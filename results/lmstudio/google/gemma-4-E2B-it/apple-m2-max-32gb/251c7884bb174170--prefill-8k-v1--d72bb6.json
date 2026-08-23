@@ -1,0 +1,341 @@
+{
+  "schema_version": 1,
+  "run_id": "251c7884bb174170--prefill-8k-v1--d72bb6",
+  "config_id": "251c7884bb174170",
+  "cell_id": "35061c031053",
+  "workload_id": "prefill-8k-v1",
+  "kind": "prefill",
+  "engine": {
+    "id": "lmstudio",
+    "version": "0.4.21",
+    "commit": null,
+    "container": null,
+    "install_method": "app"
+  },
+  "model": {
+    "id": "google/gemma-4-E2B-it",
+    "quant_id": "mlx-4bit",
+    "hf_id": "google/gemma-4-E2B-it",
+    "revision": null,
+    "dtype": "auto",
+    "local_path": null
+  },
+  "hardware": {
+    "id": "apple-m2-max-32gb",
+    "count": 1,
+    "driver": null,
+    "cuda": null,
+    "host": {
+      "cpu": "Apple M2 Max",
+      "cpu_cores": 12,
+      "ram_gb": 32.0,
+      "os": "macOS 26.5.2",
+      "kernel": "25.5.0",
+      "arch": "arm64"
+    },
+    "fingerprint": "sha256:f2cba40fa2bfa4473afbdc846b7ba69abe53fcb27fb4363b64aac1de5d17e03f",
+    "captured": {
+      "system_profiler": {
+        "_name": "hardware_overview",
+        "activation_lock_status": "activation_lock_enabled",
+        "boot_rom_version": "18000.121.3",
+        "chip_type": "Apple M2 Max",
+        "machine_model": "Mac14,13",
+        "machine_name": "Mac Studio",
+        "model_number": "MQH73D/A",
+        "number_processors": "proc 12:8:4:0",
+        "os_loader_version": "18000.121.3",
+        "physical_memory": "32 GB"
+      }
+    }
+  },
+  "args": {
+    "parallel": 32,
+    "context-length": 131072
+  },
+  "args_canonical": "@dtype=auto;@quant=mlx-4bit;context-length=131072;parallel=32",
+  "serve_command": null,
+  "workload": {
+    "id": "prefill-8k-v1",
+    "resolved_params": {
+      "concurrency": 1,
+      "num_requests": 10,
+      "input_tokens": 8192,
+      "output_tokens": 16,
+      "warmup_requests": 1,
+      "prompts_padded": false,
+      "needle_check": false,
+      "timeout_s": 900.0,
+      "seed": 42
+    }
+  },
+  "metrics": {
+    "requests_total": 10,
+    "requests_ok": 10,
+    "requests_failed": 0,
+    "success_rate": 1.0,
+    "duration_s": 17.607,
+    "input_tokens_total": 100457,
+    "output_tokens_total": 150,
+    "output_tok_s": 8.52,
+    "total_tok_s": 5714.161,
+    "req_s": 0.568,
+    "prefill_tok_s": 5968.269,
+    "ttft_ms": {
+      "mean": 1683.185,
+      "p50": 353.733,
+      "p90": 4931.224,
+      "p95": 4941.833,
+      "p99": 4950.32,
+      "min": 219.973,
+      "max": 4952.442
+    },
+    "tpot_ms": {
+      "mean": 5.531,
+      "p50": 4.815,
+      "p90": 7.212,
+      "p95": 7.239,
+      "p99": 7.26,
+      "min": 4.798,
+      "max": 7.266
+    },
+    "itl_ms": {
+      "mean": 6.418,
+      "p50": 0.025,
+      "p90": 11.691,
+      "p95": 22.354,
+      "p99": 55.551,
+      "min": 0.01,
+      "max": 56.639
+    },
+    "e2e_ms": {
+      "mean": 1760.614,
+      "p50": 421.201,
+      "p90": 5020.673,
+      "p95": 5024.904,
+      "p99": 5028.288,
+      "min": 287.396,
+      "max": 5029.134
+    },
+    "decode_tok_s_per_request": {
+      "mean": 187.124,
+      "p50": 207.676,
+      "p90": 208.382,
+      "p95": 208.398,
+      "p99": 208.41,
+      "min": 137.63,
+      "max": 208.413
+    },
+    "vram_peak_gb": null,
+    "ram_peak_gb": 24.393,
+    "kv_cache_tokens": null,
+    "power_avg_w": null,
+    "power_peak_w": null,
+    "energy_wh": null,
+    "gpu_util_avg_pct": null,
+    "temp_max_c": null,
+    "thermal_throttle_detected": null
+  },
+  "failures": [],
+  "gotchas": [
+    {
+      "severity": "info",
+      "text": "LM Studio caps concurrent predictions at 4 by default; anything above measures its internal queue, not the engine. Reload with 'lms load <model> --parallel N' before concurrency sweeps — the parallel value is part of the config fingerprint."
+    },
+    {
+      "severity": "info",
+      "text": "LM Studio's model.yaml for google/gemma-4-e2b sets enableThinking=true by default (the HF chat template defaults enable_thinking=false) — with eval workloads capped at 256 output tokens the thought block can consume the whole budget and the final answer is truncated away."
+    }
+  ],
+  "derived": {
+    "cost_per_1m_output_tokens_usd": null,
+    "tokens_per_watt": null,
+    "tok_s_per_gb_bandwidth": 0.46781,
+    "bandwidth_efficiency": 0.915623,
+    "memory_headroom_gb": null
+  },
+  "raw": {
+    "harness": "atlas-bench",
+    "harness_version": "0.1.0",
+    "sha256": "756c4c0b2c9cf1ea15fdb49a39c06c0ba9329240c773f78657e2a452ac7a452f",
+    "payload_path": null,
+    "payload": {
+      "requests": [
+        {
+          "id": "prefill-w00000",
+          "prompt_id": "hay-8k-d10",
+          "warmup": true,
+          "status": "ok",
+          "ttft_ms": 5183.827,
+          "e2e_ms": 5252.229,
+          "prompt_tokens": 10097,
+          "completion_tokens": 15,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00000",
+          "prompt_id": "hay-8k-d10",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 376.632,
+          "e2e_ms": 444.035,
+          "prompt_tokens": 10097,
+          "completion_tokens": 15,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00001",
+          "prompt_id": "hay-8k-multi",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 4928.866,
+          "e2e_ms": 5029.134,
+          "prompt_tokens": 10044,
+          "completion_tokens": 15,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00002",
+          "prompt_id": "hay-8k-d50",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 4909.524,
+          "e2e_ms": 4976.709,
+          "prompt_tokens": 9991,
+          "completion_tokens": 15,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00003",
+          "prompt_id": "hay-8k-d90",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 4952.442,
+          "e2e_ms": 5019.733,
+          "prompt_tokens": 10026,
+          "completion_tokens": 15,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00004",
+          "prompt_id": "hay-8k-d10",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 363.393,
+          "e2e_ms": 431.001,
+          "prompt_tokens": 10097,
+          "completion_tokens": 15,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00005",
+          "prompt_id": "hay-8k-multi",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 236.653,
+          "e2e_ms": 337.539,
+          "prompt_tokens": 10044,
+          "completion_tokens": 15,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00006",
+          "prompt_id": "hay-8k-d50",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 219.973,
+          "e2e_ms": 287.396,
+          "prompt_tokens": 9991,
+          "completion_tokens": 15,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00007",
+          "prompt_id": "hay-8k-d90",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 264.664,
+          "e2e_ms": 331.838,
+          "prompt_tokens": 10026,
+          "completion_tokens": 15,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00008",
+          "prompt_id": "hay-8k-d10",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 344.072,
+          "e2e_ms": 411.401,
+          "prompt_tokens": 10097,
+          "completion_tokens": 15,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00009",
+          "prompt_id": "hay-8k-multi",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 235.629,
+          "e2e_ms": 337.351,
+          "prompt_tokens": 10044,
+          "completion_tokens": 15,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        }
+      ],
+      "engine_endpoint": {
+        "attached": true,
+        "base_url": "http://localhost:1234/v1",
+        "served_model_id": "google/gemma-4-e2b",
+        "advertised_models": [
+          "rr",
+          "text-embedding-qwen.qwen3-embedding-0.6b",
+          "google/gemma-4-e2b",
+          "text-embedding-qwen.qwen3-embedding-4b",
+          "qwen.qwen3-reranker-0.6b",
+          "text-embedding-nomic-embed-text-v1.5"
+        ]
+      }
+    },
+    "truncated": false
+  },
+  "provenance": {
+    "github_login": "0xBakeer",
+    "github_user_id": null,
+    "started_at": "2026-08-23T18:32:21Z",
+    "finished_at": "2026-08-23T18:32:45Z",
+    "submitted_at": null,
+    "commit": null,
+    "pr": null,
+    "method": "atlas-bench",
+    "agent": null,
+    "notes": "Mac Studio M2 Max 32GB, desktop session active (browser + dev tools running, not a clean idle box). LM Studio 0.4.21, model loaded via 'lms load google/gemma-4-e2b --parallel 32 --context-length 131072'; 3 other small models resident (qwen3-reranker-0.6b, 2x qwen3 embedding, ~1.3 GB combined). Ambient ~22C. Thinking left at LM Studio template default (enabled) for google/gemma-4-e2b."
+  },
+  "verification": {
+    "level": "self-reported",
+    "reproduced_by": [],
+    "flags": []
+  }
+}
