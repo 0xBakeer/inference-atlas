@@ -7,6 +7,11 @@ updates:
       day: monday
     open-pull-requests-limit: 5
     labels: [dependencies]
+    ignore:
+      # Major bumps break intentionally-pinned APIs (e.g. @noble/hashes v2 renamed its
+      # subpath exports) and need a human; dependabot only keeps us current within majors.
+      - dependency-name: '*'
+        update-types: ['version-update:semver-major']
     groups:
       # One pull request for the toolchain rather than five: these move together and each
       # one costs a full CI run.
@@ -39,3 +44,6 @@ updates:
       interval: weekly
       day: monday
     labels: [dependencies, bench]
+    ignore:
+      - dependency-name: '*'
+        update-types: ['version-update:semver-major']
