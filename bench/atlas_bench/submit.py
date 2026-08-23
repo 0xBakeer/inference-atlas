@@ -110,7 +110,7 @@ def build_plan(repo: Path, paths: Sequence[Path], *, draft: bool = False) -> Sub
     return SubmitPlan(
         branch=branch,
         commit_message=message,
-        files=[str(Path(p).relative_to(repo)) for p in paths],
+        files=[str(Path(p).resolve().relative_to(repo.resolve())) for p in paths],
         pr_title=message,
         pr_body=build_body(records, draft=draft),
         labels=[str(site.get("results_label") or "results")],

@@ -132,3 +132,16 @@ def test_submit_commits_only_the_result_files(git_repo: Path) -> None:
         check=True,
     ).stdout.split()
     assert committed == plan.files
+
+
+def test_build_plan_accepts_relative_paths(git_repo: Path, monkeypatch) -> None:
+    """A --dir given relative to the CWD (e.g. ../results/...) must still map into the repo."""
+    import os
+
+    path = write_result(git_repo)
+    sub = git_repo / "bench"
+    sub.mkdir(exist_ok=True)
+    monkeypatch.chdir(sub)
+    rel = Path(os.path.relpath(path, sub))
+    plan = build_plan(git_repo, [rel])
+    assert all(not f.startswith("..") and f.startswith("results/") for f in plan.files)
