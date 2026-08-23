@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "id": "eval-vision-v1",
+  "name": "Vision eval v1",
+  "kind": "eval",
+  "description": "60 synthetic images with questions: counting and locating coloured shapes, reading a bar chart, reading rendered words, numbers and codes, counting filled cells in a grid, arrow directions, analogue clock faces and dice pips. Every image is drawn by the generator, so the answer is the value the picture was drawn from.",
+  "licence": "MIT",
+  "created": "2026-08-23",
+  "files": [
+    "items.jsonl",
+    "images/"
+  ],
+  "count": 60,
+  "generator": "datasets/_gen/gen_eval_vision.py",
+  "token_heuristic": "approx_tokens = ceil(sum(len(m.content) for m in messages) / 4)",
+  "provenance": "Synthetic, authored in this repository. No third-party text.",
+  "default_scorer": "exact",
+  "scoring": {
+    "answer_extraction": [
+      "Drop everything inside <think>...</think> (and an unterminated leading <think> block).",
+      "Drop markdown code fences, keeping the fenced content.",
+      "If any line matches /^\\s*(?:final answer|answer)\\s*[:\\-]\\s*(.+)$/i, take the capture of the LAST such line and use only that.",
+      "Strip surrounding whitespace, matching quotes, and a single trailing '.' or '!'.",
+      "Scorers that need the untouched output (instruction, json) get the raw text as well; the instruction scorer always works on the raw output."
+    ],
+    "scorers": {
+      "exact": "Case-insensitive comparison after collapsing internal whitespace. `answer` is a string; `meta.answer_aliases` (list) are also accepted."
+    },
+    "pass_rule": "One item is correct or incorrect; there is no partial credit. accuracy = correct / total. An item whose request failed (timeout, 5xx, context overflow) counts as incorrect AND is reported in scores.failures and metrics.requests_failed."
+  },
+  "categories": [
+    "arrows",
+    "chart",
+    "clock",
+    "dice",
+    "grid",
+    "ocr",
+    "shapes"
+  ],
+  "difficulties": [
+    "easy",
+    "medium",
+    "hard"
+  ],
+  "counts": {
+    "by_category": {
+      "shapes": 12,
+      "chart": 10,
+      "ocr": 10,
+      "grid": 6,
+      "arrows": 8,
+      "clock": 8,
+      "dice": 6
+    },
+    "by_difficulty": {
+      "easy": 38,
+      "medium": 14,
+      "hard": 8
+    },
+    "by_scorer": {
+      "exact": 60
+    }
+  },
+  "seed": 20260907,
+  "images": {
+    "dir": "images",
+    "format": "PNG",
+    "sizes_px": [
+      320,
+      360
+    ],
+    "count": 60,
+    "total_bytes": 119427,
+    "max_bytes": 30720
+  },
+  "notes": [
+    "The harness attaches the image as a base64 data URL in an OpenAI-style image_url content part, together with `prompt` as the text part.",
+    "meta.ground_truth records what was drawn (shape list, bar heights, clock hands, dice values). It is for debugging a disagreement, not for scoring.",
+    "Answers are short and pinned by the prompt (a number, a colour word, a letter, a compass word, yes/no, or H:MM), which is what makes the exact scorer fair.",
+    "A text-only model will score near zero here; that is the point. Record it as a real result rather than skipping the workload, since some engines silently drop image parts instead of failing.",
+    "Fonts come from Pillow's bundled default face, so regeneration does not depend on system fonts. The committed PNGs are authoritative."
+  ]
+}

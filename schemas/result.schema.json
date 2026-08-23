@@ -1,0 +1,382 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://inference-atlas.dev/schemas/result.schema.json",
+  "title": "Result record",
+  "description": "One measurement: one engine config x one workload, run by one contributor. File: results/<engine-id>/<model-id>/<hardware-id>/<run_id>.json — the filename is exactly run_id + \".json\". Nobody ever edits somebody else's result file.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "run_id",
+    "config_id",
+    "cell_id",
+    "workload_id",
+    "kind",
+    "engine",
+    "model",
+    "hardware",
+    "args",
+    "args_canonical",
+    "provenance",
+    "verification"
+  ],
+  "$defs": {
+    "nstr": {
+      "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/nullable_string"
+    },
+    "nnum": {
+      "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/nullable_number"
+    },
+    "nint": {
+      "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/nullable_integer"
+    },
+    "id": { "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/id" },
+    "metric_block": {
+      "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/metric_block"
+    }
+  },
+  "properties": {
+    "schema_version": { "type": "integer", "const": 1 },
+    "run_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{16}--[a-z0-9][a-z0-9.-]*--[0-9a-f]{6}$",
+      "description": "<config_id>--<workload_id>--<sha256(github_login|started_at)[:6]>"
+    },
+    "config_id": { "type": "string", "pattern": "^[0-9a-f]{16}$" },
+    "cell_id": { "type": "string", "pattern": "^[0-9a-f]{12}$" },
+    "workload_id": { "$ref": "#/$defs/id" },
+    "kind": { "type": "string", "enum": ["serving", "sweep", "prefill", "longctx", "eval"] },
+    "engine": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "version": { "type": "string", "minLength": 1 },
+        "commit": {
+          "$ref": "#/$defs/nstr",
+          "description": "Upstream commit, or \"fork:<name>\" when a fork was used."
+        },
+        "container": { "$ref": "#/$defs/nstr" },
+        "install_method": {
+          "type": ["string", "null"],
+          "enum": ["docker", "pip", "uv", "brew", "binary", "source", "script", "npm", "app", "attach", null]
+        },
+        "build_flags": { "$ref": "#/$defs/nstr" }
+      }
+    },
+    "model": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "quant_id"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "quant_id": { "$ref": "#/$defs/id" },
+        "hf_id": { "$ref": "#/$defs/nstr" },
+        "revision": { "$ref": "#/$defs/nstr" },
+        "dtype": {
+          "type": ["string", "null"],
+          "description": "As passed to the engine: auto, bfloat16, float16, ... Feeds the @dtype pseudo-param."
+        },
+        "local_path": { "$ref": "#/$defs/nstr" }
+      }
+    },
+    "hardware": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "count"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "count": { "type": "integer", "minimum": 1 },
+        "driver": { "$ref": "#/$defs/nstr" },
+        "cuda": { "$ref": "#/$defs/nstr" },
+        "rocm": { "$ref": "#/$defs/nstr" },
+        "host": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "cpu": { "$ref": "#/$defs/nstr" },
+            "cpu_cores": { "$ref": "#/$defs/nint" },
+            "ram_gb": { "$ref": "#/$defs/nnum" },
+            "os": { "$ref": "#/$defs/nstr" },
+            "kernel": { "$ref": "#/$defs/nstr" },
+            "arch": { "$ref": "#/$defs/nstr" }
+          }
+        },
+        "fingerprint": {
+          "type": ["string", "null"],
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "description": "Hash of the sanitized hwinfo capture; identifies the same physical box across runs."
+        },
+        "captured": {
+          "type": ["object", "null"],
+          "description": "Sanitized raw hwinfo (nvidia-smi -q subset / system_profiler subset). Never contains hostnames, serials, usernames or IPs."
+        }
+      }
+    },
+    "args": { "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/args" },
+    "args_canonical": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The canonical string that hashes to config_id. The validator recomputes it and fails on mismatch."
+    },
+    "env": {
+      "type": ["object", "null"],
+      "additionalProperties": { "type": ["string", "number", "boolean", "null"] },
+      "description": "Engine-relevant environment variables (VLLM_*, OLLAMA_*, HSA_*). Not fingerprinted in v1."
+    },
+    "serve_command": {
+      "$ref": "#/$defs/nstr",
+      "description": "The exact command line that started the engine, reproducible verbatim."
+    },
+    "workload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "resolved_params": {
+          "type": "object",
+          "additionalProperties": { "type": ["string", "number", "boolean", "array", "null"] }
+        }
+      }
+    },
+    "metrics": {
+      "oneOf": [{ "$ref": "#/$defs/metric_block" }, { "type": "null" }],
+      "description": "Aggregate metrics. For kind=sweep this is the aggregate over all points (or null)."
+    },
+    "sweep": {
+      "description": "One entry per swept point. Required for kind=sweep; also allowed for longctx/prefill runs that walk an axis.",
+      "oneOf": [
+        {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["metrics"],
+            "properties": {
+              "concurrency": { "type": "integer", "minimum": 1 },
+              "input_tokens": { "type": "integer", "minimum": 0 },
+              "output_tokens": { "type": "integer", "minimum": 0 },
+              "num_requests": { "type": "integer", "minimum": 1 },
+              "label": { "$ref": "#/$defs/nstr" },
+              "depth_pct": { "type": ["number", "null"], "minimum": 0, "maximum": 100 },
+              "needle_correct": { "type": ["boolean", "null"] },
+              "metrics": { "$ref": "#/$defs/metric_block" }
+            }
+          }
+        },
+        { "type": "null" }
+      ]
+    },
+    "scores": {
+      "description": "Required for kind=eval.",
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["suite", "total", "correct", "accuracy"],
+          "properties": {
+            "suite": { "type": "string", "minLength": 1 },
+            "total": { "type": "integer", "minimum": 0 },
+            "correct": { "type": "integer", "minimum": 0 },
+            "accuracy": { "type": "number", "minimum": 0, "maximum": 1 },
+            "success_rate": { "type": ["number", "null"], "minimum": 0, "maximum": 1, "description": "Fraction of eval requests that completed (independent of correctness)." },
+            "by_category": {
+              "type": "object",
+              "additionalProperties": {
+                "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/counted"
+              }
+            },
+            "by_difficulty": {
+              "type": "object",
+              "additionalProperties": {
+                "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/counted"
+              }
+            },
+            "avg_output_tokens": { "$ref": "#/$defs/nnum" },
+            "avg_latency_ms": { "$ref": "#/$defs/nnum" },
+            "failures": { "type": "integer", "minimum": 0 },
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["id", "correct"],
+                "properties": {
+                  "id": { "type": "string" },
+                  "category": { "$ref": "#/$defs/nstr" },
+                  "difficulty": { "$ref": "#/$defs/nstr" },
+                  "correct": { "type": "boolean" },
+                  "predicted": { "type": ["string", "null"], "maxLength": 500 },
+                  "expected": { "type": ["string", "null"], "maxLength": 500 },
+                  "latency_ms": { "$ref": "#/$defs/nnum" },
+                  "output_tokens": { "$ref": "#/$defs/nint" }
+                }
+              }
+            }
+          }
+        },
+        { "type": "null" }
+      ]
+    },
+    "failures": {
+      "type": "array",
+      "description": "Failures are data, not something to hide. An empty array means nothing failed.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["at", "count", "category"],
+        "properties": {
+          "at": { "type": "string", "enum": ["install", "load", "serve", "warmup", "request", "score"] },
+          "count": { "type": "integer", "minimum": 1 },
+          "category": {
+            "type": "string",
+            "enum": [
+              "timeout",
+              "oom",
+              "context-overflow",
+              "http-5xx",
+              "http-4xx",
+              "malformed-output",
+              "refusal",
+              "crash",
+              "unsupported",
+              "other"
+            ]
+          },
+          "message": { "$ref": "#/$defs/nstr" },
+          "sample_request_id": { "$ref": "#/$defs/nstr" }
+        }
+      }
+    },
+    "gotchas": {
+      "type": "array",
+      "description": "The knowledge that usually evaporates: what you had to know to make this work.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["severity", "text"],
+        "properties": {
+          "severity": { "type": "string", "enum": ["info", "warn", "blocker"] },
+          "text": { "type": "string", "minLength": 1, "maxLength": 2000 },
+          "link": { "$ref": "#/$defs/nstr" }
+        }
+      }
+    },
+    "derived": {
+      "type": "object",
+      "description": "Computed from metrics + registry. Contributors may leave this out; the build recomputes it.",
+      "additionalProperties": false,
+      "properties": {
+        "cost_per_1m_output_tokens_usd": { "$ref": "#/$defs/nnum" },
+        "tokens_per_watt": { "$ref": "#/$defs/nnum" },
+        "tok_s_per_gb_bandwidth": { "$ref": "#/$defs/nnum" },
+        "bandwidth_efficiency": { "$ref": "#/$defs/nnum" },
+        "memory_headroom_gb": { "$ref": "#/$defs/nnum" }
+      }
+    },
+    "raw": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "harness": { "$ref": "#/$defs/nstr" },
+        "harness_version": { "$ref": "#/$defs/nstr" },
+        "sha256": { "type": ["string", "null"], "pattern": "^[0-9a-f]{64}$" },
+        "payload_path": { "$ref": "#/$defs/nstr" },
+        "payload": { "type": ["object", "null"] },
+        "truncated": { "type": "boolean", "default": false }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["github_login", "started_at", "method"],
+      "properties": {
+        "github_login": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9](?:[A-Za-z0-9]|-(?=[A-Za-z0-9])){0,38}$",
+          "description": "Must equal the PR author. Ownership is enforced in CI."
+        },
+        "github_user_id": {
+          "$ref": "#/$defs/nint",
+          "description": "Resolved by CI. Contributors leave it null."
+        },
+        "started_at": {
+          "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/iso_datetime"
+        },
+        "finished_at": {
+          "oneOf": [
+            { "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/iso_datetime" },
+            { "type": "null" }
+          ]
+        },
+        "submitted_at": {
+          "oneOf": [
+            { "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/iso_datetime" },
+            { "type": "null" }
+          ]
+        },
+        "commit": {
+          "type": ["string", "null"],
+          "pattern": "^[0-9a-f]{7,40}$",
+          "description": "Stamped by the build from git history. Contributors leave it null."
+        },
+        "pr": {
+          "$ref": "#/$defs/nint",
+          "description": "Stamped by the build. Contributors leave it null."
+        },
+        "method": {
+          "type": "string",
+          "enum": ["atlas-bench", "manual", "issue-form", "agent"]
+        },
+        "agent": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["name"],
+              "properties": {
+                "name": { "type": "string" },
+                "model": { "$ref": "#/$defs/nstr" }
+              }
+            },
+            { "type": "null" }
+          ]
+        },
+        "notes": {
+          "$ref": "#/$defs/nstr",
+          "description": "Conditions: ambient temperature, what else was resident, anything unusual."
+        }
+      }
+    },
+    "verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["level"],
+      "properties": {
+        "level": {
+          "type": "string",
+          "enum": ["self-reported", "reproduced", "ci-verified", "disputed"]
+        },
+        "reproduced_by": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "GitHub logins whose own run of the same cell+config+workload agrees."
+        },
+        "flags": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "kind": { "const": "sweep" } }, "required": ["kind"] },
+      "then": { "required": ["sweep"], "properties": { "sweep": { "type": "array" } } }
+    },
+    {
+      "if": { "properties": { "kind": { "const": "eval" } }, "required": ["kind"] },
+      "then": { "required": ["scores"], "properties": { "scores": { "type": "object" } } }
+    }
+  ]
+}

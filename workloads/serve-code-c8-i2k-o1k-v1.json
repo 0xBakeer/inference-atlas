@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "id": "serve-code-c8-i2k-o1k-v1",
+  "name": "Code assistant, 8 concurrent, ~2k in / 1k out",
+  "kind": "serving",
+  "description": "160 coding requests at a concurrency of 8 with long outputs. Code tokens are denser than prose and the outputs are four times longer than in the chat workload, which changes the decode/prefill balance and often the speculative-decoding acceptance rate too.",
+  "dataset_id": "prompts-code-v1",
+  "params": {
+    "concurrency": 8,
+    "num_requests": 160,
+    "input_tokens": 2048,
+    "output_tokens": 1024,
+    "seed": 42,
+    "warmup_requests": 8,
+    "temperature": 0,
+    "repeat": 2,
+    "timeout_s": 300
+  },
+  "sweep": null,
+  "eval": null,
+  "metrics_required": [
+    "ttft_ms.p50",
+    "tpot_ms.p50",
+    "output_tok_s",
+    "success_rate"
+  ],
+  "immutable": true,
+  "created": "2026-08-23",
+  "supersedes": null,
+  "notes": "Speculative decoding usually looks better here than on prose; record the acceptance rate in metrics.acceptance_rate when the engine reports it."
+}

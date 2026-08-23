@@ -1,0 +1,60 @@
+name: Add a model
+description: A model — or a quantization of one — the registry does not know yet.
+title: 'model: <vendor>/<model>'
+labels: [registry, model]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Adding a model is a pull request that adds `models/<id>/model.json`, plus one
+        `models/<id>/quants/<quant-id>.json` per quantization. Facts come from the model's
+        `config.json` and its model card, **not from the launch blog post**.
+
+  - type: input
+    id: hf_id
+    attributes:
+      label: Hugging Face id
+      placeholder: Qwen/Qwen3-4B
+    validations:
+      required: true
+
+  - type: input
+    id: id
+    attributes:
+      label: Proposed model id
+      description: Readable, not the Hugging Face path — `qwen3-4b`, `llama-3.3-70b`, `nemotron-3.5-lightning-30b-a3b`.
+      placeholder: qwen3-4b
+    validations:
+      required: true
+
+  - type: input
+    id: params
+    attributes:
+      label: Total and active parameters (B)
+      description: >
+        `active_params_b` is what the bandwidth plausibility bound is computed from, and for
+        a dense model it equals the total. For an MoE it is the routed-active count, which
+        is the whole reason a 30B-A3B decodes like a 3B.
+      placeholder: 4 total, 4 active
+    validations:
+      required: true
+
+  - type: input
+    id: context
+    attributes:
+      label: Context length and licence
+      placeholder: 262144, Apache-2.0
+    validations:
+      required: true
+
+  - type: textarea
+    id: quants
+    attributes:
+      label: Quantizations to register
+      description: >
+        One per line: id, format, resident size in GB, which engines can load it, and where
+        it comes from (official / community / self-quantized). `size_gb` should be measured
+        if you can; say so if you estimated it.
+      placeholder: |
+        bf16 — bf16, 8.0 GB, vllm sglang tgi, official
+        gguf-q4-k-m — gguf, 2.5 GB, llamacpp ollama lmstudio, community (unverified)

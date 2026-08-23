@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://inference-atlas.dev/schemas/engine-overlay.schema.json",
+  "title": "Engine parameter overlay",
+  "description": "Hand-curated grouping and impact per flag, merged over every version file at build time. Version files are machine-generated and get overwritten; this file is not. File: engines/<engine-id>/overlay.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "engine_id", "params"],
+  "properties": {
+    "schema_version": { "type": "integer", "const": 1 },
+    "engine_id": { "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/id" },
+    "groups": {
+      "type": "array",
+      "description": "Display order of groups in the config explorer.",
+      "items": { "type": "string" },
+      "uniqueItems": true
+    },
+    "params": {
+      "type": "object",
+      "propertyNames": { "pattern": "^[a-z0-9][a-z0-9._-]*$" },
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "group": { "type": "string" },
+          "impact": {
+            "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/impact"
+          },
+          "notes": {
+            "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/nullable_string"
+          },
+          "featured": {
+            "type": "boolean",
+            "description": "Show in the compact config editor without expanding the group."
+          }
+        }
+      }
+    }
+  }
+}

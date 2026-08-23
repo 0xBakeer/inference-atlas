@@ -1,0 +1,41 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    labels: [dependencies]
+    groups:
+      # One pull request for the toolchain rather than five: these move together and each
+      # one costs a full CI run.
+      dev-tooling:
+        patterns:
+          - '@types/*'
+          - 'typescript'
+          - 'typescript-eslint'
+          - 'eslint*'
+          - '@eslint/*'
+          - 'prettier'
+          - 'vitest'
+          - 'tsx'
+      app:
+        patterns:
+          - 'lit'
+          - 'vite'
+          - 'uplot'
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    labels: [dependencies, ci]
+
+  - package-ecosystem: pip
+    directory: /bench
+    schedule:
+      interval: weekly
+      day: monday
+    labels: [dependencies, bench]

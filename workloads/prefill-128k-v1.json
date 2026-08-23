@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "id": "prefill-128k-v1",
+  "name": "Prefill only, 128k input",
+  "kind": "prefill",
+  "description": "10 single-stream requests with a 128k-token document and only 16 output tokens, so almost all of the time is prefill. Reported as prefill_tok_s = input tokens / time to first token. Run all three to see how prefill throughput changes with length; on most engines it falls well before the context limit.",
+  "dataset_id": "haystack-v1",
+  "params": {
+    "concurrency": 1,
+    "num_requests": 10,
+    "input_tokens": 131072,
+    "output_tokens": 16,
+    "seed": 42,
+    "warmup_requests": 1,
+    "temperature": 0,
+    "repeat": 1,
+    "timeout_s": 900,
+    "needle_check": false
+  },
+  "sweep": null,
+  "eval": null,
+  "metrics_required": [
+    "ttft_ms.p50",
+    "prefill_tok_s",
+    "success_rate"
+  ],
+  "immutable": true,
+  "created": "2026-08-23",
+  "supersedes": null,
+  "notes": "Documents come from the haystack-v1 items whose target_tokens is 131072, materialised with datasets/haystack-v1/build.py and cycled over the three needle depths. The needle answer is not scored here."
+}

@@ -1,0 +1,159 @@
+/* Inference Atlas — design tokens.
+ *
+ * One family (Archivo, variable width + weight) carries the whole identity: condensed for
+ * headings, normal for body, slightly extended for eyebrows. Data is always monospaced and
+ * tabular. Colour carries meaning: evidence levels (from site/config.json), vendor hues for
+ * hardware, and a single "flag" accent reserved for the contribution funnel.
+ */
+:root {
+  --font-sans: 'Archivo', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+
+  --fs-2xs: 10.5px;
+  --fs-xs: 11.5px;
+  --fs-sm: 12.5px;
+  --fs-md: 14px;
+  --fs-lg: 16px;
+  --fs-xl: 20px;
+  --fs-2xl: 26px;
+  --fs-3xl: 34px;
+  --fs-hero: clamp(30px, 4.2vw, 52px);
+
+  --lh-tight: 1.15;
+  --lh-snug: 1.3;
+  --lh-body: 1.5;
+
+  --r-xs: 3px;
+  --r-sm: 5px;
+  --r-md: 8px;
+  --r-lg: 12px;
+  --r-pill: 999px;
+
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+  --sp-7: 48px;
+  --sp-8: 64px;
+
+  --content-max: 1480px;
+  --nav-h: 52px;
+
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --t-fast: 120ms;
+  --t-med: 200ms;
+
+  /* light */
+  --bg: #f5f6f8;
+  --surface: #ffffff;
+  --surface-2: #eef0f4;
+  --surface-3: #e4e7ed;
+  --ink: #121722;
+  --ink-2: #3d4657;
+  --muted: #6b7484;
+  --faint: #9aa3b2;
+  --line: #dde1e8;
+  --line-strong: #c3c9d4;
+  --shadow-1: 0 1px 2px rgba(18, 23, 34, 0.06), 0 1px 1px rgba(18, 23, 34, 0.04);
+  --shadow-2: 0 6px 24px -8px rgba(18, 23, 34, 0.18), 0 2px 6px rgba(18, 23, 34, 0.06);
+  --shadow-3: 0 24px 60px -20px rgba(18, 23, 34, 0.35), 0 8px 20px -8px rgba(18, 23, 34, 0.15);
+
+  --accent: #d1295e;
+  --accent-ink: #ffffff;
+  --accent-hover: #b51f4f;
+  --accent-soft: rgba(209, 41, 94, 0.1);
+  --accent-line: rgba(209, 41, 94, 0.35);
+
+  --link: #1b4fd6;
+  --ok: #1f9d55;
+  --warn: #c77700;
+  --danger: #c92a2a;
+  --ok-soft: rgba(31, 157, 85, 0.12);
+  --warn-soft: rgba(199, 119, 0, 0.12);
+  --danger-soft: rgba(201, 42, 42, 0.1);
+  --info-soft: rgba(27, 79, 214, 0.1);
+
+  /* evidence — overridden at runtime from site.evidence_colors */
+  --ev-none: #e5e7eb;
+  --ev-single: #7dd3fc;
+  --ev-reproduced: #22c55e;
+  --ev-disputed: #f97316;
+  --ev-stale: #a78bfa;
+  --ev-none-ink: #6b7484;
+
+  /* sequential ramp for accuracy / magnitude cells (one hue, light → dark) */
+  --seq-0: #eef2ff;
+  --seq-1: #c7d2fe;
+  --seq-2: #a5b4fc;
+  --seq-3: #818cf8;
+  --seq-4: #6366f1;
+  --seq-5: #4338ca;
+
+  /* vendor hues for hardware series */
+  --vendor-nvidia: #6aa300;
+  --vendor-amd: #e2463c;
+  --vendor-apple: #5b6f99;
+  --vendor-intel: #1f6feb;
+  --vendor-cpu: #b07d3c;
+  --vendor-other: #7a8494;
+
+  --grid-dot: rgba(18, 23, 34, 0.08);
+  --selection: rgba(209, 41, 94, 0.18);
+
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  --bg: #0e1116;
+  --surface: #151920;
+  --surface-2: #1b2028;
+  --surface-3: #232934;
+  --ink: #e7eaf0;
+  --ink-2: #b4bcc9;
+  --muted: #8590a0;
+  --faint: #5f6979;
+  --line: #252b35;
+  --line-strong: #363e4b;
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-2: 0 8px 28px -10px rgba(0, 0, 0, 0.6), 0 2px 6px rgba(0, 0, 0, 0.3);
+  --shadow-3: 0 30px 70px -24px rgba(0, 0, 0, 0.8), 0 8px 24px -8px rgba(0, 0, 0, 0.5);
+
+  --accent: #f0567f;
+  --accent-ink: #160a0f;
+  --accent-hover: #f97a9c;
+  --accent-soft: rgba(240, 86, 127, 0.14);
+  --accent-line: rgba(240, 86, 127, 0.4);
+
+  --link: #7da2ff;
+  --ok: #3ccf7a;
+  --warn: #f2a33a;
+  --danger: #ff6b6b;
+  --ok-soft: rgba(60, 207, 122, 0.14);
+  --warn-soft: rgba(242, 163, 58, 0.14);
+  --danger-soft: rgba(255, 107, 107, 0.14);
+  --info-soft: rgba(125, 162, 255, 0.14);
+
+  --ev-none: #262c36;
+  --ev-none-ink: #8590a0;
+
+  --seq-0: #1c2038;
+  --seq-1: #2b3266;
+  --seq-2: #3e478f;
+  --seq-3: #5b66bf;
+  --seq-4: #7f8be8;
+  --seq-5: #b0b8ff;
+
+  --vendor-nvidia: #8fd400;
+  --vendor-amd: #ff6b5f;
+  --vendor-apple: #9db0dc;
+  --vendor-intel: #58a6ff;
+  --vendor-cpu: #d6a266;
+  --vendor-other: #9aa4b5;
+
+  --grid-dot: rgba(231, 234, 240, 0.07);
+  --selection: rgba(240, 86, 127, 0.3);
+
+  color-scheme: dark;
+}

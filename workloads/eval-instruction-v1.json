@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "id": "eval-instruction-v1",
+  "name": "Instruction following eval v1",
+  "kind": "eval",
+  "description": "Runs all 104 items of eval-instruction-v1 at temperature 0 and reports accuracy overall, by category and by difficulty. Pinned together with the dataset: a change to either means a new -v2 id.",
+  "dataset_id": "eval-instruction-v1",
+  "params": {
+    "concurrency": 4,
+    "num_requests": 104,
+    "input_tokens": null,
+    "output_tokens": 2048,
+    "seed": 42,
+    "warmup_requests": 0,
+    "temperature": 0,
+    "repeat": 1,
+    "timeout_s": 300,
+    "reasoning": "default"
+  },
+  "sweep": null,
+  "eval": {
+    "suite": "instruction",
+    "scorer": "instruction",
+    "pass_threshold": null,
+    "max_output_tokens": 2048,
+    "categories": [
+      "length",
+      "inclusion",
+      "exclusion",
+      "casing",
+      "structure",
+      "framing",
+      "format",
+      "json",
+      "language"
+    ],
+    "notes": "The instruction scorer evaluates the rule DSL in each row's `answer` against the RAW model output. The normative implementation is datasets/eval-instruction-v1/rules.py."
+  },
+  "metrics_required": [
+    "accuracy",
+    "success_rate",
+    "avg_latency_ms"
+  ],
+  "immutable": true,
+  "created": "2026-08-23",
+  "supersedes": null,
+  "notes": "accuracy and avg_latency_ms live in the result's `scores` block, not in `metrics`; success_rate is the share of requests that completed at all and is independent of whether the answers were right."
+}

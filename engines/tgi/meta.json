@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "id": "tgi",
+  "name": "Text Generation Inference",
+  "repo": "https://github.com/huggingface/text-generation-inference",
+  "docs": "https://huggingface.co/docs/text-generation-inference",
+  "description": "Hugging Face's serving stack. Ships as a container with sane defaults and a Rust router.",
+  "api": "openai",
+  "default_port": 80,
+  "platforms": [
+    "linux-cuda",
+    "linux-rocm",
+    "linux-xpu"
+  ],
+  "quant_formats": [
+    "bf16",
+    "fp16",
+    "fp8",
+    "awq-int4",
+    "gptq-int4",
+    "bitsandbytes",
+    "compressed-tensors",
+    "mxfp4"
+  ],
+  "install": [
+    {
+      "method": "docker",
+      "image": "ghcr.io/huggingface/text-generation-inference:{version}",
+      "arch": [
+        "x86_64"
+      ]
+    }
+  ],
+  "serve": {
+    "command_template": "text-generation-launcher --model-id {model_ref} {flags}",
+    "model_ref": "hf_id",
+    "flag_style": "--{name} {value}",
+    "bool_style": "--{name}",
+    "bool_false_style": null,
+    "env_style": null
+  },
+  "health": {
+    "path": "/health",
+    "models_path": "/v1/models",
+    "ready_timeout_s": 1800
+  },
+  "bench_harness": "atlas-bench",
+  "drop_params": [
+    "model-id",
+    "hostname",
+    "port",
+    "api-key",
+    "huggingface-hub-cache",
+    "json-output",
+    "otlp-endpoint",
+    "revision",
+    "download-dir",
+    "served-model-name",
+    "host",
+    "model"
+  ],
+  "param_aliases": {
+    "num-shard": "num-shard",
+    "tp": "num-shard"
+  },
+  "version_source": {
+    "kind": "github-releases",
+    "repo": "huggingface/text-generation-inference",
+    "tag_prefix": "v",
+    "version_scheme": "semver"
+  },
+  "versions_available": [
+    "3.3.6"
+  ],
+  "links": {
+    "releases": "https://github.com/huggingface/text-generation-inference/releases"
+  },
+  "notes": null
+}

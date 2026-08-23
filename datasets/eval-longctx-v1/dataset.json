@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "id": "eval-longctx-v1",
+  "name": "Long-context eval v1",
+  "kind": "eval",
+  "description": "100 questions over synthetic haystacks at 1k, 4k, 8k, 32k and 128k tokens: single-needle retrieval at 10 %, 50 % and 90 % depth, three-needle aggregation, line-number lookup, and control items whose answer is not in the document at all.",
+  "licence": "MIT",
+  "created": "2026-08-23",
+  "files": [
+    "items.jsonl"
+  ],
+  "count": 100,
+  "generator": "datasets/_gen/gen_eval_longctx.py",
+  "token_heuristic": "approx_tokens = ceil(sum(len(m.content) for m in messages) / 4)",
+  "provenance": "Synthetic, authored in this repository. No third-party text.",
+  "default_scorer": "needle",
+  "scoring": {
+    "answer_extraction": [
+      "Drop everything inside <think>...</think> (and an unterminated leading <think> block).",
+      "Drop markdown code fences, keeping the fenced content.",
+      "If any line matches /^\\s*(?:final answer|answer)\\s*[:\\-]\\s*(.+)$/i, take the capture of the LAST such line and use only that.",
+      "Strip surrounding whitespace, matching quotes, and a single trailing '.' or '!'.",
+      "Scorers that need the untouched output (instruction, json) get the raw text as well; the instruction scorer always works on the raw output."
+    ],
+    "scorers": {
+      "exact": "Case-insensitive comparison after collapsing internal whitespace. `answer` is a string; `meta.answer_aliases` (list) are also accepted.",
+      "contains": "`answer` is {all: [...], any: [...]} (either key may be absent). An entry may be a string, or a LIST of alternatives that passes when any one of them is found. Correct when every entry of `all` and at least one entry of `any` occurs in the casefolded output. Substring match, no diacritic folding.",
+      "needle": "Casefolded substring test of `answer` in the extracted output, after removing spaces, commas and hyphens from both sides. Meant for retrieval, not phrasing."
+    },
+    "pass_rule": "One item is correct or incorrect; there is no partial credit. accuracy = correct / total. An item whose request failed (timeout, 5xx, context overflow) counts as incorrect AND is reported in scores.failures and metrics.requests_failed."
+  },
+  "categories": [
+    "absent",
+    "line_lookup",
+    "multi_needle",
+    "needle"
+  ],
+  "difficulties": [
+    "easy",
+    "medium",
+    "hard"
+  ],
+  "counts": {
+    "by_category": {
+      "needle": 54,
+      "multi_needle": 15,
+      "line_lookup": 13,
+      "absent": 18
+    },
+    "by_difficulty": {
+      "easy": 45,
+      "medium": 21,
+      "hard": 34
+    },
+    "by_scorer": {
+      "needle": 69,
+      "exact": 13,
+      "contains": 18
+    }
+  },
+  "seed": 20260909,
+  "sizes": [
+    "1k",
+    "4k",
+    "8k",
+    "32k",
+    "128k"
+  ],
+  "counts_by_size": {
+    "1k": 28,
+    "4k": 27,
+    "8k": 22,
+    "32k": 12,
+    "128k": 11
+  },
+  "depends_on": [
+    "haystack-v1"
+  ],
+  "notes": [
+    "Rows carry a recipe, not text. Materialise with datasets/haystack-v1/build.py: build_haystack(meta.haystack) gives the document and build_prompt(meta.haystack) gives the full user message. meta.sha256 is the digest of the document, so an implementation can prove it agrees.",
+    "The row's `prompt` equals meta.haystack.question; sending `prompt` alone, without the document, is a bug and will read as a catastrophic accuracy drop.",
+    "Report accuracy per meta.target_tokens, not only overall — the interesting signal is where a model falls off, and averaging hides it.",
+    "An item whose context exceeds the served max-model-len must be recorded as a failure with category 'context-overflow', not silently skipped.",
+    "The `absent` items are scored leniently with contains/any over a list of not-found phrasings. A model that invents a passphrase fails; a model that says it is not in the log passes in any wording from the list."
+  ]
+}

@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "id": "prompts-code-v1",
+  "name": "Coding prompts v1",
+  "kind": "prompts",
+  "description": "150 coding prompts in python, typescript, go, rust and sql, covering four task kinds: write a function from a specification, diagnose and fix a reported bug in a supplied module, explain an unfamiliar module, and refactor one. Used by the code serving workload, where output lengths are longer than in chat.",
+  "licence": "MIT",
+  "created": "2026-08-23",
+  "files": [
+    "prompts.jsonl"
+  ],
+  "count": 150,
+  "generator": "datasets/_gen/gen_prompts_code.py",
+  "token_heuristic": "approx_tokens = ceil(sum(len(m.content) for m in messages) / 4)",
+  "provenance": "Synthetic, authored in this repository. No third-party text.",
+  "seed": 20260825,
+  "topics": [
+    "code"
+  ],
+  "length_buckets": {
+    "xs": [
+      16,
+      64
+    ],
+    "s": [
+      65,
+      256
+    ],
+    "m": [
+      257,
+      1024
+    ],
+    "l": [
+      1025,
+      4096
+    ],
+    "xl": [
+      4097,
+      16384
+    ],
+    "xxl": [
+      16385,
+      65536
+    ]
+  },
+  "code_languages": [
+    "python",
+    "typescript",
+    "go",
+    "rust",
+    "sql"
+  ],
+  "tasks": [
+    "write",
+    "fix",
+    "explain",
+    "refactor"
+  ],
+  "counts": {
+    "by_bucket": {
+      "s": 40,
+      "m": 63,
+      "l": 47
+    },
+    "by_task": {
+      "write": 40,
+      "fix": 40,
+      "explain": 35,
+      "refactor": 35
+    },
+    "by_code_language": {
+      "python": 30,
+      "typescript": 30,
+      "go": 30,
+      "rust": 30,
+      "sql": 30
+    }
+  },
+  "schema": {
+    "fields": [
+      "id",
+      "topic",
+      "bucket",
+      "approx_tokens",
+      "messages",
+      "shared_prefix"
+    ],
+    "optional_fields": [
+      "lang",
+      "code_lang",
+      "task"
+    ],
+    "messages": "Two turns: a system message naming the language, then the user task."
+  },
+  "notes": [
+    "Nothing here is scored — these prompts exist to load the engine with code-shaped traffic. Graded coding tasks with hidden tests are in eval-code-v1.",
+    "Supplied modules are synthetic and internally consistent, but they are not real programs; the 'fix' prompts describe a plausible symptom rather than a planted bug."
+  ]
+}

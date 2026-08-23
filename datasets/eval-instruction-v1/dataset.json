@@ -1,0 +1,138 @@
+{
+  "schema_version": 1,
+  "id": "eval-instruction-v1",
+  "name": "Instruction-following eval v1",
+  "kind": "eval",
+  "description": "104 items whose instructions are checkable by a program: word and character counts, required and forbidden words, casing, bullet and numbered-list shape, paragraph and line structure, opening and closing phrases, exact one-line formats, JSON-only output, answering in a given language with a required keyword, and combinations of the above.",
+  "licence": "MIT",
+  "created": "2026-08-23",
+  "files": [
+    "items.jsonl",
+    "rules.py"
+  ],
+  "count": 104,
+  "generator": "datasets/_gen/gen_eval_instruction.py",
+  "token_heuristic": "approx_tokens = ceil(sum(len(m.content) for m in messages) / 4)",
+  "provenance": "Synthetic, authored in this repository. No third-party text.",
+  "default_scorer": "instruction",
+  "scoring": {
+    "answer_extraction": [
+      "Drop everything inside <think>...</think> (and an unterminated leading <think> block).",
+      "Drop markdown code fences, keeping the fenced content.",
+      "If any line matches /^\\s*(?:final answer|answer)\\s*[:\\-]\\s*(.+)$/i, take the capture of the LAST such line and use only that.",
+      "Strip surrounding whitespace, matching quotes, and a single trailing '.' or '!'.",
+      "Scorers that need the untouched output (instruction, json) get the raw text as well; the instruction scorer always works on the raw output."
+    ],
+    "scorers": {
+      "instruction": "Evaluate the rule DSL in `answer` against the RAW output. See eval-instruction-v1/dataset.json for the rule list."
+    },
+    "pass_rule": "One item is correct or incorrect; there is no partial credit. accuracy = correct / total. An item whose request failed (timeout, 5xx, context overflow) counts as incorrect AND is reported in scores.failures and metrics.requests_failed."
+  },
+  "categories": [
+    "casing",
+    "exclusion",
+    "format",
+    "framing",
+    "inclusion",
+    "json",
+    "language",
+    "length",
+    "structure"
+  ],
+  "difficulties": [
+    "easy",
+    "medium",
+    "hard"
+  ],
+  "counts": {
+    "by_category": {
+      "length": 17,
+      "format": 10,
+      "inclusion": 11,
+      "exclusion": 8,
+      "casing": 11,
+      "structure": 25,
+      "framing": 13,
+      "json": 4,
+      "language": 5
+    },
+    "by_difficulty": {
+      "easy": 23,
+      "medium": 61,
+      "hard": 20
+    },
+    "by_scorer": {
+      "instruction": 104
+    }
+  },
+  "seed": 20260904,
+  "rule_dsl": {
+    "shape": "answer = {\"all\": [rule, ...]}; the item is correct only when every rule passes.",
+    "applies_to": "the RAW model output — no answer extraction, no trimming. json_only and json_path_equals strip a surrounding markdown fence first.",
+    "definitions": {
+      "word": "match of [A-Za-z0-9]+(?:['’-][A-Za-z0-9]+)* — \"don't\" is one word, \"3.5\" is two",
+      "line": "text.strip().split('\\n') with blank lines dropped",
+      "paragraph": "block from re.split(r'\\n\\s*\\n', text.strip()), empties dropped",
+      "sentence": "split on [.!?]+ followed by whitespace or end of text, empties dropped",
+      "bullet": "line whose lstrip() starts with a marker followed by a space"
+    },
+    "rules": {
+      "word_count": "{min?, max?} — number of words is within the range (either bound may be absent)",
+      "char_count": "{min?, max?} — len(text.strip())",
+      "sentence_count": "{min?, max?}",
+      "line_count": "{min?, max?}",
+      "paragraph_count": "{min?, max?}",
+      "bullet_count": "{min?, max?, markers?=['-','*','•'], only_bullets?=false} — when only_bullets is true every non-empty line must be a bullet",
+      "numbered_list": "{count} — the numbers found at line starts must be exactly 1..count in order",
+      "contains_all": "{values[], case_sensitive?=false} — every value occurs as a substring",
+      "contains_none": "{values[], case_sensitive?=false} — no value occurs",
+      "contains_any": "{values[], min_matches?=1, case_sensitive?=false}",
+      "starts_with": "{value, case_sensitive?=true} — on text.strip()",
+      "ends_with": "{value, case_sensitive?=true} — on text.strip()",
+      "all_caps": "{} — at least one letter, and every cased letter is upper case",
+      "all_lower": "{} — at least one letter, and every cased letter is lower case",
+      "no_commas": "{} — the output contains no ','",
+      "regex": "{pattern, flags?='', mode?='search'} — flags is a subset of 'ims'; mode 'fullmatch' matches against text.strip()",
+      "not_regex": "{pattern, flags?=''} — the pattern must NOT be found anywhere",
+      "json_only": "{} — the whole output parses as JSON once a surrounding fence is removed",
+      "json_path_equals": "{path, value} — dotted path (numeric segments index arrays) equals value",
+      "is_number": "{} — text.strip() with ',' removed parses as a float",
+      "word_repeat": "{value, min?, max?, case_sensitive?=false} — how often the word occurs",
+      "max_words_per_line": "{max}",
+      "every_line_starts_with": "{value} — every non-empty line, after lstrip()",
+      "unique_lines": "{} — no two non-empty lines are identical after stripping"
+    },
+    "reference_implementation": "datasets/eval-instruction-v1/rules.py (evaluate(answer, text) -> (bool, failed_rules)); `python datasets/eval-instruction-v1/rules.py --self-test` must pass."
+  },
+  "rules_used": [
+    "all_caps",
+    "all_lower",
+    "bullet_count",
+    "char_count",
+    "contains_all",
+    "contains_any",
+    "contains_none",
+    "ends_with",
+    "every_line_starts_with",
+    "is_number",
+    "json_only",
+    "json_path_equals",
+    "line_count",
+    "max_words_per_line",
+    "no_commas",
+    "not_regex",
+    "numbered_list",
+    "paragraph_count",
+    "regex",
+    "sentence_count",
+    "starts_with",
+    "unique_lines",
+    "word_count",
+    "word_repeat"
+  ],
+  "notes": [
+    "The instruction scorer must evaluate the rule set against the raw output. Stripping <think> blocks first is allowed and recommended for reasoning models; nothing else may be normalised away.",
+    "meta.example_pass is a compliant answer written by the generator, used to prove each rule set is satisfiable. It is never sent to the model.",
+    "A model that adds a friendly preamble fails most of these items on purpose — that is the capability being measured."
+  ]
+}

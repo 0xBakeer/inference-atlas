@@ -1,0 +1,289 @@
+{
+  "schema_version": 1,
+  "repo": {
+    "owner": "khaledbakeer",
+    "name": "inf-atlas",
+    "default_branch": "main",
+    "host": "https://github.com",
+    "branch_prefix": "result/",
+    "results_label": "results"
+  },
+  "site": {
+    "title": "Inference Atlas",
+    "tagline": "A community-owned map of LLM inference engine configurations.",
+    "description": "Every square is a model, a quantization, a device and an engine version. Colour means evidence, not speed: grey squares are the ones nobody has measured, and every grey square comes with everything you need to fill it in twenty minutes.",
+    "base_path": "/inf-atlas/",
+    "url": "https://khaledbakeer.github.io/inf-atlas/",
+    "theme_default": "system"
+  },
+  "nav": [
+    {
+      "label": "Atlas",
+      "route": "#/",
+      "primary": true
+    },
+    {
+      "label": "Explore",
+      "route": "#/explore",
+      "primary": true
+    },
+    {
+      "label": "Results",
+      "route": "#/results",
+      "primary": true
+    },
+    {
+      "label": "Gaps",
+      "route": "#/gaps",
+      "primary": true
+    },
+    {
+      "label": "Pareto",
+      "route": "#/pareto",
+      "group": "Analysis"
+    },
+    {
+      "label": "Timeline",
+      "route": "#/timeline",
+      "group": "Analysis"
+    },
+    {
+      "label": "Evals",
+      "route": "#/evals",
+      "group": "Analysis"
+    },
+    {
+      "label": "Parallelism",
+      "route": "#/parallelism",
+      "group": "Analysis"
+    },
+    {
+      "label": "Models",
+      "route": "#/models",
+      "group": "Registry"
+    },
+    {
+      "label": "Hardware",
+      "route": "#/hardware",
+      "group": "Registry"
+    },
+    {
+      "label": "Engines",
+      "route": "#/engines",
+      "group": "Registry"
+    },
+    {
+      "label": "Workloads",
+      "route": "#/workloads",
+      "group": "Registry"
+    },
+    {
+      "label": "Contributors",
+      "route": "#/contributors",
+      "group": "Community"
+    },
+    {
+      "label": "Contribute",
+      "route": "#/contribute",
+      "group": "Community",
+      "primary": true
+    }
+  ],
+  "atlas": {
+    "default_axes": {
+      "x": "hardware",
+      "y": "model"
+    },
+    "axes": [
+      "model",
+      "quant",
+      "hardware",
+      "engine",
+      "engine_minor",
+      "workload"
+    ],
+    "default_metric": "output_tok_s",
+    "metrics": [
+      {
+        "key": "output_tok_s",
+        "label": "Output tok/s",
+        "unit": "tok/s",
+        "better": "higher",
+        "format": "0.0"
+      },
+      {
+        "key": "decode_tok_s_per_request",
+        "label": "Decode tok/s per request",
+        "unit": "tok/s",
+        "better": "higher",
+        "format": "0.0"
+      },
+      {
+        "key": "ttft_p50",
+        "label": "TTFT p50",
+        "unit": "ms",
+        "better": "lower",
+        "format": "0"
+      },
+      {
+        "key": "ttft_p95",
+        "label": "TTFT p95",
+        "unit": "ms",
+        "better": "lower",
+        "format": "0"
+      },
+      {
+        "key": "tpot_p50",
+        "label": "TPOT p50",
+        "unit": "ms",
+        "better": "lower",
+        "format": "0.0"
+      },
+      {
+        "key": "accuracy",
+        "label": "Eval accuracy",
+        "unit": "",
+        "better": "higher",
+        "format": "0.0%"
+      },
+      {
+        "key": "vram_peak_gb",
+        "label": "Peak VRAM",
+        "unit": "GB",
+        "better": "lower",
+        "format": "0.0"
+      },
+      {
+        "key": "power_avg_w",
+        "label": "Average power",
+        "unit": "W",
+        "better": "lower",
+        "format": "0"
+      },
+      {
+        "key": "success_rate",
+        "label": "Success rate",
+        "unit": "",
+        "better": "higher",
+        "format": "0.0%"
+      }
+    ],
+    "default_workload_id": "serve-single-i256-o256-v1"
+  },
+  "evidence_colors": {
+    "none": "#e5e7eb",
+    "single": "#7dd3fc",
+    "reproduced": "#22c55e",
+    "disputed": "#f97316",
+    "stale": "#a78bfa"
+  },
+  "scoring": {
+    "weights": {
+      "fill_empty_cell": 10,
+      "additional_run": 2,
+      "reproduction": 6,
+      "new_hardware": 25,
+      "new_model": 15,
+      "new_engine": 40,
+      "new_quant": 5,
+      "new_workload": 8,
+      "gotcha": 2,
+      "sweep_point": 0.5,
+      "eval_run": 4,
+      "wanted_bonus": 5
+    },
+    "diminishing": {
+      "per_cell_factor": 0.5,
+      "min_factor": 0.1,
+      "max_runs_counted_per_cell": null
+    }
+  },
+  "coverage": {
+    "stale_minors_behind": 2,
+    "disputed_deviation_pct": 25,
+    "key_metrics": [
+      "output_tok_s",
+      "decode_tok_s_per_request",
+      "accuracy",
+      "ttft_p50"
+    ],
+    "reproduced_min_logins": 2
+  },
+  "plausibility": {
+    "bandwidth_tolerance": 1.5,
+    "vram_tolerance": 1.02,
+    "warn_bandwidth_fraction": 0.15,
+    "min_weight_gb": 0.05
+  },
+  "wanted": {
+    "weights": {
+      "featured_model": 3,
+      "featured_hardware": 3,
+      "featured_engine": 2,
+      "newest_engine_minor": 2,
+      "model_never_measured": 5,
+      "hardware_never_measured": 5,
+      "engine_never_measured": 4,
+      "quant_never_measured": 2,
+      "completes_axis": 2,
+      "requested": 4,
+      "stale_refresh": 3,
+      "disputed_tiebreak": 6
+    },
+    "max_gaps": 500,
+    "workloads": [
+      "serve-single-i256-o256-v1",
+      "serve-chat-c8-i1k-o256-v1",
+      "sweep-parallel-1-32-i512-o256-v1",
+      "prefill-32k-v1",
+      "longctx-needle-32k-v1",
+      "eval-math-v1",
+      "eval-code-v1",
+      "eval-reasoning-v1"
+    ]
+  },
+  "featured": {
+    "hardware": [
+      "nvidia-gb10-dgx-spark",
+      "nvidia-rtx-4090",
+      "nvidia-rtx-5090",
+      "apple-m2-max-32gb",
+      "apple-m4-max-128gb",
+      "nvidia-h100-80gb"
+    ],
+    "models": [
+      "qwen3-8b",
+      "qwen3-30b-a3b",
+      "qwen3.8-27b",
+      "gpt-oss-20b",
+      "llama-3.1-8b",
+      "nemotron-3.5-lightning-30b-a3b"
+    ],
+    "engines": [
+      "vllm",
+      "llamacpp",
+      "sglang",
+      "ollama",
+      "mlx-lm"
+    ],
+    "workloads": [
+      "serve-single-i256-o256-v1",
+      "longctx-depth-sweep-v1"
+    ]
+  },
+  "packet": {
+    "packet_version": 1,
+    "agents_file": "AGENTS.md",
+    "harness_command": "uv run atlas-bench",
+    "validate_command": "pnpm validate",
+    "issue_labels": [
+      "wanted"
+    ]
+  },
+  "links": {
+    "repo": "https://github.com/khaledbakeer/inf-atlas",
+    "spec": "https://github.com/khaledbakeer/inf-atlas/blob/main/docs/SPEC.md",
+    "agents": "https://github.com/khaledbakeer/inf-atlas/blob/main/AGENTS.md",
+    "data_licence": "https://github.com/khaledbakeer/inf-atlas/blob/main/DATA_LICENSE"
+  }
+}

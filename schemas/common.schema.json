@@ -1,0 +1,121 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://inference-atlas.dev/schemas/common.schema.json",
+  "title": "Inference Atlas shared definitions",
+  "description": "Shared $defs referenced by every other Inference Atlas schema. This file is never validated against on its own.",
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9.-]*$",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "id_list": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/id" },
+      "uniqueItems": true
+    },
+    "iso_datetime": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]+)?(Z|[+-][0-9]{2}:[0-9]{2})$"
+    },
+    "iso_date": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+    },
+    "nullable_string": { "type": ["string", "null"] },
+    "nullable_number": { "type": ["number", "null"] },
+    "nullable_integer": { "type": ["integer", "null"] },
+    "nullable_boolean": { "type": ["boolean", "null"] },
+    "links": {
+      "type": "object",
+      "description": "Free-form label -> URL map.",
+      "additionalProperties": { "type": ["string", "null"] }
+    },
+    "distribution": {
+      "type": "object",
+      "description": "Summary statistics of a per-request measurement. Every field is optional and nullable; record only what was actually measured.",
+      "additionalProperties": false,
+      "properties": {
+        "mean": { "$ref": "#/$defs/nullable_number" },
+        "p50": { "$ref": "#/$defs/nullable_number" },
+        "p90": { "$ref": "#/$defs/nullable_number" },
+        "p95": { "$ref": "#/$defs/nullable_number" },
+        "p99": { "$ref": "#/$defs/nullable_number" },
+        "min": { "$ref": "#/$defs/nullable_number" },
+        "max": { "$ref": "#/$defs/nullable_number" },
+        "stddev": { "$ref": "#/$defs/nullable_number" }
+      }
+    },
+    "nullable_distribution": {
+      "oneOf": [{ "$ref": "#/$defs/distribution" }, { "type": "null" }]
+    },
+    "metric_block": {
+      "type": "object",
+      "description": "The metrics of one measurement (or one point of a sweep). Everything is optional and nullable: only fill in what was really measured. workload.metrics_required decides what a given workload must carry.",
+      "additionalProperties": false,
+      "properties": {
+        "requests_total": { "$ref": "#/$defs/nullable_integer" },
+        "requests_ok": { "$ref": "#/$defs/nullable_integer" },
+        "requests_failed": { "$ref": "#/$defs/nullable_integer" },
+        "success_rate": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+        "duration_s": { "type": ["number", "null"], "minimum": 0 },
+        "output_tokens_total": { "$ref": "#/$defs/nullable_integer" },
+        "input_tokens_total": { "$ref": "#/$defs/nullable_integer" },
+        "output_tok_s": { "type": ["number", "null"], "minimum": 0 },
+        "total_tok_s": { "type": ["number", "null"], "minimum": 0 },
+        "req_s": { "type": ["number", "null"], "minimum": 0 },
+        "prefill_tok_s": { "type": ["number", "null"], "minimum": 0 },
+        "ttft_ms": { "$ref": "#/$defs/nullable_distribution" },
+        "tpot_ms": { "$ref": "#/$defs/nullable_distribution" },
+        "itl_ms": { "$ref": "#/$defs/nullable_distribution" },
+        "e2e_ms": { "$ref": "#/$defs/nullable_distribution" },
+        "decode_tok_s_per_request": { "$ref": "#/$defs/nullable_distribution" },
+        "vram_peak_gb": { "type": ["number", "null"], "minimum": 0 },
+        "ram_peak_gb": { "type": ["number", "null"], "minimum": 0 },
+        "kv_cache_tokens": { "$ref": "#/$defs/nullable_integer" },
+        "power_avg_w": { "type": ["number", "null"], "minimum": 0 },
+        "power_peak_w": { "type": ["number", "null"], "minimum": 0 },
+        "energy_wh": { "type": ["number", "null"], "minimum": 0 },
+        "gpu_util_avg_pct": { "type": ["number", "null"], "minimum": 0, "maximum": 100 },
+        "temp_max_c": { "$ref": "#/$defs/nullable_number" },
+        "thermal_throttle_detected": { "$ref": "#/$defs/nullable_boolean" },
+        "acceptance_rate": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+        "accepted_tokens_per_step": { "type": ["number", "null"], "minimum": 0 }
+      }
+    },
+    "arg_value": {
+      "description": "One engine flag value as it was passed to the engine.",
+      "type": ["string", "number", "boolean", "object", "array", "null"]
+    },
+    "args": {
+      "type": "object",
+      "description": "Engine flags as passed. Keys are flag names without leading dashes (canonicalization normalizes them anyway).",
+      "additionalProperties": { "$ref": "#/$defs/arg_value" }
+    },
+    "counted": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["total", "correct"],
+      "properties": {
+        "total": { "type": "integer", "minimum": 0 },
+        "correct": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "platform": {
+      "type": "string",
+      "enum": [
+        "linux-cuda",
+        "linux-rocm",
+        "linux-cpu",
+        "linux-xpu",
+        "macos-metal",
+        "macos-cpu",
+        "windows-cuda",
+        "windows-cpu"
+      ]
+    },
+    "impact": { "type": "string", "enum": ["high", "medium", "low"] }
+  }
+}

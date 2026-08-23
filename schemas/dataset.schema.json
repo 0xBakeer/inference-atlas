@@ -1,0 +1,183 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://inference-atlas.dev/schemas/dataset.schema.json",
+  "title": "Dataset record",
+  "description": "Test data authored in this repository. No third-party data is mirrored. File: datasets/<id>/dataset.json. Unlike every other record here this one allows extra top-level properties: each dataset kind carries its own metadata (haystack depths, prefix groups, per-topic counts) and enumerating them all would mean a schema change per dataset. The contract is the required fields; everything else is documentation for humans.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "schema_version",
+    "id",
+    "name",
+    "kind",
+    "licence",
+    "files",
+    "count"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "const": 1
+    },
+    "id": {
+      "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/id"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "prompts",
+        "eval",
+        "images",
+        "haystack"
+      ]
+    },
+    "description": {
+      "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/nullable_string"
+    },
+    "licence": {
+      "type": "string",
+      "minLength": 1
+    },
+    "files": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "topics": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      }
+    },
+    "categories": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      }
+    },
+    "length_buckets": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "minItems": 2,
+        "maxItems": 2,
+        "items": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "schema": {
+      "type": "object",
+      "additionalProperties": {
+        "type": [
+          "string",
+          "array",
+          "object",
+          "null"
+        ]
+      },
+      "required": [
+        "fields"
+      ],
+      "properties": {
+        "fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "notes": {
+          "description": "Free text, or a list of notes.",
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "generator": {
+      "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/nullable_string",
+      "description": "Script that produced the files, if generated."
+    },
+    "created": {
+      "oneOf": [
+        {
+          "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/iso_date"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "notes": {
+      "description": "Free text, or a list of notes.",
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      ]
+    },
+    "token_heuristic": {
+      "type": "string",
+      "description": "How approx_tokens was computed."
+    },
+    "provenance": {
+      "type": "string",
+      "description": "Where the text came from. Must say \"authored in this repository\" or equivalent."
+    },
+    "seed": {
+      "type": "integer",
+      "description": "Seed of the generator, so the files can be reproduced."
+    },
+    "counts": {
+      "type": "object",
+      "description": "Breakdowns, e.g. by_topic / by_bucket."
+    },
+    "usage": {
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      ],
+      "description": "How a runner is meant to consume these rows."
+    }
+  }
+}

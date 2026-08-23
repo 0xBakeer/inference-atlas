@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "id": "prompts-mixed-v1",
+  "name": "Mixed chat prompts v1",
+  "kind": "prompts",
+  "description": "600 synthetic chat prompts spanning eleven topics and six length buckets, from single-sentence questions to 60k-token documents with a task attached. Every prompt is unique and carries running reference numbers so that prefix caching and tokenizer merges cannot inflate prefill throughput.",
+  "licence": "MIT",
+  "created": "2026-08-23",
+  "files": [
+    "prompts.jsonl"
+  ],
+  "count": 600,
+  "generator": "datasets/_gen/gen_prompts_mixed.py",
+  "token_heuristic": "approx_tokens = ceil(sum(len(m.content) for m in messages) / 4)",
+  "provenance": "Synthetic, authored in this repository. No third-party text.",
+  "seed": 20260823,
+  "topics": [
+    "business",
+    "code",
+    "creative",
+    "everyday",
+    "history",
+    "law",
+    "math",
+    "medicine",
+    "multilingual",
+    "reasoning",
+    "science"
+  ],
+  "length_buckets": {
+    "xs": [
+      16,
+      64
+    ],
+    "s": [
+      65,
+      256
+    ],
+    "m": [
+      257,
+      1024
+    ],
+    "l": [
+      1025,
+      4096
+    ],
+    "xl": [
+      4097,
+      16384
+    ],
+    "xxl": [
+      16385,
+      65536
+    ]
+  },
+  "counts": {
+    "by_bucket": {
+      "xs": 140,
+      "s": 160,
+      "m": 150,
+      "l": 120,
+      "xl": 20,
+      "xxl": 10
+    },
+    "by_topic": {
+      "business": 57,
+      "code": 56,
+      "creative": 56,
+      "everyday": 57,
+      "history": 58,
+      "law": 58,
+      "math": 56,
+      "medicine": 58,
+      "multilingual": 30,
+      "reasoning": 56,
+      "science": 58
+    }
+  },
+  "languages": [
+    "en",
+    "de",
+    "fr",
+    "es",
+    "ar",
+    "zh",
+    "ja"
+  ],
+  "schema": {
+    "fields": [
+      "id",
+      "topic",
+      "bucket",
+      "approx_tokens",
+      "messages",
+      "shared_prefix"
+    ],
+    "optional_fields": [
+      "lang"
+    ],
+    "messages": "OpenAI chat format: [{role, content}]. Every row is a single user turn.",
+    "shared_prefix": "Always null in this dataset; see prompts-shared-prefix-v1."
+  },
+  "notes": [
+    "approx_tokens uses the repo-wide chars/4 heuristic; real tokenizers differ, and for the zh/ja multilingual rows the real count is roughly 2-4x higher.",
+    "Multilingual rows appear only in the xs and s buckets and are written natively (de, fr, es, ar, zh, ja).",
+    "Buckets are inclusive token ranges on approx_tokens."
+  ]
+}

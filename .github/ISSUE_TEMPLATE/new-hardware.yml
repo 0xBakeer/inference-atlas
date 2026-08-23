@@ -1,0 +1,72 @@
+name: Add hardware
+description: A device the registry does not know yet.
+title: 'hardware: <vendor> <device>'
+labels: [registry, hardware]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Adding a device is a pull request that adds `hardware/<id>.json` — never a code
+        change. Open this issue if you would rather somebody else write the file, or to
+        agree on the id before you do.
+
+        **The specifications are load-bearing.** The plausibility checks that catch a
+        fabricated measurement are computed from `memory_gb` and `memory_bandwidth_gbs`, so
+        a wrong bandwidth figure silently invalidates every future run on this device. If
+        you are not sure about a number, say so and it goes in as `null`.
+
+  - type: input
+    id: id
+    attributes:
+      label: Proposed id
+      description: >
+        Lowercase kebab-case, vendor first: `nvidia-rtx-5090`, `amd-mi300x`,
+        `apple-m4-max-128gb`. Apple SoC ids include the memory size, because unified memory
+        is the binding constraint.
+      placeholder: nvidia-rtx-5090
+    validations:
+      required: true
+
+  - type: input
+    id: name
+    attributes:
+      label: Full name
+      placeholder: NVIDIA GeForce RTX 5090
+    validations:
+      required: true
+
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Kind
+      options: [gpu, soc, cpu, accelerator]
+    validations:
+      required: true
+
+  - type: input
+    id: memory
+    attributes:
+      label: Memory (GB) and bandwidth (GB/s)
+      description: Vendor published figures. Say which you could not find rather than guessing.
+      placeholder: 32 GB, 1792 GB/s
+    validations:
+      required: true
+
+  - type: textarea
+    id: detect
+    attributes:
+      label: Detection strings
+      description: >
+        What the machine actually prints — `nvidia-smi --query-gpu=name`, `rocm-smi`, the
+        Apple chip string, the CPU model. This is how the harness matches a box to this id,
+        so paste the output rather than typing the marketing name.
+      render: shell
+
+  - type: textarea
+    id: specs
+    attributes:
+      label: Everything else
+      description: >
+        TDP, release year, MSRP, compute throughput (prefer dense figures over the marketing
+        number that includes structured sparsity, and say which you used), links to the
+        vendor page.

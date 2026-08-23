@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://inference-atlas.dev/schemas/quant.schema.json",
+  "title": "Quantization record",
+  "description": "One quantization of one model. File: models/<model-id>/quants/<quant-id>.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "id", "model_id", "format", "bits", "engines", "source"],
+  "properties": {
+    "schema_version": { "type": "integer", "const": 1 },
+    "id": {
+      "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/id",
+      "description": "bf16 | fp8 | nvfp4 | awq-int4 | gptq-int4 | gguf-q4-k-m | mlx-4bit | exl3-4.0bpw ..."
+    },
+    "model_id": { "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/id" },
+    "format": {
+      "type": "string",
+      "enum": [
+        "bf16",
+        "fp16",
+        "fp8",
+        "nvfp4",
+        "mxfp4",
+        "int8",
+        "int4",
+        "awq-int4",
+        "gptq-int4",
+        "compressed-tensors",
+        "bitsandbytes",
+        "gguf",
+        "mlx",
+        "exl3",
+        "exl2"
+      ],
+      "description": "Matched against engine.quant_formats."
+    },
+    "bits": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 32,
+      "description": "Effective bits per weight (4.5 for Q4_K_M-ish mixes is fine)."
+    },
+    "hf_id": {
+      "type": ["string", "null"],
+      "pattern": "^[A-Za-z0-9._-]+/[A-Za-z0-9._-]+$"
+    },
+    "revision": {
+      "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/nullable_string"
+    },
+    "files": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Specific files inside the repo, for GGUF/EXL split repos."
+    },
+    "ollama_tag": {
+      "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/nullable_string"
+    },
+    "size_gb": {
+      "type": ["number", "null"],
+      "minimum": 0,
+      "description": "On-disk / resident weight size. Drives the bandwidth plausibility bound."
+    },
+    "engines": {
+      "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/id_list",
+      "description": "Engines that can load this quant. A result whose engine is not listed fails validation."
+    },
+    "source": { "type": "string", "enum": ["official", "community", "self-quantized"] },
+    "calibration": {
+      "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/nullable_string"
+    },
+    "links": { "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/links" },
+    "notes": {
+      "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/nullable_string"
+    }
+  }
+}

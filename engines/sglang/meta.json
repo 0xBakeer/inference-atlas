@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "id": "sglang",
+  "name": "SGLang",
+  "repo": "https://github.com/sgl-project/sglang",
+  "docs": "https://docs.sglang.ai/",
+  "description": "Serving engine built around RadixAttention prefix reuse; usually the strongest option for workloads with shared prefixes.",
+  "api": "openai",
+  "default_port": 30000,
+  "platforms": [
+    "linux-cuda",
+    "linux-rocm"
+  ],
+  "quant_formats": [
+    "bf16",
+    "fp16",
+    "fp8",
+    "nvfp4",
+    "awq-int4",
+    "gptq-int4",
+    "compressed-tensors",
+    "int8",
+    "mxfp4",
+    "int4"
+  ],
+  "install": [
+    {
+      "method": "docker",
+      "image": "lmsysorg/sglang:v{version}-cu126",
+      "arch": [
+        "x86_64"
+      ]
+    },
+    {
+      "method": "pip",
+      "package": "sglang[all]=={version}",
+      "arch": [
+        "x86_64"
+      ]
+    }
+  ],
+  "serve": {
+    "command_template": "python -m sglang.launch_server --model-path {model_ref} {flags}",
+    "model_ref": "hf_id",
+    "flag_style": "--{name} {value}",
+    "bool_style": "--{name}",
+    "bool_false_style": null,
+    "env_style": null,
+    "notes": "Booleans are store_true only: there is no --no-x form, so an explicit false is simply the flag left off."
+  },
+  "health": {
+    "path": "/health",
+    "models_path": "/v1/models",
+    "ready_timeout_s": 1800
+  },
+  "bench_harness": "atlas-bench",
+  "drop_params": [
+    "model",
+    "host",
+    "port",
+    "api-key",
+    "served-model-name",
+    "download-dir",
+    "revision",
+    "hf-token",
+    "model-path",
+    "tokenizer-path",
+    "log-level",
+    "log-requests",
+    "allow-auto-truncate"
+  ],
+  "param_aliases": {
+    "tp": "tp-size",
+    "dp": "dp-size",
+    "tensor-parallel-size": "tp-size",
+    "data-parallel-size": "dp-size",
+    "ep": "ep-size"
+  },
+  "version_source": {
+    "kind": "github-releases",
+    "repo": "sgl-project/sglang",
+    "tag_prefix": "v",
+    "version_scheme": "semver"
+  },
+  "versions_available": [
+    "0.5.4"
+  ],
+  "links": {
+    "releases": "https://github.com/sgl-project/sglang/releases",
+    "server_args": "https://docs.sglang.ai/backend/server_arguments.html"
+  },
+  "notes": null
+}

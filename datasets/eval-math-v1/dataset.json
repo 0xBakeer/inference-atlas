@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "id": "eval-math-v1",
+  "name": "Mathematics eval v1",
+  "kind": "eval",
+  "description": "130 mathematics items with programmatically computed answers: arithmetic (including fractions and chained percentages), algebra (linear, systems, quadratics), number theory (gcd/lcm/primes/modular arithmetic/divisors/bases), geometry (areas, Pythagoras, circles, volumes), multi-step word problems and sequences.",
+  "licence": "MIT",
+  "created": "2026-08-23",
+  "files": [
+    "items.jsonl"
+  ],
+  "count": 130,
+  "generator": "datasets/_gen/gen_eval_math.py",
+  "token_heuristic": "approx_tokens = ceil(sum(len(m.content) for m in messages) / 4)",
+  "provenance": "Synthetic, authored in this repository. No third-party text.",
+  "default_scorer": "numeric",
+  "scoring": {
+    "answer_extraction": [
+      "Drop everything inside <think>...</think> (and an unterminated leading <think> block).",
+      "Drop markdown code fences, keeping the fenced content.",
+      "If any line matches /^\\s*(?:final answer|answer)\\s*[:\\-]\\s*(.+)$/i, take the capture of the LAST such line and use only that.",
+      "Strip surrounding whitespace, matching quotes, and a single trailing '.' or '!'.",
+      "Scorers that need the untouched output (instruction, json) get the raw text as well; the instruction scorer always works on the raw output."
+    ],
+    "scorers": {
+      "numeric": "Parse the last number in the extracted output (thousands separators, a leading currency symbol and a trailing % are stripped). Correct when abs(got - float(answer)) <= max(meta.tolerance or 1e-6, 1e-9 * abs(expected))."
+    },
+    "pass_rule": "One item is correct or incorrect; there is no partial credit. accuracy = correct / total. An item whose request failed (timeout, 5xx, context overflow) counts as incorrect AND is reported in scores.failures and metrics.requests_failed."
+  },
+  "categories": [
+    "algebra",
+    "arithmetic",
+    "geometry",
+    "number_theory",
+    "sequences",
+    "word_problems"
+  ],
+  "difficulties": [
+    "easy",
+    "medium",
+    "hard"
+  ],
+  "counts": {
+    "by_category": {
+      "arithmetic": 24,
+      "algebra": 24,
+      "number_theory": 20,
+      "geometry": 20,
+      "word_problems": 24,
+      "sequences": 18
+    },
+    "by_difficulty": {
+      "easy": 49,
+      "hard": 31,
+      "medium": 50
+    },
+    "by_scorer": {
+      "numeric": 130
+    }
+  },
+  "seed": 20260901,
+  "notes": [
+    "Every answer is derived from the generated numbers; none was typed by hand.",
+    "Where pi is needed the prompt pins it to 3.14159 and asks for two decimal places, so a correct method cannot be marked wrong for using a different pi.",
+    "Hard items ask for reasoning and a final 'Answer: <number>' line. Give reasoning models enough max_tokens (the eval-math-v1 workload uses 4096).",
+    "meta.tolerance overrides the numeric scorer's default of 1e-6."
+  ]
+}

@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://inference-atlas.dev/schemas/engine-version.schema.json",
+  "title": "Engine version parameter schema",
+  "description": "The flags one engine version accepts, with their defaults. Drives canonicalization (defaults are dropped) and the config explorer. File: engines/<engine-id>/versions/<version>.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "engine_id", "version", "extraction_method", "params"],
+  "properties": {
+    "schema_version": { "type": "integer", "const": 1 },
+    "engine_id": { "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/id" },
+    "version": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Exactly as the engine reports it: \"0.27.1\", \"b7000\", \"0.12.3\"."
+    },
+    "released": {
+      "oneOf": [
+        { "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/iso_date" },
+        { "type": "null" }
+      ]
+    },
+    "extraction_method": {
+      "type": "string",
+      "enum": ["hand-seeded", "help", "argparse", "docs", "generated"]
+    },
+    "extracted_at": {
+      "oneOf": [
+        { "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/iso_datetime" },
+        { "type": "null" }
+      ]
+    },
+    "source": {
+      "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/nullable_string",
+      "description": "Where the flags came from — a docs URL, a container image, a command."
+    },
+    "notes": {
+      "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/nullable_string"
+    },
+    "params": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "type", "default"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9._-]*$",
+            "description": "Canonical name, no leading dashes, dashes not underscores."
+          },
+          "type": {
+            "type": "string",
+            "enum": ["bool", "int", "float", "str", "enum", "json", "list", "path"]
+          },
+          "default": {
+            "description": "The value the engine uses when the flag is absent. Anything equal to this is dropped from the fingerprint. null means \"no default / unset\".",
+            "type": ["string", "number", "boolean", "object", "array", "null"]
+          },
+          "choices": {
+            "oneOf": [
+              { "type": "array", "items": { "type": ["string", "number", "boolean"] } },
+              { "type": "null" }
+            ]
+          },
+          "range": {
+            "oneOf": [
+              {
+                "type": "array",
+                "minItems": 2,
+                "maxItems": 2,
+                "items": { "type": ["number", "null"] }
+              },
+              { "type": "null" }
+            ]
+          },
+          "help": {
+            "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/nullable_string"
+          },
+          "aliases": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+          "group": {
+            "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/nullable_string"
+          },
+          "impact": {
+            "oneOf": [
+              { "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/impact" },
+              { "type": "null" }
+            ]
+          },
+          "env": {
+            "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/nullable_string",
+            "description": "Environment variable that sets the same thing, if any."
+          },
+          "deprecated": { "type": "boolean", "default": false }
+        }
+      }
+    }
+  }
+}

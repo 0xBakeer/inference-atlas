@@ -1,0 +1,123 @@
+{
+  "schema_version": 1,
+  "engine_id": "exllamav3",
+  "version": "0.0.14",
+  "released": "2026-05-02",
+  "extraction_method": "hand-seeded",
+  "extracted_at": "2026-08-23T00:00:00Z",
+  "source": "exllamav3 server --help (hand-seeded)",
+  "notes": "ExLlamaV3's own server is a thin example wrapper; many contributors run EXL3 behind TabbyAPI instead. If you do, record TabbyAPI's config values as args under these names so the fingerprints line up.",
+  "params": [
+    {
+      "name": "model-dir",
+      "type": "path",
+      "default": null,
+      "help": "EXL3 model directory. Dropped from the fingerprint.",
+      "aliases": [
+        "model"
+      ],
+      "group": "model",
+      "impact": "low"
+    },
+    {
+      "name": "max-seq-len",
+      "type": "int",
+      "default": null,
+      "help": "Maximum sequence length; defaults to the model's config.",
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "cache-size",
+      "type": "int",
+      "default": null,
+      "help": "KV cache size in tokens. Defaults to max-seq-len.",
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "cache-quant",
+      "type": "enum",
+      "default": null,
+      "choices": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        8,
+        "fp16"
+      ],
+      "help": "KV cache quantization in bits per element.",
+      "group": "caching",
+      "impact": "high"
+    },
+    {
+      "name": "gpu-split",
+      "type": "list",
+      "default": null,
+      "help": "Per-GPU VRAM budget in GiB.",
+      "group": "parallelism",
+      "impact": "high"
+    },
+    {
+      "name": "tensor-parallel",
+      "type": "bool",
+      "default": false,
+      "help": "Split each layer across GPUs instead of splitting by layer.",
+      "aliases": [
+        "tp"
+      ],
+      "group": "parallelism",
+      "impact": "high"
+    },
+    {
+      "name": "rope-scale",
+      "type": "float",
+      "default": null,
+      "help": "Linear RoPE scaling factor.",
+      "group": "model",
+      "impact": "high"
+    },
+    {
+      "name": "rope-alpha",
+      "type": "float",
+      "default": null,
+      "help": "NTK-aware RoPE alpha.",
+      "group": "model",
+      "impact": "high"
+    },
+    {
+      "name": "max-batch-size",
+      "type": "int",
+      "default": 1,
+      "help": "Maximum concurrent sequences.",
+      "group": "batching",
+      "impact": "high"
+    },
+    {
+      "name": "max-chunk-size",
+      "type": "int",
+      "default": 2048,
+      "help": "Prefill chunk size.",
+      "group": "batching",
+      "impact": "medium"
+    },
+    {
+      "name": "port",
+      "type": "int",
+      "default": 8080,
+      "help": "Bind port. Dropped from the fingerprint.",
+      "group": "server",
+      "impact": "low"
+    },
+    {
+      "name": "verbose",
+      "type": "bool",
+      "default": false,
+      "help": "Verbose logging. Dropped from the fingerprint.",
+      "group": "server",
+      "impact": "low"
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+name: Bug report
+description: Something in the site, the tools or the harness is wrong.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        For a *number* you believe is wrong, do not open this — open a
+        [configuration request](?template=request-config.yml) to have the cell measured
+        again, or submit your own run. A cell where two contributors disagree is marked
+        disputed and shown as such; disputed results are never deleted.
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Where
+      options:
+        - Website (atlas, explorer, tables, charts)
+        - Tools (pnpm validate / build:data / packet / ingest)
+        - Harness (atlas-bench)
+        - Registry data (a spec sheet figure looks wrong)
+        - CI / workflows
+        - Something else
+    validations:
+      required: true
+
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you did, what you expected, what you got. Exact command and exact output beats a description of both.
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Browser or OS, node/pnpm version, the commit you are on.
+      render: shell

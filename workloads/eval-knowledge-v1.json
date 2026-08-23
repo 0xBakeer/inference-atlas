@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "id": "eval-knowledge-v1",
+  "name": "Knowledge eval v1",
+  "kind": "eval",
+  "description": "Runs all 130 items of eval-knowledge-v1 at temperature 0 and reports accuracy overall, by category and by difficulty. Pinned together with the dataset: a change to either means a new -v2 id.",
+  "dataset_id": "eval-knowledge-v1",
+  "params": {
+    "concurrency": 4,
+    "num_requests": 130,
+    "input_tokens": null,
+    "output_tokens": 2048,
+    "seed": 42,
+    "warmup_requests": 0,
+    "temperature": 0,
+    "repeat": 1,
+    "timeout_s": 300,
+    "reasoning": "default"
+  },
+  "sweep": null,
+  "eval": {
+    "suite": "knowledge",
+    "scorer": "mc",
+    "pass_threshold": null,
+    "max_output_tokens": 2048,
+    "categories": [
+      "science",
+      "geography",
+      "history",
+      "cs_basics",
+      "units",
+      "definitions"
+    ],
+    "notes": null
+  },
+  "metrics_required": [
+    "accuracy",
+    "success_rate",
+    "avg_latency_ms"
+  ],
+  "immutable": true,
+  "created": "2026-08-23",
+  "supersedes": null,
+  "notes": "accuracy and avg_latency_ms live in the result's `scores` block, not in `metrics`; success_rate is the share of requests that completed at all and is independent of whether the answers were right."
+}

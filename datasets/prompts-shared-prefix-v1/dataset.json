@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "id": "prompts-shared-prefix-v1",
+  "name": "Shared-prefix prompts v1",
+  "kind": "prompts",
+  "description": "100 short questions sharing one of four long system prompts (about 8K, 19K, 32K and 53K characters). Built to measure prefix caching: the delta between a run with the engine's prefix cache enabled and one without is the whole point of the dataset.",
+  "licence": "MIT",
+  "created": "2026-08-23",
+  "files": [
+    "prompts.jsonl",
+    "prefixes.json"
+  ],
+  "count": 100,
+  "generator": "datasets/_gen/gen_prompts_shared_prefix.py",
+  "token_heuristic": "approx_tokens = ceil(sum(len(m.content) for m in messages) / 4)",
+  "provenance": "Synthetic, authored in this repository. No third-party text.",
+  "seed": 20260824,
+  "topics": [
+    "business",
+    "code",
+    "law",
+    "medicine"
+  ],
+  "length_buckets": {
+    "xs": [
+      16,
+      64
+    ],
+    "s": [
+      65,
+      256
+    ],
+    "m": [
+      257,
+      1024
+    ],
+    "l": [
+      1025,
+      4096
+    ],
+    "xl": [
+      4097,
+      16384
+    ],
+    "xxl": [
+      16385,
+      65536
+    ]
+  },
+  "prefix_groups": {
+    "sp-8k": {
+      "chars": 7905,
+      "approx_tokens": 1977,
+      "rows": 25
+    },
+    "sp-19k": {
+      "chars": 19325,
+      "approx_tokens": 4832,
+      "rows": 25
+    },
+    "sp-32k": {
+      "chars": 32129,
+      "approx_tokens": 8033,
+      "rows": 25
+    },
+    "sp-53k": {
+      "chars": 53082,
+      "approx_tokens": 13271,
+      "rows": 25
+    }
+  },
+  "schema": {
+    "fields": [
+      "id",
+      "topic",
+      "bucket",
+      "approx_tokens",
+      "messages",
+      "shared_prefix"
+    ],
+    "optional_fields": [
+      "lang",
+      "prefix_id",
+      "prefix_approx_tokens"
+    ],
+    "shared_prefix": "Non-null on every row. The harness MUST send it as a leading system message: [{role:'system',content:shared_prefix}, *messages]. approx_tokens already includes it."
+  },
+  "usage": [
+    "Send the rows of one prefix_id group back to back so the cache can hit.",
+    "Report ttft_ms per prefix group; a cold-vs-warm ratio near 1.0 means the engine is not reusing the prefix.",
+    "Pair a run with --enable-prefix-caching against one without it; the workload id serve-prefix-c16-v1 is used for both, the engine args differ."
+  ]
+}

@@ -1,0 +1,166 @@
+{
+  "schema_version": 1,
+  "engine_id": "mlx-lm",
+  "version": "0.28.4",
+  "released": "2026-06-30",
+  "extraction_method": "hand-seeded",
+  "extracted_at": "2026-08-23T00:00:00Z",
+  "source": "mlx_lm.server --help (hand-seeded)",
+  "notes": "mlx_lm.server serves one request at a time, so concurrency sweeps against it measure queueing rather than batching. max-kv-size and kv-bits are the two flags that decide whether a long-context run finishes at all on a 32 GB Mac.",
+  "params": [
+    {
+      "name": "model",
+      "type": "str",
+      "default": null,
+      "help": "Hugging Face id or local path. Dropped from the fingerprint.",
+      "group": "model",
+      "impact": "low"
+    },
+    {
+      "name": "max-kv-size",
+      "type": "int",
+      "default": null,
+      "help": "Rotating KV cache size in tokens. Unset means unbounded, which is what runs a Mac out of memory on long contexts.",
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "kv-bits",
+      "type": "int",
+      "default": null,
+      "choices": [
+        2,
+        3,
+        4,
+        6,
+        8
+      ],
+      "help": "Bits per KV cache element. Unset means no KV quantization.",
+      "group": "caching",
+      "impact": "high"
+    },
+    {
+      "name": "kv-group-size",
+      "type": "int",
+      "default": 64,
+      "help": "Group size for KV quantization.",
+      "group": "caching",
+      "impact": "medium"
+    },
+    {
+      "name": "quantized-kv-start",
+      "type": "int",
+      "default": 5000,
+      "help": "Token position at which KV quantization kicks in.",
+      "group": "caching",
+      "impact": "medium"
+    },
+    {
+      "name": "prefill-step-size",
+      "type": "int",
+      "default": 2048,
+      "help": "Tokens processed per prefill step.",
+      "group": "batching",
+      "impact": "high"
+    },
+    {
+      "name": "max-tokens",
+      "type": "int",
+      "default": 512,
+      "help": "Default maximum generated tokens.",
+      "group": "sampling",
+      "impact": "medium"
+    },
+    {
+      "name": "temp",
+      "type": "float",
+      "default": 0.0,
+      "help": "Sampling temperature.",
+      "aliases": [
+        "temperature"
+      ],
+      "group": "sampling",
+      "impact": "medium"
+    },
+    {
+      "name": "top-p",
+      "type": "float",
+      "default": 1.0,
+      "help": "Top-p sampling.",
+      "group": "sampling",
+      "impact": "low"
+    },
+    {
+      "name": "top-k",
+      "type": "int",
+      "default": 0,
+      "help": "Top-k sampling. 0 disables it.",
+      "group": "sampling",
+      "impact": "low"
+    },
+    {
+      "name": "seed",
+      "type": "int",
+      "default": null,
+      "help": "Random seed.",
+      "group": "sampling",
+      "impact": "medium"
+    },
+    {
+      "name": "adapter-path",
+      "type": "path",
+      "default": null,
+      "help": "LoRA adapter directory. Dropped from the fingerprint.",
+      "group": "lora",
+      "impact": "medium"
+    },
+    {
+      "name": "trust-remote-code",
+      "type": "bool",
+      "default": false,
+      "help": "Execute modelling code from the weights repo.",
+      "group": "model",
+      "impact": "low"
+    },
+    {
+      "name": "chat-template",
+      "type": "str",
+      "default": null,
+      "help": "Override the chat template.",
+      "group": "model",
+      "impact": "low"
+    },
+    {
+      "name": "cache-limit-gb",
+      "type": "int",
+      "default": null,
+      "help": "MLX buffer cache limit in GiB.",
+      "group": "memory",
+      "impact": "medium"
+    },
+    {
+      "name": "host",
+      "type": "str",
+      "default": "127.0.0.1",
+      "help": "Bind address. Dropped from the fingerprint.",
+      "group": "server",
+      "impact": "low"
+    },
+    {
+      "name": "port",
+      "type": "int",
+      "default": 8080,
+      "help": "Bind port. Dropped from the fingerprint.",
+      "group": "server",
+      "impact": "low"
+    },
+    {
+      "name": "log-level",
+      "type": "str",
+      "default": "INFO",
+      "help": "Log level. Dropped from the fingerprint.",
+      "group": "server",
+      "impact": "low"
+    }
+  ]
+}

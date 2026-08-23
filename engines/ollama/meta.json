@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "id": "ollama",
+  "name": "Ollama",
+  "repo": "https://github.com/ollama/ollama",
+  "docs": "https://docs.ollama.com/",
+  "description": "llama.cpp-based runner with a model registry and automatic memory management. The default first experience on most machines, and configured by environment variables rather than flags.",
+  "api": "ollama",
+  "default_port": 11434,
+  "platforms": [
+    "linux-cuda",
+    "linux-rocm",
+    "linux-cpu",
+    "macos-metal",
+    "windows-cuda",
+    "windows-cpu"
+  ],
+  "quant_formats": [
+    "gguf"
+  ],
+  "install": [
+    {
+      "method": "script",
+      "command": "curl -fsSL https://ollama.com/install.sh | sh",
+      "arch": [
+        "x86_64",
+        "aarch64"
+      ]
+    },
+    {
+      "method": "docker",
+      "image": "ollama/ollama:{version}",
+      "arch": [
+        "x86_64",
+        "aarch64"
+      ]
+    },
+    {
+      "method": "brew",
+      "package": "ollama",
+      "platforms": [
+        "macos-metal"
+      ]
+    }
+  ],
+  "serve": {
+    "command_template": "ollama serve",
+    "model_ref": "ollama_tag",
+    "flag_style": "{name}={value}",
+    "bool_style": "{name}=1",
+    "bool_false_style": "{name}=0",
+    "env_style": "{NAME}={value}",
+    "notes": "Server-side settings are environment variables (OLLAMA_*); per-request settings are options in the API body (num_ctx, num_batch, ...). Both are fingerprinted as flags."
+  },
+  "health": {
+    "path": "/",
+    "models_path": "/v1/models",
+    "ready_timeout_s": 600
+  },
+  "bench_harness": "atlas-bench",
+  "drop_params": [
+    "model",
+    "host",
+    "port",
+    "api-key",
+    "ollama-host",
+    "ollama-models",
+    "ollama-origins",
+    "keep-alive",
+    "ollama-keep-alive",
+    "ollama-debug"
+  ],
+  "param_aliases": {
+    "num_ctx": "num-ctx",
+    "num_batch": "num-batch",
+    "num_gpu": "num-gpu",
+    "num_thread": "num-thread",
+    "num_predict": "num-predict",
+    "repeat_penalty": "repeat-penalty",
+    "top_k": "top-k",
+    "top_p": "top-p",
+    "flash_attention": "ollama-flash-attention",
+    "kv_cache_type": "ollama-kv-cache-type"
+  },
+  "version_source": {
+    "kind": "github-releases",
+    "repo": "ollama/ollama",
+    "tag_prefix": "v",
+    "version_scheme": "semver"
+  },
+  "versions_available": [
+    "0.12.11"
+  ],
+  "links": {
+    "library": "https://ollama.com/library",
+    "faq": "https://docs.ollama.com/faq"
+  },
+  "notes": "Ollama picks its own layer split and context length unless told otherwise, so a result without num-ctx and num-gpu recorded is not reproducible."
+}

@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "id": "exllamav3",
+  "name": "ExLlamaV3",
+  "repo": "https://github.com/turboderp-org/exllamav3",
+  "docs": "https://github.com/turboderp-org/exllamav3/tree/master/doc",
+  "description": "EXL3 quantization and inference for consumer NVIDIA cards. Best-in-class quality per bit at low bit widths.",
+  "api": "openai",
+  "default_port": 8080,
+  "platforms": [
+    "linux-cuda",
+    "windows-cuda"
+  ],
+  "quant_formats": [
+    "exl3",
+    "bf16",
+    "fp16"
+  ],
+  "install": [
+    {
+      "method": "pip",
+      "package": "exllamav3=={version}",
+      "arch": [
+        "x86_64"
+      ]
+    },
+    {
+      "method": "source",
+      "command": "git clone https://github.com/turboderp-org/exllamav3 && pip install -e ."
+    }
+  ],
+  "serve": {
+    "command_template": "python -m exllamav3.server --model_dir {model_ref} {flags}",
+    "model_ref": "engine_dir",
+    "flag_style": "--{name} {value}",
+    "bool_style": "--{name}",
+    "bool_false_style": null,
+    "env_style": null
+  },
+  "health": {
+    "path": "/v1/models",
+    "models_path": "/v1/models",
+    "ready_timeout_s": 1200
+  },
+  "bench_harness": "atlas-bench",
+  "drop_params": [
+    "model",
+    "model-dir",
+    "host",
+    "port",
+    "api-key",
+    "verbose"
+  ],
+  "param_aliases": {},
+  "version_source": {
+    "kind": "github-releases",
+    "repo": "turboderp-org/exllamav3",
+    "tag_prefix": "v",
+    "version_scheme": "semver"
+  },
+  "versions_available": [
+    "0.0.14"
+  ],
+  "links": {
+    "quants": "https://huggingface.co/models?search=exl3"
+  },
+  "notes": "EXL3 bits-per-weight is continuous (3.0, 4.0, 6.0 bpw), so the quant id carries the bpw: exl3-4.0bpw."
+}

@@ -1,0 +1,137 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://inference-atlas.dev/schemas/workload.schema.json",
+  "title": "Workload record",
+  "description": "A pinned, immutable definition of what is run against an engine. File: workloads/<id>.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "id", "name", "kind", "params", "metrics_required"],
+  "properties": {
+    "schema_version": { "type": "integer", "const": 1 },
+    "id": {
+      "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/id",
+      "pattern": "^[a-z0-9][a-z0-9.-]*-v[0-9]+$",
+      "description": "Versioned suffix is mandatory: workloads are immutable once published."
+    },
+    "name": { "type": "string", "minLength": 1 },
+    "kind": { "type": "string", "enum": ["serving", "sweep", "prefill", "longctx", "eval"] },
+    "description": {
+      "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/nullable_string"
+    },
+    "dataset_id": {
+      "oneOf": [
+        { "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/id" },
+        { "type": "null" }
+      ]
+    },
+    "params": {
+      "type": "object",
+      "description": "Everything the runner needs. Unknown keys are allowed so new runners can add axes without a schema change.",
+      "additionalProperties": { "type": ["string", "number", "boolean", "array", "null"] },
+      "properties": {
+        "concurrency": { "type": "integer", "minimum": 1 },
+        "num_requests": { "type": "integer", "minimum": 1 },
+        "input_tokens": { "type": ["integer", "null"], "minimum": 0 },
+        "output_tokens": { "type": ["integer", "null"], "minimum": 0 },
+        "seed": { "type": "integer" },
+        "warmup_requests": { "type": "integer", "minimum": 0 },
+        "temperature": { "type": "number", "minimum": 0 },
+        "repeat": { "type": "integer", "minimum": 1 },
+        "timeout_s": { "type": "number", "minimum": 0 }
+      }
+    },
+    "sweep": {
+      "description": "Only for kind=sweep (required there); kind=longctx and kind=prefill may carry one too when they walk an axis. Exactly one axis in v1: the key is the varying parameter, the value is the points.",
+      "oneOf": [
+        {
+          "type": "object",
+          "minProperties": 1,
+          "maxProperties": 1,
+          "additionalProperties": false,
+          "properties": {
+            "concurrency": { "type": "array", "minItems": 1, "items": { "type": "integer", "minimum": 1 } },
+            "input_tokens": { "type": "array", "minItems": 1, "items": { "type": "integer", "minimum": 0 } },
+            "output_tokens": { "type": "array", "minItems": 1, "items": { "type": "integer", "minimum": 0 } },
+            "num_requests": { "type": "array", "minItems": 1, "items": { "type": "integer", "minimum": 1 } }
+          }
+        },
+        { "type": "null" }
+      ]
+    },
+    "eval": {
+      "description": "Only for kind=eval, where it is required.",
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["suite", "scorer"],
+          "properties": {
+            "suite": { "type": "string", "minLength": 1 },
+            "scorer": {
+              "type": "string",
+              "enum": [
+                "exact",
+                "numeric",
+                "mc",
+                "contains",
+                "json",
+                "code-exec",
+                "instruction",
+                "judge",
+                "needle",
+                "vision"
+              ]
+            },
+            "pass_threshold": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+            "max_output_tokens": { "type": ["integer", "null"], "minimum": 1 },
+            "judge_model": {
+              "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/nullable_string"
+            },
+            "categories": { "type": "array", "items": { "type": "string" } },
+            "notes": {
+              "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/nullable_string"
+            }
+          }
+        },
+        { "type": "null" }
+      ]
+    },
+    "metrics_required": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string" },
+      "description": "Metric names (optionally dotted, e.g. \"ttft_ms.p50\") a result for this workload must carry non-null."
+    },
+    "immutable": { "type": "boolean", "default": true },
+    "created": { "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/iso_date" },
+    "supersedes": {
+      "oneOf": [
+        { "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/id" },
+        { "type": "null" }
+      ]
+    },
+    "notes": {
+      "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/nullable_string"
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "kind": { "const": "sweep" } }, "required": ["kind"] },
+      "then": {
+        "required": ["sweep"],
+        "properties": { "sweep": { "type": "object" } }
+      }
+    },
+    {
+      "if": { "properties": { "kind": { "const": "eval" } }, "required": ["kind"] },
+      "then": {
+        "required": ["eval", "dataset_id"],
+        "properties": { "eval": { "type": "object" }, "dataset_id": { "type": "string" } }
+      }
+    },
+    {
+      "if": { "properties": { "kind": { "const": "serving" } }, "required": ["kind"] },
+      "then": { "properties": { "sweep": { "type": "null" }, "eval": { "type": "null" } } }
+    }
+  ]
+}

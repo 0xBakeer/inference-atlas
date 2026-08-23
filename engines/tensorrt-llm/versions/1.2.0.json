@@ -1,0 +1,150 @@
+{
+  "schema_version": 1,
+  "engine_id": "tensorrt-llm",
+  "version": "1.2.0",
+  "released": "2026-06-12",
+  "extraction_method": "hand-seeded",
+  "extracted_at": "2026-08-23T00:00:00Z",
+  "source": "https://nvidia.github.io/TensorRT-LLM/commands/trtllm-serve.html (hand-seeded)",
+  "notes": "Only the trtllm-serve surface is modelled. With backend=trt the decisive settings are baked into the engine at build time and never appear as serve flags — put them in args anyway and describe the build in provenance.notes, otherwise the run is not reproducible.",
+  "params": [
+    {
+      "name": "model",
+      "type": "str",
+      "default": null,
+      "help": "Hugging Face id, local checkpoint or prebuilt engine directory. Dropped from the fingerprint.",
+      "group": "model",
+      "impact": "low"
+    },
+    {
+      "name": "backend",
+      "type": "enum",
+      "default": "pytorch",
+      "choices": [
+        "pytorch",
+        "trt"
+      ],
+      "help": "Runtime backend. The PyTorch flow needs no separate engine build; trt uses a compiled engine.",
+      "group": "compilation",
+      "impact": "high"
+    },
+    {
+      "name": "tp-size",
+      "type": "int",
+      "default": 1,
+      "help": "Tensor parallel size.",
+      "aliases": [
+        "tp",
+        "tensor-parallel-size"
+      ],
+      "group": "parallelism",
+      "impact": "high"
+    },
+    {
+      "name": "pp-size",
+      "type": "int",
+      "default": 1,
+      "help": "Pipeline parallel size.",
+      "aliases": [
+        "pp"
+      ],
+      "group": "parallelism",
+      "impact": "high"
+    },
+    {
+      "name": "ep-size",
+      "type": "int",
+      "default": null,
+      "help": "Expert parallel size for MoE models.",
+      "aliases": [
+        "ep"
+      ],
+      "group": "parallelism",
+      "impact": "high"
+    },
+    {
+      "name": "max-batch-size",
+      "type": "int",
+      "default": 2048,
+      "help": "Maximum batch size baked into the engine.",
+      "group": "batching",
+      "impact": "high"
+    },
+    {
+      "name": "max-num-tokens",
+      "type": "int",
+      "default": 8192,
+      "help": "Token budget per iteration.",
+      "group": "batching",
+      "impact": "high"
+    },
+    {
+      "name": "max-seq-len",
+      "type": "int",
+      "default": null,
+      "help": "Maximum sequence length; defaults to the model's own.",
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "kv-cache-free-gpu-memory-fraction",
+      "type": "float",
+      "default": 0.9,
+      "range": [
+        0,
+        1
+      ],
+      "help": "Fraction of free device memory given to the KV cache.",
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "enable-chunked-prefill",
+      "type": "bool",
+      "default": false,
+      "help": "Split long prefills across iterations.",
+      "group": "batching",
+      "impact": "high"
+    },
+    {
+      "name": "enable-attention-dp",
+      "type": "bool",
+      "default": false,
+      "help": "Data-parallel attention for MLA models.",
+      "group": "parallelism",
+      "impact": "medium"
+    },
+    {
+      "name": "trust-remote-code",
+      "type": "bool",
+      "default": false,
+      "help": "Execute modelling code from the weights repo.",
+      "group": "model",
+      "impact": "low"
+    },
+    {
+      "name": "extra-llm-api-options",
+      "type": "path",
+      "default": null,
+      "help": "YAML file with everything the CLI does not expose. Dropped from the fingerprint, so summarise its contents in provenance.notes.",
+      "group": "misc",
+      "impact": "high"
+    },
+    {
+      "name": "host",
+      "type": "str",
+      "default": "localhost",
+      "help": "Bind address. Dropped from the fingerprint.",
+      "group": "server",
+      "impact": "low"
+    },
+    {
+      "name": "port",
+      "type": "int",
+      "default": 8000,
+      "help": "Bind port. Dropped from the fingerprint.",
+      "group": "server",
+      "impact": "low"
+    }
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://inference-atlas.dev/schemas/model.schema.json",
+  "title": "Model record",
+  "description": "One model family member, unquantized. Quantizations are child records under models/<id>/quants/. File: models/<id>/model.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "id", "name", "hf_id", "vendor", "params_b", "context_length"],
+  "properties": {
+    "schema_version": { "type": "integer", "const": 1 },
+    "id": { "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/id" },
+    "name": { "type": "string", "minLength": 1 },
+    "hf_id": {
+      "type": ["string", "null"],
+      "pattern": "^[A-Za-z0-9._-]+/[A-Za-z0-9._-]+$",
+      "description": "Hugging Face repo of the reference (usually BF16) weights. null for models not on the Hub."
+    },
+    "family": {
+      "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/nullable_string"
+    },
+    "vendor": { "type": "string", "minLength": 1 },
+    "params_b": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Total parameters in billions."
+    },
+    "active_params_b": {
+      "type": ["number", "null"],
+      "minimum": 0,
+      "description": "Active parameters per token in billions. Equals params_b for dense models; drives the bandwidth plausibility bound for MoE."
+    },
+    "architecture": {
+      "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/nullable_string",
+      "description": "The transformers architecture class, e.g. \"Qwen3MoeForCausalLM\"."
+    },
+    "moe": { "type": "boolean", "default": false },
+    "experts": {
+      "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/nullable_integer"
+    },
+    "experts_active": {
+      "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/nullable_integer"
+    },
+    "attention": {
+      "type": ["string", "null"],
+      "enum": ["mha", "gqa", "mla", "hybrid", "mamba", "linear", null],
+      "description": "\"hybrid\" = interleaved full/linear or SSM layers; matters for prefix caching support."
+    },
+    "modalities": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "enum": ["text", "image", "audio", "video"] }
+    },
+    "context_length": { "type": "integer", "minimum": 1 },
+    "licence": { "type": "string", "minLength": 1 },
+    "released": {
+      "oneOf": [
+        { "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/iso_date" },
+        { "type": "null" }
+      ]
+    },
+    "tags": { "type": "array", "uniqueItems": true, "items": { "type": "string" } },
+    "links": { "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/links" },
+    "notes": {
+      "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/nullable_string"
+    }
+  }
+}

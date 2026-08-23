@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "id": "sweep-parallel-1-64-i1k-o256-v1",
+  "name": "Parallelism sweep 1-64, 1k in / 256 out",
+  "kind": "sweep",
+  "description": "As sweep-parallel-1-32-i512-o256-v1 but with 1k-token inputs and one more point at 64 concurrent requests. Longer prompts move the knee of the curve, so the two sweeps together say more than either alone.",
+  "dataset_id": "prompts-mixed-v1",
+  "params": {
+    "concurrency": 1,
+    "num_requests": 32,
+    "input_tokens": 1024,
+    "output_tokens": 256,
+    "seed": 42,
+    "warmup_requests": 4,
+    "temperature": 0,
+    "repeat": 1,
+    "timeout_s": 300,
+    "dataset_buckets": [
+      "m"
+    ],
+    "requests_per_concurrency": 4
+  },
+  "sweep": {
+    "concurrency": [
+      1,
+      2,
+      4,
+      8,
+      16,
+      32,
+      64
+    ]
+  },
+  "eval": null,
+  "metrics_required": [
+    "ttft_ms.p50",
+    "tpot_ms.p50",
+    "output_tok_s",
+    "req_s",
+    "success_rate"
+  ],
+  "immutable": true,
+  "created": "2026-08-23",
+  "supersedes": null,
+  "notes": "Same requests-per-point rule as sweep-parallel-1-32-i512-o256-v1."
+}

@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "id": "eval-code-v1",
+  "name": "Code eval v1",
+  "kind": "eval",
+  "description": "140 small Python tasks with hidden tests: 120 write-a-function items across strings, lists, dicts, maths, parsing, recursion, algorithms and edge-case handling, plus 20 fix-the-bug items where the buggy code is supplied. Every reference solution is run against its own tests at generation time, and every buggy version is checked to actually fail them.",
+  "licence": "MIT",
+  "created": "2026-08-23",
+  "files": [
+    "items.jsonl"
+  ],
+  "count": 140,
+  "generator": "datasets/_gen/gen_eval_code.py",
+  "token_heuristic": "approx_tokens = ceil(sum(len(m.content) for m in messages) / 4)",
+  "provenance": "Synthetic, authored in this repository. No third-party text.",
+  "default_scorer": "code_exec",
+  "scoring": {
+    "answer_extraction": [
+      "Drop everything inside <think>...</think> (and an unterminated leading <think> block).",
+      "Drop markdown code fences, keeping the fenced content.",
+      "If any line matches /^\\s*(?:final answer|answer)\\s*[:\\-]\\s*(.+)$/i, take the capture of the LAST such line and use only that.",
+      "Strip surrounding whitespace, matching quotes, and a single trailing '.' or '!'.",
+      "Scorers that need the untouched output (instruction, json) get the raw text as well; the instruction scorer always works on the raw output."
+    ],
+    "scorers": {
+      "code_exec": "Concatenate the model's code with the `tests` string and run it in a subprocess with no network, a fresh temp cwd and meta.timeout_s (default 10). Correct when the process exits 0."
+    },
+    "pass_rule": "One item is correct or incorrect; there is no partial credit. accuracy = correct / total. An item whose request failed (timeout, 5xx, context overflow) counts as incorrect AND is reported in scores.failures and metrics.requests_failed."
+  },
+  "categories": [
+    "algorithms",
+    "bugfix",
+    "dicts",
+    "edge_cases",
+    "lists",
+    "math",
+    "parsing",
+    "recursion",
+    "strings"
+  ],
+  "difficulties": [
+    "easy",
+    "medium",
+    "hard"
+  ],
+  "counts": {
+    "by_category": {
+      "strings": 17,
+      "lists": 17,
+      "dicts": 15,
+      "math": 16,
+      "parsing": 14,
+      "recursion": 13,
+      "algorithms": 14,
+      "edge_cases": 14,
+      "bugfix": 20
+    },
+    "by_difficulty": {
+      "easy": 49,
+      "medium": 61,
+      "hard": 30
+    },
+    "by_scorer": {
+      "code_exec": 140
+    }
+  },
+  "notes": [
+    "`tests` is a block of Python assert statements. The harness appends it to the model's extracted code block and runs the whole thing in a subprocess with no network, a temporary working directory, and meta.timeout_s seconds.",
+    "`answer` holds a reference solution. It exists so the tests are provably satisfiable and so a contributor can diff a failure against something real. It is never sent to the model and never used for scoring.",
+    "Only the standard library may be imported by a solution.",
+    "The tests pin the documented edge cases (empty input, ValueError, no mutation of the caller's data), so a solution that only handles the happy path fails."
+  ],
+  "execution": {
+    "language": "python",
+    "python": ">=3.11",
+    "assembly": "extracted_code + '\\n\\n' + tests",
+    "default_timeout_s": 10,
+    "network": "denied"
+  }
+}

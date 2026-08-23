@@ -1,0 +1,165 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://inference-atlas.dev/schemas/engine.schema.json",
+  "title": "Engine record",
+  "description": "One inference engine. File: engines/<id>/meta.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "id",
+    "name",
+    "repo",
+    "api",
+    "platforms",
+    "quant_formats",
+    "install",
+    "serve",
+    "drop_params"
+  ],
+  "$defs": {
+    "id": { "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/id" },
+    "nstr": {
+      "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/nullable_string"
+    }
+  },
+  "properties": {
+    "schema_version": { "type": "integer", "const": 1 },
+    "id": { "$ref": "#/$defs/id" },
+    "name": { "type": "string", "minLength": 1 },
+    "repo": { "type": "string", "format": "uri" },
+    "docs": { "$ref": "#/$defs/nstr" },
+    "description": { "$ref": "#/$defs/nstr" },
+    "api": {
+      "type": "string",
+      "enum": ["openai", "ollama", "custom"],
+      "description": "Which client the harness uses. \"ollama\" engines still expose an OpenAI-compatible /v1."
+    },
+    "default_port": { "type": "integer", "minimum": 1, "maximum": 65535 },
+    "platforms": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/platform"
+      }
+    },
+    "quant_formats": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string" },
+      "description": "Quantization format families this engine can load. Matched against quant.format."
+    },
+    "install": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["method"],
+        "properties": {
+          "method": {
+            "type": "string",
+            "enum": ["docker", "pip", "uv", "brew", "binary", "source", "script", "npm", "app"]
+          },
+          "image": { "$ref": "#/$defs/nstr" },
+          "package": { "$ref": "#/$defs/nstr" },
+          "command": {
+            "$ref": "#/$defs/nstr",
+            "description": "Literal shell command, {version} substituted."
+          },
+          "arch": {
+            "type": "array",
+            "items": { "type": "string", "enum": ["x86_64", "aarch64", "arm64"] }
+          },
+          "platforms": {
+            "type": "array",
+            "items": {
+              "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/platform"
+            }
+          },
+          "notes": { "$ref": "#/$defs/nstr" }
+        }
+      }
+    },
+    "serve": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["command_template", "model_ref", "flag_style"],
+      "properties": {
+        "command_template": {
+          "type": "string",
+          "description": "e.g. \"vllm serve {model_ref} {flags}\""
+        },
+        "model_ref": {
+          "type": "string",
+          "enum": ["hf_id", "local_path", "gguf_path", "ollama_tag", "mlx_path", "engine_dir"]
+        },
+        "flag_style": { "type": "string", "description": "e.g. \"--{name} {value}\"" },
+        "bool_style": {
+          "$ref": "#/$defs/nstr",
+          "description": "How a true boolean is rendered, e.g. \"--{name}\"."
+        },
+        "bool_false_style": {
+          "$ref": "#/$defs/nstr",
+          "description": "How an explicit false is rendered, e.g. \"--no-{name}\". null = omit the flag."
+        },
+        "env_style": {
+          "$ref": "#/$defs/nstr",
+          "description": "For engines configured through environment variables, e.g. \"{NAME}={value}\"."
+        },
+        "notes": { "$ref": "#/$defs/nstr" }
+      }
+    },
+    "health": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "path": { "$ref": "#/$defs/nstr" },
+        "models_path": { "$ref": "#/$defs/nstr" },
+        "ready_timeout_s": {
+          "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/nullable_integer"
+        }
+      }
+    },
+    "bench_harness": { "type": "string", "enum": ["atlas-bench"] },
+    "drop_params": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string" },
+      "description": "Params removed before fingerprinting: paths, ports, hosts, credentials, anything that cannot change a number."
+    },
+    "param_aliases": {
+      "type": "object",
+      "additionalProperties": { "type": "string" },
+      "description": "Engine-wide alias -> canonical name. Version files may add more."
+    },
+    "version_source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind"],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": ["github-releases", "github-tags", "pypi", "manual", "docker-tags"]
+        },
+        "repo": { "$ref": "#/$defs/nstr" },
+        "package": { "$ref": "#/$defs/nstr" },
+        "tag_prefix": { "$ref": "#/$defs/nstr" },
+        "version_scheme": {
+          "type": "string",
+          "enum": ["semver", "build-number", "calver", "opaque"],
+          "default": "semver"
+        }
+      }
+    },
+    "versions_available": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string" },
+      "description": "Must match the files in engines/<id>/versions/."
+    },
+    "links": { "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/links" },
+    "notes": { "$ref": "#/$defs/nstr" }
+  }
+}

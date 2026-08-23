@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "id": "eval-reasoning-v1",
+  "name": "Reasoning eval v1",
+  "kind": "eval",
+  "description": "Runs all 120 items of eval-reasoning-v1 at temperature 0 and reports accuracy overall, by category and by difficulty. Pinned together with the dataset: a change to either means a new -v2 id.",
+  "dataset_id": "eval-reasoning-v1",
+  "params": {
+    "concurrency": 4,
+    "num_requests": 120,
+    "input_tokens": null,
+    "output_tokens": 2048,
+    "seed": 42,
+    "warmup_requests": 0,
+    "temperature": 0,
+    "repeat": 1,
+    "timeout_s": 300,
+    "reasoning": "default"
+  },
+  "sweep": null,
+  "eval": {
+    "suite": "reasoning",
+    "scorer": "exact",
+    "pass_threshold": null,
+    "max_output_tokens": 2048,
+    "categories": [
+      "syllogism",
+      "ordering",
+      "truth_liar",
+      "counting",
+      "datetime",
+      "spatial",
+      "deduction"
+    ],
+    "notes": "Mixed scorers per row: multiple-choice rows carry `choices` and are scored with mc, the rest with exact. Always use the row's own `scorer` field; eval.scorer is only the default."
+  },
+  "metrics_required": [
+    "accuracy",
+    "success_rate",
+    "avg_latency_ms"
+  ],
+  "immutable": true,
+  "created": "2026-08-23",
+  "supersedes": null,
+  "notes": "accuracy and avg_latency_ms live in the result's `scores` block, not in `metrics`; success_rate is the share of requests that completed at all and is independent of whether the answers were right."
+}

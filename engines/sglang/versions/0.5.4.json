@@ -1,0 +1,410 @@
+{
+  "schema_version": 1,
+  "engine_id": "sglang",
+  "version": "0.5.4",
+  "released": "2026-06-05",
+  "extraction_method": "hand-seeded",
+  "extracted_at": "2026-08-23T00:00:00Z",
+  "source": "https://docs.sglang.ai/backend/server_arguments.html (hand-seeded)",
+  "notes": "Hand-seeded from the SGLang server-arguments documentation. mem-fraction-static and the attention backend are derived from the model and GPU at startup, so their defaults are null here and an explicit value always survives into the fingerprint.",
+  "params": [
+    {
+      "name": "model-path",
+      "type": "str",
+      "default": null,
+      "help": "Hugging Face id or local path. Dropped from the fingerprint.",
+      "group": "model",
+      "impact": "low"
+    },
+    {
+      "name": "tp-size",
+      "type": "int",
+      "default": 1,
+      "range": [
+        1,
+        null
+      ],
+      "help": "Tensor parallel size.",
+      "aliases": [
+        "tp",
+        "tensor-parallel-size"
+      ],
+      "group": "parallelism",
+      "impact": "high"
+    },
+    {
+      "name": "dp-size",
+      "type": "int",
+      "default": 1,
+      "range": [
+        1,
+        null
+      ],
+      "help": "Data parallel size.",
+      "aliases": [
+        "dp",
+        "data-parallel-size"
+      ],
+      "group": "parallelism",
+      "impact": "high"
+    },
+    {
+      "name": "ep-size",
+      "type": "int",
+      "default": 1,
+      "range": [
+        1,
+        null
+      ],
+      "help": "Expert parallel size for MoE models.",
+      "aliases": [
+        "ep"
+      ],
+      "group": "parallelism",
+      "impact": "high"
+    },
+    {
+      "name": "enable-dp-attention",
+      "type": "bool",
+      "default": false,
+      "help": "Data-parallel attention; helps MLA models at high concurrency.",
+      "group": "parallelism",
+      "impact": "medium"
+    },
+    {
+      "name": "mem-fraction-static",
+      "type": "float",
+      "default": null,
+      "range": [
+        0,
+        1
+      ],
+      "help": "Fraction of device memory reserved for weights and the KV pool. SGLang derives a default from the model and the GPU, so there is no fixed value.",
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "context-length",
+      "type": "int",
+      "default": null,
+      "help": "Advertised context length; defaults to the model's own.",
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "max-total-tokens",
+      "type": "int",
+      "default": null,
+      "help": "Hard cap on KV pool tokens.",
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "max-running-requests",
+      "type": "int",
+      "default": null,
+      "help": "Maximum concurrent running requests.",
+      "group": "batching",
+      "impact": "high"
+    },
+    {
+      "name": "max-prefill-tokens",
+      "type": "int",
+      "default": 16384,
+      "help": "Token budget for one prefill batch.",
+      "group": "batching",
+      "impact": "high"
+    },
+    {
+      "name": "chunked-prefill-size",
+      "type": "int",
+      "default": 8192,
+      "help": "Prefill chunk size; -1 disables chunking.",
+      "group": "batching",
+      "impact": "high"
+    },
+    {
+      "name": "schedule-policy",
+      "type": "enum",
+      "default": "fcfs",
+      "choices": [
+        "lpm",
+        "random",
+        "fcfs",
+        "dfs-weight"
+      ],
+      "help": "Request scheduling policy. lpm prioritises longest prefix match.",
+      "group": "scheduling",
+      "impact": "high"
+    },
+    {
+      "name": "schedule-conservativeness",
+      "type": "float",
+      "default": 1.0,
+      "help": "Lower values admit more requests and risk more preemption.",
+      "group": "scheduling",
+      "impact": "medium"
+    },
+    {
+      "name": "stream-interval",
+      "type": "int",
+      "default": 1,
+      "help": "Tokens between streaming chunks. Affects measured ITL.",
+      "group": "scheduling",
+      "impact": "medium"
+    },
+    {
+      "name": "disable-radix-cache",
+      "type": "bool",
+      "default": false,
+      "help": "Turn off RadixAttention prefix reuse — SGLang's main advantage, so this flag is usually a mistake outside A/B tests.",
+      "group": "caching",
+      "impact": "high"
+    },
+    {
+      "name": "page-size",
+      "type": "int",
+      "default": 1,
+      "help": "KV cache page size in tokens.",
+      "group": "caching",
+      "impact": "medium"
+    },
+    {
+      "name": "kv-cache-dtype",
+      "type": "enum",
+      "default": "auto",
+      "choices": [
+        "auto",
+        "fp8_e5m2",
+        "fp8_e4m3"
+      ],
+      "help": "KV cache element type.",
+      "group": "caching",
+      "impact": "high"
+    },
+    {
+      "name": "quantization",
+      "type": "str",
+      "default": null,
+      "help": "Quantization method; usually inferred from the checkpoint.",
+      "group": "quantization",
+      "impact": "high"
+    },
+    {
+      "name": "dtype",
+      "type": "enum",
+      "default": "auto",
+      "choices": [
+        "auto",
+        "half",
+        "float16",
+        "bfloat16",
+        "float",
+        "float32"
+      ],
+      "help": "Activation dtype.",
+      "group": "quantization",
+      "impact": "high"
+    },
+    {
+      "name": "speculative-algorithm",
+      "type": "enum",
+      "default": null,
+      "choices": [
+        "EAGLE",
+        "EAGLE3",
+        "NEXTN",
+        "STANDALONE"
+      ],
+      "help": "Speculative decoding algorithm.",
+      "group": "speculative",
+      "impact": "high"
+    },
+    {
+      "name": "speculative-num-steps",
+      "type": "int",
+      "default": null,
+      "help": "Draft steps per verification pass.",
+      "group": "speculative",
+      "impact": "high"
+    },
+    {
+      "name": "speculative-eagle-topk",
+      "type": "int",
+      "default": null,
+      "help": "Top-k draft tokens kept per step.",
+      "group": "speculative",
+      "impact": "medium"
+    },
+    {
+      "name": "speculative-num-draft-tokens",
+      "type": "int",
+      "default": null,
+      "help": "Draft tokens verified per pass.",
+      "group": "speculative",
+      "impact": "high"
+    },
+    {
+      "name": "speculative-draft-model-path",
+      "type": "str",
+      "default": null,
+      "help": "Draft model for standalone speculative decoding.",
+      "group": "speculative",
+      "impact": "high"
+    },
+    {
+      "name": "attention-backend",
+      "type": "enum",
+      "default": null,
+      "choices": [
+        "flashinfer",
+        "triton",
+        "torch_native",
+        "fa3",
+        "aiter",
+        "flashmla"
+      ],
+      "help": "Attention kernel backend. The default depends on the GPU and the model.",
+      "group": "compilation",
+      "impact": "high"
+    },
+    {
+      "name": "sampling-backend",
+      "type": "enum",
+      "default": null,
+      "choices": [
+        "flashinfer",
+        "pytorch"
+      ],
+      "help": "Sampling kernel backend.",
+      "group": "compilation",
+      "impact": "medium"
+    },
+    {
+      "name": "enable-torch-compile",
+      "type": "bool",
+      "default": false,
+      "help": "torch.compile the model. Long warmup, real decode gains at small batch sizes.",
+      "group": "compilation",
+      "impact": "high"
+    },
+    {
+      "name": "torch-compile-max-bs",
+      "type": "int",
+      "default": 32,
+      "help": "Largest batch size compiled.",
+      "group": "compilation",
+      "impact": "medium"
+    },
+    {
+      "name": "disable-cuda-graph",
+      "type": "bool",
+      "default": false,
+      "help": "Disable CUDA graph capture.",
+      "group": "compilation",
+      "impact": "high"
+    },
+    {
+      "name": "cuda-graph-max-bs",
+      "type": "int",
+      "default": null,
+      "help": "Largest batch size captured as a CUDA graph.",
+      "group": "compilation",
+      "impact": "medium"
+    },
+    {
+      "name": "enable-mixed-chunk",
+      "type": "bool",
+      "default": false,
+      "help": "Mix prefill chunks and decode in one batch.",
+      "group": "batching",
+      "impact": "medium"
+    },
+    {
+      "name": "grammar-backend",
+      "type": "enum",
+      "default": "xgrammar",
+      "choices": [
+        "xgrammar",
+        "outlines",
+        "llguidance",
+        "none"
+      ],
+      "help": "Constrained decoding backend.",
+      "group": "sampling",
+      "impact": "medium"
+    },
+    {
+      "name": "random-seed",
+      "type": "int",
+      "default": null,
+      "help": "Random seed.",
+      "group": "sampling",
+      "impact": "medium"
+    },
+    {
+      "name": "tool-call-parser",
+      "type": "str",
+      "default": null,
+      "help": "Tool call parser.",
+      "group": "model",
+      "impact": "low"
+    },
+    {
+      "name": "reasoning-parser",
+      "type": "str",
+      "default": null,
+      "help": "Reasoning content parser.",
+      "group": "model",
+      "impact": "low"
+    },
+    {
+      "name": "trust-remote-code",
+      "type": "bool",
+      "default": false,
+      "help": "Execute modelling code from the weights repo.",
+      "group": "model",
+      "impact": "low"
+    },
+    {
+      "name": "watchdog-timeout",
+      "type": "float",
+      "default": 300,
+      "help": "Seconds before the watchdog kills a stuck forward pass.",
+      "group": "server",
+      "impact": "low"
+    },
+    {
+      "name": "host",
+      "type": "str",
+      "default": null,
+      "help": "Bind address. Dropped from the fingerprint.",
+      "group": "server",
+      "impact": "low"
+    },
+    {
+      "name": "port",
+      "type": "int",
+      "default": 30000,
+      "help": "Bind port. Dropped from the fingerprint.",
+      "group": "server",
+      "impact": "low"
+    },
+    {
+      "name": "api-key",
+      "type": "str",
+      "default": null,
+      "help": "Required API key. Dropped from the fingerprint.",
+      "group": "server",
+      "impact": "low"
+    },
+    {
+      "name": "log-level",
+      "type": "str",
+      "default": "info",
+      "help": "Log level. Dropped from the fingerprint.",
+      "group": "server",
+      "impact": "low"
+    }
+  ]
+}

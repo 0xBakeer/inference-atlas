@@ -1,0 +1,176 @@
+{
+  "schema_version": 1,
+  "engine_id": "tgi",
+  "version": "3.3.6",
+  "released": "2026-04-22",
+  "extraction_method": "hand-seeded",
+  "extracted_at": "2026-08-23T00:00:00Z",
+  "source": "text-generation-launcher --help (hand-seeded)",
+  "notes": "TGI infers max-batch-total-tokens from free memory at startup unless it is set, so two runs on differently loaded machines are not the same configuration even with identical flags. Set it explicitly for anything you want compared.",
+  "params": [
+    {
+      "name": "model-id",
+      "type": "str",
+      "default": null,
+      "help": "Hugging Face id or local path. Dropped from the fingerprint.",
+      "group": "model",
+      "impact": "low"
+    },
+    {
+      "name": "num-shard",
+      "type": "int",
+      "default": null,
+      "help": "Shards (tensor parallel size). Defaults to all visible GPUs.",
+      "aliases": [
+        "tp"
+      ],
+      "group": "parallelism",
+      "impact": "high"
+    },
+    {
+      "name": "quantize",
+      "type": "enum",
+      "default": null,
+      "choices": [
+        "awq",
+        "eetq",
+        "exl2",
+        "gptq",
+        "marlin",
+        "bitsandbytes",
+        "bitsandbytes-nf4",
+        "bitsandbytes-fp4",
+        "fp8",
+        "compressed-tensors"
+      ],
+      "help": "Quantization method.",
+      "group": "quantization",
+      "impact": "high"
+    },
+    {
+      "name": "dtype",
+      "type": "enum",
+      "default": null,
+      "choices": [
+        "float16",
+        "bfloat16"
+      ],
+      "help": "Activation dtype. Mutually exclusive with quantize.",
+      "group": "quantization",
+      "impact": "high"
+    },
+    {
+      "name": "kv-cache-dtype",
+      "type": "enum",
+      "default": "auto",
+      "choices": [
+        "auto",
+        "fp8_e5m2",
+        "fp8_e4m3"
+      ],
+      "help": "KV cache element type.",
+      "group": "caching",
+      "impact": "high"
+    },
+    {
+      "name": "max-input-tokens",
+      "type": "int",
+      "default": null,
+      "help": "Maximum prompt tokens per request.",
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "max-total-tokens",
+      "type": "int",
+      "default": null,
+      "help": "Maximum prompt plus generated tokens per request.",
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "max-batch-prefill-tokens",
+      "type": "int",
+      "default": null,
+      "help": "Prefill token budget per batch.",
+      "group": "batching",
+      "impact": "high"
+    },
+    {
+      "name": "max-batch-total-tokens",
+      "type": "int",
+      "default": null,
+      "help": "Total token budget per batch; TGI infers it when unset.",
+      "group": "batching",
+      "impact": "high"
+    },
+    {
+      "name": "max-concurrent-requests",
+      "type": "int",
+      "default": 128,
+      "help": "Requests accepted before the router returns an overload error.",
+      "group": "batching",
+      "impact": "high"
+    },
+    {
+      "name": "max-waiting-tokens",
+      "type": "int",
+      "default": 20,
+      "help": "Tokens a queued request waits before the batch is rebuilt.",
+      "group": "scheduling",
+      "impact": "medium"
+    },
+    {
+      "name": "cuda-graphs",
+      "type": "list",
+      "default": null,
+      "help": "Batch sizes captured as CUDA graphs; 0 disables capture.",
+      "group": "compilation",
+      "impact": "high"
+    },
+    {
+      "name": "trust-remote-code",
+      "type": "bool",
+      "default": false,
+      "help": "Execute modelling code from the weights repo.",
+      "group": "model",
+      "impact": "low"
+    },
+    {
+      "name": "rope-scaling",
+      "type": "enum",
+      "default": null,
+      "choices": [
+        "linear",
+        "dynamic"
+      ],
+      "help": "RoPE scaling method.",
+      "group": "model",
+      "impact": "high"
+    },
+    {
+      "name": "rope-factor",
+      "type": "float",
+      "default": null,
+      "help": "RoPE scaling factor.",
+      "group": "model",
+      "impact": "high"
+    },
+    {
+      "name": "hostname",
+      "type": "str",
+      "default": "0.0.0.0",
+      "help": "Bind address. Dropped from the fingerprint.",
+      "group": "server",
+      "impact": "low"
+    },
+    {
+      "name": "port",
+      "type": "int",
+      "default": 80,
+      "help": "Bind port. Dropped from the fingerprint.",
+      "group": "server",
+      "impact": "low"
+    }
+  ]
+}

@@ -1,0 +1,110 @@
+name: issue-to-pr
+
+# The third contribution path (SPEC §7): somebody who has the hardware and the numbers but
+# no checkout fills in the "Submit result" form, and this turns it into a pull request in
+# their name — `provenance.github_login` is the issue author, `Co-authored-by` credits them
+# on the commit, and the ownership rule then works on the file exactly as if they had
+# opened the pull request themselves.
+
+on:
+  issues:
+    types: [opened, edited, labeled]
+
+permissions:
+  contents: read
+
+jobs:
+  convert:
+    if: contains(github.event.issue.labels.*.name, 'submit-result')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @atlas/core run build
+
+      - name: Write the issue body to a file
+        env:
+          BODY: ${{ github.event.issue.body }}
+        run: printf '%s' "$BODY" > issue-body.md
+
+      - name: Convert the form into a result file
+        id: convert
+        run: |
+          set +e
+          pnpm --filter @atlas/tools exec tsx src/issue-to-pr.ts \
+            --body-file "$GITHUB_WORKSPACE/issue-body.md" \
+            --author '${{ github.event.issue.user.login }}' \
+            --issue '${{ github.event.issue.number }}' \
+            --submitted-at '${{ github.event.issue.created_at }}' \
+            --write --json > convert.json
+          echo "exit=$?" >> "$GITHUB_OUTPUT"
+          set -e
+          node -e "const r=require('./convert.json');if(r.branch)console.log('branch='+r.branch)" >> "$GITHUB_OUTPUT"
+          cat convert.json
+
+      - name: Report a form that could not be converted
+        if: steps.convert.outputs.exit != '0'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const report = JSON.parse(fs.readFileSync('convert.json', 'utf8'));
+            const lines = (report.errors ?? []).map((e) => `- \`${e.code}\`: ${e.message}`);
+            await github.rest.issues.createComment({
+              ...context.repo,
+              issue_number: context.payload.issue.number,
+              body: [
+                'I could not turn this form into a result file yet:',
+                '',
+                ...lines,
+                '',
+                'Edit the issue and I will try again. Ids, paths and the canonical argument',
+                'string are computed here — you never have to fill those in.',
+              ].join('\n'),
+            });
+            core.setFailed('the submitted form is not convertible');
+
+      - name: Open the pull request
+        if: steps.convert.outputs.exit == '0'
+        id: pr
+        uses: peter-evans/create-pull-request@v6
+        with:
+          add-paths: results/
+          # The branch name is derived from the cell, the same way AGENTS.md tells a human
+          # contributor to name theirs.
+          branch: ${{ steps.convert.outputs.branch }}
+          title: ${{ github.event.issue.title }}
+          commit-message: |
+            results: from issue #${{ github.event.issue.number }}
+
+            Co-authored-by: ${{ github.event.issue.user.login }} <${{ github.event.issue.user.id }}+${{ github.event.issue.user.login }}@users.noreply.github.com>
+          labels: results
+          body: |
+            Converted from #${{ github.event.issue.number }} by `tools/issue-to-pr`.
+
+            The numbers, the configuration and the ownership of the file belong to
+            @${{ github.event.issue.user.login }}; the bot only transcribed them. Validation
+            runs on this pull request like any other.
+
+            Closes #${{ github.event.issue.number }}
+
+      - name: Link the pull request from the issue
+        if: steps.pr.outputs.pull-request-number
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              ...context.repo,
+              issue_number: context.payload.issue.number,
+              body: `Opened ${{ steps.pr.outputs.pull-request-url }} with your result. Validation runs there; nothing more is needed from you unless it reports a problem.`,
+            });

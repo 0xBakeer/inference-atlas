@@ -1,0 +1,283 @@
+{
+  "schema_version": 1,
+  "engine_id": "vllm",
+  "groups": [
+    "parallelism",
+    "memory",
+    "batching",
+    "caching",
+    "quantization",
+    "speculative",
+    "compilation",
+    "scheduling",
+    "model",
+    "multimodal",
+    "lora",
+    "sampling",
+    "server"
+  ],
+  "params": {
+    "model": {
+      "group": "model",
+      "impact": "low"
+    },
+    "tensor-parallel-size": {
+      "group": "parallelism",
+      "impact": "high",
+      "featured": true
+    },
+    "pipeline-parallel-size": {
+      "group": "parallelism",
+      "impact": "high"
+    },
+    "data-parallel-size": {
+      "group": "parallelism",
+      "impact": "medium"
+    },
+    "distributed-executor-backend": {
+      "group": "parallelism",
+      "impact": "medium"
+    },
+    "gpu-memory-utilization": {
+      "group": "memory",
+      "impact": "high",
+      "notes": "This is the total budget, weights included — not headroom on top of the weights. Lowering it shrinks the KV cache, which shows up as a lower max concurrency, not as lower single-stream speed.",
+      "featured": true
+    },
+    "swap-space": {
+      "group": "memory",
+      "impact": "low"
+    },
+    "cpu-offload-gb": {
+      "group": "memory",
+      "impact": "high"
+    },
+    "max-model-len": {
+      "group": "memory",
+      "impact": "high",
+      "featured": true
+    },
+    "max-num-seqs": {
+      "group": "batching",
+      "impact": "high",
+      "featured": true
+    },
+    "max-num-batched-tokens": {
+      "group": "batching",
+      "impact": "high"
+    },
+    "enable-chunked-prefill": {
+      "group": "batching",
+      "impact": "high",
+      "featured": true
+    },
+    "enable-prefix-caching": {
+      "group": "caching",
+      "impact": "high",
+      "notes": "Defaults OFF for hybrid-attention models even though it is on for everything else. Pass it explicitly and record it, or you will compare a cached run against an uncached one and call it a version regression.",
+      "featured": true
+    },
+    "block-size": {
+      "group": "caching",
+      "impact": "medium"
+    },
+    "kv-cache-dtype": {
+      "group": "caching",
+      "impact": "high",
+      "featured": true
+    },
+    "mamba-ssm-cache-dtype": {
+      "group": "caching",
+      "impact": "medium"
+    },
+    "mamba-backend": {
+      "group": "caching",
+      "impact": "medium"
+    },
+    "disable-sliding-window": {
+      "group": "caching",
+      "impact": "medium"
+    },
+    "quantization": {
+      "group": "quantization",
+      "impact": "high",
+      "featured": true
+    },
+    "dtype": {
+      "group": "quantization",
+      "impact": "high"
+    },
+    "speculative-config": {
+      "group": "speculative",
+      "impact": "high",
+      "notes": "The one flag that can beat the memory-bandwidth bound on a capacity-limited machine. Record the accepted tokens per step alongside it or the number looks impossible.",
+      "featured": true
+    },
+    "compilation-config": {
+      "group": "compilation",
+      "impact": "high"
+    },
+    "enforce-eager": {
+      "group": "compilation",
+      "impact": "high",
+      "notes": "Saves a few GiB and several minutes of startup at a real decode cost. Frequently on by accident in shared scripts.",
+      "featured": true
+    },
+    "max-seq-len-to-capture": {
+      "group": "compilation",
+      "impact": "medium"
+    },
+    "cuda-graph-sizes": {
+      "group": "compilation",
+      "impact": "medium"
+    },
+    "scheduling-policy": {
+      "group": "scheduling",
+      "impact": "medium"
+    },
+    "num-scheduler-steps": {
+      "group": "scheduling",
+      "impact": "low"
+    },
+    "async-scheduling": {
+      "group": "scheduling",
+      "impact": "medium"
+    },
+    "preemption-mode": {
+      "group": "scheduling",
+      "impact": "medium"
+    },
+    "reasoning-parser": {
+      "group": "model",
+      "impact": "low"
+    },
+    "tool-call-parser": {
+      "group": "model",
+      "impact": "low"
+    },
+    "enable-auto-tool-choice": {
+      "group": "model",
+      "impact": "low"
+    },
+    "trust-remote-code": {
+      "group": "model",
+      "impact": "low"
+    },
+    "tokenizer": {
+      "group": "model",
+      "impact": "low"
+    },
+    "tokenizer-mode": {
+      "group": "model",
+      "impact": "low"
+    },
+    "hf-overrides": {
+      "group": "model",
+      "impact": "high"
+    },
+    "rope-scaling": {
+      "group": "model",
+      "impact": "high"
+    },
+    "rope-theta": {
+      "group": "model",
+      "impact": "medium"
+    },
+    "revision": {
+      "group": "model",
+      "impact": "low"
+    },
+    "load-format": {
+      "group": "model",
+      "impact": "medium"
+    },
+    "config-format": {
+      "group": "model",
+      "impact": "low"
+    },
+    "max-parallel-loading-workers": {
+      "group": "model",
+      "impact": "low"
+    },
+    "seed": {
+      "group": "sampling",
+      "impact": "medium"
+    },
+    "max-logprobs": {
+      "group": "sampling",
+      "impact": "low"
+    },
+    "generation-config": {
+      "group": "sampling",
+      "impact": "medium"
+    },
+    "override-generation-config": {
+      "group": "sampling",
+      "impact": "medium"
+    },
+    "limit-mm-per-prompt": {
+      "group": "multimodal",
+      "impact": "high"
+    },
+    "mm-processor-kwargs": {
+      "group": "multimodal",
+      "impact": "medium"
+    },
+    "enable-lora": {
+      "group": "lora",
+      "impact": "medium"
+    },
+    "max-loras": {
+      "group": "lora",
+      "impact": "medium"
+    },
+    "max-lora-rank": {
+      "group": "lora",
+      "impact": "low"
+    },
+    "lora-modules": {
+      "group": "lora",
+      "impact": "medium"
+    },
+    "enable-sleep-mode": {
+      "group": "memory",
+      "impact": "medium"
+    },
+    "kv-transfer-config": {
+      "group": "caching",
+      "impact": "high"
+    },
+    "disable-custom-all-reduce": {
+      "group": "parallelism",
+      "impact": "medium"
+    },
+    "disable-log-requests": {
+      "group": "server",
+      "impact": "low"
+    },
+    "disable-log-stats": {
+      "group": "server",
+      "impact": "low"
+    },
+    "served-model-name": {
+      "group": "server",
+      "impact": "low"
+    },
+    "host": {
+      "group": "server",
+      "impact": "low"
+    },
+    "port": {
+      "group": "server",
+      "impact": "low"
+    },
+    "api-key": {
+      "group": "server",
+      "impact": "low"
+    },
+    "download-dir": {
+      "group": "server",
+      "impact": "low"
+    }
+  }
+}

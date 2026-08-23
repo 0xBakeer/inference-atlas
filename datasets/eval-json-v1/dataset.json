@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "id": "eval-json-v1",
+  "name": "Structured output eval v1",
+  "kind": "eval",
+  "description": "110 items that ask for JSON of a described shape: field extraction from prose and from log lines, rule-based classification, nested objects, arrays of scalars and of objects, aggregation, date normalisation, config transformation, and correctly emitting null for information that is not in the source.",
+  "licence": "MIT",
+  "created": "2026-08-23",
+  "files": [
+    "items.jsonl"
+  ],
+  "count": 110,
+  "generator": "datasets/_gen/gen_eval_json.py",
+  "token_heuristic": "approx_tokens = ceil(sum(len(m.content) for m in messages) / 4)",
+  "provenance": "Synthetic, authored in this repository. No third-party text.",
+  "default_scorer": "json",
+  "scoring": {
+    "answer_extraction": [
+      "Drop everything inside <think>...</think> (and an unterminated leading <think> block).",
+      "Drop markdown code fences, keeping the fenced content.",
+      "If any line matches /^\\s*(?:final answer|answer)\\s*[:\\-]\\s*(.+)$/i, take the capture of the LAST such line and use only that.",
+      "Strip surrounding whitespace, matching quotes, and a single trailing '.' or '!'.",
+      "Scorers that need the untouched output (instruction, json) get the raw text as well; the instruction scorer always works on the raw output."
+    ],
+    "scorers": {
+      "json": "Parse the extracted output as JSON. `answer` is the expected value; `meta.match` is 'subset' (default — every key/value in `answer` must appear, extra keys allowed) or 'exact'. Arrays compare elementwise in order unless meta.array_order is false."
+    },
+    "pass_rule": "One item is correct or incorrect; there is no partial credit. accuracy = correct / total. An item whose request failed (timeout, 5xx, context overflow) counts as incorrect AND is reported in scores.failures and metrics.requests_failed."
+  },
+  "categories": [
+    "aggregation",
+    "arrays",
+    "classification",
+    "extraction",
+    "nested",
+    "normalisation",
+    "transformation"
+  ],
+  "difficulties": [
+    "easy",
+    "medium",
+    "hard"
+  ],
+  "counts": {
+    "by_category": {
+      "extraction": 40,
+      "classification": 22,
+      "nested": 10,
+      "arrays": 18,
+      "aggregation": 10,
+      "normalisation": 6,
+      "transformation": 4
+    },
+    "by_difficulty": {
+      "easy": 32,
+      "medium": 66,
+      "hard": 12
+    },
+    "by_scorer": {
+      "json": 110
+    }
+  },
+  "seed": 20260905,
+  "notes": [
+    "Scoring: parse the extracted output as JSON (a surrounding ``` fence is stripped first). meta.match is 'subset' by default — every key and value in `answer` must be present and equal, extra keys are tolerated — or 'exact', which additionally forbids extra keys.",
+    "Numbers compare numerically, so 7 and 7.0 both pass. Strings compare exactly, including case.",
+    "Arrays compare elementwise in order.",
+    "Output that is not valid JSON is simply incorrect; it is not a request failure and must not be counted as one.",
+    "meta.schema, where present, describes the expected object. Validating against it is optional; equality with `answer` is what decides the score."
+  ]
+}

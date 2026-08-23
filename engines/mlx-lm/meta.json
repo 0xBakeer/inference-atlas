@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "id": "mlx-lm",
+  "name": "MLX LM",
+  "repo": "https://github.com/ml-explore/mlx-lm",
+  "docs": "https://github.com/ml-explore/mlx-lm/blob/main/README.md",
+  "description": "Apple's MLX runtime for LLMs on Apple silicon. The fastest path on a Mac for models that have an MLX quantization.",
+  "api": "openai",
+  "default_port": 8080,
+  "platforms": [
+    "macos-metal"
+  ],
+  "quant_formats": [
+    "mlx",
+    "bf16",
+    "fp16"
+  ],
+  "install": [
+    {
+      "method": "pip",
+      "package": "mlx-lm=={version}",
+      "platforms": [
+        "macos-metal"
+      ]
+    },
+    {
+      "method": "uv",
+      "package": "mlx-lm=={version}",
+      "platforms": [
+        "macos-metal"
+      ]
+    }
+  ],
+  "serve": {
+    "command_template": "mlx_lm.server --model {model_ref} {flags}",
+    "model_ref": "hf_id",
+    "flag_style": "--{name} {value}",
+    "bool_style": "--{name}",
+    "bool_false_style": null,
+    "env_style": null
+  },
+  "health": {
+    "path": "/v1/models",
+    "models_path": "/v1/models",
+    "ready_timeout_s": 900
+  },
+  "bench_harness": "atlas-bench",
+  "drop_params": [
+    "model",
+    "host",
+    "port",
+    "api-key",
+    "adapter-path",
+    "log-level",
+    "cache-limit-gb"
+  ],
+  "param_aliases": {},
+  "version_source": {
+    "kind": "pypi",
+    "package": "mlx-lm",
+    "version_scheme": "semver"
+  },
+  "versions_available": [
+    "0.28.4"
+  ],
+  "links": {
+    "community": "https://huggingface.co/mlx-community"
+  },
+  "notes": "mlx_lm.server is single-stream oriented; concurrency sweeps on it measure queueing, not batching."
+}

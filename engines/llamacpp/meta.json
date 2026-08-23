@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "id": "llamacpp",
+  "name": "llama.cpp (llama-server)",
+  "repo": "https://github.com/ggml-org/llama.cpp",
+  "docs": "https://github.com/ggml-org/llama.cpp/tree/master/tools/server",
+  "description": "GGUF inference on essentially anything: CUDA, Metal, ROCm, Vulkan, SYCL, CPU. The widest hardware reach of any engine here.",
+  "api": "openai",
+  "default_port": 8080,
+  "platforms": [
+    "linux-cuda",
+    "linux-rocm",
+    "linux-cpu",
+    "macos-metal",
+    "macos-cpu",
+    "windows-cuda",
+    "windows-cpu"
+  ],
+  "quant_formats": [
+    "gguf"
+  ],
+  "install": [
+    {
+      "method": "binary",
+      "command": "curl -L https://github.com/ggml-org/llama.cpp/releases/download/{version}/llama-{version}-bin-ubuntu-x64.zip -o llama.zip && unzip llama.zip",
+      "arch": [
+        "x86_64"
+      ]
+    },
+    {
+      "method": "brew",
+      "package": "llama.cpp",
+      "platforms": [
+        "macos-metal",
+        "macos-cpu"
+      ],
+      "notes": "Homebrew tracks master, so pin the reported build number in the result rather than trusting the formula version."
+    },
+    {
+      "method": "source",
+      "command": "cmake -B build -DGGML_CUDA=ON && cmake --build build --config Release -j",
+      "notes": "Backend flags decide everything; record them in engine.build_flags."
+    }
+  ],
+  "serve": {
+    "command_template": "llama-server -m {model_ref} {flags}",
+    "model_ref": "gguf_path",
+    "flag_style": "--{name} {value}",
+    "bool_style": "--{name}",
+    "bool_false_style": null,
+    "env_style": null,
+    "notes": "Short aliases (-c, -ngl, -b, -ub, -np, -fa) are the common way these are written; the version file maps them."
+  },
+  "health": {
+    "path": "/health",
+    "models_path": "/v1/models",
+    "ready_timeout_s": 3600
+  },
+  "bench_harness": "atlas-bench",
+  "drop_params": [
+    "model",
+    "host",
+    "port",
+    "api-key",
+    "alias",
+    "hf-repo",
+    "hf-file",
+    "hf-token",
+    "model-url",
+    "log-file",
+    "path",
+    "chat-template-file",
+    "threads-http",
+    "no-webui",
+    "metrics",
+    "slots"
+  ],
+  "param_aliases": {
+    "c": "ctx-size",
+    "ngl": "n-gpu-layers",
+    "gpu-layers": "n-gpu-layers",
+    "b": "batch-size",
+    "ub": "ubatch-size",
+    "np": "parallel",
+    "fa": "flash-attn",
+    "t": "threads",
+    "tb": "threads-batch",
+    "ctk": "cache-type-k",
+    "ctv": "cache-type-v",
+    "sm": "split-mode",
+    "ts": "tensor-split",
+    "mg": "main-gpu",
+    "n": "n-predict",
+    "md": "model-draft",
+    "ngld": "gpu-layers-draft"
+  },
+  "version_source": {
+    "kind": "github-releases",
+    "repo": "ggml-org/llama.cpp",
+    "tag_prefix": "",
+    "version_scheme": "build-number"
+  },
+  "versions_available": [
+    "b7000"
+  ],
+  "links": {
+    "releases": "https://github.com/ggml-org/llama.cpp/releases"
+  },
+  "notes": "Versions are build numbers (bNNNN), not semver, so every build is its own coverage square. Record the exact build llama-server prints on startup."
+}

@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "engine_id": "lmstudio",
+  "version": "0.3.31",
+  "released": "2026-07-08",
+  "extraction_method": "hand-seeded",
+  "extracted_at": "2026-08-23T00:00:00Z",
+  "source": "lms load --help and the app's model load panel (hand-seeded)",
+  "notes": "LM Studio settings are usually clicked, not typed, so args here describe the load configuration however it was set. Record the backend runtime version (llama.cpp build or MLX version) in engine.build_flags: the app version alone does not determine the numbers.",
+  "params": [
+    {
+      "name": "path",
+      "type": "str",
+      "default": null,
+      "help": "Model key in the local LM Studio library. Dropped from the fingerprint.",
+      "group": "model",
+      "impact": "low"
+    },
+    {
+      "name": "context-length",
+      "type": "int",
+      "default": null,
+      "help": "Context window. Defaults to the model's own, capped by the app.",
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "gpu",
+      "type": "str",
+      "default": "auto",
+      "help": "GPU offload ratio: off, max, auto or a number between 0 and 1.",
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "cpu-threads",
+      "type": "int",
+      "default": null,
+      "help": "CPU threads for the llama.cpp runtime.",
+      "group": "memory",
+      "impact": "medium"
+    },
+    {
+      "name": "flash-attention",
+      "type": "bool",
+      "default": false,
+      "help": "Flash attention in the llama.cpp runtime.",
+      "group": "compilation",
+      "impact": "high"
+    },
+    {
+      "name": "kv-cache-quantization",
+      "type": "enum",
+      "default": "f16",
+      "choices": [
+        "f16",
+        "q8_0",
+        "q4_0"
+      ],
+      "help": "KV cache type in the llama.cpp runtime.",
+      "group": "caching",
+      "impact": "high"
+    },
+    {
+      "name": "keep-model-in-memory",
+      "type": "bool",
+      "default": true,
+      "help": "Prevent the model being paged out.",
+      "group": "memory",
+      "impact": "medium"
+    },
+    {
+      "name": "try-mmap",
+      "type": "bool",
+      "default": true,
+      "help": "Memory-map the weights.",
+      "group": "memory",
+      "impact": "medium"
+    },
+    {
+      "name": "ttl",
+      "type": "int",
+      "default": null,
+      "help": "Seconds of idleness before the model is unloaded. Dropped from the fingerprint.",
+      "group": "server",
+      "impact": "low"
+    },
+    {
+      "name": "identifier",
+      "type": "str",
+      "default": null,
+      "help": "Name the API reports. Dropped from the fingerprint.",
+      "group": "server",
+      "impact": "low"
+    },
+    {
+      "name": "port",
+      "type": "int",
+      "default": 1234,
+      "help": "Bind port. Dropped from the fingerprint.",
+      "group": "server",
+      "impact": "low"
+    }
+  ]
+}

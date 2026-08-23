@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "id": "eval-format-v1",
+  "name": "Format robustness eval v1",
+  "kind": "eval",
+  "description": "30 trivially easy questions with a strict output contract: one word, one number, one symbol, yes/no, or an exact pattern. It measures whether the model can stop talking, which is the thing that breaks first when a chat template, a system prompt or a reasoning mode changes.",
+  "licence": "MIT",
+  "created": "2026-08-23",
+  "files": [
+    "items.jsonl"
+  ],
+  "count": 30,
+  "generator": "datasets/_gen/gen_eval_format.py",
+  "token_heuristic": "approx_tokens = ceil(sum(len(m.content) for m in messages) / 4)",
+  "provenance": "Synthetic, authored in this repository. No third-party text.",
+  "default_scorer": "exact",
+  "scoring": {
+    "answer_extraction": [
+      "Drop everything inside <think>...</think> (and an unterminated leading <think> block).",
+      "Drop markdown code fences, keeping the fenced content.",
+      "If any line matches /^\\s*(?:final answer|answer)\\s*[:\\-]\\s*(.+)$/i, take the capture of the LAST such line and use only that.",
+      "Strip surrounding whitespace, matching quotes, and a single trailing '.' or '!'.",
+      "Scorers that need the untouched output (instruction, json) get the raw text as well; the instruction scorer always works on the raw output."
+    ],
+    "scorers": {
+      "exact": "Case-insensitive comparison after collapsing internal whitespace. `answer` is a string; `meta.answer_aliases` (list) are also accepted."
+    },
+    "pass_rule": "One item is correct or incorrect; there is no partial credit. accuracy = correct / total. An item whose request failed (timeout, 5xx, context overflow) counts as incorrect AND is reported in scores.failures and metrics.requests_failed."
+  },
+  "categories": [
+    "boolean",
+    "number_only",
+    "one_word",
+    "pattern",
+    "token"
+  ],
+  "difficulties": [
+    "easy",
+    "medium",
+    "hard"
+  ],
+  "counts": {
+    "by_category": {
+      "number_only": 8,
+      "one_word": 8,
+      "token": 7,
+      "boolean": 4,
+      "pattern": 3
+    },
+    "by_difficulty": {
+      "easy": 12,
+      "medium": 15,
+      "hard": 3
+    },
+    "by_scorer": {
+      "exact": 30
+    }
+  },
+  "notes": [
+    "The exact scorer compares case-insensitively after collapsing whitespace and removing surrounding quotes and one trailing '.' or '!'. meta.answer_aliases lists any other spelling that must be accepted.",
+    "Anything beyond the requested token is wrong on purpose: 'The answer is 42' fails, '42' passes.",
+    "A low score here next to a high score on eval-math-v1 usually means the reasoning trace is leaking into the answer — check whether <think> blocks are being stripped, and record the reasoning setting in the result.",
+    "Refusal-versus-help calibration is deliberately out of scope for this suite."
+  ]
+}

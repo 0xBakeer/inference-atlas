@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "id": "serve-prefix-c16-v1",
+  "name": "Shared prefix, 16 concurrent",
+  "kind": "serving",
+  "description": "200 requests (two passes over the 100 rows of prompts-shared-prefix-v1) at a concurrency of 16. Every row carries one of four long system prompts, so an engine with prefix caching pays the prefill once per group and an engine without it pays every time. Run this workload twice on the same engine, with and without the cache flag, and compare ttft_ms.",
+  "dataset_id": "prompts-shared-prefix-v1",
+  "params": {
+    "concurrency": 16,
+    "num_requests": 200,
+    "input_tokens": null,
+    "output_tokens": 256,
+    "seed": 42,
+    "warmup_requests": 0,
+    "temperature": 0,
+    "repeat": 2,
+    "timeout_s": 300,
+    "group_by": "prefix_id",
+    "shuffle": false,
+    "warmup_per_group": 1
+  },
+  "sweep": null,
+  "eval": null,
+  "metrics_required": [
+    "ttft_ms.p50",
+    "tpot_ms.p50",
+    "output_tok_s",
+    "success_rate",
+    "prefill_tok_s"
+  ],
+  "immutable": true,
+  "created": "2026-08-23",
+  "supersedes": null,
+  "notes": "params.group_by tells the runner to send all rows of one prefix_id back to back; shuffling would destroy the measurement. warmup_per_group requests are excluded from the aggregate so that the reported ttft is the warm one. input_tokens is null because the prompt length varies from about 2k to about 13k approx tokens per group."
+}

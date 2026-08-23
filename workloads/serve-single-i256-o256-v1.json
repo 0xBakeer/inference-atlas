@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "id": "serve-single-i256-o256-v1",
+  "name": "Single stream, 256 in / 256 out",
+  "kind": "serving",
+  "description": "One request at a time, short chat-sized prompts, 256 output tokens. The cleanest number for 'how fast does this feel for one person', and the workload the bandwidth-bound decode ceiling (memory bandwidth / weight size) is compared against.",
+  "dataset_id": "prompts-mixed-v1",
+  "params": {
+    "concurrency": 1,
+    "num_requests": 50,
+    "input_tokens": 256,
+    "output_tokens": 256,
+    "seed": 42,
+    "warmup_requests": 3,
+    "temperature": 0,
+    "repeat": 1,
+    "timeout_s": 300,
+    "dataset_buckets": [
+      "s",
+      "m"
+    ]
+  },
+  "sweep": null,
+  "eval": null,
+  "metrics_required": [
+    "output_tok_s",
+    "success_rate"
+  ],
+  "immutable": true,
+  "created": "2026-08-23",
+  "supersedes": null,
+  "notes": "metrics_required is deliberately short so that hand-recorded single-stream measurements (SPEC section 10) can be submitted with only the numbers that were really observed. A harness run should also fill ttft_ms, tpot_ms and decode_tok_s_per_request."
+}

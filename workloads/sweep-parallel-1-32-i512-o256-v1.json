@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "id": "sweep-parallel-1-32-i512-o256-v1",
+  "name": "Parallelism sweep 1-32, 512 in / 256 out",
+  "kind": "sweep",
+  "description": "The same 512-token request repeated at concurrency 1, 2, 4, 8, 16 and 32. Produces the throughput-versus-latency curve that a single throughput number cannot: where per-request speed starts to fall, and where aggregate tokens per second stops rising.",
+  "dataset_id": "prompts-mixed-v1",
+  "params": {
+    "concurrency": 1,
+    "num_requests": 32,
+    "input_tokens": 512,
+    "output_tokens": 256,
+    "seed": 42,
+    "warmup_requests": 4,
+    "temperature": 0,
+    "repeat": 1,
+    "timeout_s": 300,
+    "dataset_buckets": [
+      "m"
+    ],
+    "requests_per_concurrency": 4
+  },
+  "sweep": {
+    "concurrency": [
+      1,
+      2,
+      4,
+      8,
+      16,
+      32
+    ]
+  },
+  "eval": null,
+  "metrics_required": [
+    "ttft_ms.p50",
+    "tpot_ms.p50",
+    "output_tok_s",
+    "req_s",
+    "success_rate"
+  ],
+  "immutable": true,
+  "created": "2026-08-23",
+  "supersedes": null,
+  "notes": "Requests per sweep point = max(params.num_requests, concurrency * params.requests_per_concurrency), so every stream serves at least four requests and the low points do not become warmup measurements. params.concurrency is the first point of the sweep and is ignored by the runner."
+}

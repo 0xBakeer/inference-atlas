@@ -1,0 +1,518 @@
+{
+  "schema_version": 1,
+  "engine_id": "llamacpp",
+  "version": "b7000",
+  "released": null,
+  "extraction_method": "hand-seeded",
+  "extracted_at": "2026-08-23T00:00:00Z",
+  "source": "llama-server --help (hand-seeded from the documented flags, not captured from this build)",
+  "notes": "llama.cpp versions are build numbers, so this file describes the flags around build b7000 rather than one exact commit. Defaults in llama.cpp move between builds more often than in a semver project: if a default here disagrees with your build's --help, your build wins, and the flag simply stays in the fingerprint.",
+  "params": [
+    {
+      "name": "model",
+      "type": "path",
+      "default": null,
+      "help": "GGUF file to load. Dropped from the fingerprint.",
+      "aliases": [
+        "-m"
+      ],
+      "group": "model",
+      "impact": "low"
+    },
+    {
+      "name": "ctx-size",
+      "type": "int",
+      "default": 4096,
+      "help": "Context size in tokens. 0 means take it from the GGUF metadata.",
+      "aliases": [
+        "-c"
+      ],
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "n-gpu-layers",
+      "type": "int",
+      "default": 0,
+      "help": "Layers offloaded to the GPU. Use a large number (999) for all. Builds with a GPU backend compiled in may offload everything by default — verify against your build and record what you passed.",
+      "aliases": [
+        "-ngl",
+        "gpu-layers"
+      ],
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "threads",
+      "type": "int",
+      "default": -1,
+      "help": "CPU threads for generation. -1 means one per physical core.",
+      "aliases": [
+        "-t"
+      ],
+      "group": "memory",
+      "impact": "medium"
+    },
+    {
+      "name": "threads-batch",
+      "type": "int",
+      "default": -1,
+      "help": "CPU threads for prompt processing.",
+      "aliases": [
+        "-tb"
+      ],
+      "group": "memory",
+      "impact": "medium"
+    },
+    {
+      "name": "batch-size",
+      "type": "int",
+      "default": 2048,
+      "help": "Logical maximum batch size.",
+      "aliases": [
+        "-b"
+      ],
+      "group": "batching",
+      "impact": "high"
+    },
+    {
+      "name": "ubatch-size",
+      "type": "int",
+      "default": 512,
+      "help": "Physical micro-batch size — the one that actually changes prefill speed.",
+      "aliases": [
+        "-ub"
+      ],
+      "group": "batching",
+      "impact": "high"
+    },
+    {
+      "name": "parallel",
+      "type": "int",
+      "default": 1,
+      "help": "Parallel request slots. Context is split between them.",
+      "aliases": [
+        "-np"
+      ],
+      "group": "batching",
+      "impact": "high"
+    },
+    {
+      "name": "cont-batching",
+      "type": "bool",
+      "default": true,
+      "help": "Continuous batching. On by default in llama-server.",
+      "aliases": [
+        "-cb"
+      ],
+      "group": "batching",
+      "impact": "high"
+    },
+    {
+      "name": "no-cont-batching",
+      "type": "bool",
+      "default": false,
+      "help": "Disable continuous batching.",
+      "group": "batching",
+      "impact": "high"
+    },
+    {
+      "name": "flash-attn",
+      "type": "enum",
+      "default": "auto",
+      "choices": [
+        "on",
+        "off",
+        "auto"
+      ],
+      "help": "Flash attention. auto enables it where the backend supports it.",
+      "aliases": [
+        "-fa"
+      ],
+      "group": "compilation",
+      "impact": "high"
+    },
+    {
+      "name": "cache-type-k",
+      "type": "enum",
+      "default": "f16",
+      "choices": [
+        "f32",
+        "f16",
+        "bf16",
+        "q8_0",
+        "q4_0",
+        "q4_1",
+        "iq4_nl",
+        "q5_0",
+        "q5_1"
+      ],
+      "help": "KV cache key type. q8_0 and q4_0 trade accuracy for cache size.",
+      "aliases": [
+        "-ctk"
+      ],
+      "group": "caching",
+      "impact": "high"
+    },
+    {
+      "name": "cache-type-v",
+      "type": "enum",
+      "default": "f16",
+      "choices": [
+        "f32",
+        "f16",
+        "bf16",
+        "q8_0",
+        "q4_0",
+        "q4_1",
+        "iq4_nl",
+        "q5_0",
+        "q5_1"
+      ],
+      "help": "KV cache value type. Needs flash attention for the quantized types.",
+      "aliases": [
+        "-ctv"
+      ],
+      "group": "caching",
+      "impact": "high"
+    },
+    {
+      "name": "kv-unified",
+      "type": "bool",
+      "default": false,
+      "help": "Single unified KV buffer shared by all slots.",
+      "group": "caching",
+      "impact": "medium"
+    },
+    {
+      "name": "swa-full",
+      "type": "bool",
+      "default": false,
+      "help": "Keep the full KV cache for sliding-window models.",
+      "group": "caching",
+      "impact": "medium"
+    },
+    {
+      "name": "defrag-thold",
+      "type": "float",
+      "default": 0.1,
+      "help": "KV cache defragmentation threshold.",
+      "group": "caching",
+      "impact": "low"
+    },
+    {
+      "name": "no-mmap",
+      "type": "bool",
+      "default": false,
+      "help": "Read the whole model instead of memory-mapping it. Slower to start, avoids page-cache thrash.",
+      "group": "memory",
+      "impact": "medium"
+    },
+    {
+      "name": "mlock",
+      "type": "bool",
+      "default": false,
+      "help": "Lock the model in RAM.",
+      "group": "memory",
+      "impact": "medium"
+    },
+    {
+      "name": "split-mode",
+      "type": "enum",
+      "default": "layer",
+      "choices": [
+        "none",
+        "layer",
+        "row"
+      ],
+      "help": "How to split across multiple GPUs.",
+      "aliases": [
+        "-sm"
+      ],
+      "group": "parallelism",
+      "impact": "high"
+    },
+    {
+      "name": "tensor-split",
+      "type": "list",
+      "default": null,
+      "help": "Per-GPU split proportions.",
+      "aliases": [
+        "-ts"
+      ],
+      "group": "parallelism",
+      "impact": "high"
+    },
+    {
+      "name": "main-gpu",
+      "type": "int",
+      "default": 0,
+      "help": "GPU used for small tensors and, with split-mode none, everything.",
+      "aliases": [
+        "-mg"
+      ],
+      "group": "parallelism",
+      "impact": "medium"
+    },
+    {
+      "name": "device",
+      "type": "str",
+      "default": null,
+      "help": "Explicit backend device list.",
+      "group": "parallelism",
+      "impact": "medium"
+    },
+    {
+      "name": "rope-scaling",
+      "type": "enum",
+      "default": "none",
+      "choices": [
+        "none",
+        "linear",
+        "yarn"
+      ],
+      "help": "RoPE scaling method.",
+      "group": "model",
+      "impact": "high"
+    },
+    {
+      "name": "rope-freq-base",
+      "type": "float",
+      "default": 0,
+      "help": "RoPE base frequency. 0 keeps the model's own.",
+      "group": "model",
+      "impact": "high"
+    },
+    {
+      "name": "rope-freq-scale",
+      "type": "float",
+      "default": 0,
+      "help": "RoPE frequency scaling factor.",
+      "group": "model",
+      "impact": "high"
+    },
+    {
+      "name": "yarn-orig-ctx",
+      "type": "int",
+      "default": 0,
+      "help": "Original context size for YaRN scaling.",
+      "group": "model",
+      "impact": "medium"
+    },
+    {
+      "name": "n-predict",
+      "type": "int",
+      "default": -1,
+      "help": "Server-side cap on generated tokens.",
+      "aliases": [
+        "-n"
+      ],
+      "group": "sampling",
+      "impact": "medium"
+    },
+    {
+      "name": "keep",
+      "type": "int",
+      "default": 0,
+      "help": "Tokens of the prompt kept when the context is shifted.",
+      "group": "sampling",
+      "impact": "low"
+    },
+    {
+      "name": "temp",
+      "type": "float",
+      "default": 0.8,
+      "help": "Sampling temperature.",
+      "group": "sampling",
+      "impact": "medium"
+    },
+    {
+      "name": "top-k",
+      "type": "int",
+      "default": 40,
+      "help": "Top-k sampling.",
+      "group": "sampling",
+      "impact": "low"
+    },
+    {
+      "name": "top-p",
+      "type": "float",
+      "default": 0.95,
+      "help": "Top-p sampling.",
+      "group": "sampling",
+      "impact": "low"
+    },
+    {
+      "name": "min-p",
+      "type": "float",
+      "default": 0.05,
+      "help": "Min-p sampling.",
+      "group": "sampling",
+      "impact": "low"
+    },
+    {
+      "name": "repeat-penalty",
+      "type": "float",
+      "default": 1.0,
+      "help": "Repetition penalty. 1.0 disables it.",
+      "group": "sampling",
+      "impact": "low"
+    },
+    {
+      "name": "seed",
+      "type": "int",
+      "default": -1,
+      "help": "Random seed. -1 is random.",
+      "group": "sampling",
+      "impact": "medium"
+    },
+    {
+      "name": "jinja",
+      "type": "bool",
+      "default": false,
+      "help": "Use the GGUF's Jinja chat template. Required for tool calls on most recent models.",
+      "group": "model",
+      "impact": "medium"
+    },
+    {
+      "name": "chat-template",
+      "type": "str",
+      "default": null,
+      "help": "Override the chat template by name.",
+      "group": "model",
+      "impact": "medium"
+    },
+    {
+      "name": "reasoning-format",
+      "type": "enum",
+      "default": "auto",
+      "choices": [
+        "none",
+        "auto",
+        "deepseek",
+        "deepseek-legacy"
+      ],
+      "help": "How reasoning content is returned.",
+      "group": "model",
+      "impact": "low"
+    },
+    {
+      "name": "draft-max",
+      "type": "int",
+      "default": 16,
+      "help": "Maximum draft tokens per speculative step.",
+      "aliases": [
+        "draft"
+      ],
+      "group": "speculative",
+      "impact": "high"
+    },
+    {
+      "name": "draft-min",
+      "type": "int",
+      "default": 0,
+      "help": "Minimum draft tokens per speculative step.",
+      "group": "speculative",
+      "impact": "medium"
+    },
+    {
+      "name": "model-draft",
+      "type": "path",
+      "default": null,
+      "help": "Draft model for speculative decoding.",
+      "aliases": [
+        "-md"
+      ],
+      "group": "speculative",
+      "impact": "high"
+    },
+    {
+      "name": "gpu-layers-draft",
+      "type": "int",
+      "default": 0,
+      "help": "Draft-model layers offloaded to the GPU.",
+      "aliases": [
+        "-ngld"
+      ],
+      "group": "speculative",
+      "impact": "medium"
+    },
+    {
+      "name": "numa",
+      "type": "enum",
+      "default": null,
+      "choices": [
+        "distribute",
+        "isolate",
+        "numactl"
+      ],
+      "help": "NUMA optimisation strategy.",
+      "group": "memory",
+      "impact": "medium"
+    },
+    {
+      "name": "host",
+      "type": "str",
+      "default": "127.0.0.1",
+      "help": "Bind address. Dropped from the fingerprint.",
+      "group": "server",
+      "impact": "low"
+    },
+    {
+      "name": "port",
+      "type": "int",
+      "default": 8080,
+      "help": "Bind port. Dropped from the fingerprint.",
+      "group": "server",
+      "impact": "low"
+    },
+    {
+      "name": "api-key",
+      "type": "str",
+      "default": null,
+      "help": "Required API key. Dropped from the fingerprint.",
+      "group": "server",
+      "impact": "low"
+    },
+    {
+      "name": "alias",
+      "type": "str",
+      "default": null,
+      "help": "Model name reported by the API. Dropped from the fingerprint.",
+      "group": "server",
+      "impact": "low"
+    },
+    {
+      "name": "threads-http",
+      "type": "int",
+      "default": -1,
+      "help": "HTTP worker threads. Dropped from the fingerprint.",
+      "group": "server",
+      "impact": "low"
+    },
+    {
+      "name": "metrics",
+      "type": "bool",
+      "default": false,
+      "help": "Expose the Prometheus endpoint. Dropped from the fingerprint.",
+      "group": "server",
+      "impact": "low"
+    },
+    {
+      "name": "slots",
+      "type": "bool",
+      "default": false,
+      "help": "Expose the slots endpoint. Dropped from the fingerprint.",
+      "group": "server",
+      "impact": "low"
+    },
+    {
+      "name": "no-webui",
+      "type": "bool",
+      "default": false,
+      "help": "Disable the built-in web UI. Dropped from the fingerprint.",
+      "group": "server",
+      "impact": "low"
+    }
+  ]
+}

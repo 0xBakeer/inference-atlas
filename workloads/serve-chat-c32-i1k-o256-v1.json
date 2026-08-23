@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "id": "serve-chat-c32-i1k-o256-v1",
+  "name": "Chat serving, 32 concurrent, ~1k in / 256 out",
+  "kind": "serving",
+  "description": "400 chat requests with roughly 1k-token prompts and 256 output tokens at a concurrency of 32. The standard throughput point: run all three of c8, c32 and c64 to see where the engine stops scaling.",
+  "dataset_id": "prompts-mixed-v1",
+  "params": {
+    "concurrency": 32,
+    "num_requests": 400,
+    "input_tokens": 1024,
+    "output_tokens": 256,
+    "seed": 42,
+    "warmup_requests": 32,
+    "temperature": 0,
+    "repeat": 3,
+    "timeout_s": 300,
+    "dataset_buckets": [
+      "m"
+    ]
+  },
+  "sweep": null,
+  "eval": null,
+  "metrics_required": [
+    "ttft_ms.p50",
+    "tpot_ms.p50",
+    "output_tok_s",
+    "success_rate"
+  ],
+  "immutable": true,
+  "created": "2026-08-23",
+  "supersedes": null,
+  "notes": "Prompts are drawn from the m bucket (257-1024 approx tokens). Report the real input token count in metrics.input_tokens_total rather than assuming 1024."
+}

@@ -1,0 +1,272 @@
+{
+  "schema_version": 1,
+  "engine_id": "ollama",
+  "version": "0.12.11",
+  "released": "2026-05-20",
+  "extraction_method": "hand-seeded",
+  "extracted_at": "2026-08-23T00:00:00Z",
+  "source": "https://docs.ollama.com/faq and ollama serve --help (hand-seeded)",
+  "notes": "Ollama is configured two ways at once: OLLAMA_* environment variables on the server and per-request options in the API body. Both are fingerprinted as flags here, with the env variable recorded in the param's env field. num-gpu = -1 means Ollama decides the layer split from free VRAM, so two runs of the same nominal config on the same box can differ; record the layer count the server logged.",
+  "params": [
+    {
+      "name": "num-ctx",
+      "type": "int",
+      "default": 4096,
+      "help": "Context window in tokens for the loaded model.",
+      "aliases": [
+        "num_ctx"
+      ],
+      "group": "memory",
+      "impact": "high",
+      "env": "OLLAMA_CONTEXT_LENGTH"
+    },
+    {
+      "name": "num-batch",
+      "type": "int",
+      "default": 512,
+      "help": "Prompt processing batch size.",
+      "aliases": [
+        "num_batch"
+      ],
+      "group": "batching",
+      "impact": "high"
+    },
+    {
+      "name": "num-gpu",
+      "type": "int",
+      "default": -1,
+      "help": "Layers offloaded to the GPU. -1 lets Ollama decide, which is the single most common source of unreproducible Ollama numbers.",
+      "aliases": [
+        "num_gpu"
+      ],
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "num-thread",
+      "type": "int",
+      "default": 0,
+      "help": "CPU threads. 0 means auto.",
+      "aliases": [
+        "num_thread"
+      ],
+      "group": "memory",
+      "impact": "medium"
+    },
+    {
+      "name": "num-predict",
+      "type": "int",
+      "default": -1,
+      "help": "Maximum tokens to generate. -1 is unlimited.",
+      "aliases": [
+        "num_predict"
+      ],
+      "group": "sampling",
+      "impact": "medium"
+    },
+    {
+      "name": "num-keep",
+      "type": "int",
+      "default": 4,
+      "help": "Tokens kept from the prompt when the context is shifted.",
+      "aliases": [
+        "num_keep"
+      ],
+      "group": "sampling",
+      "impact": "low"
+    },
+    {
+      "name": "temperature",
+      "type": "float",
+      "default": 0.8,
+      "help": "Sampling temperature.",
+      "group": "sampling",
+      "impact": "medium"
+    },
+    {
+      "name": "top-k",
+      "type": "int",
+      "default": 40,
+      "help": "Top-k sampling.",
+      "aliases": [
+        "top_k"
+      ],
+      "group": "sampling",
+      "impact": "low"
+    },
+    {
+      "name": "top-p",
+      "type": "float",
+      "default": 0.9,
+      "help": "Top-p sampling.",
+      "aliases": [
+        "top_p"
+      ],
+      "group": "sampling",
+      "impact": "low"
+    },
+    {
+      "name": "min-p",
+      "type": "float",
+      "default": 0.0,
+      "help": "Min-p sampling.",
+      "aliases": [
+        "min_p"
+      ],
+      "group": "sampling",
+      "impact": "low"
+    },
+    {
+      "name": "repeat-penalty",
+      "type": "float",
+      "default": 1.1,
+      "help": "Repetition penalty.",
+      "aliases": [
+        "repeat_penalty"
+      ],
+      "group": "sampling",
+      "impact": "low"
+    },
+    {
+      "name": "seed",
+      "type": "int",
+      "default": 0,
+      "help": "Random seed.",
+      "group": "sampling",
+      "impact": "medium"
+    },
+    {
+      "name": "ollama-flash-attention",
+      "type": "bool",
+      "default": false,
+      "help": "Enable flash attention in the runner.",
+      "aliases": [
+        "flash_attention",
+        "flash-attention"
+      ],
+      "group": "compilation",
+      "impact": "high",
+      "env": "OLLAMA_FLASH_ATTENTION"
+    },
+    {
+      "name": "ollama-kv-cache-type",
+      "type": "enum",
+      "default": "f16",
+      "choices": [
+        "f16",
+        "q8_0",
+        "q4_0"
+      ],
+      "help": "KV cache quantization for the runner. Requires flash attention for the quantized types.",
+      "aliases": [
+        "kv_cache_type",
+        "kv-cache-type"
+      ],
+      "group": "caching",
+      "impact": "high",
+      "env": "OLLAMA_KV_CACHE_TYPE"
+    },
+    {
+      "name": "ollama-num-parallel",
+      "type": "int",
+      "default": 1,
+      "help": "Concurrent requests per loaded model. 0 lets Ollama choose (usually 4 or 1 depending on free memory).",
+      "aliases": [
+        "num_parallel"
+      ],
+      "group": "batching",
+      "impact": "high",
+      "env": "OLLAMA_NUM_PARALLEL"
+    },
+    {
+      "name": "ollama-max-loaded-models",
+      "type": "int",
+      "default": 0,
+      "help": "Models kept resident at once. 0 means 3 x GPU count.",
+      "aliases": [
+        "max_loaded_models"
+      ],
+      "group": "memory",
+      "impact": "medium",
+      "env": "OLLAMA_MAX_LOADED_MODELS"
+    },
+    {
+      "name": "ollama-max-queue",
+      "type": "int",
+      "default": 512,
+      "help": "Queued requests before the server returns 503.",
+      "group": "scheduling",
+      "impact": "medium",
+      "env": "OLLAMA_MAX_QUEUE"
+    },
+    {
+      "name": "ollama-sched-spread",
+      "type": "bool",
+      "default": false,
+      "help": "Spread a model across all GPUs instead of packing it into the fewest.",
+      "group": "parallelism",
+      "impact": "high",
+      "env": "OLLAMA_SCHED_SPREAD"
+    },
+    {
+      "name": "ollama-new-engine",
+      "type": "bool",
+      "default": false,
+      "help": "Use the new Go inference engine instead of the llama.cpp runner. Different code path, different numbers.",
+      "group": "compilation",
+      "impact": "high",
+      "env": "OLLAMA_NEW_ENGINE"
+    },
+    {
+      "name": "ollama-gpu-overhead",
+      "type": "int",
+      "default": 0,
+      "help": "Bytes of VRAM per GPU to leave unused.",
+      "group": "memory",
+      "impact": "medium",
+      "env": "OLLAMA_GPU_OVERHEAD"
+    },
+    {
+      "name": "keep-alive",
+      "type": "str",
+      "default": "5m",
+      "help": "How long a model stays resident after the last request. Dropped from the fingerprint.",
+      "aliases": [
+        "ollama-keep-alive"
+      ],
+      "group": "server",
+      "impact": "low",
+      "env": "OLLAMA_KEEP_ALIVE"
+    },
+    {
+      "name": "ollama-host",
+      "type": "str",
+      "default": "127.0.0.1:11434",
+      "help": "Bind address. Dropped from the fingerprint.",
+      "aliases": [
+        "host"
+      ],
+      "group": "server",
+      "impact": "low",
+      "env": "OLLAMA_HOST"
+    },
+    {
+      "name": "ollama-models",
+      "type": "path",
+      "default": null,
+      "help": "Model storage directory. Dropped from the fingerprint.",
+      "group": "server",
+      "impact": "low",
+      "env": "OLLAMA_MODELS"
+    },
+    {
+      "name": "ollama-debug",
+      "type": "bool",
+      "default": false,
+      "help": "Verbose logging. Dropped from the fingerprint.",
+      "group": "server",
+      "impact": "low",
+      "env": "OLLAMA_DEBUG"
+    }
+  ]
+}

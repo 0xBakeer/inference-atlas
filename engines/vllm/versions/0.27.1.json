@@ -1,0 +1,607 @@
+{
+  "schema_version": 1,
+  "engine_id": "vllm",
+  "version": "0.27.1",
+  "released": "2026-07-30",
+  "extraction_method": "hand-seeded",
+  "extracted_at": "2026-08-23T00:00:00Z",
+  "source": "https://docs.vllm.ai/en/latest/configuration/engine_args.html (hand-seeded, not extracted from the binary)",
+  "notes": "Hand-seeded from the vLLM documentation, not extracted from this exact build. Flags whose default depends on the model (enable-prefix-caching, enable-chunked-prefill, block-size, max-num-batched-tokens) carry default null on purpose: a null default is never dropped, so an explicitly passed value always survives into the fingerprint. That is the conservative direction — it can split two configurations that were in fact identical, but it can never merge two that were not.",
+  "params": [
+    {
+      "name": "model",
+      "type": "str",
+      "default": null,
+      "help": "Hugging Face id or local path of the weights. Dropped from the fingerprint: the model is already part of the cell.",
+      "group": "model",
+      "impact": "low"
+    },
+    {
+      "name": "tensor-parallel-size",
+      "type": "int",
+      "default": 1,
+      "range": [
+        1,
+        null
+      ],
+      "help": "Number of GPUs to shard each layer across.",
+      "aliases": [
+        "-tp",
+        "tp"
+      ],
+      "group": "parallelism",
+      "impact": "high"
+    },
+    {
+      "name": "pipeline-parallel-size",
+      "type": "int",
+      "default": 1,
+      "range": [
+        1,
+        null
+      ],
+      "help": "Number of pipeline stages.",
+      "aliases": [
+        "-pp",
+        "pp"
+      ],
+      "group": "parallelism",
+      "impact": "high"
+    },
+    {
+      "name": "data-parallel-size",
+      "type": "int",
+      "default": 1,
+      "range": [
+        1,
+        null
+      ],
+      "help": "Number of independent replicas behind one endpoint.",
+      "aliases": [
+        "-dp",
+        "dp"
+      ],
+      "group": "parallelism",
+      "impact": "medium"
+    },
+    {
+      "name": "distributed-executor-backend",
+      "type": "enum",
+      "default": null,
+      "choices": [
+        "ray",
+        "mp",
+        "uni",
+        "external_launcher"
+      ],
+      "help": "How workers are launched. Defaults to mp for single node, ray for multi node.",
+      "group": "parallelism",
+      "impact": "medium"
+    },
+    {
+      "name": "gpu-memory-utilization",
+      "type": "float",
+      "default": 0.9,
+      "range": [
+        0,
+        1
+      ],
+      "help": "Fraction of device memory the engine may claim, weights included. Everything left over after weights becomes KV cache.",
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "swap-space",
+      "type": "float",
+      "default": 4,
+      "help": "CPU swap space per GPU in GiB for preempted sequences.",
+      "group": "memory",
+      "impact": "low"
+    },
+    {
+      "name": "cpu-offload-gb",
+      "type": "float",
+      "default": 0,
+      "help": "GiB of weights to keep in CPU memory. Slow; use only when the model does not fit.",
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "max-model-len",
+      "type": "int",
+      "default": null,
+      "help": "Context length the engine advertises. Defaults to the model's own maximum, which is often far more KV cache than you have.",
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "max-num-seqs",
+      "type": "int",
+      "default": 1024,
+      "help": "Maximum sequences in a batch.",
+      "group": "batching",
+      "impact": "high"
+    },
+    {
+      "name": "max-num-batched-tokens",
+      "type": "int",
+      "default": null,
+      "help": "Token budget per scheduler step. Defaults depend on whether chunked prefill is on.",
+      "group": "batching",
+      "impact": "high"
+    },
+    {
+      "name": "enable-chunked-prefill",
+      "type": "bool",
+      "default": null,
+      "help": "Split long prefills across scheduler steps so decodes are not starved. Enabled by default in V1 for most models.",
+      "group": "batching",
+      "impact": "high"
+    },
+    {
+      "name": "enable-prefix-caching",
+      "type": "bool",
+      "default": null,
+      "help": "Reuse KV blocks for shared prefixes. On by default in V1 for most models but OFF for hybrid-attention models, so pass it explicitly and record it.",
+      "group": "caching",
+      "impact": "high"
+    },
+    {
+      "name": "block-size",
+      "type": "enum",
+      "default": null,
+      "choices": [
+        1,
+        8,
+        16,
+        32,
+        64,
+        128
+      ],
+      "help": "KV cache block size in tokens.",
+      "group": "caching",
+      "impact": "medium"
+    },
+    {
+      "name": "kv-cache-dtype",
+      "type": "enum",
+      "default": "auto",
+      "choices": [
+        "auto",
+        "fp8",
+        "fp8_e5m2",
+        "fp8_e4m3"
+      ],
+      "help": "KV cache element type. fp8 roughly doubles the cache at some accuracy cost.",
+      "group": "caching",
+      "impact": "high"
+    },
+    {
+      "name": "mamba-ssm-cache-dtype",
+      "type": "enum",
+      "default": "auto",
+      "choices": [
+        "auto",
+        "float32"
+      ],
+      "help": "Element type of the Mamba/SSM state cache for hybrid models.",
+      "group": "caching",
+      "impact": "medium"
+    },
+    {
+      "name": "mamba-backend",
+      "type": "enum",
+      "default": "auto",
+      "choices": [
+        "auto",
+        "triton",
+        "cuda"
+      ],
+      "help": "Kernel backend for Mamba/SSM layers. Verify against the exact release: this flag is newer than most of the list.",
+      "group": "caching",
+      "impact": "medium"
+    },
+    {
+      "name": "disable-sliding-window",
+      "type": "bool",
+      "default": false,
+      "help": "Ignore the model's sliding-window attention and use full attention.",
+      "group": "caching",
+      "impact": "medium"
+    },
+    {
+      "name": "quantization",
+      "type": "str",
+      "default": null,
+      "help": "Quantization method to apply or expect. Usually inferred from the checkpoint.",
+      "group": "quantization",
+      "impact": "high"
+    },
+    {
+      "name": "dtype",
+      "type": "enum",
+      "default": "auto",
+      "choices": [
+        "auto",
+        "half",
+        "float16",
+        "bfloat16",
+        "float",
+        "float32"
+      ],
+      "help": "Activation and weight dtype.",
+      "group": "quantization",
+      "impact": "high"
+    },
+    {
+      "name": "speculative-config",
+      "type": "json",
+      "default": null,
+      "help": "Speculative decoding configuration, e.g. {\"method\":\"mtp\",\"num_speculative_tokens\":3}. The single biggest single-stream speedup on memory-bound machines.",
+      "group": "speculative",
+      "impact": "high"
+    },
+    {
+      "name": "compilation-config",
+      "type": "json",
+      "default": null,
+      "help": "torch.compile / CUDA graph configuration. -O3 style shorthand is accepted.",
+      "aliases": [
+        "-O"
+      ],
+      "group": "compilation",
+      "impact": "high"
+    },
+    {
+      "name": "enforce-eager",
+      "type": "bool",
+      "default": false,
+      "help": "Disable CUDA graphs. Slower, but it saves memory and makes tracebacks readable.",
+      "group": "compilation",
+      "impact": "high"
+    },
+    {
+      "name": "max-seq-len-to-capture",
+      "type": "int",
+      "default": 8192,
+      "help": "Longest sequence covered by a captured CUDA graph; longer requests fall back to eager.",
+      "group": "compilation",
+      "impact": "medium"
+    },
+    {
+      "name": "cuda-graph-sizes",
+      "type": "list",
+      "default": null,
+      "help": "Batch sizes to capture CUDA graphs for.",
+      "group": "compilation",
+      "impact": "medium"
+    },
+    {
+      "name": "scheduling-policy",
+      "type": "enum",
+      "default": "fcfs",
+      "choices": [
+        "fcfs",
+        "priority"
+      ],
+      "help": "Request scheduling policy.",
+      "group": "scheduling",
+      "impact": "medium"
+    },
+    {
+      "name": "num-scheduler-steps",
+      "type": "int",
+      "default": 1,
+      "help": "Multi-step scheduling; removed in the V1 engine.",
+      "group": "scheduling",
+      "impact": "low",
+      "deprecated": true
+    },
+    {
+      "name": "async-scheduling",
+      "type": "bool",
+      "default": false,
+      "help": "Overlap scheduling with the forward pass.",
+      "group": "scheduling",
+      "impact": "medium"
+    },
+    {
+      "name": "preemption-mode",
+      "type": "enum",
+      "default": null,
+      "choices": [
+        "recompute",
+        "swap"
+      ],
+      "help": "What to do when the KV cache is full.",
+      "group": "scheduling",
+      "impact": "medium"
+    },
+    {
+      "name": "reasoning-parser",
+      "type": "str",
+      "default": null,
+      "help": "Parser that splits reasoning content out of the response. Model specific: qwen3 resolves, qwen3_xml does not.",
+      "group": "model",
+      "impact": "low"
+    },
+    {
+      "name": "tool-call-parser",
+      "type": "str",
+      "default": null,
+      "help": "Parser for tool calls. Model specific: qwen3_xml resolves, qwen3 does not.",
+      "group": "model",
+      "impact": "low"
+    },
+    {
+      "name": "enable-auto-tool-choice",
+      "type": "bool",
+      "default": false,
+      "help": "Let the model choose tools automatically; requires a tool-call parser.",
+      "group": "model",
+      "impact": "low"
+    },
+    {
+      "name": "trust-remote-code",
+      "type": "bool",
+      "default": false,
+      "help": "Execute modelling code from the Hugging Face repo. Required by many new architectures.",
+      "group": "model",
+      "impact": "low"
+    },
+    {
+      "name": "tokenizer",
+      "type": "str",
+      "default": null,
+      "help": "Tokenizer id or path when it differs from the model.",
+      "group": "model",
+      "impact": "low"
+    },
+    {
+      "name": "tokenizer-mode",
+      "type": "enum",
+      "default": "auto",
+      "choices": [
+        "auto",
+        "slow",
+        "mistral",
+        "custom"
+      ],
+      "help": "Tokenizer implementation.",
+      "group": "model",
+      "impact": "low"
+    },
+    {
+      "name": "hf-overrides",
+      "type": "json",
+      "default": null,
+      "help": "Overrides merged into the model's config.json, e.g. rope settings or a patched context length.",
+      "group": "model",
+      "impact": "high"
+    },
+    {
+      "name": "rope-scaling",
+      "type": "json",
+      "default": null,
+      "help": "RoPE scaling configuration, e.g. {\"rope_type\":\"yarn\",\"factor\":4.0}.",
+      "group": "model",
+      "impact": "high"
+    },
+    {
+      "name": "rope-theta",
+      "type": "float",
+      "default": null,
+      "help": "RoPE base frequency override.",
+      "group": "model",
+      "impact": "medium"
+    },
+    {
+      "name": "revision",
+      "type": "str",
+      "default": null,
+      "help": "Git revision of the weights repo. Dropped from the fingerprint but recorded in the result.",
+      "group": "model",
+      "impact": "low"
+    },
+    {
+      "name": "load-format",
+      "type": "enum",
+      "default": "auto",
+      "choices": [
+        "auto",
+        "pt",
+        "safetensors",
+        "npcache",
+        "dummy",
+        "tensorizer",
+        "runai_streamer",
+        "bitsandbytes",
+        "gguf"
+      ],
+      "help": "Weight loading format.",
+      "group": "model",
+      "impact": "medium"
+    },
+    {
+      "name": "config-format",
+      "type": "enum",
+      "default": "auto",
+      "choices": [
+        "auto",
+        "hf",
+        "mistral"
+      ],
+      "help": "Model config format.",
+      "group": "model",
+      "impact": "low"
+    },
+    {
+      "name": "max-parallel-loading-workers",
+      "type": "int",
+      "default": null,
+      "help": "Parallelism while loading shards; lowers peak host memory.",
+      "group": "model",
+      "impact": "low"
+    },
+    {
+      "name": "seed",
+      "type": "int",
+      "default": null,
+      "help": "Random seed. Set it for anything you want reproducible.",
+      "group": "sampling",
+      "impact": "medium"
+    },
+    {
+      "name": "max-logprobs",
+      "type": "int",
+      "default": 20,
+      "help": "Maximum logprobs returned per token.",
+      "group": "sampling",
+      "impact": "low"
+    },
+    {
+      "name": "generation-config",
+      "type": "str",
+      "default": "auto",
+      "help": "Where default sampling parameters come from. Set to vllm to ignore the model's own generation_config.json.",
+      "group": "sampling",
+      "impact": "medium"
+    },
+    {
+      "name": "override-generation-config",
+      "type": "json",
+      "default": null,
+      "help": "Overrides merged into the model's generation config.",
+      "group": "sampling",
+      "impact": "medium"
+    },
+    {
+      "name": "limit-mm-per-prompt",
+      "type": "json",
+      "default": null,
+      "help": "Per-modality item limits, e.g. {\"image\":4}. Caps multimodal memory reservation.",
+      "group": "multimodal",
+      "impact": "high"
+    },
+    {
+      "name": "mm-processor-kwargs",
+      "type": "json",
+      "default": null,
+      "help": "Extra arguments for the multimodal processor.",
+      "group": "multimodal",
+      "impact": "medium"
+    },
+    {
+      "name": "enable-lora",
+      "type": "bool",
+      "default": false,
+      "help": "Enable LoRA adapters.",
+      "group": "lora",
+      "impact": "medium"
+    },
+    {
+      "name": "max-loras",
+      "type": "int",
+      "default": 1,
+      "help": "Concurrent LoRA adapters per batch.",
+      "group": "lora",
+      "impact": "medium"
+    },
+    {
+      "name": "max-lora-rank",
+      "type": "int",
+      "default": 16,
+      "help": "Maximum LoRA rank.",
+      "group": "lora",
+      "impact": "low"
+    },
+    {
+      "name": "lora-modules",
+      "type": "list",
+      "default": null,
+      "help": "Adapters to preload, as name=path pairs.",
+      "group": "lora",
+      "impact": "medium"
+    },
+    {
+      "name": "enable-sleep-mode",
+      "type": "bool",
+      "default": false,
+      "help": "Allow the engine to release device memory while idle.",
+      "group": "memory",
+      "impact": "medium"
+    },
+    {
+      "name": "kv-transfer-config",
+      "type": "json",
+      "default": null,
+      "help": "Disaggregated prefill / KV transfer configuration.",
+      "group": "caching",
+      "impact": "high"
+    },
+    {
+      "name": "disable-custom-all-reduce",
+      "type": "bool",
+      "default": false,
+      "help": "Fall back to NCCL for all-reduce.",
+      "group": "parallelism",
+      "impact": "medium"
+    },
+    {
+      "name": "disable-log-requests",
+      "type": "bool",
+      "default": false,
+      "help": "Stop logging every request. Worth setting for high-concurrency runs.",
+      "group": "server",
+      "impact": "low"
+    },
+    {
+      "name": "disable-log-stats",
+      "type": "bool",
+      "default": false,
+      "help": "Stop logging throughput statistics.",
+      "group": "server",
+      "impact": "low"
+    },
+    {
+      "name": "served-model-name",
+      "type": "str",
+      "default": null,
+      "help": "Name the API reports. Dropped from the fingerprint.",
+      "group": "server",
+      "impact": "low"
+    },
+    {
+      "name": "host",
+      "type": "str",
+      "default": null,
+      "help": "Bind address. Dropped from the fingerprint.",
+      "group": "server",
+      "impact": "low"
+    },
+    {
+      "name": "port",
+      "type": "int",
+      "default": 8000,
+      "help": "Bind port. Dropped from the fingerprint.",
+      "group": "server",
+      "impact": "low"
+    },
+    {
+      "name": "api-key",
+      "type": "str",
+      "default": null,
+      "help": "Required API key. Dropped from the fingerprint and never recorded.",
+      "group": "server",
+      "impact": "low"
+    },
+    {
+      "name": "download-dir",
+      "type": "path",
+      "default": null,
+      "help": "Weight cache directory. Dropped from the fingerprint.",
+      "group": "server",
+      "impact": "low"
+    }
+  ]
+}

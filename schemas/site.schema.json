@@ -1,0 +1,245 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://inference-atlas.dev/schemas/site.schema.json",
+  "title": "Site configuration",
+  "description": "Everything the app and the tools read that is not data: branding, navigation, default axes, colours, scoring weights, thresholds. Forks change this file, not the code. File: site/config.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "repo", "site", "nav", "atlas", "evidence_colors", "scoring", "coverage", "plausibility", "wanted"],
+  "$defs": {
+    "colour": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" },
+    "weight": { "type": "number" }
+  },
+  "properties": {
+    "schema_version": { "type": "integer", "const": 1 },
+    "repo": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["owner", "name", "default_branch"],
+      "properties": {
+        "owner": { "type": "string", "minLength": 1 },
+        "name": { "type": "string", "minLength": 1 },
+        "default_branch": { "type": "string", "minLength": 1 },
+        "host": { "type": "string", "default": "https://github.com" },
+        "branch_prefix": {
+          "type": "string",
+          "default": "result/",
+          "description": "Contribution branches are <branch_prefix><engine>-<model>-<hardware>-<short>."
+        },
+        "results_label": { "type": "string", "default": "results" }
+      }
+    },
+    "site": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title", "tagline", "base_path"],
+      "properties": {
+        "title": { "type": "string", "minLength": 1 },
+        "tagline": { "type": "string", "minLength": 1 },
+        "description": { "type": "string" },
+        "base_path": { "type": "string", "pattern": "^/.*/$|^/$" },
+        "url": { "type": "string" },
+        "theme_default": { "type": "string", "enum": ["light", "dark", "system"] }
+      }
+    },
+    "nav": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["label", "route"],
+        "properties": {
+          "label": { "type": "string", "minLength": 1 },
+          "route": { "type": "string", "pattern": "^#/" },
+          "group": { "type": "string" },
+          "primary": { "type": "boolean" }
+        }
+      }
+    },
+    "atlas": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["default_axes", "axes", "default_metric"],
+      "properties": {
+        "default_axes": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["x", "y"],
+          "properties": {
+            "x": { "type": "string" },
+            "y": { "type": "string" }
+          }
+        },
+        "axes": {
+          "type": "array",
+          "minItems": 2,
+          "items": { "type": "string", "enum": ["model", "quant", "hardware", "engine", "engine_minor", "workload"] }
+        },
+        "default_metric": { "type": "string" },
+        "metrics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["key", "label"],
+            "properties": {
+              "key": { "type": "string" },
+              "label": { "type": "string" },
+              "unit": { "type": "string" },
+              "better": { "type": "string", "enum": ["higher", "lower"] },
+              "format": { "type": "string" }
+            }
+          }
+        },
+        "default_workload_id": {
+          "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/id"
+        }
+      }
+    },
+    "evidence_colors": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["none", "single", "reproduced", "disputed", "stale"],
+      "properties": {
+        "none": { "$ref": "#/$defs/colour" },
+        "single": { "$ref": "#/$defs/colour" },
+        "reproduced": { "$ref": "#/$defs/colour" },
+        "disputed": { "$ref": "#/$defs/colour" },
+        "stale": { "$ref": "#/$defs/colour" }
+      }
+    },
+    "scoring": {
+      "type": "object",
+      "description": "Contributor points. Weights only — the algorithm lives in @atlas/core/scoring.",
+      "additionalProperties": false,
+      "required": ["weights", "diminishing"],
+      "properties": {
+        "weights": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["fill_empty_cell", "reproduction", "new_hardware", "new_model", "new_engine"],
+          "properties": {
+            "fill_empty_cell": { "$ref": "#/$defs/weight" },
+            "additional_run": { "$ref": "#/$defs/weight" },
+            "reproduction": { "$ref": "#/$defs/weight" },
+            "new_hardware": { "$ref": "#/$defs/weight" },
+            "new_model": { "$ref": "#/$defs/weight" },
+            "new_engine": { "$ref": "#/$defs/weight" },
+            "new_quant": { "$ref": "#/$defs/weight" },
+            "new_workload": { "$ref": "#/$defs/weight" },
+            "gotcha": { "$ref": "#/$defs/weight" },
+            "sweep_point": { "$ref": "#/$defs/weight" },
+            "eval_run": { "$ref": "#/$defs/weight" },
+            "wanted_bonus": { "$ref": "#/$defs/weight" }
+          }
+        },
+        "diminishing": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["per_cell_factor"],
+          "properties": {
+            "per_cell_factor": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 1,
+              "description": "Each further run by the same contributor in the same cell is worth factor^n of the first."
+            },
+            "min_factor": { "type": "number", "minimum": 0, "maximum": 1 },
+            "max_runs_counted_per_cell": {
+              "type": ["integer", "null"],
+              "minimum": 1
+            }
+          }
+        }
+      }
+    },
+    "coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["stale_minors_behind", "disputed_deviation_pct", "key_metrics"],
+      "properties": {
+        "stale_minors_behind": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "A cell whose only evidence is on an engine minor this many minors behind the newest registered version is stale."
+        },
+        "disputed_deviation_pct": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Two independent contributors on the same cell+config+workload deviating by more than this on the key metric make the cell disputed."
+        },
+        "key_metrics": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string" },
+          "description": "Metric preference order used to compare runs of a cell."
+        },
+        "reproduced_min_logins": { "type": "integer", "minimum": 2 }
+      }
+    },
+    "plausibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["bandwidth_tolerance", "vram_tolerance"],
+      "properties": {
+        "bandwidth_tolerance": {
+          "type": "number",
+          "minimum": 1,
+          "description": "per-request decode tok/s must be <= bandwidth_gbs / active_weight_gb * this."
+        },
+        "vram_tolerance": {
+          "type": "number",
+          "minimum": 1,
+          "description": "vram_peak_gb must be <= memory_gb * this (allows for reporting slop)."
+        },
+        "warn_bandwidth_fraction": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Below this fraction of the bandwidth ceiling we warn that something looks under-utilised."
+        },
+        "min_weight_gb": { "type": "number", "minimum": 0 }
+      }
+    },
+    "wanted": {
+      "type": "object",
+      "description": "Weights for ranking untested cells in the gaps / wanted queue.",
+      "additionalProperties": false,
+      "required": ["weights"],
+      "properties": {
+        "weights": {
+          "type": "object",
+          "additionalProperties": { "$ref": "#/$defs/weight" }
+        },
+        "max_gaps": { "type": "integer", "minimum": 1 },
+        "workloads": {
+          "description": "Workload ids that define what counts as a gap for the wanted queue (falls back to featured.workloads, then every workload).",
+          "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/id_list"
+        }
+      }
+    },
+    "featured": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "hardware": { "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/id_list" },
+        "models": { "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/id_list" },
+        "engines": { "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/id_list" },
+        "workloads": { "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/id_list" }
+      }
+    },
+    "packet": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "packet_version": { "type": "integer", "minimum": 1 },
+        "agents_file": { "type": "string" },
+        "harness_command": { "type": "string" },
+        "validate_command": { "type": "string" },
+        "issue_labels": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "links": { "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/links" }
+  }
+}

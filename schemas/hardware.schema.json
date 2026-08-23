@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://inference-atlas.dev/schemas/hardware.schema.json",
+  "title": "Hardware record",
+  "description": "One accelerator / SoC / CPU that measurements can be attributed to. File: hardware/<id>.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "id", "name", "vendor", "kind", "memory_gb"],
+  "properties": {
+    "schema_version": { "type": "integer", "const": 1 },
+    "id": { "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/id" },
+    "name": { "type": "string", "minLength": 1 },
+    "vendor": {
+      "type": "string",
+      "enum": ["nvidia", "apple", "amd", "intel", "qualcomm", "google", "aws", "huawei", "other"]
+    },
+    "kind": { "type": "string", "enum": ["gpu", "soc", "cpu", "accelerator"] },
+    "aliases": {
+      "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/id_list"
+    },
+    "memory_gb": {
+      "type": ["number", "null"],
+      "minimum": 0,
+      "description": "Device memory in GB (unified memory for SoCs). null for hardware where it is not a fixed property, e.g. generic CPU."
+    },
+    "memory_type": {
+      "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/nullable_string"
+    },
+    "memory_bandwidth_gbs": { "type": ["number", "null"], "minimum": 0 },
+    "compute": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "arch": {
+          "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/nullable_string"
+        },
+        "sm": {
+          "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/nullable_string",
+          "description": "CUDA compute capability as a string, e.g. \"12.1\"; null for non-NVIDIA."
+        },
+        "cores": {
+          "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/nullable_integer",
+          "description": "CUDA cores / GPU cores / physical CPU cores depending on kind."
+        },
+        "clock_mhz": {
+          "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/nullable_integer"
+        },
+        "fp32_tflops": { "type": ["number", "null"], "minimum": 0 },
+        "fp16_tflops": {
+          "type": ["number", "null"],
+          "minimum": 0,
+          "description": "Dense (non-sparse) FP16/BF16 tensor throughput."
+        },
+        "bf16_tflops": { "type": ["number", "null"], "minimum": 0 },
+        "fp8_tflops": { "type": ["number", "null"], "minimum": 0 },
+        "fp4_tflops": { "type": ["number", "null"], "minimum": 0 },
+        "int8_tops": { "type": ["number", "null"], "minimum": 0 }
+      }
+    },
+    "tdp_w": { "type": ["number", "null"], "minimum": 0 },
+    "release_year": { "type": ["integer", "null"], "minimum": 1990, "maximum": 2100 },
+    "msrp_usd": { "type": ["number", "null"], "minimum": 0 },
+    "typical_cloud_usd_per_h": { "type": ["number", "null"], "minimum": 0 },
+    "form_factor": {
+      "type": ["string", "null"],
+      "enum": ["desktop", "laptop", "workstation", "server", "sxm", "pcie", "embedded", "cloud", null]
+    },
+    "notes": {
+      "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/nullable_string",
+      "description": "Free text. Use it to flag which spec numbers are uncertain."
+    },
+    "detect": {
+      "type": "object",
+      "description": "How atlas-bench maps a real machine to this id. Substring/exact match candidates, never guessed by the agent.",
+      "additionalProperties": false,
+      "properties": {
+        "nvidia_smi_name": { "type": "array", "items": { "type": "string" } },
+        "rocm_smi_name": { "type": "array", "items": { "type": "string" } },
+        "apple_chip": { "type": "array", "items": { "type": "string" } },
+        "cpu_model": { "type": "array", "items": { "type": "string" } },
+        "lspci": { "type": "array", "items": { "type": "string" } },
+        "memory_gb": {
+          "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/nullable_number",
+          "description": "Required memory size for the match to hold (Apple SoC ids are memory-specific)."
+        }
+      }
+    },
+    "links": { "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/links" }
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "id": "eval-multilingual-v1",
+  "name": "Multilingual eval v1",
+  "kind": "eval",
+  "description": "80 items in nine languages: 24 English-to-target translations scored on key tokens, 16 target-to-English translations, 20 reading-comprehension multiple-choice items written entirely in the target language, and 20 arithmetic word problems stated in the target language with a numeric answer.",
+  "licence": "MIT",
+  "created": "2026-08-23",
+  "files": [
+    "items.jsonl"
+  ],
+  "count": 80,
+  "generator": "datasets/_gen/gen_eval_multilingual.py",
+  "token_heuristic": "approx_tokens = ceil(sum(len(m.content) for m in messages) / 4)",
+  "provenance": "Synthetic, authored in this repository. No third-party text.",
+  "default_scorer": "contains",
+  "scoring": {
+    "answer_extraction": [
+      "Drop everything inside <think>...</think> (and an unterminated leading <think> block).",
+      "Drop markdown code fences, keeping the fenced content.",
+      "If any line matches /^\\s*(?:final answer|answer)\\s*[:\\-]\\s*(.+)$/i, take the capture of the LAST such line and use only that.",
+      "Strip surrounding whitespace, matching quotes, and a single trailing '.' or '!'.",
+      "Scorers that need the untouched output (instruction, json) get the raw text as well; the instruction scorer always works on the raw output."
+    ],
+    "scorers": {
+      "numeric": "Parse the last number in the extracted output (thousands separators, a leading currency symbol and a trailing % are stripped). Correct when abs(got - float(answer)) <= max(meta.tolerance or 1e-6, 1e-9 * abs(expected)).",
+      "mc": "Multiple choice. `choices` is a list of strings; `answer` is the 0-based-letter label ('A', 'B', ...). Accept the bare letter, 'A)', '(A)', 'A.' or the full text of the correct choice, case-insensitively.",
+      "contains": "`answer` is {all: [...], any: [...]} (either key may be absent). An entry may be a string, or a LIST of alternatives that passes when any one of them is found. Correct when every entry of `all` and at least one entry of `any` occurs in the casefolded output. Substring match, no diacritic folding."
+    },
+    "pass_rule": "One item is correct or incorrect; there is no partial credit. accuracy = correct / total. An item whose request failed (timeout, 5xx, context overflow) counts as incorrect AND is reported in scores.failures and metrics.requests_failed."
+  },
+  "categories": [
+    "comprehension",
+    "translate_from",
+    "translate_to",
+    "word_problem"
+  ],
+  "difficulties": [
+    "easy",
+    "medium",
+    "hard"
+  ],
+  "counts": {
+    "by_category": {
+      "translate_to": 24,
+      "translate_from": 16,
+      "comprehension": 20,
+      "word_problem": 20
+    },
+    "by_difficulty": {
+      "medium": 80
+    },
+    "by_scorer": {
+      "contains": 40,
+      "mc": 20,
+      "numeric": 20
+    }
+  },
+  "seed": 20260908,
+  "languages": {
+    "Arabic": 9,
+    "German": 12,
+    "Spanish": 10,
+    "French": 10,
+    "Italian": 8,
+    "Japanese": 9,
+    "Portuguese": 8,
+    "Turkish": 6,
+    "Chinese (Simplified)": 8
+  },
+  "notes": [
+    "Translation items use the `contains` scorer with an extended `all` list: an entry that is itself a list passes when ANY of its alternatives is found. That is how 'fermée'/'ferme' and '20'/'二十' are both accepted.",
+    "Matching is a casefolded substring test with no diacritic folding, so every accented form that a competent translator might write is listed explicitly.",
+    "Word problems isolate comprehension from production: the model has to read the language but only has to write a number.",
+    "The chars/4 token heuristic under-counts Chinese and Japanese by roughly 2-4x; budget max_tokens accordingly."
+  ]
+}

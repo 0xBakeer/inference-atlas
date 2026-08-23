@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "id": "serve-long-c4-i8k-o512-v1",
+  "name": "Long inputs, 4 concurrent, ~8k in / 512 out",
+  "kind": "serving",
+  "description": "40 long-document requests at a concurrency of 4. Prefill dominates the time here, and KV cache pressure is real, so this is where max-model-len and gpu-memory-utilization choices start to show up in the numbers.",
+  "dataset_id": "prompts-mixed-v1",
+  "params": {
+    "concurrency": 4,
+    "num_requests": 40,
+    "input_tokens": 8192,
+    "output_tokens": 512,
+    "seed": 42,
+    "warmup_requests": 4,
+    "temperature": 0,
+    "repeat": 2,
+    "timeout_s": 300,
+    "dataset_buckets": [
+      "xl"
+    ]
+  },
+  "sweep": null,
+  "eval": null,
+  "metrics_required": [
+    "ttft_ms.p50",
+    "tpot_ms.p50",
+    "output_tok_s",
+    "success_rate",
+    "prefill_tok_s"
+  ],
+  "immutable": true,
+  "created": "2026-08-23",
+  "supersedes": null,
+  "notes": null
+}

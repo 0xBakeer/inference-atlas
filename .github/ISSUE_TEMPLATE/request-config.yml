@@ -1,0 +1,55 @@
+name: Request a configuration
+description: Ask for a cell somebody else has the hardware for. Reactions on this issue move it up the wanted queue.
+title: 'wanted: <engine> <model>/<quant> on <hardware>'
+labels: [request-config, wanted]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Every field is optional: "anything at all on an M4 Max" is a legitimate request.
+        The fields are pre-filled when you arrive here from the **Request** button on a
+        grey square in the atlas.
+
+        Once a week the open requests here are snapshotted into `site/wanted-requests.json`
+        and fed into the ranking behind `#/gaps`, weighted by the 👍 reactions. If you want
+        this measured, react to it rather than opening a second issue.
+
+  - type: input
+    id: engine
+    attributes:
+      label: Engine
+      placeholder: vllm
+
+  - type: input
+    id: model
+    attributes:
+      label: Model
+      placeholder: qwen3-8b
+
+  - type: input
+    id: quant
+    attributes:
+      label: Quantization
+      placeholder: fp8
+
+  - type: input
+    id: hardware
+    attributes:
+      label: Hardware
+      placeholder: nvidia-rtx-5090
+
+  - type: input
+    id: workload
+    attributes:
+      label: Workload
+      placeholder: serve-single-i256-o256-v1
+
+  - type: textarea
+    id: why
+    attributes:
+      label: Why this one
+      description: >
+        What decision this number would settle. "Deciding between a 5090 and two 4090s for
+        a 30B MoE" is worth more to whoever picks this up than "would be interesting".
+    validations:
+      required: true

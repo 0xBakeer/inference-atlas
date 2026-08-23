@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "id": "lmstudio",
+  "name": "LM Studio",
+  "repo": "https://github.com/lmstudio-ai",
+  "docs": "https://lmstudio.ai/docs",
+  "description": "Desktop app with an OpenAI-compatible server and both llama.cpp and MLX backends. Very common on Macs, and configured through the app or the lms CLI.",
+  "api": "openai",
+  "default_port": 1234,
+  "platforms": [
+    "macos-metal",
+    "linux-cuda",
+    "windows-cuda",
+    "linux-cpu",
+    "windows-cpu"
+  ],
+  "quant_formats": [
+    "gguf",
+    "mlx"
+  ],
+  "install": [
+    {
+      "method": "app",
+      "command": "Download from https://lmstudio.ai and enable the local server (or: lms server start)",
+      "notes": "Not scriptable end to end; record the app version and the backend runtime version from the app's runtime panel."
+    }
+  ],
+  "serve": {
+    "command_template": "lms load {model_ref} {flags} && lms server start",
+    "model_ref": "local_path",
+    "flag_style": "--{name} {value}",
+    "bool_style": "--{name}",
+    "bool_false_style": null,
+    "env_style": null
+  },
+  "health": {
+    "path": "/v1/models",
+    "models_path": "/v1/models",
+    "ready_timeout_s": 900
+  },
+  "bench_harness": "atlas-bench",
+  "drop_params": [
+    "model",
+    "host",
+    "port",
+    "api-key",
+    "identifier",
+    "path"
+  ],
+  "param_aliases": {},
+  "version_source": {
+    "kind": "manual",
+    "version_scheme": "semver"
+  },
+  "versions_available": [
+    "0.3.31"
+  ],
+  "links": {
+    "cli": "https://lmstudio.ai/docs/cli"
+  },
+  "notes": "The number that matters is the backend runtime version (llama.cpp build or MLX version), not just the app version. Record both: app version in engine.version, runtime in engine.build_flags."
+}

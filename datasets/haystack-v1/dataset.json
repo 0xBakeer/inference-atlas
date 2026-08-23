@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "id": "haystack-v1",
+  "name": "Needle-in-a-haystack recipes v1",
+  "kind": "haystack",
+  "description": "32 long-context recipes: eight token targets from 1k to 256k, each with a needle at 10 %, 50 % and 90 % depth plus one three-needle variant for aggregation questions. Rows are recipes, not text; datasets/haystack-v1/build.py is the normative materialisation algorithm and every row carries the sha256 of its output.",
+  "licence": "MIT",
+  "created": "2026-08-23",
+  "files": [
+    "items.jsonl",
+    "build.py"
+  ],
+  "count": 32,
+  "generator": "datasets/_gen/gen_haystack.py",
+  "token_heuristic": "approx_tokens = ceil(sum(len(m.content) for m in messages) / 4)",
+  "provenance": "Synthetic, authored in this repository. No third-party text.",
+  "seed": 20260826,
+  "target_tokens": [
+    1024,
+    4096,
+    8192,
+    16384,
+    32768,
+    65536,
+    131072,
+    262144
+  ],
+  "depths": [
+    0.1,
+    0.5,
+    0.9
+  ],
+  "static": {
+    "dir": "static",
+    "materialised_up_to_tokens": 32768,
+    "files": [
+      "hay-16k-d10.txt",
+      "hay-16k-d50.txt",
+      "hay-16k-d90.txt",
+      "hay-16k-multi.txt",
+      "hay-1k-d10.txt",
+      "hay-1k-d50.txt",
+      "hay-1k-d90.txt",
+      "hay-1k-multi.txt",
+      "hay-32k-d10.txt",
+      "hay-32k-d50.txt",
+      "hay-32k-d90.txt",
+      "hay-32k-multi.txt",
+      "hay-4k-d10.txt",
+      "hay-4k-d50.txt",
+      "hay-4k-d90.txt",
+      "hay-4k-multi.txt",
+      "hay-8k-d10.txt",
+      "hay-8k-d50.txt",
+      "hay-8k-d90.txt",
+      "hay-8k-multi.txt"
+    ],
+    "note": "Static files carry one trailing newline that is not part of the hashed text."
+  },
+  "schema": {
+    "fields": [
+      "id",
+      "kind",
+      "target_tokens",
+      "seed",
+      "algorithm",
+      "secret_kind",
+      "needles",
+      "question",
+      "answer",
+      "chars",
+      "lines",
+      "approx_tokens",
+      "sha256",
+      "static_file"
+    ],
+    "needles": "[{depth, text, answer, line_number}] — line_number is the 1-based line of the needle in the materialised document, verified by the generator.",
+    "kind": "single = one needle; multi = three needles whose answers must be aggregated."
+  },
+  "usage": [
+    "Materialise with build_haystack(item); prompt with build_prompt(item), which is preamble + document + question.",
+    "Serving/prefill workloads use these documents purely as input padding and ignore the answer; longctx workloads must check it.",
+    "The sha256 field is the contract between implementations: a re-implementation of the algorithm is correct iff every digest matches."
+  ]
+}

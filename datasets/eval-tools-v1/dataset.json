@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "id": "eval-tools-v1",
+  "name": "Tool calling eval v1",
+  "kind": "eval",
+  "description": "80 tool-calling items over a catalogue of 14 OpenAI-style function schemas: 60 requests where exactly one call with unambiguous arguments is correct, and 20 requests that need no tool at all and must be answered directly.",
+  "licence": "MIT",
+  "created": "2026-08-23",
+  "files": [
+    "items.jsonl"
+  ],
+  "count": 80,
+  "generator": "datasets/_gen/gen_eval_tools.py",
+  "token_heuristic": "approx_tokens = ceil(sum(len(m.content) for m in messages) / 4)",
+  "provenance": "Synthetic, authored in this repository. No third-party text.",
+  "default_scorer": "json",
+  "scoring": {
+    "answer_extraction": [
+      "Drop everything inside <think>...</think> (and an unterminated leading <think> block).",
+      "Drop markdown code fences, keeping the fenced content.",
+      "If any line matches /^\\s*(?:final answer|answer)\\s*[:\\-]\\s*(.+)$/i, take the capture of the LAST such line and use only that.",
+      "Strip surrounding whitespace, matching quotes, and a single trailing '.' or '!'.",
+      "Scorers that need the untouched output (instruction, json) get the raw text as well; the instruction scorer always works on the raw output."
+    ],
+    "scorers": {
+      "json": "Parse the extracted output as JSON. `answer` is the expected value; `meta.match` is 'subset' (default — every key/value in `answer` must appear, extra keys allowed) or 'exact'. Arrays compare elementwise in order unless meta.array_order is false."
+    },
+    "pass_rule": "One item is correct or incorrect; there is no partial credit. accuracy = correct / total. An item whose request failed (timeout, 5xx, context overflow) counts as incorrect AND is reported in scores.failures and metrics.requests_failed."
+  },
+  "categories": [
+    "no_call",
+    "single_call"
+  ],
+  "difficulties": [
+    "easy",
+    "medium",
+    "hard"
+  ],
+  "counts": {
+    "by_category": {
+      "single_call": 60,
+      "no_call": 20
+    },
+    "by_difficulty": {
+      "medium": 41,
+      "easy": 29,
+      "hard": 10
+    },
+    "by_scorer": {
+      "json": 80
+    }
+  },
+  "seed": 20260906,
+  "tool_catalogue": [
+    "book_meeting_room",
+    "convert_currency",
+    "create_calendar_event",
+    "create_ticket",
+    "find_restaurant",
+    "get_directions",
+    "get_stock_quote",
+    "get_weather",
+    "lookup_order",
+    "search_flights",
+    "send_email",
+    "set_reminder",
+    "translate_text",
+    "unit_convert"
+  ],
+  "notes": [
+    "The harness sends meta.tools as the request's `tools` parameter with tool_choice='auto', and scores the FIRST entry of response.tool_calls.",
+    "For a single_call item: the call is correct when tool_calls[0].function.name equals answer.tool_call.name AND the parsed arguments match answer.tool_call.arguments. Matching is subset by default (extra optional arguments are tolerated) unless meta.arguments_match is 'exact'. String values compare case-insensitively after stripping; numbers compare numerically.",
+    "For a no_call item the response must contain no tool call at all; the text of the reply is not scored.",
+    "Every item's expected arguments are validated at generation time against the tool's own JSON schema: keys exist, and every required parameter is present.",
+    "Engines differ in how they emit tool calls (native field vs a parsed text block). Record the parser flag used in the result's args, because it changes the score."
+  ]
+}
