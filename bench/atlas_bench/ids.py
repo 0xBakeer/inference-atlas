@@ -5,7 +5,8 @@ Every id in the Atlas is derived, never typed by hand:
 * ``config_id`` — ``sha256(canonical)[:16]``
 * ``cell_id``   — ``sha256("model|quant|hardware|count|engine|engine_minor")[:12]``
 * ``run_id``    — ``<config_id>--<workload_id>--<sha256(login|started_at)[:6]>``
-* result path   — ``results/<engine>/<model>/<hardware>/<run_id>.json``
+* result path   — ``results/<engine>/<owner>/<name>/<hardware>/<run_id>.json``, where
+  ``<owner>/<name>`` is the Hugging Face model id (SPEC §2, decision 20)
 """
 
 from __future__ import annotations
@@ -19,10 +20,15 @@ from .canonical import CanonicalInput, canonicalize
 
 __all__ = [
     "ID_RE",
+    "MODEL_ID_RE",
     "cell_id",
     "config_id",
     "engine_minor",
     "is_valid_id",
+    "is_valid_model_id",
+    "model_parts",
+    "model_slug",
+    "parse_result_path",
     "result_path",
     "run_id",
     "run_suffix",
@@ -30,8 +36,14 @@ __all__ = [
     "slugify_id",
 ]
 
-#: Registry ids are lowercase kebab-case (SPEC §2).
+#: Registry ids other than ``model_id`` are lowercase kebab-case (SPEC §2).
 ID_RE = re.compile(r"^[a-z0-9][a-z0-9.-]*$")
+
+#: ``model_id`` is the Hugging Face repo id, verbatim and case-preserved, exactly one slash.
+MODEL_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*/[A-Za-z0-9][A-Za-z0-9._-]*$")
+
+#: Characters a model slug may keep; every other character becomes ``-``.
+_SLUG_KEEP_RE = re.compile(r"[^a-z0-9.-]")
 
 
 def sha256_hex(text: str) -> str:
@@ -97,14 +109,63 @@ def run_id(*, cfg_id: str, workload_id: str, github_login: str, started_at: str)
     return f"{cfg_id}--{workload_id}--{run_suffix(github_login, started_at)}"
 
 
+def model_parts(model_id: str) -> tuple[str, str]:
+    """Split a Hugging Face model id into ``(owner, name)``.
+
+    The two halves are directory levels everywhere: ``models/<owner>/<name>/`` and
+    ``results/<engine>/<owner>/<name>/<hardware>/``. Nothing here lowercases or rewrites
+    them — the id is the repo id, verbatim (SPEC §2, decision 20).
+    """
+    owner, _, name = str(model_id).partition("/")
+    return owner, name
+
+
+def model_slug(model_id: str) -> str:
+    """Filesystem/branch-safe rendering of a model id: lowercased, ``[^a-z0-9.-]`` to ``-``.
+
+    Used for branch names and nothing else. It is lossy on purpose (``Qwen/Qwen3.8-27B`` and
+    ``qwen/qwen3.8-27b`` slug identically) and is never written into a result file, so it can
+    never be mistaken for the id itself.
+    """
+    return _SLUG_KEEP_RE.sub("-", str(model_id).lower())
+
+
 def result_path(*, engine_id: str, model_id: str, hardware_id: str, rid: str) -> PurePosixPath:
-    """Repo-relative path a result file must live at."""
-    return PurePosixPath("results") / engine_id / model_id / hardware_id / f"{rid}.json"
+    """Repo-relative path a result file must live at.
+
+    ``<owner>/<name>`` is the model id, so the path has one more level than the other
+    registries: ``results/<engine>/<owner>/<name>/<hardware>/<run_id>.json``.
+    """
+    owner, name = model_parts(model_id)
+    parts = [part for part in (owner, name) if part]
+    return PurePosixPath("results", engine_id, *parts, hardware_id, f"{rid}.json")
+
+
+def parse_result_path(path: str | PurePosixPath) -> dict[str, str] | None:
+    """Inverse of :func:`result_path`; ``None`` when the path is not a result file.
+
+    Reads the *tail* of the path, so it works on repo-relative and absolute paths alike.
+    """
+    parts = PurePosixPath(str(path).replace("\\", "/")).parts
+    if len(parts) < 6 or not parts[-1].endswith(".json") or parts[-6] != "results":
+        return None
+    engine, owner, name, hardware, filename = parts[-5:]
+    return {
+        "engine_id": engine,
+        "model_id": f"{owner}/{name}",
+        "hardware_id": hardware,
+        "run_id": filename[: -len(".json")],
+    }
 
 
 def is_valid_id(value: Any) -> bool:
-    """True when ``value`` is a well-formed registry id."""
+    """True when ``value`` is a well-formed lowercase kebab-case registry id."""
     return isinstance(value, str) and bool(ID_RE.match(value))
+
+
+def is_valid_model_id(value: Any) -> bool:
+    """True when ``value`` is a Hugging Face repo id: ``<owner>/<name>``, exactly one slash."""
+    return isinstance(value, str) and bool(MODEL_ID_RE.match(value))
 
 
 def slugify_id(text: str) -> str:

@@ -1,5 +1,5 @@
 import { canonicalizeArgs } from './canonical.js';
-import { cellId, engineMinor, resultDir } from './ids.js';
+import { cellId, engineMinor, modelSlug, resultDir } from './ids.js';
 import type {
   Args,
   EngineInstall,
@@ -203,7 +203,7 @@ export function buildPacket(spec: PacketSpec, registry: PacketRegistry, site: Si
   const outputDir =
     spec.engine_id && spec.model_id && spec.hardware_id
       ? resultDir(spec.engine_id, spec.model_id, spec.hardware_id)
-      : 'results/<engine>/<model>/<hardware>';
+      : 'results/<engine>/<owner>/<name>/<hardware>';
   const branch = buildBranchName(site, kind, spec, cell);
   const prTitle = buildPrTitle(kind, spec, version);
 
@@ -330,7 +330,9 @@ function buildBranchName(
     return `${kind}/${slug}`;
   }
   const short = (cell ?? 'unknown').slice(0, 6);
-  return `${prefix}${spec.engine_id ?? 'engine'}-${spec.model_id ?? 'model'}-${spec.hardware_id ?? 'hardware'}-${short}`;
+  // The model id carries a slash and upper case, neither of which belongs in a branch name.
+  const model = spec.model_id ? modelSlug(spec.model_id) : 'model';
+  return `${prefix}${spec.engine_id ?? 'engine'}-${model}-${spec.hardware_id ?? 'hardware'}-${short}`;
 }
 
 function slugify(value: string): string {
@@ -512,12 +514,17 @@ function renderMarkdown(ctx: MarkdownContext): string {
   }
   if (kind === 'new-model') {
     lines.push(
-      'This model is not in the registry yet. Add `models/<id>/model.json` from the Hugging Face `config.json` and model card — `params_b`, `active_params_b`, `architecture`, `context_length`, `modalities`, `licence` must match the metadata, not the launch blog post. Then add one `models/<id>/quants/<quant-id>.json` per quantization you actually intend to run.',
+      "This model is not in the registry yet. Its id is the Hugging Face repo id verbatim, case included, so the file is `models/<owner>/<name>/model.json` (`models/google/gemma-4-E2B-it/model.json`) and `hf_id` must equal `id`. Fill it from the Hugging Face `config.json` and model card — `params_b`, `active_params_b`, `architecture`, `context_length`, `modalities`, `licence` must match the metadata, not the launch blog post. Then add one `models/<owner>/<name>/quants/<quant-id>.json` per quantization you actually intend to run: a short lowercase id (`fp8`, `mlx-4bit`, `gguf-q4-k-m`) and the `hf_id` of the repo that really holds those weights, which for a community quantization is somebody else's repo.",
       '',
     );
   }
   if (quant?.hf_id) {
-    lines.push('```bash', `hf download ${quant.hf_id}`, '```', '');
+    // Naming the files matters for split repos: a GGUF repository holds every quantization
+    // of the model, and downloading all of them is hundreds of gigabytes of the wrong thing.
+    const download = quant.files?.length
+      ? quant.files.map((file) => `hf download ${quant.hf_id} ${shellQuote(file)}`)
+      : [`hf download ${quant.hf_id}`];
+    lines.push('```bash', ...download, '```', '');
   }
 
   // 4. serve
@@ -659,7 +666,7 @@ function renderShell(ctx: {
     '# 3. serve (leave this running in another shell)',
     serve,
     '',
-    '# 4. measure — writes results/<engine>/<model>/<hardware>/<run_id>.json',
+    '# 4. measure — writes results/<engine>/<owner>/<name>/<hardware>/<run_id>.json',
     `${harness} run --spec task.json`,
     '',
     '# 5. validate, then open the PR',

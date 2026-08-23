@@ -133,7 +133,7 @@ def context(atlas_repo: Path, workload: dict, client: ChatClient) -> RunContext:
     spec = TaskSpec.model_validate(
         {
             "engine": {"id": "vllm", "version": "0.27.1"},
-            "model": {"id": "test-model-1b", "quant_id": "fp8"},
+            "model": {"id": "acme/test-model-1b", "quant_id": "fp8"},
             "hardware": {"id": "test-gpu-24gb"},
             "workloads": [workload["id"]],
         }

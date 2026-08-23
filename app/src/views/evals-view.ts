@@ -4,7 +4,7 @@ import { addButton } from '../components/add-modal.js';
 import { icon } from '../components/icons.js';
 import { emptyState, selectField, skeletonLines } from '../components/ui.js';
 import { resolveSelection } from '../components/cell-picker.js';
-import { href, navigate, qget, setQuery } from '../router.js';
+import { href, modelHref, navigate, qget, setQuery } from '../router.js';
 import { store } from '../store.js';
 import { seqStep } from '../util/colors.js';
 import { fmtPct } from '../util/format.js';
@@ -102,8 +102,14 @@ export class AtlasEvalsView extends ViewElement {
             })
           : rows.length === 0
             ? emptyState({
-                title: 'No runs match',
-                text: 'Loosen the filters or show every registered model/quant.',
+                title: store.index.value.length === 0 ? 'No eval runs yet' : 'No runs match',
+                text:
+                  store.index.value.length === 0
+                    ? 'The suites are pinned and waiting. Show every registered model/quant — each empty cell opens a ready-made packet.'
+                    : 'Loosen the filters or show every registered model/quant.',
+                action: html`<button class="btn btn-primary" @click=${() => setQuery({ all: true })}>
+                  Show every registered model/quant
+                </button>`,
               })
             : html`<div class="table-wrap">
                   <table class="table">
@@ -122,7 +128,7 @@ export class AtlasEvalsView extends ViewElement {
                             class="mono xs"
                             style="position:sticky;left:0;background:var(--surface);z-index:1"
                           >
-                            <a href=${href('models', p.model)} style="color:inherit">${p.model}</a
+                            <a href=${modelHref(p.model)} style="color:inherit">${p.model}</a
                             ><span class="muted">/${p.quant}</span>
                           </td>
                           ${suites.map((s) => {

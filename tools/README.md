@@ -48,23 +48,30 @@ results/ site/` against the schema its _path_ implies (ajv, draft 2020-12). A fi
 2. **Recomputed identity.** `config_id`, `cell_id`, `run_id` and `args_canonical` are
    recomputed from the engine version's params, the engine meta's `drop_params` and
    `param_aliases`; the filename must equal `<run_id>.json` and the path must be
-   `results/<engine>/<model>/<hardware>/`.
+   `results/<engine>/<hf-owner>/<hf-name>/<hardware>/` — a model id is a Hugging Face repo
+   id, so it spans two path segments (SPEC §2).
 3. **Referential integrity.** Engine, model, quantization, hardware and workload must exist;
    `result.kind` must mirror the workload's kind; the workload's dataset must be registered;
    `quant.engines` must include the engine. A missing engine _version_ file is a warning
    (`unknown-engine-version`) rather than an error, because a run on a version nobody has
    registered yet is still a real measurement — but no defaults get dropped from its
    fingerprint, which is why you are told.
-4. **Physics** (`checkPlausibility` from core): the bandwidth ceiling, VRAM against device
+4. **Model ids.** A model id is a Hugging Face repo id, verbatim and case-preserved, and it
+   _is_ its directory: `models/<owner>/<name>/model.json` (`model-dir-depth` when a
+   `model.json` sits one level up), the record's `id` must equal that directory
+   (`id-mismatch`) and be a repo id at all (`invalid-model-id`), and `hf_id` must equal `id`
+   (`hf-id-mismatch`). Two model directories that differ only by case are rejected
+   (`model-dir-case-collision`): a case-insensitive filesystem cannot check both out.
+5. **Physics** (`checkPlausibility` from core): the bandwidth ceiling, VRAM against device
    memory, request counts that add up, percentiles in order, power against TDP.
-5. **Duplicates and payload size.** A repeated `run_id` fails; a `raw.payload` above 100 KB
+6. **Duplicates and payload size.** A repeated `run_id` fails; a `raw.payload` above 100 KB
    fails unless it declares `raw.truncated: true`.
-6. **Cross-check.** A result whose key metric deviates from the median of other results with
+7. **Cross-check.** A result whose key metric deviates from the median of other results with
    the _same_ `cell_id + config_id + workload_id` by more than
    `site.coverage.disputed_deviation_pct` gets a `needs-review` warning listing the files it
    disagrees with. Same configuration, different numbers: somebody should look.
-7. **Ownership** — below.
-8. **Dataset payloads.** Files listed in `dataset.json` exist, the row count matches `count`,
+8. **Ownership** — below.
+9. **Dataset payloads.** Files listed in `dataset.json` exist, the row count matches `count`,
    and the first 50 rows carry the fields their kind needs (`answer`/`scorer` for an eval,
    `messages`/`prompt` for prompts, and so on).
 
@@ -146,7 +153,7 @@ workloads.json    the workload registry with run counts and its dataset
 datasets.json     dataset metadata and counts — never the rows
 stats.json        the landing-page headline numbers
 engines/<id>/<version>.json                    params with overlay merged
-runs/<engine>/<model>/<hardware>/<run_id>.json full results with stamped provenance
+runs/<engine>/<owner>/<name>/<hardware>/<run_id>.json  full results, provenance stamped
 ```
 
 The build refuses to run if validation finds an error: publishing data compiled from a
@@ -196,7 +203,7 @@ would make the queue meaningless.
 ## `packet`
 
 ```bash
-pnpm packet -- --engine vllm --version 0.27.1 --model qwen3-8b --quant fp8 \
+pnpm packet -- --engine vllm --version 0.27.1 --model Qwen/Qwen3-8B --quant fp8 \
                --hardware nvidia-rtx-4090 \
                --workloads serve-single-i256-o256-v1,eval-math-v1 \
                --args gpu-memory-utilization=0.9 --args max-model-len=32768 \

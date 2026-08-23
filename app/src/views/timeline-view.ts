@@ -209,7 +209,7 @@ export class AtlasTimelineView extends ViewElement {
                               rows.some((r) => r.engine.version === v)
                                 ? html`<a
                                     class="btn btn-xs"
-                                    href=${`#/results?engine=${sel.engine}&version=${v}&model=${sel.model}&quant=${sel.quant}&hardware=${sel.hardware}`}
+                                    href=${`#/results?engine=${sel.engine}&version=${v}&model=${encodeURIComponent(sel.model ?? '')}&quant=${sel.quant}&hardware=${sel.hardware}`}
                                     >runs ${icon('arrowRight')}</a
                                   >`
                                 : addButton(

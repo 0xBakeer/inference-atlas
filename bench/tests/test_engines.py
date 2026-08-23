@@ -20,7 +20,12 @@ def spec(**overrides) -> TaskSpec:
             "version": "0.27.1",
             "install": {"method": "docker", "image": "vllm/vllm-openai:v{version}"},
         },
-        "model": {"id": "test-model-1b", "quant_id": "fp8", "hf_id": "test/Test-Model-1B-FP8"},
+        "model": {
+            "id": "acme/test-model-1b",
+            "quant_id": "fp8",
+            "hf_id": "acme/test-model-1b",
+            "quant_hf_id": "acme-quants/test-model-1b-FP8",
+        },
         "hardware": {"id": "test-gpu-24gb", "count": 1},
         "args": {"max-model-len": 32768, "enable-prefix-caching": True},
         "workloads": ["serve-test-c2-v1"],
@@ -69,7 +74,7 @@ def test_vllm_docker_command(atlas_repo: Path) -> None:
     assert "--ipc=host" in command
     assert command[command.index("--entrypoint") + 1] == "vllm"
     assert "vllm/vllm-openai:v0.27.1" in command
-    assert command[command.index("serve") + 1] == "test/Test-Model-1B-FP8"
+    assert command[command.index("serve") + 1] == "acme-quants/test-model-1b-FP8"
     assert "--max-model-len" in command
     assert command[-1] == "8000"
 
@@ -145,7 +150,9 @@ def test_attach_mode_starts_nothing(atlas_repo: Path) -> None:
     assert adapter.base_url == "http://box:8000"
     result = adapter.start()
     assert result.started is False
-    assert "attach" in result.serve_command
+    # We did not start this server, so we do not claim to know the command that did.
+    assert result.serve_command is None
+    assert adapter.serve_command() is None
 
 
 def test_unknown_engine_falls_back_to_attach(atlas_repo: Path) -> None:
@@ -182,3 +189,19 @@ def test_hf_home_is_honoured(atlas_repo: Path, monkeypatch) -> None:
     monkeypatch.setenv("HF_HOME", "/mnt/weights/hf")
     command = get_adapter(spec(), Registry(atlas_repo)).serve_command()
     assert "/mnt/weights/hf:/root/.cache/huggingface" in shlex.split(command)
+
+
+def test_model_ref_is_the_weights_repo_not_the_model_id(atlas_repo: Path) -> None:
+    """An engine is handed the repo that holds *these* weights, never the base repo.
+
+    Serving ``acme/test-model-1b`` when the packet says ``fp8`` would benchmark different
+    weights than the result claims — the mistake that the id/weights split exists to prevent.
+    """
+    packet = spec()
+    packet.model.quant_hf_id = None
+    adapter = get_adapter(packet, Registry(atlas_repo), attach=False)
+    # Falls back to the quant record in the registry.
+    assert adapter.model_ref() == "acme-quants/test-model-1b-FP8"
+
+    packet.model.local_path = "/models/local.safetensors"
+    assert adapter.model_ref() == "/models/local.safetensors"

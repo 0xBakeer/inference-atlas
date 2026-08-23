@@ -2,7 +2,7 @@
 /**
  * `pnpm packet` — print the brief for one gap (SPEC §7).
  *
- *   pnpm packet -- --engine vllm --version 0.27.1 --model qwen3-8b --quant fp8 \
+ *   pnpm packet -- --engine vllm --version 0.27.1 --model Qwen/Qwen3-8B --quant fp8 \
  *                  --hardware nvidia-rtx-4090 --workloads serve-chat-c8-i1k-o256-v1,eval-math-v1 \
  *                  --args gpu-memory-utilization=0.9 --args max-model-len=32768
  *   pnpm packet -- --new-hardware "RTX 5080" --format md
@@ -70,9 +70,11 @@ function specFromArgs(argv: string[]): {
   format: PacketFormat;
   out: string | null;
 } {
-  const args = parseArgv(argv, { variadic: [], boolean: ['new-hardware', 'new-engine'] });
+  const args = parseArgv(argv);
 
-  // `--new-*` may carry the name of the thing being added, or stand alone.
+  // `--new-*` may carry the name of the thing being added (`--new-model Qwen/Qwen3-4B`) or
+  // stand alone, which is why none of them is declared boolean: `parseArgv` already reads a
+  // flag whose next token is another flag as a bare one.
   let kind: PacketKind = 'cell';
   let target: string | null = null;
   if (args.has('new-hardware')) {

@@ -43,6 +43,21 @@ def test_refusal_detection() -> None:
     assert not is_refusal("The answer is 42.")
 
 
+@pytest.mark.parametrize(
+    "given",
+    [
+        "http://localhost:1234",
+        "http://localhost:1234/",
+        "http://localhost:1234/v1",
+        "http://localhost:1234/v1/",
+    ],
+)
+def test_base_url_with_a_v1_suffix_is_not_doubled(given: str) -> None:
+    """`--base-url http://localhost:1234/v1` must not become `/v1/v1/...`."""
+    client = ChatClient(given, "m")
+    assert client.base_url == "http://localhost:1234"
+
+
 async def test_streaming_measures_ttft_itl_and_usage(fake_server: FakeOpenAIServer) -> None:
     """A streamed response yields TTFT, per-chunk ITL and usage-derived token counts."""
     async with ChatClient("http://fake", "fake-model", transport=fake_server.transport) as client:
@@ -61,6 +76,26 @@ async def test_streaming_measures_ttft_itl_and_usage(fake_server: FakeOpenAIServ
     assert result.text.startswith("tok0 ")
 
 
+async def test_a_single_chunk_response_reports_no_decode_rate() -> None:
+    """One delta means no decode interval was observed — not an enormous tok/s.
+
+    Short answers routinely arrive in a single chunk (LM Studio does this for a two-token
+    reply); ``(tokens - 1) / ~0s`` would put four digits into a published metric.
+    """
+    server = FakeOpenAIServer(chunks=1, chunk_delay_s=0)
+    async with ChatClient("http://fake", "fake-model", transport=server.transport) as client:
+        result = await client.chat_stream(MESSAGES, request_id="r1", max_tokens=16)
+
+    assert result.ok
+    assert len(result.chunk_times) == 1
+    assert result.measured_decode is False
+    assert result.decode_tok_s is None
+    assert result.tpot_s is None
+    # TTFT and e2e are still real measurements.
+    assert result.ttft_s is not None
+    assert result.e2e_s is not None
+
+
 async def test_stream_without_usage_falls_back_to_counting_deltas() -> None:
     """An engine that never reports usage still produces a token count, marked as such."""
     server = FakeOpenAIServer(report_usage=False, chunks=5)
@@ -69,6 +104,42 @@ async def test_stream_without_usage_falls_back_to_counting_deltas() -> None:
     assert result.completion_tokens == 5
     assert result.token_source == "stream-deltas"
     assert result.prompt_tokens is None
+
+
+async def test_stream_options_rejection_falls_back_without_failing() -> None:
+    """A server that rejects ``stream_options`` without naming it still gets measured.
+
+    LM Studio answers 400 with a generic "unexpected parameter" message. Retrying once
+    without the field costs one request and keeps the run alive; token counts then come from
+    counting streamed deltas.
+    """
+    server = FakeOpenAIServer(reject_stream_options=True, chunks=6)
+    async with ChatClient("http://fake", "fake-model", transport=server.transport) as client:
+        first = await client.chat_stream(MESSAGES, request_id="r1")
+        second = await client.chat_stream(MESSAGES, request_id="r2")
+
+    assert first.ok and second.ok
+    assert first.completion_tokens == 6
+    assert first.token_source == "stream-deltas"
+    assert first.ttft_s is not None
+    # The first request paid for the probe; afterwards the field is not sent again.
+    assert "stream_options" in server.requests[0]
+    assert "stream_options" not in server.requests[1]
+    assert "stream_options" not in server.requests[2]
+    assert len(server.requests) == 3
+
+
+async def test_a_real_400_is_not_retried_forever() -> None:
+    """A 400 that has nothing to do with stream_options is reported, not looped on."""
+    server = FakeOpenAIServer(
+        fail_every=1, fail_status=400, fail_body="This model's maximum context length is 8192"
+    )
+    async with ChatClient("http://fake", "fake-model", transport=server.transport) as client:
+        result = await client.chat_stream(MESSAGES, request_id="r1")
+
+    assert not result.ok
+    assert result.error_category == "context-overflow"
+    assert len(server.requests) == 2, "exactly one retry, then the real error"
 
 
 async def test_http_error_is_captured_not_raised() -> None:

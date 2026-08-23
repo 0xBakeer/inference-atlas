@@ -19,7 +19,7 @@ const cellSpec = {
   kind: 'cell' as const,
   engine_id: 'vllm',
   engine_version: '0.27.1',
-  model_id: 'qwen3-8b',
+  model_id: 'Qwen/Qwen3-8B',
   quant_id: 'fp8',
   hardware_id: 'nvidia-rtx-4090',
   hw_count: 1,
@@ -56,7 +56,7 @@ describe('markdown brief', () => {
     const { text, packet } = renderPacket({ root: repo.root, spec: cellSpec, format: 'md' });
     expect(text).toContain('docker pull vllm/vllm-openai:v0.27.1');
     expect(text).toContain('Qwen/Qwen3-8B-FP8');
-    expect(text).toContain('results/vllm/qwen3-8b/nvidia-rtx-4090');
+    expect(text).toContain('results/vllm/Qwen/Qwen3-8B/nvidia-rtx-4090');
     expect(text).toContain(packet.json.cell.cell_id!);
     expect(text).toContain('AGENTS.md');
     expect(text).not.toContain('undefined');
@@ -74,7 +74,7 @@ describe('other renderings', () => {
     expect(json.workloads).toEqual([
       { id: 'serve-single-i256-o256-v1', kind: 'serving', name: expect.any(String) },
     ]);
-    expect(json.output_dir).toBe('results/vllm/qwen3-8b/nvidia-rtx-4090');
+    expect(json.output_dir).toBe('results/vllm/Qwen/Qwen3-8B/nvidia-rtx-4090');
     expect(json.agent_rules).toEqual([...AGENT_RULES]);
   });
 
@@ -83,7 +83,7 @@ describe('other renderings', () => {
       'git clone',
     );
     expect(renderPacket({ root: repo.root, spec: cellSpec, format: 'issue' }).text).toContain(
-      'https://github.com/khaledbakeer/inf-atlas/issues/new',
+      'https://github.com/Inference-Atlas/inference-atlas/issues/new',
     );
   });
 });

@@ -138,7 +138,7 @@ class Store {
     reg: Registry,
     index: IndexRow[],
     coverage: CoverageMap,
-    manifest: Manifest,
+    _manifest: Manifest,
   ): Stats {
     const logins = new Set(index.map((r) => r.provenance.login));
     let last: string | null = null;
@@ -155,7 +155,7 @@ class Store {
       models: given.models ?? reg.models.length,
       hardware: given.hardware ?? reg.hardware.length,
       workloads: given.workloads ?? reg.workloads.length,
-      last_updated: given.last_updated ?? last ?? manifest.built_at ?? null,
+      last_updated: given.last_updated ?? last ?? null,
     };
   }
 

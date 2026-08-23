@@ -195,7 +195,7 @@ export class AtlasEnginesView extends ViewElement {
         </div>
       </div>
 
-      <div class="split" style="grid-template-columns: minmax(0,1fr) minmax(0,1.4fr)">
+      <div class="split facts-wide">
         <section class="card">
           <div class="card-head"><h3>Meta</h3></div>
           ${kv([

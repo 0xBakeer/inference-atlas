@@ -5,7 +5,7 @@
  * Validates every JSON file in the repository against its schema, recomputes the derived
  * ids of every result, and runs the plausibility checks. `tools/validate` will supersede
  * this with the ownership and git-history parts that only make sense inside CI; until then
- * this is what keeps the seed data honest.
+ * this is what a contributor runs before opening the pull request.
  *
  *   node packages/core/scripts/check-registries.mjs [--quiet]
  */
@@ -15,7 +15,7 @@ import { fileURLToPath } from 'node:url';
 import Ajv2020 from 'ajv/dist/2020.js';
 import addFormats from 'ajv-formats';
 import { canonicalizeArgs } from '../dist/canonical.js';
-import { cellId, engineMinor, runId, resultPath } from '../dist/ids.js';
+import { cellId, engineMinor, runId, resultPath, parseResultPath, isModelId } from '../dist/ids.js';
 import { checkPlausibility } from '../dist/plausibility.js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '../../..');
@@ -142,44 +142,83 @@ for (const dir of existsSync(join(ROOT, 'engines')) ? readdirSync(join(ROOT, 'en
 }
 
 const models = new Map();
-for (const dir of existsSync(join(ROOT, 'models')) ? readdirSync(join(ROOT, 'models')) : []) {
-  const base = join(ROOT, 'models', dir);
-  if (!statSync(base).isDirectory()) continue;
-  const modelPath = join(base, 'model.json');
-  if (!existsSync(modelPath)) {
-    fail(rel(base), 'model directory without a model.json');
-    continue;
+// A model id is <owner>/<name>, so the registry is two levels deep. On a case-insensitive
+// filesystem (every Mac, by default) two ids that differ only in case are the same directory,
+// which would silently merge two different repositories — so they are rejected outright.
+const modelDirsByCase = new Map();
+const modelsRoot = join(ROOT, 'models');
+const ownerDirs = existsSync(modelsRoot)
+  ? readdirSync(modelsRoot).filter((d) => statSync(join(modelsRoot, d)).isDirectory())
+  : [];
+for (const owner of ownerDirs) {
+  const ownerPath = join(modelsRoot, owner);
+  const strays = readdirSync(ownerPath).filter((f) => !statSync(join(ownerPath, f)).isDirectory());
+  if (strays.length) {
+    fail(
+      rel(ownerPath),
+      `owner directory holds files (${strays.join(', ')}); it may only hold model directories`,
+    );
   }
-  const model = read(modelPath);
-  if (!validate('model', modelPath, model)) continue;
-  if (model.id !== dir) fail(rel(modelPath), `id "${model.id}" does not match the directory name`);
-  if (model.moe && (model.active_params_b ?? model.params_b) >= model.params_b) {
-    warn(rel(modelPath), 'MoE model whose active_params_b is not smaller than params_b');
-  }
+  for (const name of readdirSync(ownerPath).filter((d) =>
+    statSync(join(ownerPath, d)).isDirectory(),
+  )) {
+    const dir = `${owner}/${name}`;
+    const base = join(ownerPath, name);
+    const modelPath = join(base, 'model.json');
 
-  const quants = new Map();
-  for (const path of walk(join(base, 'quants'))) {
-    const quant = read(path);
-    if (!validate('quant', path, quant)) continue;
-    if (quant.id !== basename(path, '.json'))
-      fail(rel(path), `id "${quant.id}" does not match the filename`);
-    if (quant.model_id !== model.id)
-      fail(rel(path), `model_id "${quant.model_id}" does not match "${model.id}"`);
-    for (const engineId of quant.engines) {
-      const engine = engines.get(engineId);
-      if (!engine) {
-        fail(rel(path), `engines lists "${engineId}", which is not a registered engine`);
-      } else if (!engine.meta.quant_formats.includes(quant.format)) {
-        fail(
-          rel(path),
-          `engine "${engineId}" does not declare support for format "${quant.format}"`,
-        );
-      }
+    const previous = modelDirsByCase.get(dir.toLowerCase());
+    if (previous) {
+      fail(
+        `models/${dir}`,
+        `collides with models/${previous} on a case-insensitive filesystem; two model ids may not differ only by case`,
+      );
+    } else {
+      modelDirsByCase.set(dir.toLowerCase(), dir);
     }
-    quants.set(quant.id, quant);
+
+    if (!existsSync(modelPath)) {
+      fail(rel(base), 'model directory without a model.json');
+      continue;
+    }
+    const model = read(modelPath);
+    if (!validate('model', modelPath, model)) continue;
+    if (model.id !== dir)
+      fail(rel(modelPath), `id "${model.id}" does not match the directory path "${dir}"`);
+    if (!isModelId(model.id))
+      fail(rel(modelPath), `id "${model.id}" is not a Hugging Face repo id (<owner>/<name>)`);
+    if (model.hf_id !== model.id)
+      fail(
+        rel(modelPath),
+        `hf_id "${model.hf_id}" must equal id "${model.id}" — the id is the repo`,
+      );
+    if (model.moe && (model.active_params_b ?? model.params_b) >= model.params_b) {
+      warn(rel(modelPath), 'MoE model whose active_params_b is not smaller than params_b');
+    }
+
+    const quants = new Map();
+    for (const path of walk(join(base, 'quants'))) {
+      const quant = read(path);
+      if (!validate('quant', path, quant)) continue;
+      if (quant.id !== basename(path, '.json'))
+        fail(rel(path), `id "${quant.id}" does not match the filename`);
+      if (quant.model_id !== model.id)
+        fail(rel(path), `model_id "${quant.model_id}" does not match "${model.id}"`);
+      for (const engineId of quant.engines) {
+        const engine = engines.get(engineId);
+        if (!engine) {
+          fail(rel(path), `engines lists "${engineId}", which is not a registered engine`);
+        } else if (!engine.meta.quant_formats.includes(quant.format)) {
+          fail(
+            rel(path),
+            `engine "${engineId}" does not declare support for format "${quant.format}"`,
+          );
+        }
+      }
+      quants.set(quant.id, quant);
+    }
+    if (quants.size === 0) warn(rel(modelPath), 'model without a single quantization record');
+    models.set(model.id, { model, quants });
   }
-  if (quants.size === 0) warn(rel(modelPath), 'model without a single quantization record');
-  models.set(model.id, { model, quants });
 }
 
 const workloads = new Map();
@@ -309,7 +348,12 @@ for (const path of walk(join(ROOT, 'results'))) {
     result.hardware.id,
     result.run_id,
   );
-  if (file !== expectedPath) fail(file, `wrong path; it belongs at ${expectedPath}`);
+  if (file !== expectedPath) {
+    const shape = parseResultPath(file)
+      ? ''
+      : ' (results/<engine>/<owner>/<name>/<hardware>/<run_id>.json — the model id is two segments)';
+    fail(file, `wrong path; it belongs at ${expectedPath}${shape}`);
+  }
 
   if (result.provenance.github_user_id != null)
     warn(file, 'provenance.github_user_id is set; CI resolves it, contributors leave it null');

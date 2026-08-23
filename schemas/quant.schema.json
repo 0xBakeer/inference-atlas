@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://inference-atlas.dev/schemas/quant.schema.json",
   "title": "Quantization record",
-  "description": "One quantization of one model. File: models/<model-id>/quants/<quant-id>.json",
+  "description": "One quantization of one model. File: models/<owner>/<name>/quants/<quant-id>.json, where <owner>/<name> is the model id.",
   "type": "object",
   "additionalProperties": false,
   "required": ["schema_version", "id", "model_id", "format", "bits", "engines", "source"],
@@ -12,7 +12,10 @@
       "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/id",
       "description": "bf16 | fp8 | nvfp4 | awq-int4 | gptq-int4 | gguf-q4-k-m | mlx-4bit | exl3-4.0bpw ..."
     },
-    "model_id": { "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/id" },
+    "model_id": {
+      "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/model_id",
+      "description": "The model this quantization belongs to: the two directory levels above quants/."
+    },
     "format": {
       "type": "string",
       "enum": [
@@ -41,8 +44,11 @@
       "description": "Effective bits per weight (4.5 for Q4_K_M-ish mixes is fine)."
     },
     "hf_id": {
-      "type": ["string", "null"],
-      "pattern": "^[A-Za-z0-9._-]+/[A-Za-z0-9._-]+$"
+      "oneOf": [
+        { "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/model_id" },
+        { "type": "null" }
+      ],
+      "description": "The repo that actually holds these weights, official or community: Qwen/Qwen3.8-27B-FP8, lmstudio-community/gemma-4-E2B-it-MLX-4bit. Unlike model.hf_id this is usually not the model id."
     },
     "revision": {
       "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/nullable_string"

@@ -11,7 +11,7 @@ import { readFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { canonicalizeArgs, parseRunId } from '@atlas/core';
+import { canonicalizeArgs, modelSlug, parseRunId } from '@atlas/core';
 import { field, jsonField, parseIssueForm } from '../src/lib/issue-form.js';
 import { issueToResult } from '../src/issue-to-pr.js';
 import { validateRepo } from '../src/validate.js';
@@ -121,7 +121,7 @@ describe('building the result', () => {
     expect(result.config_id).toBe(expected.configId);
     expect(result.args_canonical).toBe(expected.canonical);
     expect(parseRunId(result.run_id)?.workloadId).toBe('serve-single-i256-o256-v1');
-    expect(outcome.path).toBe(`results/vllm/qwen3-8b/nvidia-rtx-4090/${result.run_id}.json`);
+    expect(outcome.path).toBe(`results/vllm/Qwen/Qwen3-8B/nvidia-rtx-4090/${result.run_id}.json`);
 
     // And the file it would write really does pass the validator.
     repo.write(outcome.path!, outcome.content!);
@@ -136,8 +136,14 @@ describe('building the result', () => {
       author: 'octocat',
       issueNumber: 42,
     });
-    expect(outcome.branch).toMatch(/^result\/vllm-qwen3-8b-nvidia-rtx-4090-[0-9a-f]{6}$/);
-    expect(outcome.pr_title).toBe('results: vllm 0.27.1 qwen3-8b/fp8 on nvidia-rtx-4090');
+    // A model id carries a slash and mixed case; the branch name carries `modelSlug` of it,
+    // and the title carries the id verbatim because that is what a reviewer searches for.
+    const short = outcome.result!.cell_id.slice(0, 6);
+    expect(outcome.branch).toBe(
+      `result/vllm-${modelSlug('Qwen/Qwen3-8B')}-nvidia-rtx-4090-${short}`,
+    );
+    expect(outcome.branch!.split('/')).toHaveLength(2);
+    expect(outcome.pr_title).toBe('results: vllm 0.27.1 Qwen/Qwen3-8B/fp8 on nvidia-rtx-4090');
     expect(outcome.pr_body).toContain('## Cells filled');
     expect(outcome.pr_body).toContain('## What failed');
     expect(outcome.pr_body).toContain('## Gotchas');

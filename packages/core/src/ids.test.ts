@@ -1,5 +1,15 @@
 import { describe, expect, it } from 'vitest';
-import { cellId, engineMinor, parseRunId, resultPath, runId } from './ids.js';
+import {
+  cellId,
+  engineMinor,
+  isModelId,
+  modelSlug,
+  parseResultPath,
+  parseRunId,
+  resultDir,
+  resultPath,
+  runId,
+} from './ids.js';
 import type { CellIdInput } from './ids.js';
 import { readJson } from '../test/helpers.js';
 
@@ -11,7 +21,9 @@ interface IdFixture {
     expected: string;
   }>;
   engine_minor: Array<{ input: string; expected: string }>;
+  model_slug: Array<{ input: string; expected: string }>;
   result_path: Array<{
+    name: string;
     input: { engine_id: string; model_id: string; hardware_id: string; run_id: string };
     expected: string;
   }>;
@@ -74,12 +86,114 @@ describe('engineMinor', () => {
   }
 });
 
+describe('model ids', () => {
+  it('accepts a Hugging Face repo id, case and dots included', () => {
+    expect(isModelId('Qwen/Qwen3.8-27B')).toBe(true);
+    expect(isModelId('google/gemma-4-E2B-it')).toBe(true);
+    expect(isModelId('lmstudio-community/gemma-4-E2B-it-MLX-4bit')).toBe(true);
+    expect(isModelId('nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16')).toBe(true);
+  });
+
+  it('rejects anything that is not exactly one slash between two repo names', () => {
+    expect(isModelId('qwen3.8-27b')).toBe(false); // the old kebab-case ids
+    expect(isModelId('a/b/c')).toBe(false);
+    expect(isModelId('/Qwen3-8B')).toBe(false);
+    expect(isModelId('Qwen/')).toBe(false);
+    expect(isModelId('.hidden/model')).toBe(false);
+    expect(isModelId('Qwen Team/Qwen3-8B')).toBe(false);
+  });
+
+  it('slugs a model id down to one branch-safe segment', () => {
+    for (const v of fixture.model_slug) {
+      expect(modelSlug(v.input)).toBe(v.expected);
+    }
+  });
+
+  it('slugs case-only variants identically, which is why a slug is never an id', () => {
+    expect(modelSlug('Qwen/Qwen3-8B')).toBe(modelSlug('qwen/qwen3-8b'));
+    expect(modelSlug('Qwen/Qwen3-8B')).toMatch(/^[a-z0-9.-]+$/);
+  });
+
+  it('is hashed verbatim, so two spellings of one repo are two cells', () => {
+    const base = {
+      quant_id: 'fp8',
+      hardware_id: 'nvidia-gb10-dgx-spark',
+      hw_count: 1,
+      engine_id: 'vllm',
+      engine_minor: '0.27',
+    };
+    expect(cellId({ ...base, model_id: 'Qwen/Qwen3.8-27B' })).not.toBe(
+      cellId({ ...base, model_id: 'qwen/qwen3.8-27b' }),
+    );
+  });
+});
+
 describe('resultPath', () => {
   for (const v of fixture.result_path) {
-    it(v.expected, () =>
+    it(v.name, () =>
       expect(
         resultPath(v.input.engine_id, v.input.model_id, v.input.hardware_id, v.input.run_id),
       ).toBe(v.expected),
     );
   }
+
+  it('spends two path segments on the model id', () => {
+    const path = resultPath(
+      'vllm',
+      'Qwen/Qwen3.8-27B',
+      'nvidia-gb10-dgx-spark',
+      '1dd64efc5109c652--serve-single-i256-o256-v1--d1b2ff',
+    );
+    expect(path.split('/')).toHaveLength(6);
+    expect(path).toContain('/Qwen/Qwen3.8-27B/');
+  });
+
+  it('agrees with resultDir', () => {
+    expect(resultPath('vllm', 'Qwen/Qwen3-8B', 'apple-m2-max-32gb', 'x')).toBe(
+      `${resultDir('vllm', 'Qwen/Qwen3-8B', 'apple-m2-max-32gb')}/x.json`,
+    );
+  });
+});
+
+describe('parseResultPath', () => {
+  it('inverts resultPath for every golden vector', () => {
+    for (const v of fixture.result_path) {
+      expect(parseResultPath(v.expected)).toEqual({
+        engine_id: v.input.engine_id,
+        model_id: v.input.model_id,
+        hardware_id: v.input.hardware_id,
+        run_id: v.input.run_id,
+      });
+    }
+  });
+
+  it('tolerates a leading ./ from a git diff', () => {
+    const path = fixture.result_path[0]!.expected;
+    expect(parseResultPath(`./${path}`)).toEqual(parseResultPath(path));
+  });
+
+  it('rejects paths that are not result files', () => {
+    const run = '1dd64efc5109c652--serve-single-i256-o256-v1--d1b2ff';
+    // one level short: the old single-segment model directory
+    expect(
+      parseResultPath(`results/vllm/qwen3.8-27b/nvidia-gb10-dgx-spark/${run}.json`),
+    ).toBeNull();
+    // not under results/
+    expect(
+      parseResultPath(`runs/vllm/Qwen/Qwen3.8-27B/nvidia-gb10-dgx-spark/${run}.json`),
+    ).toBeNull();
+    // file name is not a run id
+    expect(
+      parseResultPath('results/vllm/Qwen/Qwen3.8-27B/nvidia-gb10-dgx-spark/notes.json'),
+    ).toBeNull();
+    // not JSON
+    expect(
+      parseResultPath(`results/vllm/Qwen/Qwen3.8-27B/nvidia-gb10-dgx-spark/${run}.txt`),
+    ).toBeNull();
+    // an engine id that is not kebab-case
+    expect(
+      parseResultPath(`results/vLLM/Qwen/Qwen3.8-27B/nvidia-gb10-dgx-spark/${run}.json`),
+    ).toBeNull();
+    expect(parseResultPath('results/README.md')).toBeNull();
+  });
 });

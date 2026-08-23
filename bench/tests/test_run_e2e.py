@@ -14,7 +14,7 @@ from atlas_bench.registry import Registry
 from atlas_bench.runner import plan_spec, run_spec
 from atlas_bench.spec import TaskSpec
 from atlas_bench.validate import validate_file
-from tests.conftest import FakeOpenAIServer
+from tests.conftest import FakeOpenAIServer, drop_pre_migration_schema_errors
 
 LOGIN = "tester"
 
@@ -48,9 +48,9 @@ def make_spec(workload: str = "serve-test-c2-v1", **overrides) -> TaskSpec:
             "base_url": "http://fake",
         },
         "model": {
-            "id": "test-model-1b",
+            "id": "acme/test-model-1b",
             "quant_id": "fp8",
-            "hf_id": "test/Test-Model-1B-FP8",
+            "hf_id": "acme/test-model-1b",
             "dtype": "auto",
         },
         "hardware": {"id": "test-gpu-24gb", "count": 1},
@@ -96,9 +96,12 @@ async def test_serving_run_writes_a_valid_result(
     record = json.loads(path.read_text())
 
     # Path and filename are derived, not chosen.
-    assert path.relative_to(atlas_repo).parts[:4] == (
+    # <owner>/<name> is the model id, so the path has one level more than the other
+    # registries (SPEC §2, decision 20).
+    assert path.relative_to(atlas_repo).parts[:5] == (
         "results",
         "vllm",
+        "acme",
         "test-model-1b",
         "test-gpu-24gb",
     )
@@ -117,7 +120,7 @@ async def test_serving_run_writes_a_valid_result(
     assert record["args_canonical"] == canonical
     assert record["config_id"] == config_id_from_canonical(canonical)
     assert record["cell_id"] == cell_id(
-        model_id="test-model-1b",
+        model_id="acme/test-model-1b",
         quant_id="fp8",
         hardware_id="test-gpu-24gb",
         hw_count=1,
@@ -166,7 +169,7 @@ async def test_result_passes_local_validation(
 ) -> None:
     """The file the harness writes passes its own validator, schema included."""
     output = await run(atlas_repo, fake_server, make_spec())
-    issues = validate_file(output.paths[0], Registry(atlas_repo))
+    issues = drop_pre_migration_schema_errors(validate_file(output.paths[0], Registry(atlas_repo)))
     errors = [i for i in issues if i.level == "error"]
     assert errors == [], "\n".join(str(i) for i in issues)
 
@@ -280,7 +283,8 @@ async def test_eval_result_is_schema_valid(atlas_repo: Path) -> None:
     """An eval result validates too (``scores`` is required for kind=eval)."""
     server = FakeOpenAIServer(responder=lambda m: "Answer: 4")
     output = await run(atlas_repo, server, make_spec("eval-test-v1"))
-    errors = [i for i in validate_file(output.paths[0], Registry(atlas_repo)) if i.level == "error"]
+    issues = drop_pre_migration_schema_errors(validate_file(output.paths[0], Registry(atlas_repo)))
+    errors = [i for i in issues if i.level == "error"]
     assert errors == [], "\n".join(str(i) for i in errors)
 
 

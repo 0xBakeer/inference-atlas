@@ -131,7 +131,7 @@ export class AtlasCellDrawer extends AtlasElement {
                           >
                           <a
                             class="btn btn-xs"
-                            href=${`#/explore?engine=${pc.engine_id}&version=${pc.engine_version}&model=${pc.model_id}&quant=${pc.quant_id}&hardware=${pc.hardware_id}`}
+                            href=${`#/explore?engine=${pc.engine_id}&version=${pc.engine_version}&model=${encodeURIComponent(pc.model_id)}&quant=${pc.quant_id}&hardware=${pc.hardware_id}`}
                             >Explore ${icon('arrowRight')}</a
                           >
                         </div>

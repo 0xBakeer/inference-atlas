@@ -66,7 +66,7 @@ describe('output shape', () => {
     }
     const rows = read<BuiltIndexRow[]>('index.json');
     expect(
-      existsSync(join(out, `runs/vllm/qwen3-8b/nvidia-rtx-4090/${rows[0]!.run_id}.json`)),
+      existsSync(join(out, `runs/vllm/Qwen/Qwen3-8B/nvidia-rtx-4090/${rows[0]!.run_id}.json`)),
     ).toBe(true);
   });
 
@@ -284,6 +284,50 @@ describe('gaps', () => {
   });
 });
 
+describe('a repository with no results', () => {
+  /**
+   * The state the project starts in and returns to whenever a registry grows faster than
+   * anybody measures it: every square grey. The build must still produce every file, with
+   * empty collections rather than absent ones, because the app fetches them unconditionally
+   * — and the gap queue must be *fuller* here than anywhere, not empty.
+   */
+  it('compiles an empty atlas whose gaps are still the whole registry', () => {
+    const bare = makeFixtureRepo();
+    const bareOut = join(bare.root, 'app/public/data');
+    const readBare = <T>(relative: string): T =>
+      JSON.parse(readFileSync(join(bareOut, relative), 'utf8')) as T;
+    try {
+      const outcome = buildData({ root: bare.root, out: bareOut, noGit: true });
+      expect(outcome.ok).toBe(true);
+      expect(outcome.counts.runs).toBe(0);
+
+      expect(readBare<BuiltIndexRow[]>('index.json')).toEqual([]);
+      expect(readBare<{ cells: Record<string, CoverageCell> }>('coverage.json').cells).toEqual({});
+      expect(readBare<CompiledContributor[]>('contributors.json')).toEqual([]);
+
+      const stats = readBare<Record<string, unknown>>('stats.json');
+      expect(stats.runs).toBe(0);
+      expect(stats.cells_covered).toBe(0);
+      expect(stats.contributors).toBe(0);
+      expect(stats.coverage_pct).toBe(0);
+      expect(stats.cells_possible).toBeGreaterThan(0);
+      expect(stats.first_run).toBeNull();
+      expect(stats.last_updated).toBeNull();
+      expect(stats.levels).toEqual({ none: 0, single: 0, reproduced: 0, disputed: 0, stale: 0 });
+      expect(stats.models).toBeGreaterThan(0);
+
+      // Nothing measured means nothing to copy, and every possible cell is a gap.
+      expect(existsSync(join(bareOut, 'runs'))).toBe(false);
+      const gaps = readBare<{ gaps: Gap[]; considered: number }>('gaps.json');
+      expect(gaps.gaps.length).toBeGreaterThan(0);
+      expect(gaps.considered).toBeGreaterThanOrEqual(gaps.gaps.length);
+      expect(gaps.gaps.every((g) => g.level === 'none')).toBe(true);
+    } finally {
+      bare.dispose();
+    }
+  });
+});
+
 describe('determinism and provenance', () => {
   it('produces byte-identical output on a rebuild, apart from built_at', () => {
     build();
@@ -353,7 +397,7 @@ describe('refusing bad data', () => {
       startedAt: '2026-08-07T10:00:00Z',
     }) as unknown as Record<string, unknown>;
     delete broken.verification;
-    repo.write('results/vllm/qwen3-8b/nvidia-rtx-4090/broken.json', broken);
+    repo.write('results/vllm/Qwen/Qwen3-8B/nvidia-rtx-4090/broken.json', broken);
     const outcome = build();
     expect(outcome.ok).toBe(false);
     expect(outcome.errors.join('\n')).toContain('schema');

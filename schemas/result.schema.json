@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://inference-atlas.dev/schemas/result.schema.json",
   "title": "Result record",
-  "description": "One measurement: one engine config x one workload, run by one contributor. File: results/<engine-id>/<model-id>/<hardware-id>/<run_id>.json — the filename is exactly run_id + \".json\". Nobody ever edits somebody else's result file.",
+  "description": "One measurement: one engine config x one workload, run by one contributor. File: results/<engine-id>/<owner>/<name>/<hardware-id>/<run_id>.json, where <owner>/<name> is the model id — the filename is exactly run_id + \".json\". Nobody ever edits somebody else's result file.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -31,6 +31,9 @@
       "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/nullable_integer"
     },
     "id": { "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/id" },
+    "model_id": {
+      "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/model_id"
+    },
     "metric_block": {
       "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/metric_block"
     }
@@ -70,7 +73,7 @@
       "additionalProperties": false,
       "required": ["id", "quant_id"],
       "properties": {
-        "id": { "$ref": "#/$defs/id" },
+        "id": { "$ref": "#/$defs/model_id" },
         "quant_id": { "$ref": "#/$defs/id" },
         "hf_id": { "$ref": "#/$defs/nstr" },
         "revision": { "$ref": "#/$defs/nstr" },

@@ -16,8 +16,19 @@ export {
   byteCompare,
 } from './canonical.js';
 export type { CanonicalizeInput, CanonicalizeResult, CanonicalParam } from './canonical.js';
-export { cellId, runId, parseRunId, engineMinor, resultPath, resultDir } from './ids.js';
-export type { CellIdInput, ParsedRunId } from './ids.js';
+export {
+  cellId,
+  runId,
+  parseRunId,
+  engineMinor,
+  resultPath,
+  resultDir,
+  parseResultPath,
+  isModelId,
+  modelSlug,
+  MODEL_ID_PATTERN,
+} from './ids.js';
+export type { CellIdInput, ParsedRunId, ParsedResultPath } from './ids.js';
 export {
   checkPlausibility,
   activeWeightGb,

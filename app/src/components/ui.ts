@@ -3,7 +3,7 @@ import { html, nothing, render, type TemplateResult } from 'lit';
 import { classMap } from 'lit/directives/class-map.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import type { CoverageLevel, Distribution, VerificationLevel, WorkloadKind } from '@atlas/core';
-import { href } from '../router.js';
+import { href, modelHref } from '../router.js';
 import { store } from '../store.js';
 import { copyText } from '../util/clipboard.js';
 import { vendorClass } from '../util/colors.js';
@@ -99,7 +99,7 @@ export function workloadName(id: string): string {
 }
 
 export function modelLink(id: string, quant?: string | null): TemplateResult {
-  return html`<a class="reg-link" href=${href('models', id)} title=${modelName(id)}>${id}</a>${
+  return html`<a class="reg-link mono" href=${modelHref(id)} title=${modelName(id)}>${id}</a>${
       quant ? html`<span class="muted">/</span><span class="quant">${quant}</span>` : nothing
     }`;
 }

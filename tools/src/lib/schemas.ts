@@ -34,11 +34,13 @@ const RULES: Array<{ pattern: RegExp; name: SchemaName }> = [
   { pattern: /^engines\/[^/]+\/meta\.json$/, name: 'engine' },
   { pattern: /^engines\/[^/]+\/overlay\.json$/, name: 'engine-overlay' },
   { pattern: /^engines\/[^/]+\/versions\/[^/]+\.json$/, name: 'engine-version' },
-  { pattern: /^models\/[^/]+\/model\.json$/, name: 'model' },
-  { pattern: /^models\/[^/]+\/quants\/[^/]+\.json$/, name: 'quant' },
+  // A model id is a Hugging Face repo id, so its directory is two levels deep (SPEC §2)
+  // and every path that carries one — model, quant, result — has that extra segment.
+  { pattern: /^models\/[^/]+\/[^/]+\/model\.json$/, name: 'model' },
+  { pattern: /^models\/[^/]+\/[^/]+\/quants\/[^/]+\.json$/, name: 'quant' },
   { pattern: /^workloads\/[^/]+\.json$/, name: 'workload' },
   { pattern: /^datasets\/[^/]+\/dataset\.json$/, name: 'dataset' },
-  { pattern: /^results\/[^/]+\/[^/]+\/[^/]+\/[^/]+\.json$/, name: 'result' },
+  { pattern: /^results\/[^/]+\/[^/]+\/[^/]+\/[^/]+\/[^/]+\.json$/, name: 'result' },
   { pattern: /^site\/config\.json$/, name: 'site' },
 ];
 

@@ -20,7 +20,7 @@ const spark: Hardware = {
 
 const dense: Model = {
   schema_version: 1,
-  id: 'qwen3.8-27b',
+  id: 'Qwen/Qwen3.8-27B',
   name: 'Qwen3.8-27B',
   hf_id: 'Qwen/Qwen3.8-27B',
   vendor: 'alibaba',
@@ -31,7 +31,8 @@ const dense: Model = {
 
 const moe: Model = {
   ...dense,
-  id: 'nemotron',
+  id: 'nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16',
+  hf_id: 'nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16',
   name: 'Nemotron',
   params_b: 30,
   active_params_b: 3,
@@ -41,7 +42,7 @@ const moe: Model = {
 const fp8: Quant = {
   schema_version: 1,
   id: 'fp8',
-  model_id: 'qwen3.8-27b',
+  model_id: 'Qwen/Qwen3.8-27B',
   format: 'fp8',
   bits: 8,
   size_gb: 28.5,
@@ -52,7 +53,7 @@ const fp8: Quant = {
 const nvfp4: Quant = {
   ...fp8,
   id: 'nvfp4',
-  model_id: 'nemotron',
+  model_id: 'nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16',
   format: 'nvfp4',
   bits: 4,
   size_gb: 17,
@@ -67,7 +68,7 @@ function result(metrics: MetricBlock, over: Partial<ResultRecord> = {}): ResultR
     workload_id: 'serve-v1',
     kind: 'serving',
     engine: { id: 'vllm', version: '0.27.1' },
-    model: { id: 'qwen3.8-27b', quant_id: 'fp8' },
+    model: { id: 'Qwen/Qwen3.8-27B', quant_id: 'fp8' },
     hardware: { id: 'nvidia-gb10-dgx-spark', count: 1 },
     args: {},
     args_canonical: '@dtype=auto;@quant=fp8',

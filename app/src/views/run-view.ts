@@ -33,7 +33,7 @@ import {
   who,
   workloadLink,
 } from '../components/ui.js';
-import { href, navigate } from '../router.js';
+import { href, modelHref, navigate } from '../router.js';
 import { store } from '../store.js';
 import { cssVar } from '../util/colors.js';
 import { absDateTime } from '../util/dates.js';
@@ -126,7 +126,7 @@ export class AtlasRunView extends ViewElement {
           >
           <span class="sep">·</span>
           <span
-            ><a href=${href('models', rec.model.id)}>${model?.model.name ?? rec.model.id}</a
+            ><a href=${modelHref(rec.model.id)}>${model?.model.name ?? rec.model.id}</a
             ><span class="ver">/${rec.model.quant_id}</span></span
           >
           <span class="sep">·</span>
@@ -156,7 +156,7 @@ export class AtlasRunView extends ViewElement {
         </div>
       </div>
 
-      <div class="split" style="grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr)">
+      <div class="split main-aside">
         <div class="stack">
           ${
             cards.length

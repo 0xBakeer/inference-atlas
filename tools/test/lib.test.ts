@@ -1,15 +1,18 @@
 /**
- * The small pieces the CLIs are built out of: argv parsing, the engine/device
- * compatibility mapping, index-row metric extraction and deterministic serialization.
+ * The small pieces the CLIs are built out of: argv parsing, the path → schema mapping, the
+ * engine/device compatibility mapping, index-row metric extraction and deterministic
+ * serialization.
  * Each of them is somewhere a wrong answer would be invisible in the output of the
  * command that uses it.
  */
 import { describe, expect, it } from 'vitest';
+import { parseResultPath, resultPath } from '@atlas/core';
 import type { EngineMeta, Hardware, ResultRecord } from '@atlas/core';
 import { parseArgv } from '../src/lib/args.js';
 import { engineFitsHardware, hardwarePlatforms } from '../src/lib/compat.js';
 import { parsePr, loginFromEmail } from '../src/lib/git.js';
 import { indexMetrics } from '../src/lib/index-row.js';
+import { schemaFor } from '../src/lib/schemas.js';
 import { serialize, sortKeys } from '../src/lib/write.js';
 
 describe('parseArgv', () => {
@@ -30,6 +33,20 @@ describe('parseArgv', () => {
     });
     expect(args.list('changed')).toEqual(['a.json', 'b.json', 'c.json']);
     expect(args.bool('json')).toBe(true);
+  });
+
+  it('keeps a value that carries slashes and upper case', () => {
+    // `--model Qwen/Qwen3-8B`: a model id is a Hugging Face repo id, not a kebab token.
+    expect(parseArgv(['--model', 'Qwen/Qwen3-8B']).str('model')).toBe('Qwen/Qwen3-8B');
+  });
+
+  it('treats a flag whose next token is another flag as bare', () => {
+    // What lets `--new-engine` stand alone while `--new-engine ktransformers` names one,
+    // without either being declared boolean.
+    const args = parseArgv(['--new-engine', '--format', 'md']);
+    expect(args.has('new-engine')).toBe(true);
+    expect(args.str('new-engine')).toBeNull();
+    expect(args.str('format')).toBe('md');
   });
 
   it('splits comma-separated lists', () => {
@@ -57,6 +74,62 @@ describe('parseArgv', () => {
 
   it('drops the separator pnpm forwards before the real flags', () => {
     expect(parseArgv(['--', '--engine', 'vllm']).str('engine')).toBe('vllm');
+  });
+});
+
+describe('which schema a path implies', () => {
+  const name = (path: string) => {
+    const verdict = schemaFor(path);
+    return verdict.kind === 'schema' ? verdict.name : verdict.kind;
+  };
+
+  it('maps the two-level model directory a Hugging Face repo id implies', () => {
+    expect(name('models/Qwen/Qwen3-8B/model.json')).toBe('model');
+    expect(name('models/Qwen/Qwen3-8B/quants/gguf-q4-k-m.json')).toBe('quant');
+    // Owners and names carry dots and dashes as often as not.
+    expect(name('models/acme.labs-ai/Test.Model-8B/model.json')).toBe('model');
+    expect(name('models/acme.labs-ai/Test.Model-8B/quants/exl3-4.0bpw.json')).toBe('quant');
+  });
+
+  it('maps a result path with the model id spread over two segments', () => {
+    expect(name('results/vllm/Qwen/Qwen3-8B/nvidia-rtx-4090/abcd--w-v1--012345.json')).toBe(
+      'result',
+    );
+    expect(
+      name('results/llamacpp/acme.labs-ai/Test.Model-8B/apple-m2-max-32gb/x--w-v1--012345.json'),
+    ).toBe('result');
+  });
+
+  it('refuses the single-level layout instead of guessing what it meant', () => {
+    // Pre-decision-20 paths are one segment short. Silently ignoring them would leave a
+    // model out of the registry and a result out of the atlas with nothing said.
+    expect(name('models/qwen3-8b/model.json')).toBe('unmapped');
+    expect(name('models/qwen3-8b/quants/fp8.json')).toBe('unmapped');
+    expect(name('results/vllm/qwen3-8b/nvidia-rtx-4090/abcd--w-v1--012345.json')).toBe('unmapped');
+  });
+
+  it('still maps everything that has no model id in its path', () => {
+    expect(name('hardware/nvidia-rtx-4090.json')).toBe('hardware');
+    expect(name('engines/vllm/meta.json')).toBe('engine');
+    expect(name('engines/vllm/versions/0.27.1.json')).toBe('engine-version');
+    expect(name('workloads/serve-single-i256-o256-v1.json')).toBe('workload');
+    expect(name('datasets/eval-math-v1/dataset.json')).toBe('dataset');
+    expect(name('datasets/eval-math-v1/items.json')).toBe('ignored');
+    expect(name('site/config.json')).toBe('site');
+    expect(name('app/public/data/index.json')).toBe('ignored');
+  });
+
+  it('agrees with the path @atlas/core builds and parses', () => {
+    const id = '0123456789abcdef--serve-single-i256-o256-v1--012345';
+    const path = resultPath('vllm', 'acme.labs-ai/Test.Model-8B', 'nvidia-rtx-4090', id);
+    expect(path).toBe(`results/vllm/acme.labs-ai/Test.Model-8B/nvidia-rtx-4090/${id}.json`);
+    expect(name(path)).toBe('result');
+    expect(parseResultPath(path)).toEqual({
+      engine_id: 'vllm',
+      model_id: 'acme.labs-ai/Test.Model-8B',
+      hardware_id: 'nvidia-rtx-4090',
+      run_id: id,
+    });
   });
 });
 

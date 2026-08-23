@@ -54,11 +54,11 @@ disagree, this file wins.
 ├── engines/<engine-id>/meta.json
 ├── engines/<engine-id>/overlay.json                 # hand-curated group/impact per flag
 ├── engines/<engine-id>/versions/<version>.json      # flag schema per version (generated or hand-seeded)
-├── models/<model-id>/model.json
-├── models/<model-id>/quants/<quant-id>.json
+├── models/<hf-owner>/<hf-name>/model.json        # model_id IS the Hugging Face repo id, verbatim (e.g. models/Qwen/Qwen3.8-27B/)
+├── models/<hf-owner>/<hf-name>/quants/<quant-id>.json
 ├── workloads/<workload-id>.json
 ├── datasets/<dataset-id>/dataset.json + data files (jsonl / png)
-├── results/<engine-id>/<model-id>/<hardware-id>/<run-file>.json
+├── results/<engine-id>/<hf-owner>/<hf-name>/<hardware-id>/<run-file>.json
 ├── site/config.json               # nav, default axes, scoring weights, colours, branding
 ├── packages/core/                 # TS: types, ids, canonicalization, validation helpers (node + browser)
 ├── tools/                         # TS node scripts: validate, build, packet, ingest
@@ -84,20 +84,21 @@ Top-level scripts (root `package.json`):
 
 ## 2. Identifiers
 
-All ids are lowercase kebab-case `[a-z0-9][a-z0-9.-]*`. Registry ids are chosen by humans
-and stable forever (renaming = new id + `aliases`).
+All ids except `model_id` are lowercase kebab-case `[a-z0-9][a-z0-9.-]*`. `model_id` is the
+Hugging Face repo id verbatim (see below). Registry ids are chosen by humans and stable forever
+(renaming = new id + `aliases`).
 
 | id | where | rule |
 |---|---|---|
 | `hardware_id` | `hardware/<id>.json` | e.g. `nvidia-rtx-4090`, `nvidia-gb10-dgx-spark`, `apple-m2-max-32gb`, `apple-m3-ultra-96gb` (Apple SoC ids include memory because it is the binding constraint) |
 | `engine_id` | `engines/<id>/` | `vllm`, `sglang`, `llamacpp`, `ollama`, `mlx-lm`, `tensorrt-llm`, `tgi`, `lmstudio`, `exllamav3` |
-| `model_id` | `models/<id>/` | derived from HF id: `qwen--qwen3-8b`? **No.** Use readable: `qwen3-8b`, `qwen3.8-27b`, `nemotron-3.5-lightning-30b-a3b`, `llama-3.1-8b`. `model.json` carries `hf_id`. |
-| `quant_id` | `models/<model-id>/quants/<quant-id>.json` | `bf16`, `fp8`, `nvfp4`, `awq-int4`, `gptq-int4`, `gguf-q4-k-m`, `gguf-q5-k-m`, `gguf-q8-0`, `mlx-4bit`, `mlx-8bit`, `exl3-4.0bpw`. Full ref = `<model-id>/<quant-id>` (HF-style "model then its quantizations"). |
+| `model_id` | `models/<owner>/<name>/` | **The Hugging Face repo id, verbatim and case-preserved**: `Qwen/Qwen3.8-27B`, `google/gemma-4-E2B-it`, `nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16`. Pattern `^[A-Za-z0-9][A-Za-z0-9._-]*/[A-Za-z0-9][A-Za-z0-9._-]*$` (exactly one `/`). A fine-tune or re-upload by somebody else is a different HF repo and therefore a different model. `model.json.hf_id` must equal `id`. Directory path = id (two levels). The validator rejects two model dirs that differ only by case. |
+| `quant_id` | `models/<model-id>/quants/<quant-id>.json` | `bf16`, `fp8`, `nvfp4`, `awq-int4`, `gptq-int4`, `gguf-q4-k-m`, `gguf-q5-k-m`, `gguf-q8-0`, `mlx-4bit`, `mlx-8bit`, `exl3-4.0bpw`. Unique within the model; the quant record's `hf_id` is the full HF repo that holds the weights (official or community, e.g. `lmstudio-community/gemma-4-E2B-it-MLX-4bit`). Full ref = `<model-id>/<quant-id>`. |
 | `workload_id` | `workloads/<id>.json` | versioned suffix mandatory: `serve-chat-c8-i1k-o256-v1`, `sweep-parallel-1-32-v1`, `eval-math-v1`, `eval-code-v1`, `eval-vision-v1`, `longctx-needle-32k-v1`, `prefill-32k-v1`. Immutable once published. |
 | `cell_id` | computed | `sha256("model_id|quant_id|hardware_id|hw_count|engine_id|engine_minor")[:12]` where `engine_minor` = first two semver components (`0.27`). One square on the coverage map. |
 | `config_id` | computed | canonical non-default engine args (see §3) → `sha256(canonical)[:16]` |
 | `run_id` | computed | `<config_id>--<workload_id>--<sha256(github_login + "|" + started_at)[:6]>` |
-| result filename | `results/<engine>/<model>/<hardware>/<run_id>.json` | exactly `run_id + ".json"` |
+| result filename | `results/<engine>/<owner>/<name>/<hardware>/<run_id>.json` | exactly `run_id + ".json"`; `<owner>/<name>` is the model_id |
 
 `hw_count` = number of devices (1 for single GPU / one Mac). Multi-node is out of scope v1.
 
@@ -175,17 +176,17 @@ Same as DESIGN §6.1 (`params[]` with name, type, default, choices, range, help,
 group, impact). `overlay.json` = `{ "params": { "<name>": { "group": "...", "impact": "high|medium|low" } } }`
 merged at build time.
 
-### models/<id>/model.json
+### models/<owner>/<name>/model.json
 ```jsonc
-{ "schema_version": 1, "id": "qwen3.8-27b", "name": "Qwen3.8-27B", "hf_id": "Qwen/Qwen3.8-27B",
+{ "schema_version": 1, "id": "Qwen/Qwen3.8-27B", "name": "Qwen3.8-27B", "hf_id": "Qwen/Qwen3.8-27B",
   "family": "qwen3.8", "vendor": "alibaba", "params_b": 27, "active_params_b": 27, "architecture": "Qwen3_5ForConditionalGeneration",
   "moe": false, "modalities": ["text","image"], "context_length": 262144, "licence": "Apache-2.0",
   "released": "2026-08-14", "tags": ["chat","reasoning","vision"], "links": {...}, "notes": "..." }
 ```
 
-### models/<id>/quants/<quant-id>.json
+### models/<owner>/<name>/quants/<quant-id>.json
 ```jsonc
-{ "schema_version": 1, "id": "fp8", "model_id": "qwen3.8-27b", "format": "fp8", "bits": 8,
+{ "schema_version": 1, "id": "fp8", "model_id": "Qwen/Qwen3.8-27B", "format": "fp8", "bits": 8,
   "hf_id": "Qwen/Qwen3.8-27B-FP8", "revision": null, "files": [], "size_gb": 28.5,
   "engines": ["vllm","sglang"], "source": "official", "notes": "" }
 ```
@@ -222,7 +223,7 @@ Eval rows: `{ "id", "category", "difficulty", "prompt"|"messages", "answer", "sc
   "run_id": "...", "config_id": "...", "cell_id": "...", "workload_id": "...",
   "kind": "serving",                                          // mirrors workload.kind
   "engine":   { "id": "vllm", "version": "0.27.1", "commit": null, "container": "vllm/vllm-openai:v0.27.1-aarch64", "install_method": "docker" },
-  "model":    { "id": "qwen3.8-27b", "quant_id": "fp8", "hf_id": "Qwen/Qwen3.8-27B-FP8", "revision": "abc123", "dtype": "auto" },
+  "model":    { "id": "Qwen/Qwen3.8-27B", "quant_id": "fp8", "hf_id": "Qwen/Qwen3.8-27B-FP8", "revision": "abc123", "dtype": "auto" },
   "hardware": { "id": "nvidia-gb10-dgx-spark", "count": 1, "driver": "580.95", "cuda": "13.0",
                 "host": { "cpu": "...", "ram_gb": 121, "os": "Ubuntu 24.04", "kernel": "..." },
                 "fingerprint": "sha256:…", "captured": { /* sanitized raw hwinfo: nvidia-smi -q subset / system_profiler subset */ } },
@@ -277,7 +278,7 @@ aggregates). Per-item eval results keep at most `predicted` truncated to 500 cha
 
 On every PR:
 1. Schema-validate every changed JSON file (ajv 2020-12).
-2. Recompute `config_id`, `cell_id`, `run_id`, `args_canonical`; filename must equal `run_id.json`; path must match `results/<engine>/<model>/<hardware>/`.
+2. Recompute `config_id`, `cell_id`, `run_id`, `args_canonical`; filename must equal `run_id.json`; path must match `results/<engine>/<owner>/<name>/<hardware>/` where `<owner>/<name>` is the model_id verbatim.
 3. **Ownership:** for each changed file under `results/`: `provenance.github_login` must equal the PR author login (`github.event.pull_request.user.login`), both for added and modified files, and for a modified file the *previous* version's login must also equal the author. Deleting another person's file is rejected. (Maintainers can bypass with label `maintainer-override`.)
 4. Referential integrity: engine/model/quant/hardware/workload ids must exist; `quant.engines` must include the engine; engine version file exists (warning otherwise).
 5. Plausibility: `output_tok_s_per_request <= memory_bandwidth_gbs / weight_gb * 1.5` (MoE uses active weights), `vram_peak_gb <= memory_gb`, non-negative latencies, `success_rate ∈ [0,1]`, `requests_ok + requests_failed == requests_total`.
@@ -299,7 +300,7 @@ index.json           [ slim run rows: run_id, cell_id, config_id, workload_id, k
 coverage.json        { cells: { cell_id: { model_id, quant_id, hardware_id, engine_id, engine_minor, runs, workloads[], level: none|single|reproduced|disputed|stale, best: {...} } } }
 contributors.json    [ { login, user_id, runs, cells_filled, reproductions, hardware_ids[], first_seen, last_seen, points } ]
 engines/<id>/<version>.json     param schemas with overlay merged
-runs/<engine>/<model>/<hardware>/<run_id>.json   full result files (copied, with stamped provenance)
+runs/<engine>/<owner>/<name>/<hardware>/<run_id>.json   full result files (copied, with stamped provenance)
 gaps.json            ranked list of untested/wanted cells (registry × workload cross product scored by site.config wanted weights + requests)
 ```
 The app fetches `manifest.json` first, then `registry.json` + `index.json` + `coverage.json`;
@@ -351,13 +352,11 @@ page has Add/Contribute buttons where a gap is visible. Mobile responsive. Light
 
 ## 10. Seeding
 
-Seed with the real measurements we have from the DGX Spark (GB10) and the Mac Studio (M2 Max
-32 GB), marked `provenance.method: "manual"` and `verification.level: "self-reported"`, login
-`khaledbakeer`. Numbers must come from actual measurements recorded in docs/seed-notes.md —
-never invented. Where only a headline tok/s is known, fill only the metrics that are known and
-leave the rest `null` (schema allows null for optional metrics).
-
----
+There is no seed data. Every result in `results/` is a real run produced by the harness on a
+contributor's own machine and submitted through a PR by that contributor. CI never runs
+benchmarks — it only validates and builds the site. `docs/reference-measurements.md` keeps a
+few historical hand-measured numbers as context for plausibility and gotchas; they are not in
+the atlas.
 
 ## Decisions log
 
@@ -500,3 +499,14 @@ or where reality disagreed with it. Each one is binding until superseded here.
     explorer recomputes `config_id` on every keystroke. `@noble/hashes` gives a sync,
     dependency-light SHA-256 that works identically in the browser and in Node; the package
     contains no filesystem, network or Node-only API.
+
+20. **Model ids are Hugging Face repo ids (2026-08-23, Khaled).** `model_id` is the HF repo id
+    verbatim and case-preserved (`Qwen/Qwen3.8-27B`), because a fine-tune or re-upload by another
+    account is a different model. Directories nest one extra level (`models/<owner>/<name>/`,
+    `results/<engine>/<owner>/<name>/<hardware>/`). `cell_id` hashes the verbatim id. The app
+    encodes the slash as a path segment (`#/models/Qwen/Qwen3.8-27B`). Case-only collisions between
+    model directories are rejected by the validator (case-insensitive filesystems). Quant records keep
+    short ids unique within the model and carry the full `hf_id` of the weights repo.
+
+21. **No seed results; measurements run on contributors' machines only.** The 8 hand-entered seed
+    files were removed; `docs/reference-measurements.md` keeps the numbers as reference.

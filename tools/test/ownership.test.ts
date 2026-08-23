@@ -115,7 +115,7 @@ describe('renaming', () => {
   it('rejects moving somebody else’s file', () => {
     const stored = repo.read<ResultRecord>(alicePath);
     repo.remove(alicePath);
-    repo.write(`results/vllm/qwen3-8b/apple-m2-max-32gb/${stored.run_id}.json`, stored);
+    repo.write(`results/vllm/Qwen/Qwen3-8B/apple-m2-max-32gb/${stored.run_id}.json`, stored);
     repo.commit('results: bob moves alice’s run');
     const outcome = check({ author: 'bob' });
     expect(codes(outcome).some((c) => c.startsWith('ownership-'))).toBe(true);

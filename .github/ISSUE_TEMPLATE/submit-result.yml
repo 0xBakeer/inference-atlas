@@ -1,6 +1,6 @@
 name: Submit a result
 description: You have the hardware and the numbers but not a checkout. Paste them here and a pull request is opened in your name.
-title: 'results: <engine> <version> <model>/<quant> on <hardware>'
+title: 'results: <engine> <version> <hf-owner>/<hf-name>/<quant> on <hardware>'
 labels: [submit-result]
 body:
   - type: markdown
@@ -40,8 +40,11 @@ body:
     id: model
     attributes:
       label: Model
-      description: The model id under `models/` — not the Hugging Face path.
-      placeholder: qwen3-8b
+      description: >
+        The Hugging Face repo id of the model, exactly as it is written on the Hub —
+        case included. That *is* the model id, and it is the directory it lives in under
+        `models/<owner>/<name>/`.
+      placeholder: Qwen/Qwen3-8B
     validations:
       required: true
 
@@ -49,7 +52,9 @@ body:
     id: quant
     attributes:
       label: Quantization
-      description: The quant id under `models/<model>/quants/`.
+      description: >
+        The quant id under `models/<owner>/<name>/quants/` — the short id (`fp8`,
+        `gguf-q4-k-m`), not the repo the weights came from.
       placeholder: fp8
     validations:
       required: true

@@ -78,20 +78,22 @@ def test_build_packet_fills_from_the_registry(atlas_repo: Path) -> None:
         Registry(atlas_repo),
         engine_id="vllm",
         engine_version="0.27.1",
-        model_id="test-model-1b",
+        model_id="acme/test-model-1b",
         quant_id="fp8",
         hardware_id="test-gpu-24gb",
         workloads=["serve-test-c2-v1"],
         args={"max-model-len": 32768},
     )
     assert packet["packet_version"] == PACKET_VERSION
-    assert packet["model"]["hf_id"] == "test/Test-Model-1B-FP8"
+    # The model's repo is the id itself; the weights repo rides along separately.
+    assert packet["model"]["hf_id"] == "acme/test-model-1b"
+    assert packet["model"]["quant_hf_id"] == "acme-quants/test-model-1b-FP8"
     assert packet["engine"]["install"]["method"] == "docker"
     assert packet["engine"]["install"]["image"] == "vllm/vllm-openai:v0.27.1"
     assert packet["hardware"]["expected_detect"]["nvidia_smi_name"] == ["Test GPU 24GB"]
     assert packet["cell"]["engine_minor"] == "0.27"
-    assert packet["branch"].startswith("result/vllm-test-model-1b-test-gpu-24gb-")
-    assert packet["pr_title"].startswith("results: vllm 0.27.1 test-model-1b fp8 on")
+    assert packet["branch"].startswith("result/vllm-acme-test-model-1b-test-gpu-24gb-")
+    assert packet["pr_title"].startswith("results: vllm 0.27.1 acme/test-model-1b fp8 on")
     assert packet["agent_rules"] == AGENT_RULES
 
 
@@ -101,7 +103,7 @@ def test_generated_packet_is_a_valid_task_spec(atlas_repo: Path) -> None:
         Registry(atlas_repo),
         engine_id="vllm",
         engine_version="0.27.1",
-        model_id="test-model-1b",
+        model_id="acme/test-model-1b",
         quant_id="fp8",
         hardware_id="test-gpu-24gb",
         workloads=["serve-test-c2-v1"],
@@ -118,7 +120,7 @@ def test_packet_for_unregistered_hardware(atlas_repo: Path) -> None:
         Registry(atlas_repo),
         engine_id="vllm",
         engine_version="0.27.1",
-        model_id="test-model-1b",
+        model_id="acme/test-model-1b",
         quant_id="fp8",
         hardware_id=None,
         workloads=["serve-test-c2-v1"],
@@ -144,13 +146,13 @@ def test_find_cell_scans_existing_results(atlas_repo: Path) -> None:
     record = {
         "cell_id": "abcdef123456",
         "engine": {"id": "vllm", "version": "0.27.1"},
-        "model": {"id": "test-model-1b", "quant_id": "fp8"},
+        "model": {"id": "acme/test-model-1b", "quant_id": "fp8"},
         "hardware": {"id": "test-gpu-24gb"},
     }
-    target = atlas_repo / "results" / "vllm" / "test-model-1b" / "test-gpu-24gb" / "r.json"
+    target = atlas_repo / "results" / "vllm" / "acme/test-model-1b" / "test-gpu-24gb" / "r.json"
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(json.dumps(record))
-    assert find_cell(Registry(atlas_repo), "abcdef123456")["model_id"] == "test-model-1b"
+    assert find_cell(Registry(atlas_repo), "abcdef123456")["model_id"] == "acme/test-model-1b"
     assert find_cell(Registry(atlas_repo), "000000000000") is None
 
 

@@ -16,6 +16,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from .ids import model_slug
+
 __all__ = ["SubmitPlan", "build_plan", "dirty_outside_results", "submit"]
 
 
@@ -97,7 +99,10 @@ def build_plan(repo: Path, paths: Sequence[Path], *, draft: bool = False) -> Sub
     short = str(first.get("cell_id") or first.get("config_id") or "new")[:6]
     site = _site_repo(repo)
     prefix = str(site.get("branch_prefix") or "result/")
-    branch = f"{prefix}{engine['id']}-{model['id']}-{hardware['id']}-{short}"
+    # A model id is a Hugging Face repo id (`Qwen/Qwen3.8-27B`); a git branch cannot hold a
+    # slash or an upper-case letter portably, so the branch uses the slug. The id itself is
+    # never rewritten — it lives in the file, the path and every hash.
+    branch = f"{prefix}{engine['id']}-{model_slug(str(model['id']))}-{hardware['id']}-{short}"
     message = (
         f"results: {engine['id']} {engine['version']} {model['id']} {model['quant_id']} "
         f"on {hardware['id']} ({len(records)} runs)"

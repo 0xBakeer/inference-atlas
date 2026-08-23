@@ -52,9 +52,16 @@ class ResultInputs:
     github_login: str
     started_at: str
     finished_at: str
-    serve_command: str
+    #: ``None`` in attach mode: we did not start the server and do not know how it was.
+    serve_command: str | None
     container: str | None = None
     install_method: str | None = None
+    #: What the server answered to in the OpenAI ``model`` field — transport, not identity.
+    served_model_id: str | None = None
+    #: Everything ``/v1/models`` advertised, so a wrong-model run can be spotted afterwards.
+    advertised_models: list[str] = field(default_factory=list)
+    #: True when the engine was already running and the harness only measured it.
+    attached: bool = False
     extra_gotchas: list[str] = field(default_factory=list)
     notes: str | None = None
     warnings: list[str] = field(default_factory=list)
@@ -276,7 +283,16 @@ def build_result(inputs: ResultInputs) -> dict[str, Any]:
     model_record = registry.model(spec.model.id) or {}
 
     metrics = outcome.metrics
-    payload, truncated = bound_payload(dict(outcome.raw or {}))
+    raw_payload = dict(outcome.raw or {})
+    # The wire-level facts that have no home in the (closed) engine/model blocks: what the
+    # server called the model, what else it had loaded, and whether we started it at all.
+    raw_payload["engine_endpoint"] = {
+        "attached": inputs.attached,
+        "base_url": spec.engine.base_url,
+        "served_model_id": inputs.served_model_id,
+        "advertised_models": inputs.advertised_models,
+    }
+    payload, truncated = bound_payload(raw_payload)
     payload_json = json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
 
     agent_name = os.environ.get("ATLAS_AGENT_NAME")
@@ -297,7 +313,9 @@ def build_result(inputs: ResultInputs) -> dict[str, Any]:
         "model": {
             "id": spec.model.id,
             "quant_id": spec.model.quant_id,
-            "hf_id": spec.model.hf_id or quant.get("hf_id") or model_record.get("hf_id"),
+            # model.hf_id is the model's own repo (equal to the id); the quant's weights
+            # repo lives in the quant record and is not duplicated here.
+            "hf_id": spec.model.hf_id or model_record.get("hf_id") or spec.model.id,
             "revision": spec.model.revision,
             "dtype": spec.model.dtype or "auto",
             "local_path": spec.model.local_path,

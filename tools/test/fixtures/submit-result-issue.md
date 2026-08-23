@@ -8,7 +8,7 @@ vllm
 
 ### Model
 
-qwen3-8b
+Qwen/Qwen3-8B
 
 ### Quantization
 

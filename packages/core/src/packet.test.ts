@@ -13,10 +13,10 @@ const vllm = readJson<EngineMeta>('engines/vllm/meta.json');
 const vllmVersion = readJson<EngineVersion>('engines/vllm/versions/0.27.1.json');
 const llamacpp = readJson<EngineMeta>('engines/llamacpp/meta.json');
 const llamacppVersion = readJson<EngineVersion>('engines/llamacpp/versions/b7000.json');
-const qwen = readJson<Model>('models/qwen3.8-27b/model.json');
-const qwenFp8 = readJson<Quant>('models/qwen3.8-27b/quants/fp8.json');
-const ling = readJson<Model>('models/ling-3.0-flash/model.json');
-const lingGguf = readJson<Quant>('models/ling-3.0-flash/quants/gguf-q5-k-m.json');
+const qwen = readJson<Model>('models/Qwen/Qwen3.8-27B/model.json');
+const qwenFp8 = readJson<Quant>('models/Qwen/Qwen3.8-27B/quants/fp8.json');
+const ling = readJson<Model>('models/inclusionAI/Ling-3.0-flash/model.json');
+const lingGguf = readJson<Quant>('models/inclusionAI/Ling-3.0-flash/quants/gguf-q5-k-m.json');
 const spark = readJson<Hardware>('hardware/nvidia-gb10-dgx-spark.json');
 const m2 = readJson<Hardware>('hardware/apple-m2-max-32gb.json');
 
@@ -45,7 +45,7 @@ const cellPacket = buildPacket(
     kind: 'cell',
     engine_id: 'vllm',
     engine_version: '0.27.1',
-    model_id: 'qwen3.8-27b',
+    model_id: 'Qwen/Qwen3.8-27B',
     quant_id: 'fp8',
     hardware_id: 'nvidia-gb10-dgx-spark',
     hw_count: 1,
@@ -94,8 +94,8 @@ describe('the cell packet', () => {
   });
 
   it('clones the repository from the site config', () => {
-    expect(md).toContain('git clone https://github.com/khaledbakeer/inf-atlas.git');
-    expect(md).toContain('cd inf-atlas');
+    expect(md).toContain('git clone https://github.com/Inference-Atlas/inference-atlas.git');
+    expect(md).toContain('cd inference-atlas');
     expect(md).toContain('AGENTS.md');
   });
 
@@ -116,11 +116,11 @@ describe('the cell packet', () => {
   it('runs the workload through the harness and validates locally', () => {
     expect(md).toContain('uv run atlas-bench run --spec task.json');
     expect(md).toContain('pnpm validate');
-    expect(md).toContain('results/vllm/qwen3.8-27b/nvidia-gb10-dgx-spark/<run_id>.json');
+    expect(md).toContain('results/vllm/Qwen/Qwen3.8-27B/nvidia-gb10-dgx-spark/<run_id>.json');
   });
 
   it('opens the pull request on the right branch with the right label', () => {
-    expect(md).toContain('git checkout -b result/vllm-qwen3.8-27b-nvidia-gb10-dgx-spark-');
+    expect(md).toContain('git checkout -b result/vllm-qwen-qwen3.8-27b-nvidia-gb10-dgx-spark-');
     expect(md).toContain('gh pr create --base main');
     expect(md).toContain('--label results');
   });
@@ -150,7 +150,7 @@ describe('the cell packet', () => {
     expect(json.kind).toBe('cell');
     expect(json.cell.cell_id).toBe(
       cellId({
-        model_id: 'qwen3.8-27b',
+        model_id: 'Qwen/Qwen3.8-27B',
         quant_id: 'fp8',
         hardware_id: 'nvidia-gb10-dgx-spark',
         hw_count: 1,
@@ -160,7 +160,7 @@ describe('the cell packet', () => {
     );
     expect(json.model.hf_id).toBe('Qwen/Qwen3.8-27B-FP8');
     expect(json.engine.install?.method).toBe('docker');
-    expect(json.output_dir).toBe('results/vllm/qwen3.8-27b/nvidia-gb10-dgx-spark');
+    expect(json.output_dir).toBe('results/vllm/Qwen/Qwen3.8-27B/nvidia-gb10-dgx-spark');
     expect(json.agent_rules).toEqual([...AGENT_RULES]);
     expect(md).toContain(JSON.stringify(json, null, 2));
   });
@@ -174,7 +174,9 @@ describe('the cell packet', () => {
   });
 
   it('offers a pre-filled issue url', () => {
-    expect(cellPacket.issueUrl).toContain('https://github.com/khaledbakeer/inf-atlas/issues/new?');
+    expect(cellPacket.issueUrl).toContain(
+      'https://github.com/Inference-Atlas/inference-atlas/issues/new?',
+    );
     expect(cellPacket.issueUrl).toContain('labels=wanted');
     expect(decodeURIComponent(cellPacket.issueUrl)).toContain('nvidia-gb10-dgx-spark');
   });
@@ -200,7 +202,7 @@ describe('the registry packets', () => {
       registry,
       site,
     );
-    expect(packet.markdown).toContain('models/<id>/model.json');
+    expect(packet.markdown).toContain('models/<owner>/<name>/model.json');
     expect(packet.markdown).toContain('not the launch blog post');
     expect(packet.json.pr_title).toBe('model: add Some New 12B');
   });
@@ -222,7 +224,7 @@ describe('the registry packets', () => {
         kind: 'cell',
         engine_id: 'llamacpp',
         engine_version: 'b7000',
-        model_id: 'ling-3.0-flash',
+        model_id: 'inclusionAI/Ling-3.0-flash',
         quant_id: 'gguf-q5-k-m',
         hardware_id: 'nvidia-gb10-dgx-spark',
         args: { 'ctx-size': 262144 },
@@ -235,5 +237,43 @@ describe('the registry packets', () => {
       'llama-server -m ./models/Ling-3.0-flash-Q5_K_M.gguf --ctx-size 262144',
     );
     expect(packet.json.cell.engine_minor).toBe('b7000');
+  });
+
+  it('downloads the one file it needs out of a multi-quant GGUF repository', () => {
+    const packet = buildPacket(
+      {
+        kind: 'cell',
+        engine_id: 'llamacpp',
+        engine_version: 'b7000',
+        model_id: 'inclusionAI/Ling-3.0-flash',
+        quant_id: 'gguf-q5-k-m',
+        hardware_id: 'nvidia-gb10-dgx-spark',
+        workload_ids: [],
+      },
+      registry,
+      site,
+    );
+    expect(packet.markdown).toContain(`hf download ${lingGguf.hf_id} Ling-3.0-flash-Q5_K_M.gguf`);
+  });
+
+  it('puts a branch-safe rendering of the model id in the branch name', () => {
+    const packet = buildPacket(
+      {
+        kind: 'cell',
+        engine_id: 'vllm',
+        engine_version: '0.27.1',
+        model_id: 'Qwen/Qwen3.8-27B',
+        quant_id: 'fp8',
+        hardware_id: 'nvidia-gb10-dgx-spark',
+        workload_ids: [],
+      },
+      registry,
+      site,
+    );
+    expect(packet.json.branch).toMatch(/^result\/[a-z0-9./-]+$/);
+    expect(packet.json.branch).toContain('vllm-qwen-qwen3.8-27b-nvidia-gb10-dgx-spark-');
+    // the id itself, slash and capitals included, still names the cell and the output directory
+    expect(packet.json.cell.model_id).toBe('Qwen/Qwen3.8-27B');
+    expect(packet.json.output_dir).toBe('results/vllm/Qwen/Qwen3.8-27B/nvidia-gb10-dgx-spark');
   });
 });

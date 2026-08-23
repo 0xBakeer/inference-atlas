@@ -15,11 +15,24 @@ from pathlib import Path
 from typing import Any
 
 from .canonical import canonicalize
-from .ids import cell_id, config_id_from_canonical, is_valid_id, run_suffix
+from .ids import (
+    cell_id,
+    config_id_from_canonical,
+    is_valid_id,
+    is_valid_model_id,
+    model_parts,
+    run_suffix,
+)
 from .plausibility import check_plausibility
 from .registry import Registry
 
-__all__ = ["Issue", "format_issues", "validate_file", "validate_record"]
+__all__ = [
+    "Issue",
+    "check_model_registry",
+    "format_issues",
+    "validate_file",
+    "validate_record",
+]
 
 
 @dataclass
@@ -168,13 +181,15 @@ def _id_issues(record: dict[str, Any], registry: Registry, file_path: Path | Non
                 )
             )
         parts = file_path.resolve().parts
+        owner, name = model_parts(str(model.get("id")))
         expected_tail = (
             "results",
             str(engine.get("id")),
-            str(model.get("id")),
+            *[part for part in (owner, name) if part],
             str(hardware.get("id")),
         )
-        if len(parts) < 5 or tuple(parts[-5:-1]) != expected_tail:
+        depth = len(expected_tail)
+        if len(parts) <= depth or tuple(parts[-depth - 1 : -1]) != expected_tail:
             issues.append(
                 Issue(
                     "error",
@@ -194,13 +209,37 @@ def _reference_issues(record: dict[str, Any], registry: Registry, path: str | No
     hardware = record.get("hardware") or {}
     for label, value in (
         ("engine.id", engine.get("id")),
-        ("model.id", model.get("id")),
         ("model.quant_id", model.get("quant_id")),
         ("hardware.id", hardware.get("id")),
         ("workload_id", record.get("workload_id")),
     ):
         if value is not None and not is_valid_id(value):
             issues.append(Issue("error", "id-format", f"{label}={value!r} is not kebab-case", path))
+    # model_id is the Hugging Face repo id: case-preserved, exactly one slash. Nothing may
+    # lowercase or kebab-case it (SPEC §2, decision 20).
+    if model.get("id") is not None and not is_valid_model_id(model.get("id")):
+        issues.append(
+            Issue(
+                "error",
+                "model-id-format",
+                f"model.id={model.get('id')!r} is not a Hugging Face repo id (<owner>/<name>)",
+                path,
+            )
+        )
+
+    # Under the HF-id contract these are the same string; a result that disagrees is
+    # pointing at a different repo than the one it claims to measure (usually the quant's
+    # weights repo, which belongs in the quant record).
+    if model.get("hf_id") and model.get("id") and model["hf_id"] != model["id"]:
+        issues.append(
+            Issue(
+                "error",
+                "model-hf-id-mismatch",
+                f"model.hf_id={model['hf_id']!r} must equal model.id={model['id']!r} "
+                "(the quant's weights repo lives in the quant record)",
+                path,
+            )
+        )
 
     if engine.get("id") and registry.engine_meta(str(engine["id"])) is None:
         issues.append(
@@ -208,7 +247,12 @@ def _reference_issues(record: dict[str, Any], registry: Registry, path: str | No
         )
     if model.get("id") and registry.model(str(model["id"])) is None:
         issues.append(
-            Issue("error", "unknown-model", f"models/{model['id']}/model.json is missing", path)
+            Issue(
+                "error",
+                "unknown-model",
+                f"models/{model['id']}/model.json is missing",
+                path,
+            )
         )
     quant = (
         registry.quant(str(model.get("id")), str(model.get("quant_id")))
@@ -313,6 +357,64 @@ def validate_file(path: Path | str, registry: Registry) -> list[Issue]:
             )
         ]
     return validate_record(record, registry, file_path)
+
+
+def check_model_registry(registry: Registry) -> list[Issue]:
+    """Registry-wide model checks that no single result file can see.
+
+    Two model directories that differ only by case are the same directory on macOS and
+    Windows, so one of them silently wins on a contributor's checkout and the ids stop
+    round-tripping (SPEC §2, decision 20). ``model.json.hf_id`` must also equal the id: the
+    directory layout *is* the Hugging Face repo id, and a mismatch means one of the two is a
+    typo nobody would notice.
+    """
+    issues: list[Issue] = []
+    seen: dict[str, str] = {}
+    for model_id in registry.model_ids():
+        relative = f"models/{model_id}/model.json"
+        if not is_valid_model_id(model_id):
+            issues.append(
+                Issue(
+                    "error",
+                    "model-id-format",
+                    f"{model_id!r} is not a Hugging Face repo id (<owner>/<name>)",
+                    relative,
+                )
+            )
+        folded = model_id.casefold()
+        if folded in seen and seen[folded] != model_id:
+            issues.append(
+                Issue(
+                    "error",
+                    "model-id-case-collision",
+                    f"{model_id!r} and {seen[folded]!r} differ only by case; they are one "
+                    "directory on a case-insensitive filesystem",
+                    relative,
+                )
+            )
+        seen.setdefault(folded, model_id)
+
+        record = registry.model(model_id)
+        if isinstance(record, dict):
+            if record.get("id") != model_id:
+                issues.append(
+                    Issue(
+                        "error",
+                        "model-id-mismatch",
+                        f"model.json says id={record.get('id')!r} but it lives in {model_id}",
+                        relative,
+                    )
+                )
+            if record.get("hf_id") not in (None, model_id):
+                issues.append(
+                    Issue(
+                        "error",
+                        "model-hf-id-mismatch",
+                        f"model.json hf_id={record.get('hf_id')!r} must equal the id {model_id!r}",
+                        relative,
+                    )
+                )
+    return issues
 
 
 def format_issues(issues: Iterable[Issue]) -> str:

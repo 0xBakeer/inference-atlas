@@ -4,7 +4,7 @@ import type { Gap } from '@atlas/core';
 import { addButton } from '../components/add-modal.js';
 import { icon } from '../components/icons.js';
 import { emptyState, selectField, skeletonLines, vendorDot } from '../components/ui.js';
-import { href, qget, setQuery } from '../router.js';
+import { href, modelHref, qget, setQuery } from '../router.js';
 import { store } from '../store.js';
 import { matchesQuery, uniqueSorted } from '../util/filters.js';
 import { fmtInt } from '../util/format.js';
@@ -125,7 +125,7 @@ export class AtlasGapsView extends ViewElement {
                             <a href=${href('engines', g.engine_id)}>${g.engine_id}</a>
                             <span class="muted">${g.engine_version}</span>
                             <span class="faint">·</span>
-                            <a href=${href('models', g.model_id)}>${g.model_id}</a
+                            <a class="mono" href=${modelHref(g.model_id)}>${g.model_id}</a
                             ><span class="muted">/${g.quant_id}</span>
                             <span class="faint">·</span>
                             ${vendorDot(store.lookups.hardware.get(g.hardware_id)?.vendor)}
@@ -144,7 +144,7 @@ export class AtlasGapsView extends ViewElement {
                           <span class="score" title="wanted score">${g.score.toFixed(0)}</span>
                           <a
                             class="btn btn-sm btn-ghost"
-                            href=${`#/explore?engine=${g.engine_id}&version=${g.engine_version}&model=${g.model_id}&quant=${g.quant_id}&hardware=${g.hardware_id}`}
+                            href=${`#/explore?engine=${g.engine_id}&version=${g.engine_version}&model=${encodeURIComponent(g.model_id)}&quant=${g.quant_id}&hardware=${g.hardware_id}`}
                             title="Open in the explorer"
                             >${icon('sparkle')}</a
                           >

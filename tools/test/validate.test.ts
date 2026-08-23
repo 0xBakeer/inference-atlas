@@ -9,7 +9,13 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import type { ResultRecord } from '@atlas/core';
 import { validateRepo } from '../src/validate.js';
-import { SOURCE_ROOT, makeFixtureRepo, makeResult } from './helpers/fixture-repo.js';
+import {
+  CASE_SENSITIVE_FS,
+  SOURCE_ROOT,
+  addModel,
+  makeFixtureRepo,
+  makeResult,
+} from './helpers/fixture-repo.js';
 import type { FixtureRepo } from './helpers/fixture-repo.js';
 
 let repo: FixtureRepo;
@@ -74,7 +80,7 @@ describe('recomputed identity', () => {
     // filename no longer matches the run_id either.
     const result = makeResult(repo);
     repo.writeResult(result);
-    const path = `results/vllm/qwen3-8b/nvidia-rtx-4090/${result.run_id}.json`;
+    const path = `results/vllm/Qwen/Qwen3-8B/nvidia-rtx-4090/${result.run_id}.json`;
     const stored = repo.read<ResultRecord>(path);
     stored.provenance.github_login = 'someone-else';
     repo.write(path, stored);
@@ -83,13 +89,13 @@ describe('recomputed identity', () => {
 
   it('catches a result filed under the wrong directory', () => {
     const result = makeResult(repo);
-    repo.write(`results/vllm/qwen3-8b/apple-m2-max-32gb/${result.run_id}.json`, result);
+    repo.write(`results/vllm/Qwen/Qwen3-8B/apple-m2-max-32gb/${result.run_id}.json`, result);
     expect(codes(validateRepo({ root: repo.root }))).toContain('wrong-path');
   });
 
   it('catches a filename that is not the run_id', () => {
     const result = makeResult(repo);
-    repo.write('results/vllm/qwen3-8b/nvidia-rtx-4090/my-run.json', result);
+    repo.write('results/vllm/Qwen/Qwen3-8B/nvidia-rtx-4090/my-run.json', result);
     expect(codes(validateRepo({ root: repo.root }))).toContain('wrong-path');
   });
 });
@@ -97,8 +103,8 @@ describe('recomputed identity', () => {
 describe('referential integrity', () => {
   it('rejects an unknown model', () => {
     const result = makeResult(repo);
-    result.model.id = 'no-such-model';
-    repo.write(`results/vllm/no-such-model/nvidia-rtx-4090/${result.run_id}.json`, result);
+    result.model.id = 'acme/no-such-model';
+    repo.write(`results/vllm/acme/no-such-model/nvidia-rtx-4090/${result.run_id}.json`, result);
     const outcome = validateRepo({ root: repo.root });
     expect(codes(outcome)).toContain('unknown-model');
   });
@@ -106,7 +112,7 @@ describe('referential integrity', () => {
   it('rejects an unknown hardware id', () => {
     const result = makeResult(repo);
     result.hardware.id = 'no-such-gpu';
-    repo.write(`results/vllm/qwen3-8b/no-such-gpu/${result.run_id}.json`, result);
+    repo.write(`results/vllm/Qwen/Qwen3-8B/no-such-gpu/${result.run_id}.json`, result);
     expect(codes(validateRepo({ root: repo.root }))).toContain('unknown-hardware');
   });
 
@@ -128,7 +134,7 @@ describe('referential integrity', () => {
     const result = makeResult(repo);
     result.engine.version = '0.27.9';
     repo.writeResult(makeResult(repo)); // keep a valid one alongside
-    repo.write(`results/vllm/qwen3-8b/nvidia-rtx-4090/${result.run_id}.json`, result);
+    repo.write(`results/vllm/Qwen/Qwen3-8B/nvidia-rtx-4090/${result.run_id}.json`, result);
     const outcome = validateRepo({ root: repo.root });
     expect(codes(outcome, 'warn')).toContain('unknown-engine-version');
   });
@@ -152,11 +158,80 @@ describe('referential integrity', () => {
   });
 });
 
+describe('model ids and their directories', () => {
+  it('accepts a Hugging Face repo id whose owner carries dots and dashes', () => {
+    addModel(repo, 'acme.labs-ai/Test.Model-8B');
+    repo.writeResult(
+      makeResult(repo, {
+        modelId: 'acme.labs-ai/Test.Model-8B',
+        quantId: 'bf16',
+        decodeTokS: 50,
+        outputTokS: 50,
+      }),
+    );
+    const outcome = validateRepo({ root: repo.root });
+    expect(codes(outcome)).toEqual([]);
+    expect(outcome.counts.models).toBe(2);
+  });
+
+  it('rejects a model.json one level above where its id says it lives', () => {
+    // The pre-decision-20 layout: a single kebab-case directory instead of <owner>/<name>.
+    repo.write('models/orphan-8b/model.json', repo.read('models/Qwen/Qwen3-8B/model.json'));
+    repo.write(
+      'models/orphan-8b/quants/fp8.json',
+      repo.read('models/Qwen/Qwen3-8B/quants/fp8.json'),
+    );
+    const outcome = validateRepo({ root: repo.root });
+    // One error naming the layout, not a second one calling `quants/` a nameless model.
+    expect(codes(outcome).filter((c) => c.startsWith('model-'))).toEqual(['model-dir-depth']);
+  });
+
+  it('rejects a directory that is not a Hugging Face repo id', () => {
+    addModel(repo, 'acme/-not-a-repo');
+    expect(codes(validateRepo({ root: repo.root }))).toContain('invalid-model-id');
+  });
+
+  it('rejects an id that disagrees with the directory it is in', () => {
+    addModel(repo, 'acme/test-model-8b');
+    const model = repo.read<{ id: string }>('models/acme/test-model-8b/model.json');
+    model.id = 'acme/other-model-8b';
+    repo.write('models/acme/test-model-8b/model.json', model);
+    expect(codes(validateRepo({ root: repo.root }))).toContain('id-mismatch');
+  });
+
+  it('rejects an id that differs from its directory only by case', () => {
+    // What a contributor on a case-insensitive filesystem actually produces: the directory
+    // is right, the id inside it was typed rather than copied off the Hub.
+    const model = repo.read<{ id: string }>('models/Qwen/Qwen3-8B/model.json');
+    model.id = 'qwen/qwen3-8b';
+    repo.write('models/Qwen/Qwen3-8B/model.json', model);
+    expect(codes(validateRepo({ root: repo.root }))).toContain('id-mismatch');
+  });
+
+  it('rejects an hf_id that is not the id', () => {
+    addModel(repo, 'acme/test-model-8b');
+    const model = repo.read<{ hf_id: string }>('models/acme/test-model-8b/model.json');
+    model.hf_id = 'acme/Test-Model-8B';
+    repo.write('models/acme/test-model-8b/model.json', model);
+    expect(codes(validateRepo({ root: repo.root }))).toContain('hf-id-mismatch');
+  });
+
+  // Two directories that differ only by case cannot both exist on APFS or NTFS, which is
+  // the whole reason the check exists: only a contributor on a case-sensitive filesystem
+  // can create the situation, and only there can it be reproduced.
+  it.runIf(CASE_SENSITIVE_FS)('rejects two model directories that differ only by case', () => {
+    addModel(repo, 'acme/test-model-8b');
+    addModel(repo, 'acme/Test-Model-8B');
+    const outcome = validateRepo({ root: repo.root });
+    expect(codes(outcome)).toContain('model-dir-case-collision');
+  });
+});
+
 describe('duplicates and payloads', () => {
   it('rejects two files carrying the same run_id', () => {
     const result = makeResult(repo);
     repo.writeResult(result);
-    repo.write(`results/vllm/qwen3-8b/apple-m2-max-32gb/${result.run_id}.json`, result);
+    repo.write(`results/vllm/Qwen/Qwen3-8B/apple-m2-max-32gb/${result.run_id}.json`, result);
     const outcome = validateRepo({ root: repo.root });
     expect(codes(outcome)).toContain('duplicate-run-id');
   });
@@ -187,7 +262,7 @@ describe('duplicates and payloads', () => {
   it('rejects a file that does not match its schema', () => {
     const result = makeResult(repo) as unknown as Record<string, unknown>;
     delete result.verification;
-    repo.write(`results/vllm/qwen3-8b/nvidia-rtx-4090/${String(result.run_id)}.json`, result);
+    repo.write(`results/vllm/Qwen/Qwen3-8B/nvidia-rtx-4090/${String(result.run_id)}.json`, result);
     expect(codes(validateRepo({ root: repo.root }))).toContain('schema');
   });
 });
@@ -264,7 +339,7 @@ describe('reporting', () => {
 
     const elsewhere = validateRepo({
       root: repo.root,
-      changed: ['results/vllm/qwen3-8b/nvidia-rtx-4090/other.json'],
+      changed: ['results/vllm/Qwen/Qwen3-8B/nvidia-rtx-4090/other.json'],
     });
     expect(elsewhere.issues).toEqual([]);
     expect(elsewhere.ok).toBe(true);

@@ -1,7 +1,7 @@
 /** Cmd/Ctrl-K search over pages, models, hardware, engines, workloads, contributors and runs. */
 import { html, nothing } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
-import { href, navigate } from '../router.js';
+import { href, modelHref, navigate } from '../router.js';
 import { signal, watch } from '../signal.js';
 import { store } from '../store.js';
 import { fuzzyScore } from '../util/filters.js';
@@ -88,7 +88,7 @@ export class AtlasCommandPalette extends AtlasElement {
           group: 'Models',
           label: m.model.name,
           sub: m.model.id,
-          hash: href('models', m.model.id),
+          hash: modelHref(m.model.id),
           ic: 'box',
           keywords: `${m.model.id} ${m.model.name} ${m.model.family ?? ''} ${m.model.vendor}`,
         });

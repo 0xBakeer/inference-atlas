@@ -23,6 +23,16 @@ export type Platform =
 
 export type Impact = 'high' | 'medium' | 'low';
 
+/**
+ * The Hugging Face repo id, verbatim and case-preserved, with exactly one slash:
+ * `Qwen/Qwen3.8-27B`, `google/gemma-4-E2B-it` (SPEC §2, decision 20).
+ *
+ * An alias for `string` — TypeScript cannot check the shape — but it marks every field that
+ * is *not* a lowercase kebab-case id, and that is the distinction people get wrong. Use
+ * `isModelId` from `ids.ts` when the value comes from outside.
+ */
+export type ModelId = string;
+
 export interface Links {
   [label: string]: string | null | undefined;
 }
@@ -218,9 +228,11 @@ export interface EngineOverlay {
 
 export interface Model {
   schema_version: 1;
-  id: string;
+  /** The HF repo id, verbatim: `Qwen/Qwen3.8-27B`. Also the two directory levels under `models/`. */
+  id: ModelId;
   name: string;
-  hf_id: string | null;
+  /** Always equal to `id`; the validators enforce it. The weights of a *quantization* live elsewhere — see `Quant.hf_id`. */
+  hf_id: ModelId;
   family?: string | null;
   vendor: string;
   params_b: number;
@@ -258,11 +270,14 @@ export type QuantFormat =
 
 export interface Quant {
   schema_version: 1;
+  /** Short lowercase kebab-case, unique within the model: `fp8`, `mlx-4bit`, `gguf-q4-k-m`. */
   id: string;
-  model_id: string;
+  /** The model this belongs to, i.e. the two directory levels above `quants/`. */
+  model_id: ModelId;
   format: QuantFormat;
   bits: number;
-  hf_id?: string | null;
+  /** The repo that holds *these* weights, official or community — usually not `model_id`. */
+  hf_id?: ModelId | null;
   revision?: string | null;
   files?: string[];
   ollama_tag?: string | null;
@@ -421,7 +436,7 @@ export interface ResultRecord {
     build_flags?: string | null;
   };
   model: {
-    id: string;
+    id: ModelId;
     quant_id: string;
     hf_id?: string | null;
     revision?: string | null;
@@ -571,7 +586,7 @@ export interface CompiledIndexRow {
   workload_id: string;
   kind: WorkloadKind;
   engine: { id: string; version: string; minor: string };
-  model: { id: string; quant_id: string };
+  model: { id: ModelId; quant_id: string };
   hardware: { id: string; count: number };
   metrics: {
     output_tok_s?: number | null;
@@ -602,7 +617,7 @@ export type CoverageLevel = 'none' | 'single' | 'reproduced' | 'disputed' | 'sta
 
 export interface CoverageCell {
   cell_id: string;
-  model_id: string;
+  model_id: ModelId;
   quant_id: string;
   hardware_id: string;
   hw_count: number;
@@ -658,7 +673,7 @@ export interface Contributor {
 /** One entry of the wanted queue: a cell nobody has measured, ranked. */
 export interface Gap {
   cell_id: string;
-  model_id: string;
+  model_id: ModelId;
   quant_id: string;
   hardware_id: string;
   hw_count: number;
@@ -681,7 +696,7 @@ export interface PacketJson {
   repo: { owner: string; name: string; url: string; default_branch: string };
   cell: {
     cell_id: string | null;
-    model_id: string | null;
+    model_id: ModelId | null;
     quant_id: string | null;
     hardware_id: string | null;
     hw_count: number;
@@ -697,7 +712,7 @@ export interface PacketJson {
     default_port: number | null;
   };
   model: {
-    id: string | null;
+    id: ModelId | null;
     quant_id: string | null;
     hf_id: string | null;
     ollama_tag: string | null;

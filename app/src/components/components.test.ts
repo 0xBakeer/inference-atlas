@@ -143,7 +143,7 @@ describe('add modal', () => {
       kind: 'cell' as const,
       engine_id: 'vllm',
       engine_version: '0.27.1',
-      model_id: 'qwen3-8b',
+      model_id: 'Qwen/Qwen3-8B',
       quant_id: 'fp8',
       hardware_id: 'nvidia-rtx-4090',
       workload_ids: ['a', 'b'],
@@ -160,7 +160,7 @@ describe('add modal', () => {
     openAdd({
       engine_id: 'vllm',
       engine_version: '0.27.1',
-      model_id: 'qwen3-8b',
+      model_id: 'Qwen/Qwen3-8B',
       quant_id: 'fp8',
       hardware_id: 'nvidia-rtx-4090',
       workload_ids: ['serve-single-i256-o256-v1'],
@@ -169,7 +169,7 @@ describe('add modal', () => {
     await new Promise((r) => setTimeout(r, 0));
     await el.updateComplete;
     expect(el.querySelector('.add-dialog')).toBeTruthy();
-    expect(el.querySelector('#add-title')?.textContent).toContain('qwen3-8b');
+    expect(el.querySelector('#add-title')?.textContent).toContain('Qwen/Qwen3-8B');
     const md = el.querySelector('.add-md')!.textContent ?? '';
     expect(md).toContain('atlas-bench hwinfo --json');
     expect(md).toContain('git clone');

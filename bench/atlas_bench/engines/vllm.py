@@ -70,8 +70,8 @@ class VllmAdapter(EngineAdapter):
                 "--port",
                 str(self.port),
             ]
-        if self.spec.model.served_name:
-            tokens.extend(["--served-model-name", self.spec.model.served_name])
+        if self.spec.model.served_model_id:
+            tokens.extend(["--served-model-name", self.spec.model.served_model_id])
         return shlex.join(tokens)
 
     def prepare(self) -> list[str]:

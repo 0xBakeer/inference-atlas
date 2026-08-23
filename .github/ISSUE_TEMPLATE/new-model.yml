@@ -1,29 +1,27 @@
 name: Add a model
 description: A model — or a quantization of one — the registry does not know yet.
-title: 'model: <vendor>/<model>'
+title: 'model: <hf-owner>/<hf-name>'
 labels: [registry, model]
 body:
   - type: markdown
     attributes:
       value: |
-        Adding a model is a pull request that adds `models/<id>/model.json`, plus one
-        `models/<id>/quants/<quant-id>.json` per quantization. Facts come from the model's
-        `config.json` and its model card, **not from the launch blog post**.
+        Adding a model is a pull request that adds `models/<owner>/<name>/model.json`, plus
+        one `models/<owner>/<name>/quants/<quant-id>.json` per quantization. Facts come from
+        the model's `config.json` and its model card, **not from the launch blog post**.
+
+        There is no id to invent: the model id **is** the Hugging Face repo id, verbatim and
+        case-preserved, and it is the directory the record lives in. A fine-tune or a
+        re-upload by another account is a different repo and therefore a different model.
 
   - type: input
     id: hf_id
     attributes:
-      label: Hugging Face id
+      label: Hugging Face repo id
+      description: >
+        Exactly as it appears on the Hub, case included — this becomes both the `id` and the
+        `models/<owner>/<name>/` directory.
       placeholder: Qwen/Qwen3-4B
-    validations:
-      required: true
-
-  - type: input
-    id: id
-    attributes:
-      label: Proposed model id
-      description: Readable, not the Hugging Face path — `qwen3-4b`, `llama-3.3-70b`, `nemotron-3.5-lightning-30b-a3b`.
-      placeholder: qwen3-4b
     validations:
       required: true
 
@@ -52,9 +50,10 @@ body:
     attributes:
       label: Quantizations to register
       description: >
-        One per line: id, format, resident size in GB, which engines can load it, and where
-        it comes from (official / community / self-quantized). `size_gb` should be measured
-        if you can; say so if you estimated it.
+        One per line: the short quant id, format, resident size in GB, which engines can load
+        it, the Hugging Face repo the weights come from, and whether that repo is official,
+        community or self-quantized. `size_gb` should be measured if you can; say so if you
+        estimated it.
       placeholder: |
-        bf16 — bf16, 8.0 GB, vllm sglang tgi, official
-        gguf-q4-k-m — gguf, 2.5 GB, llamacpp ollama lmstudio, community (unverified)
+        bf16 — bf16, 8.0 GB, vllm sglang tgi, Qwen/Qwen3-4B, official
+        gguf-q4-k-m — gguf, 2.5 GB, llamacpp ollama lmstudio, unsloth/Qwen3-4B-GGUF, community (unverified)

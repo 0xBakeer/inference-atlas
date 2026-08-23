@@ -203,7 +203,9 @@ export function normalizeStats(raw: unknown): Partial<Stats> {
   if (h !== undefined) out.hardware = h;
   const w = n(['workloads', 'workload_count']);
   if (w !== undefined) out.workloads = w;
-  const lu = s(['last_updated', 'last_submitted_at', 'updated_at', 'built_at']);
+  // deliberately NOT falling back to `built_at`: last_updated means "last result",
+  // and with zero runs the build time would masquerade as one
+  const lu = s(['last_updated', 'last_submitted_at', 'updated_at']);
   if (lu !== undefined) out.last_updated = lu;
   return out;
 }

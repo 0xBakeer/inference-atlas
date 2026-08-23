@@ -7,7 +7,7 @@ import { runsTable } from '../components/runs-table.js';
 import { emptyState, extLink, kv, skeletonLines } from '../components/ui.js';
 import { engineMinors, engineRunsOn, quantRunsOn } from '../data/derive.js';
 import type { RegistryModel } from '../data/types.js';
-import { href, qget, qlist, setQuery } from '../router.js';
+import { href, modelHref, qget, qlist, setQuery } from '../router.js';
 import { store } from '../store.js';
 import { matchesQuery, uniqueSorted } from '../util/filters.js';
 import { fmtInt, fmtParams, fmtTokens } from '../util/format.js';
@@ -115,12 +115,12 @@ export class AtlasModelsView extends ViewElement {
           : html`<div class="reg-list">
               ${rows.map((m) => {
                 const { p, c } = this.coverageOf((x) => x.model_id === m.model.id);
-                return html`<a class="reg-card" href=${href('models', m.model.id)}>
+                return html`<a class="reg-card" href=${modelHref(m.model.id)}>
                   <span class="name"
                     >${m.model.name}
                     ${m.model.moe ? html`<span class="tag">MoE</span>` : nothing}</span
                   >
-                  <span class="id">${m.model.id} · ${m.model.hf_id ?? ''}</span>
+                  <span class="id mono">${m.model.id}</span>
                   <span class="facts">
                     <span
                       >${fmtParams(m.model.params_b)}${m.model.moe && m.model.active_params_b ? ` (${fmtParams(m.model.active_params_b)} active)` : ''}</span
@@ -151,7 +151,7 @@ export class AtlasModelsView extends ViewElement {
     const entry: RegistryModel | undefined = store.lookups.models.get(id);
     if (!entry) {
       return html`<div class="page">
-        ${emptyState({ title: `No model “${id}” in the registry`, text: 'Models live under models/<id>/model.json. Register it and it appears here.', action: html`<div class="row">${addButton({ kind: 'new-model', target_name: id }, { label: 'Register this model' })}<a class="btn" href="#/models">All models</a></div>` })}
+        ${emptyState({ title: `No model “${id}” in the registry`, text: 'A model id is its Hugging Face repo id, verbatim — models/<owner>/<name>/model.json in the registry. Register it and it appears here.', action: html`<div class="row">${addButton({ kind: 'new-model', target_name: id }, { label: 'Register this model' })}<a class="btn" href="#/models">All models</a></div>` })}
       </div>`;
     }
     const m = entry.model;
@@ -203,17 +203,17 @@ export class AtlasModelsView extends ViewElement {
             <p class="lede mt-2">${m.notes ?? ''}</p>
           </div>
           <div class="head-actions">
-            <a class="btn btn-sm" href=${`#/?rows=quant&cols=hardware&model=${m.id}`}
+            <a class="btn btn-sm" href=${`#/?rows=quant&cols=hardware&model=${encodeURIComponent(m.id)}`}
               >${icon('grid')} On the atlas</a
             >
-            <a class="btn btn-sm" href=${`#/results?model=${m.id}`}
+            <a class="btn btn-sm" href=${`#/results?model=${encodeURIComponent(m.id)}`}
               >${icon('table')} ${runs.length} runs</a
             >
           </div>
         </div>
       </div>
 
-      <div class="split" style="grid-template-columns: minmax(0,1fr) minmax(0,2fr)">
+      <div class="split facts-quants">
         <section class="card">
           <div class="card-head"><h3>Facts</h3></div>
           ${kv([
@@ -350,7 +350,7 @@ export class AtlasModelsView extends ViewElement {
                       </div>`,
                   )}
                 </div>
-                ${missing.length > 12 ? html`<p class="xs muted mt-2">…and ${fmtInt(missing.length - 12)} more. <a href=${`#/gaps?model=${m.id}`}>See them in the wanted queue</a>.</p>` : nothing}`
+                ${missing.length > 12 ? html`<p class="xs muted mt-2">…and ${fmtInt(missing.length - 12)} more. <a href=${`#/gaps?model=${encodeURIComponent(m.id)}`}>See them in the wanted queue</a>.</p>` : nothing}`
             : html`<p class="small muted">
                 Every possible combination has at least one run. Remarkable.
               </p>`

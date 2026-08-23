@@ -12,6 +12,7 @@
  */
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { basename, join, relative } from 'node:path';
+import { isModelId } from '@atlas/core';
 import type {
   Dataset,
   EngineMeta,
@@ -85,6 +86,31 @@ function dirs(root: string, name: string): string[] {
   return readdirSync(base)
     .sort()
     .filter((entry) => statSync(join(base, entry)).isDirectory());
+}
+
+/**
+ * `models/<hf-owner>/<hf-name>` pairs, sorted — the two-level directory a model id implies.
+ *
+ * A `model.json` directly under an owner directory is the pre-decision-20 layout (a single
+ * kebab-case level) and is called out by name, because the alternative is the model being
+ * silently invisible to every tool that reads the registry.
+ */
+function modelDirs(root: string, reporter: Reporter): Array<[string, string]> {
+  const out: Array<[string, string]> = [];
+  for (const owner of dirs(root, 'models')) {
+    if (existsSync(join(root, 'models', owner, 'model.json'))) {
+      reporter.error(
+        `models/${owner}/model.json`,
+        'model-dir-depth',
+        'a model directory is two levels deep: models/<hf-owner>/<hf-name>/model.json, where <hf-owner>/<hf-name> is the Hugging Face repo id',
+      );
+      // The whole subtree is the old layout; descending into it would report its `quants/`
+      // as a second model directory and bury the one error that says what to do.
+      continue;
+    }
+    for (const name of dirs(root, join('models', owner))) out.push([owner, name]);
+  }
+  return out;
 }
 
 export function loadRepo(root: string, reporter: Reporter, schemas?: Schemas): Repo {
@@ -234,22 +260,59 @@ export function loadRepo(root: string, reporter: Reporter, schemas?: Schemas): R
   /* --------------------------------------------------------------------- models */
 
   const models = new Map<string, ModelEntry>();
-  for (const dir of dirs(root, 'models')) {
-    const base = join(root, 'models', dir);
+  /** Lowercased id → the id that claimed it, for the case-collision check below. */
+  const modelDirsSeen = new Map<string, string>();
+  for (const [owner, name] of modelDirs(root, reporter)) {
+    const dir = `${owner}/${name}`;
+    const base = join(root, 'models', owner, name);
     const modelPath = join(base, 'model.json');
     if (!existsSync(modelPath)) {
       reporter.error(`models/${dir}`, 'missing-model', 'model directory without a model.json');
       continue;
     }
+    // Two directories that differ only by case are one directory on macOS and Windows, so a
+    // repository carrying both cannot be checked out at all. Rejected here rather than left
+    // to whoever clones it next (SPEC §2, decision 20).
+    const collision = modelDirsSeen.get(dir.toLowerCase());
+    if (collision !== undefined) {
+      reporter.error(
+        relPath(root, modelPath),
+        'model-dir-case-collision',
+        `models/${dir} and models/${collision} differ only by case; a case-insensitive filesystem cannot hold both`,
+        { related: [`models/${collision}/model.json`] },
+      );
+      continue;
+    }
+    modelDirsSeen.set(dir.toLowerCase(), dir);
+
+    // The directory *is* the id (SPEC §2), so a directory that is not a Hugging Face repo id
+    // is a model nobody can pull — checked before the record is read, because no id inside
+    // the file can rescue a path that cannot hold one.
+    if (!isModelId(dir)) {
+      reporter.error(
+        relPath(root, modelPath),
+        'invalid-model-id',
+        `"${dir}" is not a Hugging Face repo id: <owner>/<name>, each starting with a letter or a digit and made of [A-Za-z0-9._-]`,
+      );
+      continue;
+    }
+
     const model = load<Model>(modelPath);
     if (!model) continue;
     if (model.id !== dir) {
       reporter.error(
         relPath(root, modelPath),
         'id-mismatch',
-        `id "${model.id}" does not match the directory name "${dir}"`,
+        `id "${model.id}" does not match the directory "${dir}"`,
       );
       continue;
+    }
+    if (model.hf_id !== model.id) {
+      reporter.error(
+        relPath(root, modelPath),
+        'hf-id-mismatch',
+        `hf_id "${String(model.hf_id)}" must equal the id "${model.id}"`,
+      );
     }
     if (model.moe && (model.active_params_b ?? model.params_b) >= model.params_b) {
       reporter.warn(

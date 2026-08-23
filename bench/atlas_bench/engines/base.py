@@ -50,7 +50,7 @@ class ServeResult:
     """What ``serve`` reports back to the caller."""
 
     base_url: str
-    serve_command: str
+    serve_command: str | None
     started: bool
     pid: int | None = None
     log_path: str | None = None
@@ -148,17 +148,37 @@ class EngineAdapter:
     # -------------------------------------------------------------- lifecycle
 
     def model_ref(self) -> str:
-        """What to pass to the engine as "the model" (HF id, tag or local path)."""
-        model = self.spec.model
-        return model.local_path or model.hf_id or model.id
+        """What to pass to the engine as "the model": where the weights actually live.
 
-    def serve_command(self) -> str:
-        """The exact command line that starts this engine (recorded in the result)."""
+        For a quantized model that is the quant's own repo
+        (``lmstudio-community/gemma-4-E2B-it-MLX-4bit``), not the model id — serving the base
+        repo when the packet said ``fp8`` would quietly benchmark different weights than the
+        result claims.
+        """
+        model = self.spec.model
+        if model.local_path:
+            return model.local_path
+        if model.quant_hf_id:
+            return model.quant_hf_id
+        quant = self.registry.quant(model.id, model.quant_id) or {}
+        return str(quant.get("hf_id") or model.hf_id or model.id)
+
+    def serve_command(self) -> str | None:
+        """The exact command line that starts this engine (recorded in the result).
+
+        ``None`` means "we did not start this server and cannot claim to know how it was
+        started" — the result records null rather than a plausible-looking guess.
+        """
         raise NotImplementedError
 
     def start(self) -> ServeResult:
         """Start the engine as a child process using :meth:`serve_command`."""
         command = self.serve_command()
+        if command is None:
+            raise RuntimeError(
+                f"{type(self).__name__} is attach-only: start the server yourself and pass "
+                "--base-url"
+            )
         env = {**os.environ, **(self.spec.engine.env or {})}
         log = None
         if self.log_dir:
@@ -265,9 +285,9 @@ class AttachAdapter(EngineAdapter):
 
     engine_id = "attach"
 
-    def serve_command(self) -> str:
-        """Attach mode has no command; the result records that it was attached."""
-        return f"# attached to {self.base_url} (engine started outside atlas-bench)"
+    def serve_command(self) -> str | None:
+        """Attach mode has no command: the engine was started outside the harness."""
+        return None
 
     def start(self) -> ServeResult:
         """Nothing to start."""
@@ -284,11 +304,18 @@ class AttachAdapter(EngineAdapter):
 
 
 def get_adapter(
-    spec: TaskSpec, registry: Registry, *, attach: bool = False, log_dir: str | None = None
+    spec: TaskSpec, registry: Registry, *, attach: bool | None = None, log_dir: str | None = None
 ) -> EngineAdapter:
-    """Pick the adapter for a packet; ``attach`` forces :class:`AttachAdapter`."""
+    """Pick the adapter for a packet.
+
+    ``attach=None`` (the default) decides from the packet: a ``base_url`` means the server is
+    already running and must not be started again. ``attach=False`` forces a real adapter,
+    which is what ``atlas-bench serve`` wants; ``attach=True`` forces attach mode.
+    """
     from . import ADAPTERS
 
+    if attach is None:
+        attach = bool(spec.engine.base_url)
     if attach or (spec.engine.install and spec.engine.install.method == "attach"):
         return AttachAdapter(spec, registry, log_dir=log_dir)
     adapter_cls = ADAPTERS.get(spec.engine.id)

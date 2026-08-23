@@ -26,7 +26,7 @@ import {
   type HeatFilters,
   type HeatMatrix,
 } from '../data/derive.js';
-import { href, qget, setQuery } from '../router.js';
+import { href, modelHref, qget, setQuery } from '../router.js';
 import { store } from '../store.js';
 import { fmtInt, fmtPct } from '../util/format.js';
 import { headlineMetric } from '../util/metrics.js';
@@ -156,7 +156,7 @@ export class AtlasView extends ViewElement {
         ${this.stat(stats?.models, 'models')} ${this.stat(stats?.hardware, 'devices')}
         <div class="stat">
           <div class="v" style="font-size:var(--fs-lg);padding-top:6px">
-            ${stats?.last_updated ? when(stats.last_updated) : html`<span class="faint">–</span>`}
+            ${stats?.runs && stats.last_updated ? when(stats.last_updated) : html`<span class="faint">–</span>`}
           </div>
           <div class="k">last result</div>
         </div>
@@ -324,7 +324,7 @@ export class AtlasView extends ViewElement {
           <a href=${href('engines', g.engine_id)}>${g.engine_id}</a>
           <span class="muted">${g.engine_version}</span>
           <span class="faint">·</span>
-          <a href=${href('models', g.model_id)}>${g.model_id}</a
+          <a class="mono" href=${modelHref(g.model_id)}>${g.model_id}</a
           ><span class="muted">/${g.quant_id}</span>
           <span class="faint">·</span>
           <a href=${href('hardware', g.hardware_id)}>${g.hardware_id}</a>
@@ -368,7 +368,10 @@ export class AtlasView extends ViewElement {
       <div style="padding:0 var(--sp-4) var(--sp-2)">
         ${
           rows.length === 0
-            ? html`<p class="small muted" style="padding:12px 0">No results yet.</p>`
+            ? html`<p class="small muted" style="padding:12px 0">
+                No results yet — the first measurement on the map lands here.
+                <a href="#/gaps">Pick a gap</a> and its packet does the rest.
+              </p>`
             : rows.map((r) => {
                 const hl = headlineMetric(r, store.site.coverage.key_metrics);
                 return html`<a class="latest-row" href=${href('run', r.run_id)}>
@@ -445,7 +448,7 @@ export class AtlasView extends ViewElement {
         <div class="featured-grid">
           ${models.map((m) => {
             const { p, c } = covOf((x) => x.model_id === m!.model.id);
-            return html`<a class="feat-card" href=${href('models', m!.model.id)}>
+            return html`<a class="feat-card" href=${modelHref(m!.model.id)}>
               <span class="name">${m!.model.name}</span>
               <span class="sub"
                 >${m!.model.params_b}B${m!.model.moe ? ` · ${m!.model.active_params_b}B active` : ''}

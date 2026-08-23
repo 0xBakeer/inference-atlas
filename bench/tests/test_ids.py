@@ -12,6 +12,10 @@ from atlas_bench.ids import (
     config_id_from_canonical,
     engine_minor,
     is_valid_id,
+    is_valid_model_id,
+    model_parts,
+    model_slug,
+    parse_result_path,
     result_path,
     run_id,
     run_suffix,
@@ -126,11 +130,98 @@ def test_run_id_separates_contributors_and_times() -> None:
 
 
 def test_result_path_shape() -> None:
-    """The only place a result may live."""
+    """``<owner>/<name>`` is the model id, so the path has one level more."""
     path = result_path(
-        engine_id="vllm", model_id="qwen3.8-27b", hardware_id="nvidia-gb10-dgx-spark", rid="abc"
+        engine_id="vllm",
+        model_id="Qwen/Qwen3.8-27B",
+        hardware_id="nvidia-gb10-dgx-spark",
+        rid="abc",
     )
-    assert str(path) == "results/vllm/qwen3.8-27b/nvidia-gb10-dgx-spark/abc.json"
+    assert str(path) == "results/vllm/Qwen/Qwen3.8-27B/nvidia-gb10-dgx-spark/abc.json"
+
+
+def test_result_path_round_trips() -> None:
+    """``parse_result_path`` is the inverse, on relative and absolute paths alike."""
+    fields = {
+        "engine_id": "lmstudio",
+        "model_id": "google/gemma-4-E2B-it",
+        "hardware_id": "apple-m2-max-32gb",
+        "rid": "0123456789abcdef--eval-format-v1--abc123",
+    }
+    path = result_path(**fields)
+    parsed = parse_result_path(path)
+    assert parsed == {
+        "engine_id": "lmstudio",
+        "model_id": "google/gemma-4-E2B-it",
+        "hardware_id": "apple-m2-max-32gb",
+        "run_id": fields["rid"],
+    }
+    assert parse_result_path(f"/home/me/checkout/{path}") == parsed
+    assert parse_result_path("some/other/file.json") is None
+    assert parse_result_path("results/vllm/owner/name/hw/run") is None
+
+
+@pytest.mark.parametrize(
+    ("model_id", "expected"),
+    [
+        ("Qwen/Qwen3.8-27B", "qwen-qwen3.8-27b"),
+        ("google/gemma-4-E2B-it", "google-gemma-4-e2b-it"),
+        (
+            "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16",
+            "nvidia-nvidia-nemotron-3.5-lightning-30b-a3b-bf16",
+        ),
+        ("acme/model_with_underscores", "acme-model-with-underscores"),
+    ],
+)
+def test_model_slug(model_id: str, expected: str) -> None:
+    """The slug is for branch names only: lowercased, ``[^a-z0-9.-]`` becomes ``-``."""
+    assert model_slug(model_id) == expected
+
+
+def test_model_parts() -> None:
+    """The two halves of a repo id are two directory levels."""
+    assert model_parts("google/gemma-4-E2B-it") == ("google", "gemma-4-E2B-it")
+
+
+@pytest.mark.parametrize(
+    ("value", "valid"),
+    [
+        ("Qwen/Qwen3.8-27B", True),
+        ("google/gemma-4-E2B-it", True),
+        ("acme/model.v2_final-1", True),
+        ("qwen3.8-27b", False),
+        ("owner/name/extra", False),
+        ("/name", False),
+        ("owner/", False),
+        ("own er/name", False),
+        (None, False),
+    ],
+)
+def test_is_valid_model_id(value, valid: bool) -> None:
+    """model_id is a Hugging Face repo id — exactly one slash, case preserved."""
+    assert is_valid_model_id(value) is valid
+
+
+def test_nothing_lowercases_a_model_id() -> None:
+    """The id that is hashed and written to disk keeps its case, always."""
+    model_id = "Qwen/Qwen3.8-27B"
+    path = result_path(engine_id="vllm", model_id=model_id, hardware_id="h", rid="r")
+    assert model_id in str(path)
+    assert cell_id(
+        model_id=model_id,
+        quant_id="fp8",
+        hardware_id="h",
+        hw_count=1,
+        engine_id="vllm",
+        engine_version="0.27.1",
+    ) != cell_id(
+        model_id=model_id.lower(),
+        quant_id="fp8",
+        hardware_id="h",
+        hw_count=1,
+        engine_id="vllm",
+        engine_version="0.27.1",
+    )
 
 
 def test_id_validation_and_slugify() -> None:

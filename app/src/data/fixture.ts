@@ -78,7 +78,7 @@ export function fixtureRegistry(): Registry {
       {
         model: {
           schema_version: 1,
-          id: 'qwen3-8b',
+          id: 'Qwen/Qwen3-8B',
           name: 'Qwen3-8B',
           hf_id: 'Qwen/Qwen3-8B',
           vendor: 'alibaba',
@@ -89,7 +89,7 @@ export function fixtureRegistry(): Registry {
           {
             schema_version: 1,
             id: 'bf16',
-            model_id: 'qwen3-8b',
+            model_id: 'Qwen/Qwen3-8B',
             format: 'bf16',
             bits: 16,
             hf_id: 'Qwen/Qwen3-8B',
@@ -100,7 +100,7 @@ export function fixtureRegistry(): Registry {
           {
             schema_version: 1,
             id: 'fp8',
-            model_id: 'qwen3-8b',
+            model_id: 'Qwen/Qwen3-8B',
             format: 'fp8',
             bits: 8,
             hf_id: 'Qwen/Qwen3-8B-FP8',
@@ -111,7 +111,7 @@ export function fixtureRegistry(): Registry {
           {
             schema_version: 1,
             id: 'mlx-4bit',
-            model_id: 'qwen3-8b',
+            model_id: 'Qwen/Qwen3-8B',
             format: 'mlx',
             bits: 4,
             hf_id: 'mlx-community/Qwen3-8B-4bit',
@@ -152,12 +152,12 @@ export function fixtureRow(over: Partial<CompiledIndexRow> = {}): CompiledIndexR
     workload_id: 'serve-single-i256-o256-v1',
     kind: 'serving',
     engine: { id: 'vllm', version: '0.27.1', minor: '0.27' },
-    model: { id: 'qwen3-8b', quant_id: 'fp8' },
+    model: { id: 'Qwen/Qwen3-8B', quant_id: 'fp8' },
     hardware: { id: 'nvidia-rtx-4090', count: 1 },
     metrics: { output_tok_s: 120.5, ttft_p50: 80, ttft_p95: 120 },
     provenance: { login: 'someone', submitted_at: '2026-08-23T12:00:00Z' },
     verification_level: 'self-reported',
-    path: 'results/vllm/qwen3-8b/nvidia-rtx-4090/x.json',
+    path: 'results/vllm/Qwen/Qwen3-8B/nvidia-rtx-4090/x.json',
     ...over,
   };
 }

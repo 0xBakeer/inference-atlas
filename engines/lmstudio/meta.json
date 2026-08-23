@@ -21,13 +21,21 @@
   "install": [
     {
       "method": "app",
-      "command": "Download from https://lmstudio.ai and enable the local server (or: lms server start)",
-      "notes": "Not scriptable end to end; record the app version and the backend runtime version from the app's runtime panel."
+      "url": "https://lmstudio.ai",
+      "command": "Download LM Studio from https://lmstudio.ai, then: lms server start",
+      "platforms": [
+        "macos-metal",
+        "linux-cuda",
+        "windows-cuda",
+        "linux-cpu",
+        "windows-cpu"
+      ],
+      "notes": "Not scriptable end to end: the app is installed by hand and the CLI (lms) ships with it. Record the app version in engine.version and the backend runtime version from the app's runtime panel in engine.build_flags."
     }
   ],
   "serve": {
-    "command_template": "lms load {model_ref} {flags} && lms server start",
-    "model_ref": "local_path",
+    "command_template": "lms server start --port {port} && lms load {model_ref} {flags}",
+    "model_ref": "hf_id",
     "flag_style": "--{name} {value}",
     "bool_style": "--{name}",
     "bool_false_style": null,
@@ -53,10 +61,11 @@
     "version_scheme": "semver"
   },
   "versions_available": [
-    "0.3.31"
+    "0.3.31",
+    "0.4.21"
   ],
   "links": {
     "cli": "https://lmstudio.ai/docs/cli"
   },
-  "notes": "The number that matters is the backend runtime version (llama.cpp build or MLX version), not just the app version. Record both: app version in engine.version, runtime in engine.build_flags."
+  "notes": "The model_ref is the LM Studio model key, which is the Hugging Face repo path of the downloaded weights (lms get lmstudio-community/gemma-4-E2B-it-MLX-4bit, then lms load with the same key). The number that matters is the backend runtime version (llama.cpp build or MLX version), not just the app version: record both, app version in engine.version and runtime in engine.build_flags. Only --no-speculative-draft-mtp has a --no- form, so bool_false_style stays null and a false boolean is simply not passed."
 }

@@ -27,7 +27,7 @@ uv run atlas-bench hwinfo
 
 # 2. What am I measuring? (writes task.json)
 uv run atlas-bench packet \
-  --cell 'vllm@0.27.1/qwen3.8-27b/fp8/nvidia-gb10-dgx-spark' \
+  --cell 'vllm@0.27.1/Qwen/Qwen3.8-27B/fp8/nvidia-gb10-dgx-spark' \
   --workload serve-chat-c8-i1k-o256-v1 \
   --arg max-model-len=262144 --arg gpu-memory-utilization=0.44 \
   --arg enable-prefix-caching=true \
@@ -40,9 +40,56 @@ uv run atlas-bench run --spec task.json --base-url http://127.0.0.1:8000 --out .
 Then validate and submit:
 
 ```bash
-uv run atlas-bench validate ../results/vllm/qwen3.8-27b/nvidia-gb10-dgx-spark/*.json
-uv run atlas-bench submit --dir ../results/vllm/qwen3.8-27b/nvidia-gb10-dgx-spark --draft
+uv run atlas-bench validate ../results/vllm/Qwen/Qwen3.8-27B/nvidia-gb10-dgx-spark/*.json
+uv run atlas-bench submit --dir ../results/vllm/Qwen/Qwen3.8-27B/nvidia-gb10-dgx-spark --draft
 ```
+
+## Attaching to a server with its own model names
+
+`model.id` is an identity; the name a *server* answers to is a separate string. LM Studio
+serves the repo `google/gemma-4-E2B-it` under the key `google/gemma-4-e2b`; vLLM answers to
+whatever `--served-model-name` said. Put that key in **`model.served_model_id`** (the older
+spelling `served_name` is still accepted):
+
+```jsonc
+{
+  "packet_version": 1,
+  "engine": { "id": "lmstudio", "version": "0.4.21", "install": { "method": "app" },
+              "base_url": "http://localhost:1234/v1" },
+  "model":  { "id": "google/gemma-4-E2B-it",      // identity: hashed, pathed, validated
+              "quant_id": "mlx-4bit",
+              "hf_id": "google/gemma-4-E2B-it",
+              "served_model_id": "google/gemma-4-e2b",   // transport: the OpenAI `model` field
+              "dtype": "auto" },
+  "hardware": { "id": "apple-m2-max-32gb", "count": 1 },
+  "args": {},
+  "workloads": ["eval-format-v1"],
+  "request": { "temperature": 0, "seed": 42 }
+}
+```
+
+```bash
+uv run atlas-bench run --spec task.json --base-url http://localhost:1234/v1 --out ../results
+```
+
+What the harness does with it:
+
+* sends `served_model_id` verbatim as the `model` field, and warns
+  (`served-model-not-advertised`) if `/v1/models` does not list it — it still sends it, since
+  some servers load on demand;
+* without one, it looks for `model.id` in `/v1/models` **case-insensitively**, and only then
+  falls back to the first advertised model — saying so (`served-model-guessed`) when more
+  than one is loaded;
+* records the resolved key, everything `/v1/models` advertised, the base URL and whether the
+  server was already running in `raw.payload.engine_endpoint`, so a run against the wrong
+  model can be spotted after the fact;
+* records `serve_command: null` in attach mode. The harness did not start that server and
+  does not claim to know how it was started. (`atlas-bench serve` still prints and runs a
+  real command, and with the `lms` CLI present the LM Studio adapter can `lms load` the key.)
+
+`stream_options: {"include_usage": true}` is sent by default; a server that rejects it —
+LM Studio answers 400 without naming the field — gets one automatic retry without it, after
+which token counts come from counting streamed deltas. The run never fails over this.
 
 ## Full auto path (harness starts the engine)
 
@@ -73,10 +120,35 @@ without an adapter falls back to attach mode.
 Useful `run` flags: `--gotcha "text"` (repeatable), `--notes "ambient 22C, box idle"`,
 `--no-telemetry`, `--tokenizer <hf-id>`, `--login <github-login>`.
 
+## Model ids are Hugging Face repo ids
+
+`model_id` is the HF repo id, **verbatim and case-preserved**, with exactly one slash:
+`Qwen/Qwen3.8-27B`, `google/gemma-4-E2B-it`. A re-upload or a fine-tune under another
+account is a different repo and therefore a different model (SPEC §2, decision 20). Nothing
+in the harness lowercases or kebab-cases it — it is what `cell_id` hashes, what the registry
+directory is, and what the result path is built from.
+
+Consequences you will notice:
+
+* registries nest one level deeper: `models/<owner>/<name>/{model.json,quants/<q>.json}`;
+* result paths do too: `results/<engine>/<owner>/<name>/<hardware>/<run_id>.json`;
+* `model.json.hf_id` must equal `id`, and so must a result's `model.hf_id`. The **weights**
+  repo is a different thing and lives in the quant record — usually somebody else's account,
+  `lmstudio-community/gemma-4-E2B-it-MLX-4bit`. That is what an engine is handed to serve
+  (a packet may carry it as `model.quant_hf_id`); serving the base repo when the packet says
+  `mlx-4bit` would benchmark different weights than the result claims;
+* two model directories that differ only by case are a validation error — on macOS and
+  Windows they are one directory and one of them silently wins;
+* git branches cannot hold a slash, so `submit` uses a **slug** — lowercased, every character
+  outside `[a-z0-9.-]` replaced by `-` (`Qwen/Qwen3.8-27B` → `qwen-qwen3.8-27b`). The slug is
+  used for branch names and nothing else; it is never written into a result file.
+* `--cell` takes the model id as two segments:
+  `lmstudio@0.4.21/google/gemma-4-E2B-it/mlx-4bit/apple-m2-max-32gb`.
+
 ## How results are named
 
 ```
-results/<engine_id>/<model_id>/<hardware_id>/<run_id>.json
+results/<engine_id>/<owner>/<name>/<hardware_id>/<run_id>.json
 ```
 
 * `config_id` = `sha256(canonical)[:16]` where *canonical* is the normalized non-default
@@ -111,6 +183,11 @@ Metric definitions (also in `atlas_bench/metrics.py`):
 | `tpot_ms` | (e2e − ttft) / (completion tokens − 1), per request |
 | `itl_ms` | gaps between consecutive content deltas, pooled |
 | `decode_tok_s_per_request` | (completion tokens − 1) / (e2e − ttft), per request |
+
+A request whose whole completion arrived in a single delta reports no `tpot_ms` and no
+`decode_tok_s_per_request`: with one chunk there is no inter-token interval to measure, and
+`(tokens - 1) / ~0s` would put an invented four-digit number into a published metric. TTFT and
+end-to-end latency are still real for those requests.
 
 Percentiles interpolate linearly between neighbouring ranks (numpy default). Warmup requests
 are excluded from every aggregate. With `repeat > 1` the **median iteration** by

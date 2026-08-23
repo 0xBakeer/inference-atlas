@@ -18,7 +18,7 @@
 import { mkdirSync, readFileSync, realpathSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { canonicalizeArgs, cellId, engineMinor, resultPath, runId } from '@atlas/core';
+import { canonicalizeArgs, cellId, engineMinor, modelSlug, resultPath, runId } from '@atlas/core';
 import type { Args, MetricBlock, ResultRecord, Scores } from '@atlas/core';
 import { parseArgv } from './lib/args.js';
 import { checkResult } from './lib/check-result.js';
@@ -290,7 +290,10 @@ export function issueToResult(input: IssueToPrInput): IssueToPrOutcome {
 
   const ok = reporter.errors.length === 0;
   const short = cell.slice(0, 6);
-  const branch = `${repo.site?.repo?.branch_prefix ?? 'result/'}${engineId}-${modelId}-${hardwareId}-${short}`;
+  // A model id is a Hugging Face repo id, with a slash and mixed case; `modelSlug` is the
+  // one form of it that is safe in a branch name (SPEC §2, decision 20). The title keeps the
+  // id verbatim, because that is what a reviewer searches for.
+  const branch = `${repo.site?.repo?.branch_prefix ?? 'result/'}${engineId}-${modelSlug(modelId)}-${hardwareId}-${short}`;
   const prTitle = `results: ${engineId} ${version} ${modelId}/${quantId} on ${hardwareId}`;
 
   return {

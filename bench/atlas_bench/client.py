@@ -138,11 +138,23 @@ class RequestResult:
         return max(self.finished - self.first_token_at, 0.0)
 
     @property
+    def measured_decode(self) -> bool:
+        """Whether this request actually shows a decode interval.
+
+        A server that sends the whole completion in one delta (short answers, some
+        aggregating proxies) gives ``first_token_at == finished``: nothing about the decode
+        rate was observed, and dividing by that near-zero window produces a four-digit tok/s
+        that is pure artifact. Two content deltas is the minimum for the question to mean
+        anything.
+        """
+        return len(self.chunk_times) >= 2
+
+    @property
     def tpot_s(self) -> float | None:
         """Mean time per output token, excluding the first token."""
         decode = self.decode_s
         tokens = self.completion_tokens or 0
-        if decode is None or tokens < 2:
+        if decode is None or tokens < 2 or not self.measured_decode:
             return None
         return decode / (tokens - 1)
 
@@ -151,7 +163,7 @@ class RequestResult:
         """Single-request decode throughput (tokens after the first / decode time)."""
         decode = self.decode_s
         tokens = self.completion_tokens or 0
-        if not decode or tokens < 2:
+        if not decode or tokens < 2 or not self.measured_decode:
             return None
         return (tokens - 1) / decode
 
@@ -171,7 +183,10 @@ class ChatClient:
         tokenizer: Any | None = None,
         extra_body: dict[str, Any] | None = None,
     ) -> None:
-        self.base_url = base_url.rstrip("/")
+        # Every request path this client builds already starts with `/v1`, so a base URL that
+        # ends in `/v1` — which is exactly what an engine's docs and LM Studio's UI hand you —
+        # would otherwise produce `/v1/v1/chat/completions` and a silently empty run.
+        self.base_url = base_url.rstrip("/").removesuffix("/v1").rstrip("/")
         self.model = model
         self.timeout_s = timeout_s
         self.tokenizer = tokenizer
@@ -246,6 +261,7 @@ class ChatClient:
         seed: int | None,
         stop: list[str] | None,
         extra_body: dict[str, Any] | None,
+        stream_options: bool = True,
     ) -> dict[str, Any]:
         body: dict[str, Any] = {
             "model": self.model,
@@ -261,7 +277,7 @@ class ChatClient:
             body["seed"] = seed
         if stop:
             body["stop"] = stop
-        if stream and self._supports_stream_options:
+        if stream and stream_options:
             body["stream_options"] = {"include_usage": True}
         body.update(self.extra_body)
         body.update(extra_body or {})
@@ -281,12 +297,14 @@ class ChatClient:
         extra_body: dict[str, Any] | None = None,
         warmup: bool = False,
         timeout_s: float | None = None,
+        _without_stream_options: bool = False,
     ) -> RequestResult:
         """Run one streaming chat completion and time every delta."""
         result = RequestResult(request_id=request_id, prompt_id=prompt_id, warmup=warmup)
         body = self._body(
             messages,
             stream=True,
+            stream_options=self._supports_stream_options and not _without_stream_options,
             max_tokens=max_tokens,
             temperature=temperature,
             top_p=top_p,
@@ -306,9 +324,12 @@ class ChatClient:
                 if response.status_code >= 400:
                     raw = await response.aread()
                     message = raw.decode("utf-8", "replace")[:2000]
-                    if response.status_code == 400 and "stream_options" in message:
-                        self._supports_stream_options = False
-                        return await self.chat_stream(
+                    if self._should_retry_without_stream_options(response.status_code, body):
+                        # Servers that do not know `stream_options` reject the whole request,
+                        # and not all of them name the offending field (LM Studio does not).
+                        # Retry once without it: usage then falls back to counting deltas,
+                        # which is a worse token count but a real measurement.
+                        retry = await self.chat_stream(
                             messages,
                             request_id=request_id,
                             prompt_id=prompt_id,
@@ -320,7 +341,11 @@ class ChatClient:
                             extra_body=extra_body,
                             warmup=warmup,
                             timeout_s=timeout_s,
+                            _without_stream_options=True,
                         )
+                        if retry.ok:
+                            self._supports_stream_options = False
+                        return retry
                     return self._fail(result, response.status_code, message)
                 async for line in response.aiter_lines():
                     payload = _sse_payload(line)
@@ -359,6 +384,12 @@ class ChatClient:
             result.error_category = "malformed-output"
             result.error_message = "stream produced no content deltas"
         return result
+
+    def _should_retry_without_stream_options(self, status: int, body: dict[str, Any]) -> bool:
+        """Whether a 4xx is worth one retry with ``stream_options`` removed."""
+        return (
+            status in (400, 404, 422) and self._supports_stream_options and "stream_options" in body
+        )
 
     async def chat_once(
         self,

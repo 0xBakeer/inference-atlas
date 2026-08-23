@@ -8,6 +8,7 @@ import { sha256Hex } from './hash.js';
  */
 
 export interface CellIdInput {
+  /** The Hugging Face repo id, verbatim: `Qwen/Qwen3.8-27B`. Hashed exactly as written. */
   model_id: string;
   quant_id: string;
   hardware_id: string;
@@ -23,6 +24,9 @@ export interface CellIdInput {
  * The engine *minor* rather than the full version is deliberate: patch releases of an engine
  * are the same square, minors are not, because 0.26 → 0.27 routinely moves numbers by double
  * digit percentages.
+ *
+ * The model id goes in verbatim, case and slash included (SPEC §2, decision 20), so
+ * `Qwen/Qwen3-8B` and a re-upload of it under another account are never the same square.
  */
 export function cellId(input: CellIdInput): string {
   const parts = [
@@ -80,17 +84,80 @@ export function parseRunId(id: string): ParsedRunId | null {
   return { configId, workloadId, contributorHash };
 }
 
-/** `results/<engine>/<model>/<hardware>/<run_id>.json` — the only place a result may live. */
+/**
+ * A model id is the Hugging Face repo id, verbatim and case-preserved, with exactly one slash.
+ * Every other id in the atlas is lowercase kebab-case; this one is not, because
+ * `unsloth/Qwen3-8B-GGUF` and `Qwen/Qwen3-8B` are different weights by different people.
+ */
+export const MODEL_ID_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._-]*\/[A-Za-z0-9][A-Za-z0-9._-]*$/;
+
+/** SPEC §2: `Qwen/Qwen3.8-27B` yes, `qwen3.8-27b` no, `a/b/c` no. */
+export function isModelId(value: string): boolean {
+  return MODEL_ID_PATTERN.test(value);
+}
+
+/**
+ * A model id flattened into one path-safe, lowercase segment: `Qwen/Qwen3.8-27B` →
+ * `qwen-qwen3.8-27b`. Used where a slash is not allowed — git branch names above all.
+ *
+ * Deliberately not injective: two ids that differ only in case collapse to the same slug. It
+ * is never an identifier, only a label; the cell hash in the branch name is what makes the
+ * branch unique.
+ */
+export function modelSlug(modelId: string): string {
+  return modelId.toLowerCase().replace(/[^a-z0-9.-]/g, '-');
+}
+
+/**
+ * `results/<engine>/<owner>/<name>/<hardware>/<run_id>.json` — the only place a result may
+ * live. The model id contributes two path segments because it *is* two segments.
+ */
 export function resultPath(
   engineId: string,
   modelId: string,
   hardwareId: string,
   id: string,
 ): string {
-  return `results/${engineId}/${modelId}/${hardwareId}/${id}.json`;
+  return `${resultDir(engineId, modelId, hardwareId)}/${id}.json`;
 }
 
 /** Directory a packet tells an agent to write into. */
 export function resultDir(engineId: string, modelId: string, hardwareId: string): string {
   return `results/${engineId}/${modelId}/${hardwareId}`;
+}
+
+export interface ParsedResultPath {
+  engine_id: string;
+  model_id: string;
+  hardware_id: string;
+  run_id: string;
+}
+
+/**
+ * Inverse of `resultPath`. Returns null for any path that is not a legal result file, which
+ * is how the validator answers "does this changed file belong where it lies?".
+ *
+ * The model id eats exactly two segments, so a legal path has six of them; the file name must
+ * be a run id, because SPEC §2 fixes it to `run_id + ".json"`.
+ */
+export function parseResultPath(path: string): ParsedResultPath | null {
+  const parts = path.replace(/^\.?\//, '').split('/');
+  if (parts.length !== 6) return null;
+  const [root, engineId, owner, name, hardwareId, file] = parts as [
+    string,
+    string,
+    string,
+    string,
+    string,
+    string,
+  ];
+  if (root !== 'results') return null;
+  if (!file.endsWith('.json')) return null;
+  const id = file.slice(0, -'.json'.length);
+  if (!parseRunId(id)) return null;
+  const modelId = `${owner}/${name}`;
+  if (!isModelId(modelId)) return null;
+  if (!/^[a-z0-9][a-z0-9.-]*$/.test(engineId)) return null;
+  if (!/^[a-z0-9][a-z0-9.-]*$/.test(hardwareId)) return null;
+  return { engine_id: engineId, model_id: modelId, hardware_id: hardwareId, run_id: id };
 }

@@ -34,7 +34,7 @@ from .result import ResultInputs, build_result, output_path, resolve_login
 from .runner import run_spec_sync
 from .spec import load_spec
 from .submit import submit as do_submit
-from .validate import validate_file
+from .validate import check_model_registry, validate_file
 from .workloads import resolve_workload
 from .workloads.base import WorkloadOutcome
 from .wrap import load_native, native_started_at, wrap_metrics
@@ -156,19 +156,28 @@ def serve(
     """Start the engine described by a packet and wait until it is healthy."""
     spec = load_spec(spec_path)
     registry = _registry(registry_dir)
-    adapter = get_adapter(spec, registry, log_dir=str(log_dir) if log_dir else None)
+    # `serve` is explicitly the command that starts an engine, so it asks for a real adapter
+    # even when the packet already names a base_url.
+    adapter = get_adapter(spec, registry, attach=False, log_dir=str(log_dir) if log_dir else None)
 
     if engine_adapter_only:
         console.print(f"[bold]adapter[/]     {type(adapter).__name__}")
         console.print(f"[bold]base_url[/]    {adapter.base_url}")
-        console.print(f"[bold]command[/]     {adapter.serve_command()}")
+        command = adapter.serve_command()
+        console.print(
+            f"[bold]command[/]     {command}"
+            if command
+            else "[bold]command[/]     — attach only: start the server yourself, then "
+            "`run --base-url`"
+        )
         return
 
     if not skip_prepare:
         for note in adapter.prepare():
             console.print(f"[dim]{note}[/]")
     result = adapter.start()
-    console.print(f"[dim]{result.serve_command}[/]")
+    if result.serve_command:
+        console.print(f"[dim]{result.serve_command}[/]")
     for note in result.notes:
         console.print(f"[yellow]{note}[/]")
     if not adapter.wait_healthy(timeout_s=timeout_s):
@@ -302,6 +311,18 @@ def validate(
 
     errors = 0
     warnings = 0
+
+    # Registry-wide model checks first: a case-only directory clash or a model.json that
+    # disagrees with its own path breaks every result that references it.
+    registry_issues = check_model_registry(registry)
+    if registry_issues:
+        console.print("[bold]models/[/]")
+        for issue in registry_issues:
+            colour = "red" if issue.level == "error" else "yellow"
+            console.print(f"  [{colour}]{issue.level}[/] {issue.code} — {issue.message}")
+            errors += issue.level == "error"
+            warnings += issue.level == "warning"
+
     for target in targets:
         issues = validate_file(target, registry)
         if not issues:
@@ -485,7 +506,7 @@ def wrap(
             github_login=resolved_login,
             started_at=native_started_at(raw) or utc_now(),
             finished_at=utc_now(),
-            serve_command=spec.engine.container or adapter.serve_command(),
+            serve_command=adapter.serve_command(),
             notes=notes,
         )
     )

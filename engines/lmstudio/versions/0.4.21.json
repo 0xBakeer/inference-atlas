@@ -1,0 +1,171 @@
+{
+  "schema_version": 1,
+  "engine_id": "lmstudio",
+  "version": "0.4.21",
+  "released": null,
+  "extraction_method": "hand-seeded",
+  "extracted_at": "2026-08-23T00:00:00Z",
+  "source": "lms load --help and lms server start --help on LM Studio 0.4.21 (build +2, CLI commit 71bd99c) on macOS, plus the app's model load panel for the settings the CLI does not expose",
+  "notes": "The CLI flags below are verbatim from lms load --help on this build; cpu-threads, flash-attention, kv-cache-quantization, keep-model-in-memory and try-mmap are load-panel settings with no CLI flag, kept because they change the numbers and have to end up in the fingerprint however they were set. Sampling parameters (temperature, top-p, ...) are not here: LM Studio takes them per request from the OpenAI API, so they belong to the workload, not to the engine configuration. Record the backend runtime version (llama.cpp build or MLX version) in engine.build_flags — the app version alone does not determine the numbers.",
+  "params": [
+    {
+      "name": "path",
+      "type": "str",
+      "default": null,
+      "help": "Model key in the local LM Studio library, passed to lms load as the positional argument. Dropped from the fingerprint.",
+      "group": "model",
+      "impact": "low"
+    },
+    {
+      "name": "context-length",
+      "type": "int",
+      "default": null,
+      "aliases": [
+        "c"
+      ],
+      "help": "Tokens of context to load the model with. Absent means the model's own default, capped by the app.",
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "gpu",
+      "type": "str",
+      "default": "auto",
+      "help": "GPU offload ratio: \"off\", \"max\" or a number between 0 and 1. Absent means LM Studio picks the ratio itself, which is what \"auto\" records.",
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "parallel",
+      "type": "int",
+      "default": null,
+      "help": "Maximum number of predictions the model runs at once. Below the workload's concurrency this is the throughput ceiling, so it must be in the fingerprint.",
+      "group": "batching",
+      "impact": "high"
+    },
+    {
+      "name": "cpu-threads",
+      "type": "int",
+      "default": null,
+      "help": "CPU threads for the llama.cpp runtime. Load-panel setting, no CLI flag.",
+      "group": "memory",
+      "impact": "medium"
+    },
+    {
+      "name": "flash-attention",
+      "type": "bool",
+      "default": false,
+      "help": "Flash attention in the llama.cpp runtime. Load-panel setting, no CLI flag.",
+      "group": "compilation",
+      "impact": "high"
+    },
+    {
+      "name": "kv-cache-quantization",
+      "type": "enum",
+      "default": "f16",
+      "choices": [
+        "f16",
+        "q8_0",
+        "q4_0"
+      ],
+      "help": "KV cache type in the llama.cpp runtime. Load-panel setting, no CLI flag.",
+      "group": "caching",
+      "impact": "high"
+    },
+    {
+      "name": "keep-model-in-memory",
+      "type": "bool",
+      "default": true,
+      "help": "Prevent the model being paged out. Load-panel setting, no CLI flag.",
+      "group": "memory",
+      "impact": "medium"
+    },
+    {
+      "name": "try-mmap",
+      "type": "bool",
+      "default": true,
+      "help": "Memory-map the weights. Load-panel setting, no CLI flag.",
+      "group": "memory",
+      "impact": "medium"
+    },
+    {
+      "name": "speculative-draft-mtp",
+      "type": "bool",
+      "default": null,
+      "help": "Load-time Draft MTP speculative decoding, for models that carry an MTP head. Whether it is on without the flag depends on the model, so the default is null and an explicit value always survives into the fingerprint.",
+      "group": "speculative",
+      "impact": "high"
+    },
+    {
+      "name": "speculative-draft-simple",
+      "type": "bool",
+      "default": false,
+      "help": "Load-time speculative decoding with a separate draft model, given by speculative-draft-model.",
+      "group": "speculative",
+      "impact": "high"
+    },
+    {
+      "name": "speculative-draft-model",
+      "type": "str",
+      "default": null,
+      "help": "Draft model resource used with speculative-draft-simple. Part of the fingerprint: a different draft model is a different configuration.",
+      "group": "speculative",
+      "impact": "high"
+    },
+    {
+      "name": "speculative-draft-max-tokens",
+      "type": "int",
+      "default": null,
+      "help": "Maximum draft tokens generated per speculative step. Feeds the tokens-per-forward-pass bound of the plausibility check.",
+      "group": "speculative",
+      "impact": "medium"
+    },
+    {
+      "name": "speculative-draft-min-tokens",
+      "type": "int",
+      "default": null,
+      "help": "Minimum draft length to consider for speculative decoding.",
+      "group": "speculative",
+      "impact": "low"
+    },
+    {
+      "name": "speculative-draft-min-continue-probability",
+      "type": "float",
+      "default": null,
+      "range": [
+        0,
+        1
+      ],
+      "help": "Keep drafting while the token probability is at or above this threshold.",
+      "group": "speculative",
+      "impact": "medium"
+    },
+    {
+      "name": "ttl",
+      "type": "int",
+      "default": null,
+      "help": "Seconds of idleness before the model is unloaded. Dropped from the fingerprint.",
+      "group": "server",
+      "impact": "low"
+    },
+    {
+      "name": "identifier",
+      "type": "str",
+      "default": null,
+      "help": "Name the API reports for the loaded model. Dropped from the fingerprint.",
+      "group": "server",
+      "impact": "low"
+    },
+    {
+      "name": "port",
+      "type": "int",
+      "default": 1234,
+      "aliases": [
+        "p"
+      ],
+      "help": "Bind port of lms server start. Dropped from the fingerprint.",
+      "group": "server",
+      "impact": "low"
+    }
+  ]
+}

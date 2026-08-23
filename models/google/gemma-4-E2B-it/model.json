@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "id": "google/gemma-4-E2B-it",
+  "name": "Gemma 4 E2B Instruct",
+  "hf_id": "google/gemma-4-E2B-it",
+  "family": "gemma-4",
+  "vendor": "google",
+  "params_b": 5.1,
+  "active_params_b": 2.3,
+  "architecture": "Gemma4ForConditionalGeneration",
+  "moe": false,
+  "attention": "hybrid",
+  "modalities": [
+    "text",
+    "image",
+    "audio"
+  ],
+  "context_length": 131072,
+  "licence": "apache-2.0",
+  "released": "2026-03-02",
+  "tags": [
+    "chat",
+    "reasoning",
+    "vision",
+    "audio",
+    "tools",
+    "on-device"
+  ],
+  "links": {
+    "hf": "https://huggingface.co/google/gemma-4-E2B-it",
+    "docs": "https://ai.google.dev/gemma/docs/core",
+    "licence": "https://ai.google.dev/gemma/docs/gemma_4_license",
+    "paper": "https://arxiv.org/abs/2607.02770"
+  },
+  "notes": "The \"E\" is for effective: Per-Layer Embeddings give every decoder layer its own small token embedding, so the card quotes 2.3B effective parameters against 5.1B total (the BF16 checkpoint is 10.25 GB, which is the total). params_b is the total, active_params_b the effective count, because the embedding tables are looked up rather than multiplied and decode bandwidth follows the effective figure. 35 layers, 512-token sliding window with every fifth layer global, 262K vocabulary. Thinking is off by default in the chat template: pass enable_thinking=true (which injects the <|think|> token into the system turn) to turn it on, and expect output token counts to change by a large factor when you do — say which mode you measured in provenance.notes. Audio is native on E2B; the licence is Apache-2.0 on the repo, linked to Google's Gemma 4 terms."
+}

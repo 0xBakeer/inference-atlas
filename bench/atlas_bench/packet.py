@@ -10,7 +10,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from .ids import cell_id
+from .ids import cell_id, model_slug
 from .registry import Registry
 from .spec import PACKET_VERSION
 
@@ -36,15 +36,26 @@ AGENT_RULES = [
 
 
 def parse_cell(text: str) -> dict[str, str] | None:
-    """Parse the compact cell form ``engine@version/model/quant/hardware``."""
+    """Parse the compact cell form ``engine@version/<owner>/<name>/quant/hardware``.
+
+    The model id contains a slash of its own, so the tail has four segments. The
+    three-segment form (``engine@version/model/quant/hardware``) is still accepted for a
+    model id without an owner, which is what a legacy packet carries.
+    """
     if "/" not in text or "@" not in text:
         return None
     head, _, tail = text.partition("/")
     engine, _, version = head.partition("@")
     parts = tail.split("/")
-    if len(parts) != 3:
+    if len(parts) == 4:
+        owner, name, quant, hardware = parts
+        model = f"{owner}/{name}"
+    elif len(parts) == 3:
+        model, quant, hardware = parts
+    else:
         return None
-    model, quant, hardware = parts
+    if not (engine and version and model and quant and hardware):
+        return None
     return {
         "engine_id": engine,
         "engine_version": version,
@@ -141,7 +152,11 @@ def build_packet(
         "model": {
             "id": model_id,
             "quant_id": quant_id,
-            "hf_id": quant.get("hf_id") or model.get("hf_id"),
+            # The model's own repo — under the new id contract it *is* the id.
+            "hf_id": model.get("hf_id") or model_id,
+            # Where the weights actually live, which is usually somebody else's repo:
+            # `lmstudio-community/gemma-4-E2B-it-MLX-4bit`. This is what to download.
+            "quant_hf_id": quant.get("hf_id"),
             "revision": quant.get("revision"),
             "dtype": dtype,
             "gguf_file": (quant.get("files") or [None])[0],
@@ -156,7 +171,8 @@ def build_packet(
         "workloads": list(workloads),
         "output_dir": output_dir,
         "branch": (
-            f"{branch_prefix}{engine_id}-{model_id}-{hardware_id or 'new-hardware'}-{short}"
+            f"{branch_prefix}{engine_id}-{model_slug(model_id)}-"
+            f"{hardware_id or 'new-hardware'}-{short}"
         ),
         "pr_title": (
             f"results: {engine_id} {engine_version} {model_id} {quant_id} on "

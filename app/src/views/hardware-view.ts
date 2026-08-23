@@ -15,7 +15,7 @@ import {
   who,
 } from '../components/ui.js';
 import { engineRunsOn, quantRunsOn } from '../data/derive.js';
-import { href, navigate, qget, setQuery } from '../router.js';
+import { href, modelHref, navigate, qget, setQuery } from '../router.js';
 import { store } from '../store.js';
 import { matchesQuery, parseSort, serializeSort, sortRows, toggleSort } from '../util/filters.js';
 import { fmtInt, fmtNum, fmtTokS, fmtUsd } from '../util/format.js';
@@ -284,7 +284,7 @@ export class AtlasHardwareView extends ViewElement {
           )}
       </div>
 
-      <div class="split" style="grid-template-columns: minmax(0,1fr) minmax(0,1.4fr)">
+      <div class="split facts-wide">
         <section class="card">
           <div class="card-head"><h3>Spec</h3></div>
           ${kv([
@@ -365,7 +365,7 @@ export class AtlasHardwareView extends ViewElement {
                         (x) =>
                           html`<tr>
                             <td>
-                              <a href=${href('models', x.m.model.id)} style="color:inherit"
+                              <a href=${modelHref(x.m.model.id)} style="color:inherit"
                                 >${x.m.model.id}</a
                               ><span class="muted">/${x.qq.id}</span>
                             </td>

@@ -63,14 +63,27 @@ class EngineRef(_Base):
 
 
 class ModelRef(_Base):
-    """Model + quantization to serve."""
+    """Model + quantization to serve.
+
+    ``id`` is the Hugging Face repo id, verbatim and case-preserved (SPEC §2, decision 20);
+    it is what every computed id hashes and what the result path is built from.
+
+    ``served_model_id`` is a different thing and must never be confused with it: it is the
+    name *this particular server* answers to in the OpenAI ``model`` field. LM Studio, for
+    instance, serves ``google/gemma-4-E2B-it`` under the key ``google/gemma-4-e2b``; vLLM
+    serves whatever ``--served-model-name`` said. It is transport, not identity — it is sent
+    on the wire and recorded in ``raw.payload``, and it never touches an id.
+    """
 
     id: str
     quant_id: str
     hf_id: str | None = None
+    #: The repo that holds this quantization's weights (often a community re-upload).
+    quant_hf_id: str | None = None
     revision: str | None = None
     dtype: str | None = "auto"
-    served_name: str | None = None
+    #: The name the running server answers to; ``served_name`` is accepted as an alias.
+    served_model_id: str | None = Field(default=None, alias="served_name")
     gguf_file: str | None = None
     gguf_repo: str | None = None
     ollama_tag: str | None = None

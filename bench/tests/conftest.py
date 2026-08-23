@@ -57,6 +57,7 @@ class FakeOpenAIServer:
         fail_status: int = 500,
         fail_body: str = "internal error",
         report_usage: bool = True,
+        reject_stream_options: bool = False,
     ) -> None:
         self.model = model
         self.chunks = chunks
@@ -69,6 +70,8 @@ class FakeOpenAIServer:
         self.fail_status = fail_status
         self.fail_body = fail_body
         self.report_usage = report_usage
+        #: LM Studio-style: reject the request outright, without naming the field.
+        self.reject_stream_options = reject_stream_options
         self.requests: list[dict[str, Any]] = []
 
     # ------------------------------------------------------------------ wiring
@@ -92,6 +95,8 @@ class FakeOpenAIServer:
 
         body = json.loads(request.content.decode())
         self.requests.append(body)
+        if self.reject_stream_options and "stream_options" in body:
+            return httpx.Response(400, json={"error": "Unexpected parameter in request body"})
         index = len(self.requests)
         if self.fail_every and index % self.fail_every == 0:
             return httpx.Response(self.fail_status, json={"error": {"message": self.fail_body}})
@@ -176,6 +181,35 @@ def _frame(payload: dict[str, Any]) -> bytes:
     return f"data: {json.dumps(payload)}\n\n".encode()
 
 
+def schema_accepts_hf_model_ids() -> bool:
+    """Whether this checkout's schemas already carry the HF ``model_id`` definition.
+
+    `bench/` implements SPEC §2 decision 20 (model ids are Hugging Face repo ids); the
+    schemas are migrated by another workspace. While that is in flight, a locally generated
+    result is correct but trips the old lowercase-kebab pattern, so the validation tests
+    ignore exactly that one schema error and nothing else.
+    """
+    common = REPO_ROOT / "schemas" / "common.schema.json"
+    if not common.is_file():
+        return True
+    try:
+        defs = json.loads(common.read_text(encoding="utf-8")).get("$defs") or {}
+    except json.JSONDecodeError:  # pragma: no cover - only while a writer is mid-file
+        return True
+    return "model_id" in defs
+
+
+def drop_pre_migration_schema_errors(issues: list) -> list:
+    """Filter out the model-id pattern error while the schemas are still being migrated."""
+    if schema_accepts_hf_model_ids():
+        return issues
+    return [
+        issue
+        for issue in issues
+        if not (issue.code == "schema" and issue.message.startswith("model/id:"))
+    ]
+
+
 @pytest.fixture
 def fake_server() -> FakeOpenAIServer:
     """A default fake server: 8 deltas, usage reported."""
@@ -226,9 +260,10 @@ ENGINE_VERSION = {
 }
 MODEL = {
     "schema_version": 1,
-    "id": "test-model-1b",
+    "id": "acme/test-model-1b",
     "name": "Test Model 1B",
-    "hf_id": "test/Test-Model-1B",
+    # model.json.hf_id must equal the id: the directory layout *is* the repo id.
+    "hf_id": "acme/test-model-1b",
     "params_b": 1,
     "moe": False,
     "context_length": 32768,
@@ -237,10 +272,11 @@ MODEL = {
 QUANT = {
     "schema_version": 1,
     "id": "fp8",
-    "model_id": "test-model-1b",
+    "model_id": "acme/test-model-1b",
     "format": "fp8",
     "bits": 8,
-    "hf_id": "test/Test-Model-1B-FP8",
+    # The quant's hf_id is the repo that actually holds these weights — a different repo.
+    "hf_id": "acme-quants/test-model-1b-FP8",
     "size_gb": 1.0,
     "engines": ["vllm"],
 }
@@ -306,6 +342,64 @@ def _write(path: Path, payload: Any) -> None:
     path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
 
 
+LMSTUDIO_META = {
+    "schema_version": 1,
+    "id": "lmstudio",
+    "name": "LM Studio",
+    "api": "openai",
+    "default_port": 1234,
+    "serve": {"flag_style": "--{name} {value}", "bool_style": "--{name}"},
+    "health": {"path": "/v1/models", "models_path": "/v1/models"},
+    "drop_params": ["model", "host", "port", "api-key"],
+    "param_aliases": {},
+    "install": [{"method": "app"}],
+}
+GEMMA = {
+    "schema_version": 1,
+    "id": "google/gemma-4-E2B-it",
+    "name": "Gemma 4 E2B IT",
+    "hf_id": "google/gemma-4-E2B-it",
+    "params_b": 2,
+    "moe": False,
+    "context_length": 131072,
+    "modalities": ["text", "image"],
+}
+GEMMA_QUANT = {
+    "schema_version": 1,
+    "id": "mlx-4bit",
+    "model_id": "google/gemma-4-E2B-it",
+    "format": "mlx",
+    "bits": 4,
+    "hf_id": "lmstudio-community/gemma-4-E2B-it-MLX-4bit",
+    "size_gb": 1.6,
+    "engines": ["lmstudio", "mlx-lm"],
+}
+APPLE_HARDWARE = {
+    "schema_version": 1,
+    "id": "apple-m2-max-32gb",
+    "name": "Apple M2 Max (32 GB)",
+    "vendor": "apple",
+    "kind": "soc",
+    "memory_gb": 32,
+    "memory_bandwidth_gbs": 400,
+    "tdp_w": 79,
+    "detect": {"apple_chip": ["Apple M2 Max"], "memory_gb": 32},
+}
+
+
+@pytest.fixture
+def lmstudio_repo(atlas_repo: Path) -> Path:
+    """The throwaway checkout, plus the registry entries an LM Studio run needs."""
+    _write(atlas_repo / "engines" / "lmstudio" / "meta.json", LMSTUDIO_META)
+    _write(atlas_repo / "hardware" / "apple-m2-max-32gb.json", APPLE_HARDWARE)
+    _write(atlas_repo / "models" / "google" / "gemma-4-E2B-it" / "model.json", GEMMA)
+    _write(
+        atlas_repo / "models" / "google" / "gemma-4-E2B-it" / "quants" / "mlx-4bit.json",
+        GEMMA_QUANT,
+    )
+    return atlas_repo
+
+
 @pytest.fixture
 def atlas_repo(tmp_path: Path) -> Path:
     """A throwaway Atlas checkout with one engine, model, quant, hardware and workloads."""
@@ -313,8 +407,8 @@ def atlas_repo(tmp_path: Path) -> Path:
     _write(root / "hardware" / "test-gpu-24gb.json", HARDWARE)
     _write(root / "engines" / "vllm" / "meta.json", ENGINE_META)
     _write(root / "engines" / "vllm" / "versions" / "0.27.1.json", ENGINE_VERSION)
-    _write(root / "models" / "test-model-1b" / "model.json", MODEL)
-    _write(root / "models" / "test-model-1b" / "quants" / "fp8.json", QUANT)
+    _write(root / "models" / "acme" / "test-model-1b" / "model.json", MODEL)
+    _write(root / "models" / "acme" / "test-model-1b" / "quants" / "fp8.json", QUANT)
     for workload in (WORKLOAD, SWEEP_WORKLOAD, EVAL_WORKLOAD):
         _write(root / "workloads" / f"{workload['id']}.json", workload)
     _write(root / "datasets" / "prompts-test-v1" / "dataset.json", DATASET)

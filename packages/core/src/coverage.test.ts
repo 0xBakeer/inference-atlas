@@ -11,7 +11,7 @@ function row(
   over: Partial<CompiledIndexRow> & { login: string; tok_s?: number | null },
 ): CompiledIndexRow {
   const engineMinorValue = over.engine?.minor ?? '0.27';
-  const model = over.model ?? { id: 'qwen3-8b', quant_id: 'fp8' };
+  const model = over.model ?? { id: 'Qwen/Qwen3-8B', quant_id: 'fp8' };
   const hardware = over.hardware ?? { id: 'nvidia-rtx-4090', count: 1 };
   const cell_id =
     over.cell_id ??
@@ -136,7 +136,7 @@ describe('coverage levels', () => {
   it('describes an untested square as none', () => {
     const cell = emptyCell({
       cell_id: 'abc123abc123',
-      model_id: 'qwen3-8b',
+      model_id: 'Qwen/Qwen3-8B',
       quant_id: 'fp8',
       hardware_id: 'nvidia-rtx-4090',
       hw_count: 1,

@@ -124,11 +124,12 @@ export class AtlasContributorsView extends ViewElement {
       ${
         rows.length === 0
           ? emptyState({
-              title: 'No contributors yet',
-              text: 'The first pull request with a result file puts a name here.',
-              action: html`<a class="btn btn-primary" href="#/contribute"
-                >${icon('flag')} How to contribute</a
-              >`,
+              title: 'Nobody on the map yet — be the first',
+              text: 'The first pull request with a result file puts a name, an avatar and points here. Every gap in the queue ships with a packet a coding agent can run end to end.',
+              action: html`<div class="row" style="justify-content:center">
+                <a class="btn btn-primary" href="#/gaps">${icon('flag')} Pick a gap to fill</a>
+                <a class="btn" href="#/contribute">How contributing works</a>
+              </div>`,
             })
           : html`<div class="table-wrap">
               <table class="table cards">
@@ -244,7 +245,7 @@ export class AtlasContributorsView extends ViewElement {
         ${earned.length ? html`<div class="badge-row mt-2">${earned.map((b) => html`<span class="badge" title=${b.desc}>${icon(b.ic)} ${b.label}</span>`)}</div>` : nothing}
       </div>
 
-      <div class="split" style="grid-template-columns: minmax(0,1fr) minmax(0,2fr)">
+      <div class="split facts-quants">
         <div class="stack">
           <section class="card">
             <div class="card-head"><h3>Points breakdown</h3></div>

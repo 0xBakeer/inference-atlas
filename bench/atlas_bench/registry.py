@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any
 
 from .canonical import CanonicalInput, ParamSpec
+from .ids import model_parts
 from .repo import find_repo_root, read_json
 
 __all__ = ["Registry", "ResolvedConfig"]
@@ -84,15 +85,34 @@ class Registry:
 
     # ----------------------------------------------------------------- models
 
+    def model_dir(self, model_id: str) -> Path:
+        """Directory of a model: ``models/<owner>/<name>`` (SPEC §2, decision 20).
+
+        The model id is a Hugging Face repo id, so its two halves are two directory levels.
+        Nothing is lowercased on the way — the id is the repo id, verbatim.
+        """
+        owner, name = model_parts(model_id)
+        parts = [part for part in (owner, name) if part]
+        return self.root.joinpath("models", *parts)
+
     def model(self, model_id: str) -> dict[str, Any] | None:
-        """``models/<id>/model.json``."""
-        data = self._json(f"models/{model_id}/model.json")
+        """``models/<owner>/<name>/model.json``."""
+        data = read_json(self.model_dir(model_id) / "model.json")
         return data if isinstance(data, dict) else None
 
     def quant(self, model_id: str, quant_id: str) -> dict[str, Any] | None:
-        """``models/<id>/quants/<quant-id>.json``."""
-        data = self._json(f"models/{model_id}/quants/{quant_id}.json")
+        """``models/<owner>/<name>/quants/<quant-id>.json``."""
+        data = read_json(self.model_dir(model_id) / "quants" / f"{quant_id}.json")
         return data if isinstance(data, dict) else None
+
+    def model_files(self) -> list[Path]:
+        """Every ``models/<owner>/<name>/model.json`` in the registry."""
+        directory = self.root / "models"
+        return sorted(directory.glob("*/*/model.json")) if directory.is_dir() else []
+
+    def model_ids(self) -> list[str]:
+        """Ids of every registered model, derived from the directory layout."""
+        return [f"{path.parent.parent.name}/{path.parent.name}" for path in self.model_files()]
 
     # -------------------------------------------------- workloads & datasets
 

@@ -5,7 +5,7 @@ import { AtlasElement } from './components/base.js';
 import { paletteOpen } from './components/command-palette.js';
 import { icon } from './components/icons.js';
 import { when } from './components/ui.js';
-import { route, type Route } from './router.js';
+import { modelIdFromSegments, route, type Route } from './router.js';
 import { watch } from './signal.js';
 import { siteFallback, store } from './store.js';
 import { theme, toggleTheme } from './theme.js';
@@ -95,7 +95,9 @@ export class AtlasApp extends AtlasElement {
     const seg = r.segments[0];
     if (!seg) return site;
     const name = seg.charAt(0).toUpperCase() + seg.slice(1);
-    return r.segments[1] ? `${r.segments[1]} · ${name} · ${site}` : `${name} · ${site}`;
+    // model ids are HF repo ids and span two segments (`#/models/<owner>/<name>`)
+    const item = seg === 'models' ? modelIdFromSegments(r.segments) : (r.segments[1] ?? null);
+    return item ? `${item} · ${name} · ${site}` : `${name} · ${site}`;
   }
 
   private view(r: Route): TemplateResult {
@@ -120,7 +122,7 @@ export class AtlasApp extends AtlasElement {
       case 'parallelism':
         return html`<atlas-parallelism-view></atlas-parallelism-view>`;
       case 'models':
-        return html`<atlas-models-view .itemId=${b ?? null}></atlas-models-view>`;
+        return html`<atlas-models-view .itemId=${modelIdFromSegments(r.segments)}></atlas-models-view>`;
       case 'hardware':
         return html`<atlas-hardware-view .itemId=${b ?? null}></atlas-hardware-view>`;
       case 'engines':

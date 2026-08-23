@@ -17,7 +17,7 @@ import httpx
 
 from . import hwinfo
 from .client import ChatClient, utc_now
-from .engines.base import EngineAdapter, get_adapter
+from .engines.base import AttachAdapter, EngineAdapter, get_adapter
 from .registry import Registry
 from .repo import write_json
 from .result import ResultInputs, build_result, output_path
@@ -55,18 +55,43 @@ def _resolve_hardware(spec: TaskSpec, registry: Registry, host: hwinfo.HostInfo)
     return warnings
 
 
-async def _served_model(client: ChatClient, spec: TaskSpec) -> str:
-    """Pick the model name to send in requests.
+async def _served_model(client: ChatClient, spec: TaskSpec) -> tuple[str, list[str], list[str]]:
+    """Pick the model name to send in requests: ``(served_model_id, advertised, warnings)``.
 
-    The engine's own ``/v1/models`` wins: passing the HF id to a server that registered the
-    model under a different name is the most common cause of a 404 mid-benchmark.
+    The registry ``model.id`` is an identity, not an address. What a server answers to is a
+    separate string — LM Studio serves ``google/gemma-4-E2B-it`` under ``google/gemma-4-e2b``,
+    vLLM under whatever ``--served-model-name`` said — so the packet may carry
+    ``model.served_model_id``, and it is used verbatim.
+
+    Without one we look for the model id in ``/v1/models`` (case-insensitively, since that is
+    exactly the kind of difference this field exists for) and only then fall back to the first
+    advertised model, which is a guess and says so.
     """
-    if spec.model.served_name:
-        return spec.model.served_name
     advertised = await client.list_models()
+    warnings: list[str] = []
+    wanted = spec.model.served_model_id
+    if wanted:
+        if advertised and not any(name.casefold() == wanted.casefold() for name in advertised):
+            warnings.append(
+                f"served-model-not-advertised: '{wanted}' is not in /v1/models "
+                f"({advertised}); sending it anyway"
+            )
+        return wanted, advertised, warnings
+
+    for candidate in (spec.model.id, spec.model.hf_id):
+        if not candidate:
+            continue
+        for name in advertised:
+            if name.casefold() == str(candidate).casefold():
+                return name, advertised, warnings
     if advertised:
-        return advertised[0]
-    return spec.model.hf_id or spec.model.id
+        if len(advertised) > 1:
+            warnings.append(
+                f"served-model-guessed: {advertised} are loaded and none matches "
+                f"'{spec.model.id}'; using '{advertised[0]}'. Set model.served_model_id."
+            )
+        return advertised[0], advertised, warnings
+    return spec.model.hf_id or spec.model.id, advertised, warnings
 
 
 def _load_tokenizer(name: str | None) -> Any | None:
@@ -127,6 +152,9 @@ async def run_spec(
     if base_url:
         spec.engine.base_url = base_url
     adapter = adapter or get_adapter(spec, registry, attach=bool(spec.engine.base_url))
+    # `run` never starts an engine — it measures one. In attach mode we genuinely do not know
+    # how the server was started, so `serve_command` is null rather than a plausible guess.
+    attached = isinstance(adapter, AttachAdapter)
     serve_command = adapter.serve_command()
 
     if dry_run:
@@ -141,14 +169,15 @@ async def run_spec(
 
     async with ChatClient(
         adapter.base_url,
-        model=spec.model.served_name or spec.model.hf_id or spec.model.id,
+        model=spec.model.served_model_id or spec.model.hf_id or spec.model.id,
         api_key=spec.request.api_key,
         timeout_s=spec.request.timeout_s,
         transport=transport,
         tokenizer=tokenizer,
         extra_body=extra_body,
     ) as client:
-        client.model = await _served_model(client, spec)
+        client.model, advertised, model_warnings = await _served_model(client, spec)
+        output.warnings.extend(model_warnings)
         for ref in spec.workloads:
             workload, params = resolve_workload(registry, ref)
             started_at = utc_now()
@@ -174,6 +203,9 @@ async def run_spec(
                     serve_command=serve_command,
                     container=getattr(adapter, "container", None) or spec.engine.container,
                     install_method=spec.engine.install_method,
+                    served_model_id=client.model,
+                    advertised_models=advertised,
+                    attached=attached,
                     extra_gotchas=list(gotchas or []),
                     notes=notes,
                     warnings=list(output.warnings),

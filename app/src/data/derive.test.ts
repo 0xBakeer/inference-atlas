@@ -29,7 +29,7 @@ describe('possibleCells', () => {
     )!;
     expect(one.cell_id).toBe(
       cellId({
-        model_id: 'qwen3-8b',
+        model_id: 'Qwen/Qwen3-8B',
         quant_id: 'fp8',
         hardware_id: 'nvidia-rtx-4090',
         hw_count: 1,
@@ -107,9 +107,9 @@ describe('buildHeatMatrix', () => {
       {},
       reg.site.coverage.key_metrics,
     );
-    expect(m.rows).toEqual(['qwen3-8b']);
+    expect(m.rows).toEqual(['Qwen/Qwen3-8B']);
     expect(m.cols.sort()).toEqual(['apple-m2-max-32gb', 'nvidia-rtx-4090']);
-    const hc = m.cells.get(heatKey('qwen3-8b', 'nvidia-rtx-4090'))!;
+    const hc = m.cells.get(heatKey('Qwen/Qwen3-8B', 'nvidia-rtx-4090'))!;
     expect(hc.possible).toBe(4);
     expect(hc.covered).toBe(1);
     expect(hc.runs).toBe(2);
@@ -118,7 +118,7 @@ describe('buildHeatMatrix', () => {
     expect(hc.bestValue).toBe(120.5);
     expect(m.totalPossible).toBe(6);
     expect(m.totalCovered).toBe(1);
-    expect(m.cells.get(heatKey('qwen3-8b', 'apple-m2-max-32gb'))!.runs).toBe(0);
+    expect(m.cells.get(heatKey('Qwen/Qwen3-8B', 'apple-m2-max-32gb'))!.runs).toBe(0);
   });
   it('filters by workload kind and engine', () => {
     const m = buildHeatMatrix(
@@ -132,7 +132,7 @@ describe('buildHeatMatrix', () => {
       { kind: 'eval' },
       reg.site.coverage.key_metrics,
     );
-    const hc = m.cells.get(heatKey('qwen3-8b', 'nvidia-rtx-4090'))!;
+    const hc = m.cells.get(heatKey('Qwen/Qwen3-8B', 'nvidia-rtx-4090'))!;
     expect(hc.runs).toBe(1);
     expect(hc.bestMetric).toBe('accuracy');
     const m2 = buildHeatMatrix(
@@ -157,7 +157,7 @@ describe('buildHeatMatrix', () => {
       index,
       'quant',
       'engine_minor',
-      { model: 'qwen3-8b' },
+      { model: 'Qwen/Qwen3-8B' },
       reg.site.coverage.key_metrics,
     );
     expect(m.rows.sort()).toEqual(['bf16', 'fp8', 'mlx-4bit']);

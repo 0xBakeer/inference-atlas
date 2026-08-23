@@ -56,6 +56,30 @@ export function href(...parts: Array<string | number>): string {
   return '#/' + parts.map((p) => encodeURIComponent(String(p))).join('/');
 }
 
+/**
+ * `#/models/<owner>/<name>` — `model_id` is the Hugging Face repo id verbatim (SPEC §2,
+ * decision #20). The slash is a real path segment: each segment is encoded on its own, the
+ * id itself is never lowercased, kebab-cased or flattened.
+ */
+export function modelHref(id: string): string {
+  return (
+    '#/models/' +
+    id
+      .split('/')
+      .map((s) => encodeURIComponent(s))
+      .join('/')
+  );
+}
+
+/**
+ * Model routes consume every segment after `models`, rejoined on '/'. Handles both
+ * `#/models/google/gemma-4-E2B-it` (two segments) and a `%2F`-encoded single segment,
+ * which `parseHash` decodes back into a slash.
+ */
+export function modelIdFromSegments(segments: string[]): string | null {
+  return segments.length > 1 ? segments.slice(1).join('/') : null;
+}
+
 export const route = signal<Route>(parseHash(typeof location !== 'undefined' ? location.hash : ''));
 
 if (typeof window !== 'undefined') {

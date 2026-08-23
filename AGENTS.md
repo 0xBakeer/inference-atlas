@@ -6,7 +6,7 @@ purpose. `docs/SPEC.md` is the long version and wins wherever the two disagree.
 
 ## What this repository is
 
-Inference Atlas is a map of the *configuration space* of LLM inference: model × quantization
+Inference Atlas is a map of the _configuration space_ of LLM inference: model × quantization
 × hardware × engine version × flags × workload. Every square that somebody has measured shows
 real numbers, attributed to the GitHub user who ran them. Every square nobody has measured is
 a gap, and gaps come with a packet like the one you were given.
@@ -23,6 +23,13 @@ That rule is what makes merge conflicts structurally impossible and what makes t
 trustworthy. It is not negotiable and there is no situation in which working around it is the
 right call.
 
+**Nothing here is measured by CI.** Every number in the atlas was produced on a contributor's
+own machine, by that contributor, and submitted as a pull request by that contributor. CI
+validates the files and builds the site; it never starts an engine and never runs a workload.
+There is no seed data either: an empty square means nobody has run it yet. So the last step
+of your job is opening the pull request with the result files in it — until then the run only
+exists on your disk.
+
 ## The rules
 
 1. **Only add files you own.** Your own result files under `results/`, plus registry files
@@ -30,8 +37,8 @@ right call.
 2. **Never edit a number by hand.** If validation fails, fix the run or fix the metadata —
    never the measurement. A hand-patched number is data corruption with extra steps.
 3. **Never silently lower the configuration.** If the requested flags do not fit — OOM,
-   unsupported quantization, context too long — that *is* the result. Record it as a failure
-   with the actual error. Only then, as a *separate* result, record what did fit, with `args`
+   unsupported quantization, context too long — that _is_ the result. Record it as a failure
+   with the actual error. Only then, as a _separate_ result, record what did fit, with `args`
    showing exactly what you changed and `provenance.notes` saying why.
 4. **Report failures as failures.** An OOM, a crash, a 0 % success rate, an engine that will
    not start: all of these are valid, wanted contributions. A failure you quietly dropped is
@@ -52,8 +59,8 @@ right call.
 
 ```bash
 # 1. get the repository and read this file
-git clone https://github.com/<owner>/<repo>.git
-cd <repo>
+git clone https://github.com/Inference-Atlas/inference-atlas.git
+cd inference-atlas
 
 # 2. capture the hardware truthfully
 uv run atlas-bench hwinfo --json
@@ -76,17 +83,24 @@ pnpm install
 pnpm validate
 
 # 7. branch, commit, pull request
-git checkout -b result/<engine>-<model>-<hardware>-<short>
+git checkout -b result/vllm-qwen-qwen3.8-27b-nvidia-gb10-dgx-spark-fa19e1
 git add results/
-git commit -m "results: vllm 0.27.1 qwen3.8-27b/fp8 on nvidia-gb10-dgx-spark"
-git push -u origin result/<engine>-<model>-<hardware>-<short>
+git commit -m "results: vllm 0.27.1 Qwen/Qwen3.8-27B/fp8 on nvidia-gb10-dgx-spark"
+git push -u origin result/vllm-qwen-qwen3.8-27b-nvidia-gb10-dgx-spark-fa19e1
 gh pr create --base main \
-  --title "results: vllm 0.27.1 qwen3.8-27b/fp8 on nvidia-gb10-dgx-spark" \
+  --title "results: vllm 0.27.1 Qwen/Qwen3.8-27B/fp8 on nvidia-gb10-dgx-spark" \
   --label results --body-file pr-body.md
 ```
 
-Branch naming: `result/<engine>-<model>-<hardware>-<first 6 of cell_id>` for measurements,
-`new-hardware/<slug>`, `new-model/<slug>`, `new-engine/<slug>` for registry additions.
+**You open the pull request.** Every measurement runs on your own machine; CI only validates
+the files and builds the site. Nothing in this repository benchmarks anything for you, so a
+run that never becomes a PR never happened.
+
+Branch naming: `result/<engine>-<model-slug>-<hardware>-<first 6 of cell_id>` for
+measurements, `new-hardware/<slug>`, `new-model/<slug>`, `new-engine/<slug>` for registry
+additions. The _model slug_ is the model id lowercased with everything outside `[a-z0-9.-]`
+turned into `-`, so `Qwen/Qwen3.8-27B` becomes `qwen-qwen3.8-27b`. It is a branch label only:
+the id itself keeps its slash and its capitals everywhere else.
 
 ### The PR body
 
@@ -107,7 +121,8 @@ Full shape: `schemas/result.schema.json` and `docs/SPEC.md` §4. The parts you m
 - `run_id`, `config_id`, `cell_id`, `args_canonical` are **computed**, never typed. The
   harness fills them in; the validator recomputes them and fails on any mismatch. The
   filename is exactly `<run_id>.json` and the path is
-  `results/<engine-id>/<model-id>/<hardware-id>/`.
+  `results/<engine-id>/<owner>/<name>/<hardware-id>/`, where `<owner>/<name>` is the model id
+  — it is a Hugging Face repo id, so it spends two directory levels.
 - `args` is what you actually passed. Not what you meant to pass, not what the packet asked
   for if you had to deviate.
 - Metrics you did not measure stay `null`. A `null` is information; a plausible-looking
@@ -136,25 +151,39 @@ code change. All of these live under CC-BY-4.0 (see `DATA_LICENSE`).
   write `null` and say why in `notes`.** A null is worth more than a guess: the plausibility
   checks are derived from these numbers, so a wrong bandwidth figure silently invalidates
   every future measurement on that device.
-- Prefer *dense* tensor throughput over the marketing figure that includes structured
+- Prefer _dense_ tensor throughput over the marketing figure that includes structured
   sparsity, and say which you used in `notes`.
 - `detect`: the strings the capture actually printed (`nvidia_smi_name`, `apple_chip`,
   `cpu_model`, `rocm_smi_name`), so the next person on the same machine is matched
   automatically.
 
-### New model — `models/<id>/model.json`
+### New model — `models/<owner>/<name>/model.json`
 
-- `id`: readable, not the Hugging Face path: `qwen3-8b`, `llama-3.3-70b`,
-  `nemotron-3.5-lightning-30b-a3b`. `hf_id` carries the repo.
+- `id` **is the Hugging Face repo id, verbatim and case-preserved**: `Qwen/Qwen3.8-27B`,
+  `google/gemma-4-E2B-it`, `meta-llama/Llama-3.1-8B-Instruct`. Exactly one slash, and the
+  two halves are the two directory levels, so the file is
+  `models/google/gemma-4-E2B-it/model.json`. `hf_id` must equal `id`.
+- Do not invent a friendlier id. A fine-tune or a re-upload by another account is a different
+  repository and therefore a different model, and that distinction is the whole point: it is
+  what stops somebody's re-quantized copy being averaged into the original's numbers. Put the
+  readable form in `name` instead.
+- Two model directories may not differ only by case (`Qwen/Qwen3-8B` vs `qwen/qwen3-8b`) —
+  the validator rejects that, because on a case-insensitive filesystem they are one directory.
 - `params_b`, `active_params_b`, `architecture`, `context_length`, `modalities` and `licence`
   come from `config.json` and the model card, **not from the launch blog post**.
 - `active_params_b` matters more than anything else here: it is what the bandwidth
   plausibility bound is computed from. For a dense model it equals `params_b`.
 
-### New quantization — `models/<model-id>/quants/<quant-id>.json`
+### New quantization — `models/<owner>/<name>/quants/<quant-id>.json`
 
-- `id` follows the existing vocabulary: `bf16`, `fp8`, `nvfp4`, `mxfp4`, `awq-int4`,
-  `gptq-int4`, `gguf-q4-k-m`, `mlx-4bit`, `exl3-4.0bpw`.
+- `id` stays short, lowercase and kebab-case, and follows the existing vocabulary: `bf16`,
+  `fp8`, `nvfp4`, `mxfp4`, `awq-int4`, `gptq-int4`, `gguf-q4-k-m`, `mlx-4bit`,
+  `exl3-4.0bpw`. It only has to be unique within the model.
+- `hf_id` is the repository that actually holds _these_ weights, official or community:
+  `Qwen/Qwen3.8-27B-FP8`, `lmstudio-community/gemma-4-E2B-it-MLX-4bit`. Unlike the model's
+  own `hf_id` it is usually not the model id. For a split repository (GGUF, EXL3) name the
+  files you loaded in `files[]` — the repository holds every quantization of the model, and
+  which file you ran is what the number belongs to.
 - `size_gb` is the resident weight size. Measure it if you can; if you estimate it, say so in
   `notes`.
 - `engines` lists the engines that can load it. A result whose engine is not in that list

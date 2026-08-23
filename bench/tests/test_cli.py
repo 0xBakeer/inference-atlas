@@ -150,7 +150,7 @@ def test_packet_command_outputs_valid_json(atlas_repo: Path, tmp_path: Path) -> 
         [
             "packet",
             "--cell",
-            "vllm@0.27.1/test-model-1b/fp8/test-gpu-24gb",
+            "vllm@0.27.1/acme/test-model-1b/fp8/test-gpu-24gb",
             "--workload",
             "serve-test-c2-v1",
             "--arg",

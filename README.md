@@ -4,13 +4,13 @@
 
 > Benchmark numbers for local inference are scattered across blog posts, Reddit threads and
 > Discord screenshots, and almost none of them are reproducible — because what determines the
-> number is not the model and not the GPU, it is the *combination*: engine, exact version,
+> number is not the model and not the GPU, it is the _combination_: engine, exact version,
 > quantization, flags, and the workload. Change one and the number changes. So the same
 > benchmark gets re-run thousands of times worldwide and the knowledge evaporates each time.
 
 Inference Atlas is the opposite of a leaderboard. It is a **coverage map plus a contribution
 funnel**. The landing view is a heatmap of the configuration space where colour means
-*evidence*, not speed — grey means nobody has tried this. The interesting question is not
+_evidence_, not speed — grey means nobody has tried this. The interesting question is not
 "what is the fastest setup", it is "which parts of the space has nobody measured yet, and how
 do I measure one of them in the next twenty minutes".
 
@@ -22,6 +22,10 @@ do I measure one of them in the next twenty minutes".
 
 - **The repository is the database.** No backend, no external DB, no server cost. Every
   measurement is one JSON file committed to `main`; the site is a static build of those files.
+- **Every number was measured on a contributor's own machine.** CI validates the files and
+  builds the site — it never starts an engine and never benchmarks anything. There is no seed
+  data: a grey square means nobody has run it yet, and a run becomes part of the atlas when
+  the person who ran it opens the pull request.
 - **One file per measurement, one owner per file.** A result records the GitHub login of
   whoever ran it, and CI rejects any pull request that touches somebody else's result. Merge
   conflicts are structurally impossible and nobody can overwrite your numbers.
@@ -50,12 +54,12 @@ Find a grey square, press **Add**, and take one of the four tabs: an agent promp
 script, a JSON packet for the harness, or a pre-filled issue. Then:
 
 ```bash
-git clone https://github.com/<owner>/<repo>.git && cd <repo>
+git clone https://github.com/Inference-Atlas/inference-atlas.git && cd inference-atlas
 pnpm install
 uv run atlas-bench hwinfo --json          # identify the machine — captured, never typed
-uv run atlas-bench run --spec task.json   # run the workloads, write the result files
+uv run atlas-bench run --spec task.json   # run the workloads on *your* machine
 pnpm validate                             # the same checks CI runs
-gh pr create --label results
+gh pr create --label results               # you open the PR; CI only validates and builds
 ```
 
 Read `CONTRIBUTING.md` first. The rules that matter: never invent a number, metrics you did
@@ -84,10 +88,11 @@ pnpm dev         # compile data + Vite dev server
 schemas/     JSON Schema (draft 2020-12) for every data kind, plus golden test vectors
 hardware/    one file per device: specs, detection rules
 engines/     per engine: meta.json, overlay.json, versions/<version>.json (the flag schema)
-models/      per model: model.json + quants/<quant-id>.json
+models/      per model, under its Hugging Face repo id: <owner>/<name>/model.json + quants/<quant-id>.json
 workloads/   pinned, immutable definitions of what gets run
 datasets/    test data authored in this repository (synthetic, MIT)
-results/     one JSON file per measurement, owned by its contributor
+results/     one JSON file per measurement, owned by its contributor:
+             <engine>/<owner>/<name>/<hardware>/<run_id>.json
 site/        branding, navigation, colours, scoring weights, thresholds
 packages/    @atlas/core — shared types, fingerprinting, ids, plausibility, coverage, packets
 tools/       node CLIs: validate, build, packet, ingest
@@ -96,11 +101,22 @@ bench/       atlas-bench, the Python harness
 docs/        DESIGN.md (the vision) and SPEC.md (the binding contract)
 ```
 
+## Identifiers
+
+Every id is lowercase kebab-case (`nvidia-rtx-4090`, `vllm`, `gguf-q4-k-m`,
+`serve-chat-c8-i1k-o256-v1`) with exactly one exception: a **model id is the Hugging Face
+repo id, verbatim and case-preserved** — `Qwen/Qwen3.8-27B`, `google/gemma-4-E2B-it`. A
+fine-tune or a re-upload by another account is a different repository and therefore a
+different model, which is what stops somebody's re-quantized copy being averaged into the
+original's numbers. The slash is a directory level: `models/Qwen/Qwen3.8-27B/model.json`,
+`results/vllm/Qwen/Qwen3.8-27B/nvidia-gb10-dgx-spark/<run_id>.json`.
+
 ## Status
 
-Early. The schemas, the fingerprint definition, the shared core and the first measurements
-are in place; the harness, the tools and the app are being built. `docs/SPEC.md` is the
-authoritative description of what exists and what it must do.
+Early. The schemas, the fingerprint definition, the shared core and the registries are in
+place; the harness, the tools and the app are being built. `results/` is empty until the
+first contributor runs something — nothing is seeded. `docs/SPEC.md` is the authoritative
+description of what exists and what it must do.
 
 ## Licence
 

@@ -15,7 +15,7 @@ function row(
     workload_id: 'serve-v1',
     kind: 'serving',
     engine: { id: 'vllm', version: '0.27.1', minor: '0.27' },
-    model: { id: 'qwen3-8b', quant_id: 'fp8' },
+    model: { id: 'Qwen/Qwen3-8B', quant_id: 'fp8' },
     hardware: { id: 'nvidia-rtx-4090', count: 1 },
     metrics: { output_tok_s: 100 },
     provenance: { login, submitted_at: submitted },

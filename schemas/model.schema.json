@@ -2,18 +2,22 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://inference-atlas.dev/schemas/model.schema.json",
   "title": "Model record",
-  "description": "One model family member, unquantized. Quantizations are child records under models/<id>/quants/. File: models/<id>/model.json",
+  "description": "One model family member, unquantized. The id is the Hugging Face repo id verbatim, so the record lives two levels deep. Quantizations are child records under models/<owner>/<name>/quants/. File: models/<owner>/<name>/model.json",
   "type": "object",
   "additionalProperties": false,
   "required": ["schema_version", "id", "name", "hf_id", "vendor", "params_b", "context_length"],
   "properties": {
     "schema_version": { "type": "integer", "const": 1 },
-    "id": { "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/id" },
+    "id": {
+      "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/model_id",
+      "description": "The Hugging Face repo id, verbatim and case-preserved: Qwen/Qwen3.8-27B, google/gemma-4-E2B-it. Equals the directory path under models/.",
+      "$comment": "id and hf_id must be the same string. JSON Schema cannot compare two properties, so the validators (packages/core/scripts/check-registries.mjs, tools/validate, bench) enforce that."
+    },
     "name": { "type": "string", "minLength": 1 },
     "hf_id": {
-      "type": ["string", "null"],
-      "pattern": "^[A-Za-z0-9._-]+/[A-Za-z0-9._-]+$",
-      "description": "Hugging Face repo of the reference (usually BF16) weights. null for models not on the Hub."
+      "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/model_id",
+      "description": "Hugging Face repo of the reference (usually BF16) weights. Must equal id — the id is this repo. The weights of a quantization live elsewhere; see quant.hf_id.",
+      "$comment": "No longer nullable: under this scheme a model that is not on the Hub has no id, and that would be a spec change rather than a null."
     },
     "family": {
       "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/nullable_string"

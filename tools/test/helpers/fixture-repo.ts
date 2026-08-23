@@ -11,7 +11,15 @@
  * mechanism and mocking them would test nothing.
  */
 import { execFileSync } from 'node:child_process';
-import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import {
+  cpSync,
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -19,6 +27,24 @@ import { canonicalizeArgs, cellId, engineMinor, resultPath, runId } from '@atlas
 import type { Args, ResultRecord, SiteConfig } from '@atlas/core';
 
 export const SOURCE_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
+
+/**
+ * Whether the filesystem the fixtures are built on tells `A` from `a`.
+ *
+ * APFS and NTFS do not, which is the entire reason the validator rejects two model
+ * directories that differ only by case: a repository carrying both cannot be checked out
+ * there. It also means the test for that rule can only run where such a repository can be
+ * built at all — Linux CI — so it is gated on this rather than quietly asserting nothing.
+ */
+export const CASE_SENSITIVE_FS = ((): boolean => {
+  const probe = mkdtempSync(join(tmpdir(), 'atlas-case-'));
+  try {
+    mkdirSync(join(probe, 'A'));
+    return !existsSync(join(probe, 'a'));
+  } finally {
+    rmSync(probe, { force: true, recursive: true });
+  }
+})();
 
 /** Registry entries the fixture repository is built from — real files, small selection. */
 const COPY = [
@@ -29,10 +55,12 @@ const COPY = [
   // The whole engine registry: a quantization names the engines that can load it, and a
   // subset would fail that reference for engines the fixture simply did not copy.
   'engines',
-  'models/qwen3-8b/model.json',
-  'models/qwen3-8b/quants/fp8.json',
-  'models/qwen3-8b/quants/bf16.json',
-  'models/qwen3-8b/quants/mlx-4bit.json',
+  // A model id is a Hugging Face repo id, so the directory is two levels deep and the id
+  // carries a slash and its original case (SPEC §2). Copied verbatim like everything else.
+  'models/Qwen/Qwen3-8B/model.json',
+  'models/Qwen/Qwen3-8B/quants/fp8.json',
+  'models/Qwen/Qwen3-8B/quants/bf16.json',
+  'models/Qwen/Qwen3-8B/quants/mlx-4bit.json',
   'workloads/serve-single-i256-o256-v1.json',
   'workloads/eval-math-v1.json',
 ];
@@ -182,7 +210,7 @@ export function makeFixtureRepo(options: FixtureOptions = {}): FixtureRepo {
   ) as SiteConfig;
   site.featured = {
     hardware: ['nvidia-rtx-4090'],
-    models: ['qwen3-8b'],
+    models: ['Qwen/Qwen3-8B'],
     engines: ['vllm'],
     workloads: options.withoutWorkloads ? [] : ['serve-single-i256-o256-v1'],
   };
@@ -208,6 +236,46 @@ export function makeFixtureRepo(options: FixtureOptions = {}): FixtureRepo {
   }
 
   return repo;
+}
+
+/**
+ * A minimal extra model, written at the two-level path its id implies.
+ *
+ * The copied registry covers the ordinary case; this covers the ids a real Hub carries that
+ * our own registry happens not to — a dot in the owner, a name that differs from another
+ * only by case — without inventing a second copy of the schema-checked records above.
+ */
+export function addModel(
+  repo: FixtureRepo,
+  id: string,
+  options: { quantId?: string; engines?: string[] } = {},
+): string {
+  const quantId = options.quantId ?? 'bf16';
+  repo.write(`models/${id}/model.json`, {
+    schema_version: 1,
+    id,
+    name: id.split('/')[1],
+    hf_id: id,
+    vendor: id.split('/')[0],
+    params_b: 8,
+    active_params_b: 8,
+    moe: false,
+    modalities: ['text'],
+    context_length: 32768,
+    licence: 'Apache-2.0',
+  });
+  repo.write(`models/${id}/quants/${quantId}.json`, {
+    schema_version: 1,
+    id: quantId,
+    model_id: id,
+    format: 'bf16',
+    bits: 16,
+    hf_id: id,
+    size_gb: 16,
+    engines: options.engines ?? ['vllm'],
+    source: 'official',
+  });
+  return id;
 }
 
 /* --------------------------------------------------------------------- results */
@@ -238,7 +306,7 @@ export interface ResultOptions {
 export function makeResult(repo: FixtureRepo, options: ResultOptions = {}): ResultRecord {
   const engineId = options.engineId ?? 'vllm';
   const version = options.version ?? '0.27.1';
-  const modelId = options.modelId ?? 'qwen3-8b';
+  const modelId = options.modelId ?? 'Qwen/Qwen3-8B';
   const quantId = options.quantId ?? 'fp8';
   const hardwareId = options.hardwareId ?? 'nvidia-rtx-4090';
   const workloadId = options.workloadId ?? 'serve-single-i256-o256-v1';

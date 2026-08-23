@@ -29,7 +29,7 @@ def git_repo(atlas_repo: Path) -> Path:
 
 def write_result(repo: Path, run_id: str = "a" * 16 + "--serve-test-c2-v1--abcdef") -> Path:
     """A result file on disk to submit."""
-    path = repo / "results" / "vllm" / "test-model-1b" / "test-gpu-24gb" / f"{run_id}.json"
+    path = repo / "results" / "vllm" / "acme/test-model-1b" / "test-gpu-24gb" / f"{run_id}.json"
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(
         json.dumps(
@@ -40,7 +40,7 @@ def write_result(repo: Path, run_id: str = "a" * 16 + "--serve-test-c2-v1--abcde
                 "workload_id": "serve-test-c2-v1",
                 "kind": "serving",
                 "engine": {"id": "vllm", "version": "0.27.1"},
-                "model": {"id": "test-model-1b", "quant_id": "fp8"},
+                "model": {"id": "acme/test-model-1b", "quant_id": "fp8"},
                 "hardware": {
                     "id": "test-gpu-24gb",
                     "fingerprint": "sha256:" + "0" * 64,
@@ -64,13 +64,15 @@ def test_plan_derives_branch_and_commit_message(git_repo: Path) -> None:
     """Branch and commit message come from the result files, not from the contributor."""
     path = write_result(git_repo)
     plan = build_plan(git_repo, [path])
-    assert plan.branch == "result/vllm-test-model-1b-test-gpu-24gb-1ba1c0"
+    assert plan.branch == "result/vllm-acme-test-model-1b-test-gpu-24gb-1ba1c0"
     assert plan.commit_message == (
-        "results: vllm 0.27.1 test-model-1b fp8 on test-gpu-24gb (1 runs)"
+        "results: vllm 0.27.1 acme/test-model-1b fp8 on test-gpu-24gb (1 runs)"
     )
     assert plan.labels == ["results"]
     assert plan.files == [
-        "results/vllm/test-model-1b/test-gpu-24gb/" + "a" * 16 + "--serve-test-c2-v1--abcdef.json"
+        "results/vllm/acme/test-model-1b/test-gpu-24gb/"
+        + "a" * 16
+        + "--serve-test-c2-v1--abcdef.json"
     ]
 
 
