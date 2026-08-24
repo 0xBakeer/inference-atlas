@@ -1,0 +1,1618 @@
+{
+  "schema_version": 1,
+  "run_id": "251c7884bb174170--eval-code-v1--f0da87",
+  "config_id": "251c7884bb174170",
+  "cell_id": "35061c031053",
+  "workload_id": "eval-code-v1",
+  "kind": "eval",
+  "engine": {
+    "id": "lmstudio",
+    "version": "0.4.21",
+    "commit": null,
+    "container": null,
+    "install_method": "app"
+  },
+  "model": {
+    "id": "google/gemma-4-E2B-it",
+    "quant_id": "mlx-4bit",
+    "hf_id": "google/gemma-4-E2B-it",
+    "revision": null,
+    "dtype": "auto",
+    "local_path": null
+  },
+  "hardware": {
+    "id": "apple-m2-max-32gb",
+    "count": 1,
+    "driver": null,
+    "cuda": null,
+    "host": {
+      "cpu": "Apple M2 Max",
+      "cpu_cores": 12,
+      "ram_gb": 32.0,
+      "os": "macOS 26.5.2",
+      "kernel": "25.5.0",
+      "arch": "arm64"
+    },
+    "fingerprint": "sha256:f2cba40fa2bfa4473afbdc846b7ba69abe53fcb27fb4363b64aac1de5d17e03f",
+    "captured": {
+      "system_profiler": {
+        "_name": "hardware_overview",
+        "activation_lock_status": "activation_lock_enabled",
+        "boot_rom_version": "18000.121.3",
+        "chip_type": "Apple M2 Max",
+        "machine_model": "Mac14,13",
+        "machine_name": "Mac Studio",
+        "model_number": "MQH73D/A",
+        "number_processors": "proc 12:8:4:0",
+        "os_loader_version": "18000.121.3",
+        "physical_memory": "32 GB"
+      }
+    }
+  },
+  "args": {
+    "parallel": 32,
+    "context-length": 131072
+  },
+  "args_canonical": "@dtype=auto;@quant=mlx-4bit;context-length=131072;parallel=32",
+  "serve_command": null,
+  "workload": {
+    "id": "eval-code-v1",
+    "resolved_params": {
+      "dataset_id": "eval-code-v1",
+      "suite": "code",
+      "scorer": "code_exec",
+      "items": 140,
+      "concurrency": 4,
+      "max_output_tokens": 4096,
+      "timeout_s": 300.0,
+      "temperature": 0,
+      "reasoning": "default",
+      "dataset_categories": null,
+      "dataset_target_tokens": null,
+      "pass_threshold": null,
+      "seed": 42
+    }
+  },
+  "metrics": {
+    "requests_total": 140,
+    "requests_ok": 140,
+    "requests_failed": 0,
+    "success_rate": 1.0,
+    "duration_s": 685.132,
+    "input_tokens_total": 16623,
+    "output_tokens_total": 140419,
+    "e2e_ms": {
+      "mean": 19523.94,
+      "p50": 18926.836,
+      "p90": 28784.341,
+      "p95": 32825.837,
+      "p99": 44488.424,
+      "min": 6872.868,
+      "max": 45630.458
+    },
+    "vram_peak_gb": null,
+    "ram_peak_gb": 21.362,
+    "power_avg_w": null,
+    "power_peak_w": null,
+    "energy_wh": null,
+    "gpu_util_avg_pct": null,
+    "temp_max_c": null,
+    "thermal_throttle_detected": null
+  },
+  "scores": {
+    "suite": "code",
+    "total": 140,
+    "correct": 128,
+    "accuracy": 0.914286,
+    "success_rate": 1.0,
+    "by_category": {
+      "algorithms": {
+        "total": 14,
+        "correct": 13
+      },
+      "bugfix": {
+        "total": 20,
+        "correct": 18
+      },
+      "dicts": {
+        "total": 15,
+        "correct": 15
+      },
+      "edge_cases": {
+        "total": 14,
+        "correct": 14
+      },
+      "lists": {
+        "total": 17,
+        "correct": 16
+      },
+      "math": {
+        "total": 16,
+        "correct": 16
+      },
+      "parsing": {
+        "total": 14,
+        "correct": 8
+      },
+      "recursion": {
+        "total": 13,
+        "correct": 12
+      },
+      "strings": {
+        "total": 17,
+        "correct": 16
+      }
+    },
+    "by_difficulty": {
+      "easy": {
+        "total": 49,
+        "correct": 48
+      },
+      "hard": {
+        "total": 30,
+        "correct": 25
+      },
+      "medium": {
+        "total": 61,
+        "correct": 55
+      }
+    },
+    "avg_output_tokens": 1002.99,
+    "avg_latency_ms": 19523.94,
+    "failures": 0,
+    "items": [
+      {
+        "id": "code-0001",
+        "correct": true,
+        "predicted": "def reverse_words(text: str) -> str:\n    \"\"\"Return *text* with the order of its whitespace-separated words reversed. Runs of\n    whitespace collapse to a single space and leading/trailing whitespace is dropped.\n    \"\"\"\n    words = text.split()\n    words.reverse()\n    return \" \".join(words)",
+        "expected": "<tests pass>",
+        "latency_ms": 15112.431,
+        "output_tokens": 784,
+        "category": "strings",
+        "difficulty": "easy"
+      },
+      {
+        "id": "code-0002",
+        "correct": true,
+        "predicted": "def is_palindrome(text: str) -> bool:\n    \"\"\"Return True when *text* reads the same forwards and backwards, ignoring case\n    and every character that is not a letter or a digit.\n    \"\"\"\n    # Filter the string: keep only alphanumeric characters and convert them to lowercase\n    processed_text = \"\".join(char.lower() for char in text if char.isalnum())\n\n    # Check if the processed string is equal to its reverse\n    return processed_text == processed_text[::-1]",
+        "expected": "<tests pass>",
+        "latency_ms": 15851.16,
+        "output_tokens": 813,
+        "category": "strings",
+        "difficulty": "easy"
+      },
+      {
+        "id": "code-0003",
+        "correct": true,
+        "predicted": "def count_vowels(text: str) -> int:\n    \"\"\"Return how many of the letters a, e, i, o and u occur in *text*, ignoring case.\n    \"\"\"\n    vowels = {'a', 'e', 'i', 'o', 'u'}\n    count = 0\n    for char in text:\n        if char.lower() in vowels:\n            count += 1\n    return count",
+        "expected": "<tests pass>",
+        "latency_ms": 17651.851,
+        "output_tokens": 901,
+        "category": "strings",
+        "difficulty": "easy"
+      },
+      {
+        "id": "code-0004",
+        "correct": true,
+        "predicted": "import re\n\ndef capitalize_words(text: str) -> str:\n    \"\"\"Upper-case the first character of every whitespace-separated word and lower-case\n    the rest. Whitespace between words is preserved exactly.\n    \"\"\"\n    def replacer(match: re.Match) -> str:\n        word = match.group(0)\n        if not word:\n            return \"\"\n        # Capitalize the first letter and lowercase the rest of the word\n        return word[0].upper() + word[1:].lower()\n\n    # Use re.sub to find all sequences of non-whitesp",
+        "expected": "<tests pass>",
+        "latency_ms": 32437.874,
+        "output_tokens": 1669,
+        "category": "strings",
+        "difficulty": "easy"
+      },
+      {
+        "id": "code-0005",
+        "correct": true,
+        "predicted": "def truncate(text: str, limit: int) -> str:\n    \"\"\"Return *text* unchanged when it is at most *limit* characters long. Otherwise cut\n    it so the result including the trailing '...' is exactly *limit* characters. When\n    *limit* is 3 or less, return the first *limit* characters of '...'.\n    \"\"\"\n    if len(text) <= limit:\n        return text\n\n    # Handle the special case where limit is 3 or less.\n    if limit <= 3:\n        # Return the first 'limit' characters of '...'\n        return '...'[:l",
+        "expected": "<tests pass>",
+        "latency_ms": 25952.682,
+        "output_tokens": 1320,
+        "category": "strings",
+        "difficulty": "medium"
+      },
+      {
+        "id": "code-0006",
+        "correct": true,
+        "predicted": "def longest_word(text: str) -> str:\n    \"\"\"Return the longest whitespace-separated word in *text*. On a tie return the one\n    that occurs first. Return '' for text with no words.\n    \"\"\"\n    words = text.split()\n\n    if not words:\n        return \"\"\n\n    # The max function with a key finds the element that maximizes the key function.\n    # If there are ties in length, it returns the first element encountered,\n    # satisfying the requirement to return the one that occurs first.\n    longest = max",
+        "expected": "<tests pass>",
+        "latency_ms": 18630.71,
+        "output_tokens": 956,
+        "category": "strings",
+        "difficulty": "easy"
+      },
+      {
+        "id": "code-0007",
+        "correct": true,
+        "predicted": "def dedupe_chars(text: str) -> str:\n    \"\"\"Return *text* with later occurrences of a character removed, keeping the first\n    occurrence in place. The comparison is case sensitive.\n    \"\"\"\n    seen = set()\n    result = []\n\n    for char in text:\n        if char not in seen:\n            result.append(char)\n            seen.add(char)\n\n    return \"\".join(result)",
+        "expected": "<tests pass>",
+        "latency_ms": 20994.286,
+        "output_tokens": 1081,
+        "category": "strings",
+        "difficulty": "medium"
+      },
+      {
+        "id": "code-0008",
+        "correct": true,
+        "predicted": "def char_frequency(text: str) -> dict:\n    \"\"\"Return a dict mapping each non-whitespace character of *text* to how often it\n    occurs. Case is significant.\n    \"\"\"\n    frequency = {}\n    for char in text:\n        if not char.isspace():\n            frequency[char] = frequency.get(char, 0) + 1\n    return frequency",
+        "expected": "<tests pass>",
+        "latency_ms": 12800.951,
+        "output_tokens": 649,
+        "category": "strings",
+        "difficulty": "medium"
+      },
+      {
+        "id": "code-0009",
+        "correct": false,
+        "predicted": "def snake_to_camel(name: str) -> str:\n    \"\"\"Convert a snake_case identifier to camelCase. Leading underscores are preserved,\n    repeated underscores are treated as one separator, and a trailing underscore is\n    dropped.\n    \"\"\"\n    if not name:\n        return \"\"\n\n    # Split the string by underscores. This handles repeated and leading/trailing\n    # underscores by producing empty strings in the resulting list.\n    parts = name.split('_')\n\n    # Filter out empty strings to get the actual words",
+        "expected": "<tests pass>",
+        "latency_ms": 27933.383,
+        "output_tokens": 1442,
+        "category": "strings",
+        "difficulty": "medium"
+      },
+      {
+        "id": "code-0010",
+        "correct": true,
+        "predicted": "def camel_to_snake(name: str) -> str:\n    \"\"\"Convert a camelCase or PascalCase identifier to snake_case. A run of capitals is\n    treated as one word, except that its last capital starts the next word when a\n    lower-case letter follows.\n    \"\"\"\n    if not name:\n        return \"\"\n\n    result = []\n    \n    for i, char in enumerate(name):\n        if char.isupper():\n            # Check if we are transitioning from lowercase to uppercase (e.g., 'aB')\n            if i > 0 and name[i-1].islower():\n  ",
+        "expected": "<tests pass>",
+        "latency_ms": 36153.393,
+        "output_tokens": 1864,
+        "category": "strings",
+        "difficulty": "hard"
+      },
+      {
+        "id": "code-0011",
+        "correct": true,
+        "predicted": "def is_anagram(a: str, b: str) -> bool:\n    \"\"\"Return True when *a* and *b* contain the same letters with the same counts,\n    ignoring case and every non-letter character.\n    \"\"\"\n    \n    def clean_and_sort(s: str) -> list[str]:\n        # Filter out non-alphabetic characters and convert to lowercase\n        letters = [char.lower() for char in s if char.isalpha()]\n        # Sort the resulting list of letters\n        letters.sort()\n        return letters\n\n    s1_sorted = clean_and_sort(a)\n    s2",
+        "expected": "<tests pass>",
+        "latency_ms": 21042.883,
+        "output_tokens": 1100,
+        "category": "strings",
+        "difficulty": "easy"
+      },
+      {
+        "id": "code-0012",
+        "correct": true,
+        "predicted": "def compress(text: str) -> str:\n    \"\"\"Run-length encode *text*: every run of the same character becomes the character\n    followed by the run length, but runs of length 1 keep no number. Return '' for ''.\n    \"\"\"\n    if not text:\n        return \"\"\n\n    compressed = []\n    i = 0\n    n = len(text)\n\n    while i < n:\n        current_char = text[i]\n        count = 1\n        j = i + 1\n\n        # Count the run length\n        while j < n and text[j] == current_char:\n            count += 1\n            j",
+        "expected": "<tests pass>",
+        "latency_ms": 21279.522,
+        "output_tokens": 1100,
+        "category": "strings",
+        "difficulty": "medium"
+      },
+      {
+        "id": "code-0013",
+        "correct": true,
+        "predicted": "def caesar(text: str, shift: int) -> str:\n    result = []\n    for char in text:\n        if 'a' <= char <= 'z':\n            base = ord('a')\n            # Calculate position (0-25), apply shift, wrap using modulo 26\n            old_pos = ord(char) - base\n            new_pos = (old_pos + shift) % 26\n            # Convert back to character and append\n            new_char = chr(new_pos + base)\n            result.append(new_char)\n        elif 'A' <= char <= 'Z':\n            base = ord('A')\n           ",
+        "expected": "<tests pass>",
+        "latency_ms": 22868.47,
+        "output_tokens": 1162,
+        "category": "strings",
+        "difficulty": "medium"
+      },
+      {
+        "id": "code-0014",
+        "correct": true,
+        "predicted": "def normalise_whitespace(text: str) -> str:\n    \"\"\"Collapse every run of whitespace in *text* to a single space and strip the ends.\n    \"\"\"\n    # str.split() without arguments splits by any whitespace and discards empty strings,\n    # effectively handling multiple spaces/tabs/newlines as a single delimiter.\n    words = text.split()\n    \n    # Join the resulting words with a single space.\n    return ' '.join(words)",
+        "expected": "<tests pass>",
+        "latency_ms": 18335.955,
+        "output_tokens": 942,
+        "category": "strings",
+        "difficulty": "easy"
+      },
+      {
+        "id": "code-0015",
+        "correct": true,
+        "predicted": "def chunk(items: list, size: int) -> list:\n    \"\"\"Split *items* into consecutive lists of at most *size* elements. Raise ValueError\n    when *size* is not at least 1.\n    \"\"\"\n    if size < 1:\n        raise ValueError(\"Chunk size must be at least 1.\")\n\n    if not items:\n        return []\n\n    result = []\n    n = len(items)\n    for i in range(0, n, size):\n        chunk = items[i:i + size]\n        result.append(chunk)\n\n    return result",
+        "expected": "<tests pass>",
+        "latency_ms": 17159.096,
+        "output_tokens": 882,
+        "category": "lists",
+        "difficulty": "easy"
+      },
+      {
+        "id": "code-0016",
+        "correct": true,
+        "predicted": "def flatten_once(items: list) -> list:\n    result = []\n    for item in items:\n        if isinstance(item, list):\n            result.extend(item)\n        else:\n            result.append(item)\n    return result",
+        "expected": "<tests pass>",
+        "latency_ms": 11368.595,
+        "output_tokens": 572,
+        "category": "lists",
+        "difficulty": "easy"
+      },
+      {
+        "id": "code-0017",
+        "correct": true,
+        "predicted": "def rotate(items: list, n: int) -> list:\n    \"\"\"Return a new list with *items* rotated *n* places to the left. A negative *n*\n    rotates right. Rotating an empty list returns an empty list.\n    \"\"\"\n    if not items:\n        return []\n\n    length = len(items)\n    \n    # Calculate the effective number of left rotations needed.\n    # Python's % operator handles negative numbers correctly for this purpose,\n    # ensuring the result is always in the range [0, length - 1] for positive\n    # rotations",
+        "expected": "<tests pass>",
+        "latency_ms": 23127.289,
+        "output_tokens": 1186,
+        "category": "lists",
+        "difficulty": "easy"
+      },
+      {
+        "id": "code-0018",
+        "correct": true,
+        "predicted": "def second_largest(numbers: list) -> float | None:\n    \"\"\"Return the second largest distinct value in *numbers*, or None when there are\n    fewer than two distinct values.\n    \"\"\"\n    # 1. Get the distinct numbers\n    distinct_numbers = list(set(numbers))\n\n    # 2. Check if there are at least two distinct numbers\n    if len(distinct_numbers) < 2:\n        return None\n\n    # 3. Sort the distinct numbers in ascending order\n    distinct_numbers.sort()\n\n    # 4. The second largest element is the seco",
+        "expected": "<tests pass>",
+        "latency_ms": 15266.166,
+        "output_tokens": 789,
+        "category": "lists",
+        "difficulty": "medium"
+      },
+      {
+        "id": "code-0019",
+        "correct": true,
+        "predicted": "def running_sum(numbers: list) -> list:\n    \"\"\"Return the list of running totals: element i is the sum of the first i+1 numbers.\n    \"\"\"\n    running_totals = []\n    current_sum = 0\n    for number in numbers:\n        current_sum += number\n        running_totals.append(current_sum)\n    return running_totals",
+        "expected": "<tests pass>",
+        "latency_ms": 19727.587,
+        "output_tokens": 1012,
+        "category": "lists",
+        "difficulty": "easy"
+      },
+      {
+        "id": "code-0020",
+        "correct": true,
+        "predicted": "def drop_consecutive_duplicates(items: list) -> list:\n    \"\"\"Remove elements that are equal to the element directly before them.\n    \"\"\"\n    if not items:\n        return []\n\n    result = [items[0]]\n    for i in range(1, len(items)):\n        if items[i] != items[i-1]:\n            result.append(items[i])\n    return result",
+        "expected": "<tests pass>",
+        "latency_ms": 13696.288,
+        "output_tokens": 715,
+        "category": "lists",
+        "difficulty": "easy"
+      },
+      {
+        "id": "code-0021",
+        "correct": true,
+        "predicted": "def differences(numbers: list) -> list:\n    \"\"\"Return the differences between consecutive elements: element i is numbers[i+1] -\n    numbers[i]. A list of fewer than two numbers gives an empty list.\n    \"\"\"\n    if len(numbers) < 2:\n        return []\n\n    return [numbers[i+1] - numbers[i] for i in range(len(numbers) - 1)]",
+        "expected": "<tests pass>",
+        "latency_ms": 12728.099,
+        "output_tokens": 649,
+        "category": "lists",
+        "difficulty": "easy"
+      },
+      {
+        "id": "code-0022",
+        "correct": true,
+        "predicted": "def interleave(a: list, b: list) -> list:\n    \"\"\"Alternate elements of *a* and *b*, starting with *a*. When one list is longer, its\n    remaining elements are appended in order.\n    \"\"\"\n    result = []\n    min_len = min(len(a), len(b))\n\n    # Interleave elements up to the length of the shorter list\n    for i in range(min_len):\n        result.append(a[i])\n        result.append(b[i])\n\n    # Append remaining elements from the longer list\n    if len(a) > min_len:\n        result.extend(a[min_len:])\n ",
+        "expected": "<tests pass>",
+        "latency_ms": 27868.759,
+        "output_tokens": 1443,
+        "category": "lists",
+        "difficulty": "medium"
+      },
+      {
+        "id": "code-0023",
+        "correct": true,
+        "predicted": "def partition_evens(numbers: list) -> tuple:\n    \"\"\"Return a tuple (evens, odds), each preserving the original order.\n    \"\"\"\n    evens = []\n    odds = []\n    for num in numbers:\n        if num % 2 == 0:\n            evens.append(num)\n        else:\n            odds.append(num)\n    return (evens, odds)",
+        "expected": "<tests pass>",
+        "latency_ms": 10832.26,
+        "output_tokens": 556,
+        "category": "lists",
+        "difficulty": "easy"
+      },
+      {
+        "id": "code-0024",
+        "correct": true,
+        "predicted": "from collections import defaultdict\n\ndef top_k_frequent(items: list, k: int) -> list:\n    \"\"\"Return the *k* most frequent elements, most frequent first. Ties are broken by\n    first appearance in *items*. When *k* exceeds the number of distinct elements,\n    return all of them.\n    \"\"\"\n    if not items:\n        return []\n\n    # 1. Calculate frequencies and first appearance indices\n    counts = defaultdict(int)\n    first_appearance = {}\n\n    for i, item in enumerate(items):\n        if item not in",
+        "expected": "<tests pass>",
+        "latency_ms": 28286.399,
+        "output_tokens": 1462,
+        "category": "lists",
+        "difficulty": "hard"
+      },
+      {
+        "id": "code-0025",
+        "correct": true,
+        "predicted": "def longest_increasing_run(numbers: list) -> list:\n    \"\"\"Return the longest run of strictly increasing consecutive elements. On a tie return\n    the earliest such run. An empty input gives an empty list.\n    \"\"\"\n    n = len(numbers)\n    if n == 0:\n        return []\n\n    max_length = 0\n    best_run = []\n\n    i = 0\n    while i < n:\n        # Start a new potential run at index i\n        current_run = [numbers[i]]\n        j = i + 1\n\n        # Extend the run as long as elements are strictly increasi",
+        "expected": "<tests pass>",
+        "latency_ms": 44510.601,
+        "output_tokens": 2276,
+        "category": "lists",
+        "difficulty": "hard"
+      },
+      {
+        "id": "code-0026",
+        "correct": true,
+        "predicted": "def move_zeros(numbers: list) -> list:\n    \"\"\"Return a new list with every 0 moved to the end, other elements keeping their\n    relative order.\n    \"\"\"\n    non_zeros = [x for x in numbers if x != 0]\n    zeros = [x for x in numbers if x == 0]\n    return non_zeros + zeros",
+        "expected": "<tests pass>",
+        "latency_ms": 15440.003,
+        "output_tokens": 798,
+        "category": "lists",
+        "difficulty": "medium"
+      },
+      {
+        "id": "code-0027",
+        "correct": true,
+        "predicted": "def index_of_min(numbers: list) -> int:\n    \"\"\"Return the index of the smallest element, the earliest one on a tie. Return -1 for\n    an empty list.\n    \"\"\"\n    if not numbers:\n        return -1\n    \n    min_val = min(numbers)\n    return numbers.index(min_val)",
+        "expected": "<tests pass>",
+        "latency_ms": 16187.071,
+        "output_tokens": 819,
+        "category": "lists",
+        "difficulty": "easy"
+      },
+      {
+        "id": "code-0028",
+        "correct": true,
+        "predicted": "def split_at_threshold(numbers: list, threshold: float) -> tuple:\n    \"\"\"Return (below, at_or_above): numbers strictly below *threshold* and the rest, each\n    keeping the original order.\n    \"\"\"\n    below = [n for n in numbers if n < threshold]\n    at_or_above = [n for n in numbers if n >= threshold]\n    return (below, at_or_above)",
+        "expected": "<tests pass>",
+        "latency_ms": 13269.514,
+        "output_tokens": 680,
+        "category": "lists",
+        "difficulty": "medium"
+      },
+      {
+        "id": "code-0029",
+        "correct": true,
+        "predicted": "def invert(mapping: dict) -> dict:\n    \"\"\"Return a dict with keys and values swapped. When two keys share a value, the key\n    that comes later in iteration order wins.\n    \"\"\"\n    return {v: k for k, v in mapping.items()}",
+        "expected": "<tests pass>",
+        "latency_ms": 19598.453,
+        "output_tokens": 999,
+        "category": "dicts",
+        "difficulty": "easy"
+      },
+      {
+        "id": "code-0030",
+        "correct": true,
+        "predicted": "def merge_sum(a: dict, b: dict) -> dict:\n    \"\"\"Merge two dicts of numbers by adding the values of shared keys.\n    \"\"\"\n    result = a.copy()\n\n    for key, value_b in b.items():\n        if key in result:\n            # Key exists in both dictionaries, add the values\n            result[key] += value_b\n        else:\n            # Key only exists in b, add it to the result\n            result[key] = value_b\n    \n    return result",
+        "expected": "<tests pass>",
+        "latency_ms": 14237.196,
+        "output_tokens": 709,
+        "category": "dicts",
+        "difficulty": "medium"
+      },
+      {
+        "id": "code-0031",
+        "correct": true,
+        "predicted": "def group_by_length(words: list) -> dict:\n    \"\"\"Group *words* into a dict from word length to the list of words of that length, in\n    input order.\n    \"\"\"\n    grouped_words = {}\n    for word in words:\n        length = len(word)\n        if length not in grouped_words:\n            grouped_words[length] = []\n        grouped_words[length].append(word)\n    return grouped_words",
+        "expected": "<tests pass>",
+        "latency_ms": 15589.166,
+        "output_tokens": 782,
+        "category": "dicts",
+        "difficulty": "easy"
+      },
+      {
+        "id": "code-0032",
+        "correct": true,
+        "predicted": "def word_count(text: str) -> dict:\n    \"\"\"Count the whitespace-separated words of *text* case-insensitively, ignoring leading\n    and trailing punctuation of each word (. , ! ? ; :).\n    \"\"\"\n    counts = {}\n    punctuation = '.,!?;:'\n\n    words = text.split()\n\n    for word in words:\n        # Convert to lowercase for case insensitivity\n        clean_word = word.lower()\n\n        # Strip leading punctuation\n        while clean_word and clean_word[0] in punctuation:\n            clean_word = clean_w",
+        "expected": "<tests pass>",
+        "latency_ms": 22936.855,
+        "output_tokens": 1171,
+        "category": "dicts",
+        "difficulty": "medium"
+      },
+      {
+        "id": "code-0033",
+        "correct": true,
+        "predicted": "def top_n_by_value(mapping: dict, n: int) -> list:\n    \"\"\"Return the *n* keys with the largest values, largest first. Ties are broken by the\n    key in ascending order.\n    \"\"\"\n    if n <= 0:\n        return []\n\n    # Convert dictionary items into a list of (key, value) tuples.\n    items = list(mapping.items())\n\n    # Sort the items using a custom key:\n    # 1. item[1] (value) is negated to achieve descending order for the primary sort.\n    # 2. item[0] (key) is used directly for ascending order ",
+        "expected": "<tests pass>",
+        "latency_ms": 19114.155,
+        "output_tokens": 986,
+        "category": "dicts",
+        "difficulty": "medium"
+      },
+      {
+        "id": "code-0034",
+        "correct": true,
+        "predicted": "def filter_values(mapping: dict, minimum: float) -> dict:\n    \"\"\"Return a new dict with only the entries whose value is at least *minimum*.\n    \"\"\"\n    return {key: value for key, value in mapping.items() if value >= minimum}",
+        "expected": "<tests pass>",
+        "latency_ms": 10629.655,
+        "output_tokens": 552,
+        "category": "dicts",
+        "difficulty": "easy"
+      },
+      {
+        "id": "code-0035",
+        "correct": true,
+        "predicted": "def pairs_to_dict(pairs: list) -> dict:\n    \"\"\"Build a dict from a list of (key, value) tuples. A later pair overwrites an earlier\n    one with the same key.\n    \"\"\"\n    result = {}\n    for key, value in pairs:\n        result[key] = value\n    return result",
+        "expected": "<tests pass>",
+        "latency_ms": 16401.0,
+        "output_tokens": 840,
+        "category": "dicts",
+        "difficulty": "easy"
+      },
+      {
+        "id": "code-0036",
+        "correct": true,
+        "predicted": "def nested_get(data: dict, path: str, default=None):\n    \"\"\"Look up a dotted *path* such as 'a.b.c' in nested dicts. Return *default* when any\n    step is missing or when a step runs into something that is not a dict. An empty\n    path returns *data*.\n    \"\"\"\n    if not path:\n        return data\n\n    keys = path.split('.')\n    current_data = data\n\n    for key in keys:\n        # Ensure the current level is a dictionary before attempting access\n        if not isinstance(current_data, dict):\n      ",
+        "expected": "<tests pass>",
+        "latency_ms": 18157.85,
+        "output_tokens": 926,
+        "category": "dicts",
+        "difficulty": "medium"
+      },
+      {
+        "id": "code-0037",
+        "correct": true,
+        "predicted": "def sum_by_prefix(mapping: dict, prefix: str) -> float:\n    \"\"\"Add up the values of every entry whose key starts with *prefix*.\n    \"\"\"\n    return sum(v for k, v in mapping.items() if k.startswith(prefix))",
+        "expected": "<tests pass>",
+        "latency_ms": 10803.676,
+        "output_tokens": 552,
+        "category": "dicts",
+        "difficulty": "medium"
+      },
+      {
+        "id": "code-0038",
+        "correct": true,
+        "predicted": "def most_common_key(counts: dict) -> str | None:\n    \"\"\"Return the key with the largest value, breaking ties by the smaller key. Return\n    None for an empty dict.\n    \"\"\"\n    if not counts:\n        return None\n\n    best_key = None\n    max_count = -1  # Initialize with a value lower than any expected count\n\n    for key, count in counts.items():\n        if best_key is None:\n            best_key = key\n            max_count = count\n            continue\n\n        if count > max_count:\n            # F",
+        "expected": "<tests pass>",
+        "latency_ms": 34682.898,
+        "output_tokens": 1788,
+        "category": "dicts",
+        "difficulty": "easy"
+      },
+      {
+        "id": "code-0039",
+        "correct": true,
+        "predicted": "def dict_diff(old: dict, new: dict) -> dict:\n    \"\"\"Compare two flat dicts and return {'added': [...], 'removed': [...], 'changed':\n    [...]}, each a sorted list of keys.\n    \"\"\"\n    old_keys = set(old.keys())\n    new_keys = set(new.keys())\n\n    # 1. Identify Removed keys (in old but not in new)\n    removed_keys = sorted(list(old_keys - new_keys))\n\n    # 2. Identify Added keys (in new but not in old)\n    added_keys = sorted(list(new_keys - old_keys))\n\n    # 3. Identify Changed keys (in both, bu",
+        "expected": "<tests pass>",
+        "latency_ms": 22235.078,
+        "output_tokens": 1161,
+        "category": "dicts",
+        "difficulty": "hard"
+      },
+      {
+        "id": "code-0040",
+        "correct": true,
+        "predicted": "def update_missing(target: dict, defaults: dict) -> dict:\n    \"\"\"Return a new dict: *target* plus every key of *defaults* that *target* does not\n    already have. Neither argument is modified.\n    \"\"\"\n    result = target.copy()\n\n    for key, value in defaults.items():\n        if key not in result:\n            result[key] = value\n\n    return result",
+        "expected": "<tests pass>",
+        "latency_ms": 16128.87,
+        "output_tokens": 831,
+        "category": "dicts",
+        "difficulty": "medium"
+      },
+      {
+        "id": "code-0041",
+        "correct": true,
+        "predicted": "def gcd_of(a: int, b: int) -> int:\n    \"\"\"Return the greatest common divisor of two non-negative integers, without using\n    math.gcd. gcd_of(0, 0) is 0.\n    \"\"\"\n    while b:\n        a, b = b, a % b\n    return a",
+        "expected": "<tests pass>",
+        "latency_ms": 20894.813,
+        "output_tokens": 1082,
+        "category": "math",
+        "difficulty": "easy"
+      },
+      {
+        "id": "code-0042",
+        "correct": true,
+        "predicted": "import math\n\ndef lcm_of(a: int, b: int) -> int:\n    \"\"\"Return the least common multiple of two positive integers. Return 0 when either is 0.\n    \"\"\"\n    if a == 0 or b == 0:\n        return 0\n\n    # Calculate the greatest common divisor (GCD) using math.gcd\n    greatest_common_divisor = math.gcd(a, b)\n\n    # The relationship between LCM and GCD is:\n    # LCM(a, b) = (|a * b|) / GCD(a, b)\n    # Since we are dealing with integers, we use integer division.\n    # We use abs() to ensure the result is ",
+        "expected": "<tests pass>",
+        "latency_ms": 17440.674,
+        "output_tokens": 892,
+        "category": "math",
+        "difficulty": "easy"
+      },
+      {
+        "id": "code-0043",
+        "correct": true,
+        "predicted": "def is_prime(n: int) -> bool:\n    \"\"\"Return True when n is a prime number. Numbers below 2 are not prime.\n    \"\"\"\n    if n < 2:\n        return False\n\n    # Check for divisibility from 2 up to the square root of n\n    i = 2\n    while i * i <= n:\n        if n % i == 0:\n            return False\n        i += 1\n\n    return True",
+        "expected": "<tests pass>",
+        "latency_ms": 13304.999,
+        "output_tokens": 680,
+        "category": "math",
+        "difficulty": "medium"
+      },
+      {
+        "id": "code-0044",
+        "correct": true,
+        "predicted": "def digit_sum(n: int) -> int:\n    \"\"\"Return the sum of the decimal digits of *n*. Negative numbers use their absolute\n    value.\n    \"\"\"\n    s = str(abs(n))\n    total = 0\n    for digit_char in s:\n        total += int(digit_char)\n    return total",
+        "expected": "<tests pass>",
+        "latency_ms": 15282.622,
+        "output_tokens": 783,
+        "category": "math",
+        "difficulty": "easy"
+      },
+      {
+        "id": "code-0045",
+        "correct": true,
+        "predicted": "def fizz_list(n: int) -> list:\n    results = []\n    for i in range(1, n + 1):\n        if i % 3 == 0 and i % 5 == 0:\n            results.append(\"FizzBuzz\")\n        elif i % 3 == 0:\n            results.append(\"Fizz\")\n        elif i % 5 == 0:\n            results.append(\"Buzz\")\n        else:\n            results.append(str(i))\n    return results",
+        "expected": "<tests pass>",
+        "latency_ms": 17106.001,
+        "output_tokens": 875,
+        "category": "math",
+        "difficulty": "easy"
+      },
+      {
+        "id": "code-0046",
+        "correct": true,
+        "predicted": "def factorial(n: int) -> int:\n    \"\"\"Return n! computed iteratively. factorial(0) is 1. Raise ValueError for negative n.\n    \"\"\"\n    if n < 0:\n        raise ValueError(\"Factorial is not defined for negative numbers.\")\n\n    if n == 0:\n        return 1\n\n    result = 1\n    for i in range(1, n + 1):\n        result *= i\n    return result",
+        "expected": "<tests pass>",
+        "latency_ms": 11419.161,
+        "output_tokens": 585,
+        "category": "math",
+        "difficulty": "easy"
+      },
+      {
+        "id": "code-0047",
+        "correct": true,
+        "predicted": "def fib_list(n: int) -> list:\n    \"\"\"Return the first *n* Fibonacci numbers starting 0, 1, 1, 2, ...\n    \"\"\"\n    if n <= 0:\n        return []\n\n    fibs = []\n    a, b = 0, 1\n\n    for _ in range(n):\n        fibs.append(a)\n        a, b = b, a + b\n\n    return fibs",
+        "expected": "<tests pass>",
+        "latency_ms": 28137.194,
+        "output_tokens": 1442,
+        "category": "math",
+        "difficulty": "easy"
+      },
+      {
+        "id": "code-0048",
+        "correct": true,
+        "predicted": "def median(numbers: list) -> float:\n    \"\"\"Return the median of *numbers*. For an even count return the mean of the two middle\n    values. Raise ValueError for an empty list.\n    \"\"\"\n    if not numbers:\n        raise ValueError(\"Cannot calculate the median of an empty list.\")\n\n    sorted_numbers = sorted(numbers)\n    n = len(sorted_numbers)\n\n    if n % 2 == 1:\n        # Odd number of elements\n        middle_index = n // 2\n        return float(sorted_numbers[middle_index])\n    else:\n        # Eve",
+        "expected": "<tests pass>",
+        "latency_ms": 15297.986,
+        "output_tokens": 790,
+        "category": "math",
+        "difficulty": "medium"
+      },
+      {
+        "id": "code-0049",
+        "correct": true,
+        "predicted": "def clamp(value: float, low: float, high: float) -> float:\n    \"\"\"Return *value* limited to the range [low, high]. Raise ValueError when low > high.\n    \"\"\"\n    if low > high:\n        raise ValueError(\"low cannot be greater than high\")\n\n    # First, ensure the value is not below the lower bound\n    clamped_low = max(value, low)\n\n    # Then, ensure the result is not above the upper bound\n    return min(clamped_low, high)",
+        "expected": "<tests pass>",
+        "latency_ms": 13030.087,
+        "output_tokens": 666,
+        "category": "math",
+        "difficulty": "easy"
+      },
+      {
+        "id": "code-0050",
+        "correct": true,
+        "predicted": "import math\n\ndef round_to_multiple(value: float, step: float) -> float:\n    \"\"\"Round *value* to the nearest multiple of *step*, rounding halves away from zero.\n    Raise ValueError when *step* is not positive.\n    \"\"\"\n    if step <= 0:\n        raise ValueError(\"step must be positive.\")\n\n    # Calculate how many steps fit into the value\n    normalized_value = value / step\n\n    # Implement rounding half away from zero.\n    # This is achieved by adding 0.5 and taking the floor for positive numbers,",
+        "expected": "<tests pass>",
+        "latency_ms": 32960.738,
+        "output_tokens": 1704,
+        "category": "math",
+        "difficulty": "hard"
+      },
+      {
+        "id": "code-0051",
+        "correct": true,
+        "predicted": "def to_base(n: int, base: int) -> str:\n    \"\"\"Render the non-negative integer *n* in *base* (2 to 16) using digits 0-9 then\n    lower-case a-f. to_base(0, b) is '0'. Raise ValueError for a base outside 2..16.\n    \"\"\"\n    if not (2 <= base <= 16):\n        raise ValueError(\"Base must be between 2 and 16 inclusive.\")\n\n    if n == 0:\n        return '0'\n\n    digits = \"0123456789abcdef\"\n    result = []\n\n    current_n = n\n    while current_n > 0:\n        remainder = current_n % base\n        result.appe",
+        "expected": "<tests pass>",
+        "latency_ms": 23979.842,
+        "output_tokens": 1217,
+        "category": "math",
+        "difficulty": "medium"
+      },
+      {
+        "id": "code-0052",
+        "correct": true,
+        "predicted": "def is_perfect_square(n: int) -> bool:\n    \"\"\"Return True when *n* is the square of a whole number. Negative numbers are never\n    perfect squares.\n    \"\"\"\n    if n < 0:\n        return False\n\n    # Calculate the integer part of the square root.\n    # We use n**0.5 which returns a float, and then cast it to int.\n    root = n**0.5\n    k = int(root)\n\n    # Check if squaring the integer root gives back the original number.\n    return k * k == n",
+        "expected": "<tests pass>",
+        "latency_ms": 21030.08,
+        "output_tokens": 1079,
+        "category": "math",
+        "difficulty": "easy"
+      },
+      {
+        "id": "code-0053",
+        "correct": true,
+        "predicted": "def count_divisors(n: int) -> int:\n    \"\"\"Return how many positive divisors the positive integer *n* has, including 1 and n.\n    Raise ValueError when n is not positive.\n    \"\"\"\n    if n <= 0:\n        raise ValueError(\"Input must be a positive integer.\")\n\n    count = 0\n    i = 1\n    while i * i <= n:\n        if n % i == 0:\n            if i * i == n:\n                # Perfect square case (i == n/i), count only once\n                count += 1\n            else:\n                # Found a pair of dis",
+        "expected": "<tests pass>",
+        "latency_ms": 23209.363,
+        "output_tokens": 1186,
+        "category": "math",
+        "difficulty": "hard"
+      },
+      {
+        "id": "code-0054",
+        "correct": true,
+        "predicted": "def percent_change(old: float, new: float) -> float | None:\n    \"\"\"Return the percentage change from *old* to *new*. Return None when *old* is 0.\n    \"\"\"\n    if old == 0:\n        return None\n    \n    change = (new - old) / old\n    return change * 100",
+        "expected": "<tests pass>",
+        "latency_ms": 8832.442,
+        "output_tokens": 434,
+        "category": "math",
+        "difficulty": "medium"
+      },
+      {
+        "id": "code-0055",
+        "correct": true,
+        "predicted": "def parse_kv(text: str) -> dict:\n    result = {}\n    segments = text.split(';')\n\n    for segment in segments:\n        # Strip surrounding whitespace from the segment\n        trimmed_segment = segment.strip()\n\n        if not trimmed_segment:\n            continue\n\n        # Find the first occurrence of '='\n        try:\n            key, value = trimmed_segment.split('=', 1)\n\n            # Strip whitespace from key and value\n            key = key.strip()\n            value = value.strip()\n\n          ",
+        "expected": "<tests pass>",
+        "latency_ms": 19364.736,
+        "output_tokens": 994,
+        "category": "parsing",
+        "difficulty": "medium"
+      },
+      {
+        "id": "code-0056",
+        "correct": false,
+        "predicted": "import re\n\ndef parse_duration(text: str) -> int:\n    \"\"\"Parse a duration such as '1h30m10s' into whole seconds. Units must appear in the\n    order h, m, s and each at most once; any of them may be missing. Raise ValueError\n    for an empty string or anything that does not match.\n    \"\"\"\n    if not text:\n        raise ValueError(\"Input string cannot be empty.\")\n\n    total_seconds = 0\n    remaining_text = text\n\n    # Define patterns for hours, minutes, and seconds. We use non-capturing groups\n    ",
+        "expected": "<tests pass>",
+        "latency_ms": 30110.103,
+        "output_tokens": 1558,
+        "category": "parsing",
+        "difficulty": "hard"
+      },
+      {
+        "id": "code-0057",
+        "correct": false,
+        "predicted": "def parse_csv_line(line: str) -> list:\n    \"\"\"Split one CSV line into fields. A field may be wrapped in double quotes, in which\n    case it may contain commas, and a doubled quote inside means a literal quote.\n    Unquoted fields are taken as they are. An empty line gives ['']. \n    \"\"\"\n    if not line:\n        return ['']\n\n    fields = []\n    current_field = []\n    in_quotes = False\n    i = 0\n\n    while i < len(line):\n        char = line[i]\n\n        if in_quotes:\n            if char == '\"':\n   ",
+        "expected": "<tests pass>",
+        "latency_ms": 32818.737,
+        "output_tokens": 1690,
+        "category": "parsing",
+        "difficulty": "hard"
+      },
+      {
+        "id": "code-0058",
+        "correct": true,
+        "predicted": "def parse_version(text: str) -> tuple:\n    \"\"\"Parse 'MAJOR.MINOR.PATCH' into a tuple of three ints. Missing components default to\n    0, so '1.2' is (1, 2, 0). Raise ValueError when a component is not a number or\n    when there are more than three.\n    \"\"\"\n    parts = text.split('.')\n\n    if len(parts) > 3:\n        raise ValueError(\"Version string contains more than three components.\")\n\n    version = [0, 0, 0]\n\n    for i in range(3):\n        if i < len(parts):\n            part_str = parts[i]\n   ",
+        "expected": "<tests pass>",
+        "latency_ms": 23939.953,
+        "output_tokens": 1236,
+        "category": "parsing",
+        "difficulty": "medium"
+      },
+      {
+        "id": "code-0059",
+        "correct": true,
+        "predicted": "def parse_query(query: str) -> dict:\n    result = {}\n    if not query:\n        return result\n\n    segments = query.split('&')\n\n    for segment in segments:\n        if not segment:\n            continue\n\n        if '=' in segment:\n            try:\n                key, value = segment.split('=', 1)\n                key = key.strip()\n                value = value.strip()\n\n                if key:\n                    if key not in result:\n                        result[key] = []\n                    res",
+        "expected": "<tests pass>",
+        "latency_ms": 20039.747,
+        "output_tokens": 1016,
+        "category": "parsing",
+        "difficulty": "medium"
+      },
+      {
+        "id": "code-0060",
+        "correct": true,
+        "predicted": "def parse_ini_section(text: str, section: str) -> dict:\n    \"\"\"Return the key/value pairs of one [section] of an INI-style text. Lines starting\n    with '#' or ';' or blank lines are ignored, keys and values are stripped, and a\n    missing section gives {}.\n    \"\"\"\n    result = {}\n    in_target_section = False\n    lines = text.splitlines()\n\n    for line in lines:\n        stripped_line = line.strip()\n\n        # 1. Check for section headers\n        if stripped_line.startswith('[') and stripped_lin",
+        "expected": "<tests pass>",
+        "latency_ms": 25189.982,
+        "output_tokens": 1282,
+        "category": "parsing",
+        "difficulty": "hard"
+      },
+      {
+        "id": "code-0061",
+        "correct": true,
+        "predicted": "import re\n\ndef extract_numbers(text: str) -> list:\n    \"\"\"Return every integer or decimal number in *text* as a float, in order. A leading\n    minus sign belongs to the number.\n    \"\"\"\n    # Regex pattern to find floating point or integer numbers.\n    # It looks for an optional sign, followed by digits, optionally followed by a decimal point and more digits.\n    # This pattern handles formats like: 123, -45.6, .5, 1., etc.\n    # Pattern breakdown:\n    # [-+]? : Optional sign (+ or -)\n    # (?: .",
+        "expected": "<tests pass>",
+        "latency_ms": 23049.327,
+        "output_tokens": 1186,
+        "category": "parsing",
+        "difficulty": "medium"
+      },
+      {
+        "id": "code-0062",
+        "correct": true,
+        "predicted": "def parse_bool(text: str) -> bool:\n    \"\"\"Parse a human-written boolean: 'true', 'yes', 'y', 'on' and '1' are True; 'false',\n    'no', 'n', 'off' and '0' are False. Case and surrounding whitespace are ignored.\n    Anything else raises ValueError.\n    \"\"\"\n    text = text.strip().lower()\n\n    true_values = {'true', 'yes', 'y', 'on', '1'}\n    false_values = {'false', 'no', 'n', 'off', '0'}\n\n    if text in true_values:\n        return True\n    elif text in false_values:\n        return False\n    else:",
+        "expected": "<tests pass>",
+        "latency_ms": 14700.197,
+        "output_tokens": 763,
+        "category": "parsing",
+        "difficulty": "easy"
+      },
+      {
+        "id": "code-0063",
+        "correct": false,
+        "predicted": "def split_name(full: str) -> tuple:\n    \"\"\"Split a full name into (first, last). With one word the last name is ''. With more\n    than two words everything between first and last belongs to the first name.\n    \"\"\"\n    words = full.split()\n    num_words = len(words)\n\n    if num_words == 0:\n        return (\"\", \"\")\n    elif num_words == 1:\n        # Rule: With one word the last name is ''.\n        return (words[0], '')\n    elif num_words == 2:\n        # Standard two-word split.\n        return (word",
+        "expected": "<tests pass>",
+        "latency_ms": 21423.881,
+        "output_tokens": 1103,
+        "category": "parsing",
+        "difficulty": "medium"
+      },
+      {
+        "id": "code-0064",
+        "correct": true,
+        "predicted": "def parse_range_list(text: str) -> list:\n    \"\"\"Expand '1-3,5,7-8' into [1, 2, 3, 5, 7, 8]. Whitespace is ignored, the result is\n    sorted and free of duplicates, and a reversed range such as '5-3' raises\n    ValueError, as does any non-numeric part.\n    \"\"\"\n    if not text:\n        return []\n\n    raw_parts = [part.strip() for part in text.split(',')]\n    result = set()\n\n    for part in raw_parts:\n        if not part:\n            continue\n\n        try:\n            if '-' in part:\n              ",
+        "expected": "<tests pass>",
+        "latency_ms": 25563.147,
+        "output_tokens": 1302,
+        "category": "parsing",
+        "difficulty": "hard"
+      },
+      {
+        "id": "code-0065",
+        "correct": false,
+        "predicted": "def parse_hhmm(text: str) -> int:\n    \"\"\"Parse a 24-hour 'HH:MM' string into minutes since midnight. Raise ValueError for a\n    malformed string or an out-of-range hour or minute.\n    \"\"\"\n    try:\n        parts = text.split(':')\n        if len(parts) != 2:\n            raise ValueError(\"Input must be in 'HH:MM' format.\")\n\n        hours = int(parts[0])\n        minutes = int(parts[1])\n\n    except ValueError:\n        # Catches errors if parts cannot be converted to int (e.g., \"A:30\")\n        raise V",
+        "expected": "<tests pass>",
+        "latency_ms": 18816.106,
+        "output_tokens": 975,
+        "category": "parsing",
+        "difficulty": "medium"
+      },
+      {
+        "id": "code-0066",
+        "correct": false,
+        "predicted": "def strip_comments(text: str) -> str:\n    \"\"\"Remove '#' comments from every line, keeping the code before the '#' with trailing\n    whitespace stripped. Lines that become empty are dropped entirely. A '#' inside a\n    single-quoted string still counts as a comment for this simplified version.\n    \"\"\"\n    processed_lines = []\n    for line in text.splitlines():\n        # Find the first occurrence of '#' after stripping leading whitespace\n        stripped_line = line.lstrip()\n\n        if stripped_l",
+        "expected": "<tests pass>",
+        "latency_ms": 21293.901,
+        "output_tokens": 1100,
+        "category": "parsing",
+        "difficulty": "medium"
+      },
+      {
+        "id": "code-0067",
+        "correct": true,
+        "predicted": "def sum_nested(items: list) -> float:\n    \"\"\"Add up every number in an arbitrarily nested list of numbers and lists.\n    \"\"\"\n    total = 0.0\n    for item in items:\n        if isinstance(item, (int, float)):\n            total += item\n        elif isinstance(item, list):\n            total += sum_nested(item)\n    return total",
+        "expected": "<tests pass>",
+        "latency_ms": 13748.208,
+        "output_tokens": 715,
+        "category": "recursion",
+        "difficulty": "medium"
+      },
+      {
+        "id": "code-0068",
+        "correct": true,
+        "predicted": "def flatten_deep(items: list) -> list:\n    \"\"\"Flatten an arbitrarily nested list into a flat list, preserving order. Strings are\n    never flattened.\n    \"\"\"\n    result = []\n    for item in items:\n        if isinstance(item, list):\n            result.extend(flatten_deep(item))\n        elif isinstance(item, str):\n            result.append(item)\n        else:\n            result.append(item)\n    return result",
+        "expected": "<tests pass>",
+        "latency_ms": 25014.782,
+        "output_tokens": 1284,
+        "category": "recursion",
+        "difficulty": "medium"
+      },
+      {
+        "id": "code-0069",
+        "correct": true,
+        "predicted": "def power(base: float, exponent: int) -> float:\n    \"\"\"Compute base ** exponent recursively for a non-negative integer exponent, without\n    using the ** operator or pow().\n    \"\"\"\n    if exponent == 0:\n        return 1.0\n\n    if exponent > 0:\n        # Recursive step: base^n = base * base^(n-1)\n        return base * power(base, exponent - 1)\n    \n    # Note: If negative exponents were required, additional logic (e.g., 1 / power(base, -exponent))\n    # would be needed here. Assuming non-negative",
+        "expected": "<tests pass>",
+        "latency_ms": 18592.128,
+        "output_tokens": 967,
+        "category": "recursion",
+        "difficulty": "easy"
+      },
+      {
+        "id": "code-0070",
+        "correct": true,
+        "predicted": "def count_leaves(node: dict) -> int:\n    \"\"\"Count the leaves of a tree where a node is {'children': [...]}. A node with no\n    children, or with an empty list, is a leaf.\n    \"\"\"\n    children = node.get('children', [])\n\n    # Base case: If there are no children, it is a leaf.\n    if not children:\n        return 1\n\n    # Recursive case: If there are children, sum the leaves found in each subtree.\n    leaf_count = 0\n    for child in children:\n        leaf_count += count_leaves(child)\n\n    return l",
+        "expected": "<tests pass>",
+        "latency_ms": 18217.738,
+        "output_tokens": 946,
+        "category": "recursion",
+        "difficulty": "medium"
+      },
+      {
+        "id": "code-0071",
+        "correct": true,
+        "predicted": "def binary_search_rec(items: list, target) -> int:\n    \"\"\"Return the index of *target* in the sorted list *items* using recursion, or -1 when\n    it is absent. Any matching index is acceptable when there are duplicates.\n    \"\"\"\n    def search(low: int, high: int) -> int:\n        if low > high:\n            return -1\n\n        mid = (low + high) // 2\n\n        if items[mid] == target:\n            return mid\n        elif items[mid] < target:\n            return search(mid + 1, high)\n        else:  # i",
+        "expected": "<tests pass>",
+        "latency_ms": 25635.352,
+        "output_tokens": 1332,
+        "category": "recursion",
+        "difficulty": "medium"
+      },
+      {
+        "id": "code-0072",
+        "correct": true,
+        "predicted": "def collatz_steps(n: int) -> int:\n    \"\"\"Count how many steps it takes to reach 1: even numbers are halved, odd numbers\n    become 3n+1. collatz_steps(1) is 0. Raise ValueError for n below 1.\n    \"\"\"\n    if n < 1:\n        raise ValueError(\"Input must be a positive integer.\")\n\n    if n == 1:\n        return 0\n\n    steps = 0\n    current = n\n\n    while current != 1:\n        if current % 2 == 0:\n            current = current // 2\n        else:\n            current = 3 * current + 1\n        steps += 1\n",
+        "expected": "<tests pass>",
+        "latency_ms": 15745.382,
+        "output_tokens": 803,
+        "category": "recursion",
+        "difficulty": "hard"
+      },
+      {
+        "id": "code-0073",
+        "correct": true,
+        "predicted": "def tree_depth(node: dict) -> int:\n    \"\"\"Return the depth of a tree where a node is {'children': [...]}. A single node has\n    depth 1.\n    \"\"\"\n    children = node.get('children', [])\n\n    if not children:\n        # Base case: A single node (leaf) has depth 1.\n        return 1\n\n    max_child_depth = 0\n    for child in children:\n        depth = tree_depth(child)\n        if depth > max_child_depth:\n            max_child_depth = depth\n\n    # The depth of the current node is 1 (for itself) plus the",
+        "expected": "<tests pass>",
+        "latency_ms": 15612.461,
+        "output_tokens": 799,
+        "category": "recursion",
+        "difficulty": "medium"
+      },
+      {
+        "id": "code-0074",
+        "correct": true,
+        "predicted": "def reverse_rec(text: str) -> str:\n    \"\"\"Reverse a string recursively, without slicing the whole string with [::-1].\"\"\"\n    if not text:\n        return \"\"\n    \n    if len(text) == 1:\n        return text\n    \n    # Recursive step: take the first character and append it to the result \n    # of reversing the rest of the string.\n    first_char = text[0]\n    rest_of_text = text[1:]\n    \n    reversed_rest = reverse_rec(rest_of_text)\n    \n    return reversed_rest + first_char",
+        "expected": "<tests pass>",
+        "latency_ms": 17383.988,
+        "output_tokens": 896,
+        "category": "recursion",
+        "difficulty": "easy"
+      },
+      {
+        "id": "code-0075",
+        "correct": false,
+        "predicted": "import math\n\ndef count_paths(rows: int, cols: int) -> int:\n    \"\"\"Count the shortest paths across a grid of rows by cols blocks when only moves\n    east and north are allowed. A grid with a zero dimension has exactly one path.\n    \"\"\"\n    # If either dimension is zero, the requirement states there is exactly one path.\n    if rows <= 0 or cols <= 0:\n        return 1\n\n    # To move from (0, 0) to (rows-1, cols-1), we need:\n    # k_vertical = rows - 1 steps (North/South)\n    # k_horizontal = cols -",
+        "expected": "<tests pass>",
+        "latency_ms": 37118.347,
+        "output_tokens": 1909,
+        "category": "recursion",
+        "difficulty": "hard"
+      },
+      {
+        "id": "code-0076",
+        "correct": true,
+        "predicted": "def gcd_rec(a: int, b: int) -> int:\n    \"\"\"Return the greatest common divisor of two non-negative integers using recursion.\n    \"\"\"\n    if b == 0:\n        return a\n    else:\n        return gcd_rec(b, a % b)",
+        "expected": "<tests pass>",
+        "latency_ms": 8601.653,
+        "output_tokens": 436,
+        "category": "recursion",
+        "difficulty": "medium"
+      },
+      {
+        "id": "code-0077",
+        "correct": true,
+        "predicted": "def binary_search(items: list, target) -> int:\n    low = 0\n    high = len(items) - 1\n    first_occurrence = -1\n\n    while low <= high:\n        mid = low + (high - low) // 2\n\n        if items[mid] == target:\n            # Found an occurrence. Store the index, and continue searching \n            # in the left half to find the absolute first occurrence.\n            first_occurrence = mid\n            high = mid - 1\n        elif items[mid] < target:\n            # Target must be in the right half\n    ",
+        "expected": "<tests pass>",
+        "latency_ms": 20347.467,
+        "output_tokens": 1051,
+        "category": "algorithms",
+        "difficulty": "hard"
+      },
+      {
+        "id": "code-0078",
+        "correct": true,
+        "predicted": "def merge_sorted(a: list, b: list) -> list:\n    \"\"\"Merge two already sorted lists into one sorted list, without calling sorted() or\n    .sort().\n    \"\"\"\n    merged = []\n    i = 0  # pointer for list a\n    j = 0  # pointer for list b\n\n    len_a = len(a)\n    len_b = len(b)\n\n    # Compare elements from both lists and append the smaller one\n    while i < len_a and j < len_b:\n        if a[i] <= b[j]:\n            merged.append(a[i])\n            i += 1\n        else:\n            merged.append(b[j])\n    ",
+        "expected": "<tests pass>",
+        "latency_ms": 20197.875,
+        "output_tokens": 1038,
+        "category": "algorithms",
+        "difficulty": "medium"
+      },
+      {
+        "id": "code-0079",
+        "correct": true,
+        "predicted": "def two_sum(numbers: list, target: int) -> tuple | None:\n    \"\"\"Return the indices (i, j) with i < j of two numbers that add up to *target*, or None\n    when there is no such pair. Return the pair with the smallest j, and for that j\n    the smallest i.\n    \"\"\"\n    seen = {}  # Stores {number: index}\n    result = None\n\n    for j, num in enumerate(numbers):\n        complement = target - num\n\n        if complement in seen:\n            i = seen[complement]\n            \n            # We found a pair ",
+        "expected": "<tests pass>",
+        "latency_ms": 44453.736,
+        "output_tokens": 2281,
+        "category": "algorithms",
+        "difficulty": "hard"
+      },
+      {
+        "id": "code-0080",
+        "correct": true,
+        "predicted": "def max_subarray_sum(numbers: list) -> int:\n    \"\"\"Return the largest sum of any non-empty contiguous slice of *numbers*. Raise\n    ValueError for an empty list.\n    \"\"\"\n    if not numbers:\n        raise ValueError(\"Input list cannot be empty.\")\n\n    # Kadane's Algorithm\n    max_so_far = numbers[0]\n    current_max = numbers[0]\n\n    for x in numbers[1:]:\n        # Calculate the maximum sum ending at the current position (x)\n        # Either start a new subarray (x) or extend the previous one (cur",
+        "expected": "<tests pass>",
+        "latency_ms": 16334.92,
+        "output_tokens": 834,
+        "category": "algorithms",
+        "difficulty": "hard"
+      },
+      {
+        "id": "code-0081",
+        "correct": true,
+        "predicted": "def is_balanced(text: str) -> bool:\n    \"\"\"Return True when the brackets (), [] and {} in *text* are correctly nested and\n    closed. Other characters are ignored.\n    \"\"\"\n    stack = []\n    mapping = {')': '(', ']': '[', '}': '{'}\n\n    for char in text:\n        if char in '([{':\n            stack.append(char)\n        elif char in ')]}':\n            if not stack:\n                return False\n            \n            top = stack.pop()\n            \n            if mapping[char] != top:\n            ",
+        "expected": "<tests pass>",
+        "latency_ms": 19677.52,
+        "output_tokens": 1004,
+        "category": "algorithms",
+        "difficulty": "medium"
+      },
+      {
+        "id": "code-0082",
+        "correct": true,
+        "predicted": "def longest_common_prefix(words: list) -> str:\n    \"\"\"Return the longest string that starts every word in *words*. An empty list gives ''.\n    \"\"\"\n    if not words:\n        return \"\"\n\n    # Initialize the prefix with the first word\n    prefix = words[0]\n\n    # Iterate through the rest of the words\n    for word in words[1:]:\n        new_prefix = \"\"\n        # Compare characters up to the length of the current prefix or the word\n        min_len = min(len(prefix), len(word))\n\n        for i in range(",
+        "expected": "<tests pass>",
+        "latency_ms": 23806.46,
+        "output_tokens": 1213,
+        "category": "algorithms",
+        "difficulty": "easy"
+      },
+      {
+        "id": "code-0083",
+        "correct": true,
+        "predicted": "def roman_to_int(text: str) -> int:\n    \"\"\"Convert an upper-case Roman numeral from I to MMMCMXCIX into an integer. Raise\n    ValueError when a character is not a Roman digit or the string is empty.\n    \"\"\"\n    if not text:\n        raise ValueError(\"Input string cannot be empty.\")\n\n    roman_map = {\n        'I': 1,\n        'V': 5,\n        'X': 10,\n        'L': 50,\n        'C': 100,\n        'D': 500,\n        'M': 1000\n    }\n\n    result = 0\n    n = len(text)\n    i = 0\n\n    while i < n:\n        cur",
+        "expected": "<tests pass>",
+        "latency_ms": 30229.067,
+        "output_tokens": 1552,
+        "category": "algorithms",
+        "difficulty": "hard"
+      },
+      {
+        "id": "code-0084",
+        "correct": false,
+        "predicted": "def int_to_roman(number: int) -> str:\n    \"\"\"Convert an integer from 1 to 3999 into an upper-case Roman numeral. Raise ValueError\n    outside that range.\n    \"\"\"\n    if not (1 <= number <= 3999):\n        raise ValueError(\"Input number must be between 1 and 3999.\")\n\n    # Define the Roman numeral values and symbols in descending order,\n    # including subtractive forms (e.g., 900 = CM)\n    roman_map = [\n        (1000, 'M'),\n        (900, 'CM'),\n        (500, 'D'),\n        (400, 'CD'),\n        (10",
+        "expected": "<tests pass>",
+        "latency_ms": 31741.245,
+        "output_tokens": 1621,
+        "category": "algorithms",
+        "difficulty": "medium"
+      },
+      {
+        "id": "code-0085",
+        "correct": true,
+        "predicted": "def insertion_sort(numbers: list) -> list:\n    \"\"\"Return a sorted copy of *numbers* using insertion sort. Do not call sorted() or\n    .sort(), and do not modify the input.\n    \"\"\"\n    arr = numbers[:]\n    n = len(arr)\n\n    for i in range(1, n):\n        key = arr[i]\n        j = i - 1\n\n        # Move elements of arr[0..i-1], that are greater than key,\n        # to one position ahead of their current position\n        while j >= 0 and arr[j] > key:\n            arr[j + 1] = arr[j]\n            j -= 1\n",
+        "expected": "<tests pass>",
+        "latency_ms": 18491.962,
+        "output_tokens": 952,
+        "category": "algorithms",
+        "difficulty": "medium"
+      },
+      {
+        "id": "code-0086",
+        "correct": true,
+        "predicted": "from collections import Counter\n\ndef find_duplicates(items: list) -> list:\n    \"\"\"Return the values that occur more than once, each once, in order of first repeat.\n    \"\"\"\n    counts = Counter(items)\n    duplicates = []\n    reported = set()\n\n    for item in items:\n        if counts[item] > 1 and item not in reported:\n            duplicates.append(item)\n            reported.add(item)\n\n    return duplicates",
+        "expected": "<tests pass>",
+        "latency_ms": 21131.216,
+        "output_tokens": 1088,
+        "category": "algorithms",
+        "difficulty": "easy"
+      },
+      {
+        "id": "code-0087",
+        "correct": true,
+        "predicted": "from collections import defaultdict\n\ndef group_anagrams(words: list) -> list:\n    \"\"\"Group words that are anagrams of each other, ignoring case. Return a list of groups\n    sorted by the first word of each group; inside a group keep the input order.\n    \"\"\"\n    anagram_map = defaultdict(list)\n\n    for word in words:\n        # Normalize the word by converting to lowercase and sorting its characters\n        # This creates a canonical key for all anagrams.\n        key = tuple(sorted(word.lower()))\n",
+        "expected": "<tests pass>",
+        "latency_ms": 23921.765,
+        "output_tokens": 1221,
+        "category": "algorithms",
+        "difficulty": "hard"
+      },
+      {
+        "id": "code-0088",
+        "correct": true,
+        "predicted": "def min_coins(amount: int, coins: list) -> int:\n    \"\"\"Return the fewest coins that add up to *amount*, or -1 when it cannot be made. Coins\n    may be used any number of times. min_coins(0, ...) is 0.\n    \"\"\"\n    if amount == 0:\n        return 0\n\n    # Initialize DP array. dp[i] will store the minimum number of coins needed to make amount i.\n    # We use float('inf') to represent an unreachable state.\n    infinity = float('inf')\n    dp = [infinity] * (amount + 1)\n    \n    # Base case: 0 amount r",
+        "expected": "<tests pass>",
+        "latency_ms": 24960.65,
+        "output_tokens": 1275,
+        "category": "algorithms",
+        "difficulty": "hard"
+      },
+      {
+        "id": "code-0089",
+        "correct": true,
+        "predicted": "def safe_divide(a: float, b: float, default: float = 0.0) -> float:\n    \"\"\"Divide *a* by *b* and return *default* when *b* is 0.\n    \"\"\"\n    if b == 0.0:\n        return default\n    return a / b",
+        "expected": "<tests pass>",
+        "latency_ms": 9827.786,
+        "output_tokens": 506,
+        "category": "edge_cases",
+        "difficulty": "easy"
+      },
+      {
+        "id": "code-0090",
+        "correct": true,
+        "predicted": "def first_or(items: list, default=None):\n    \"\"\"Return the first element of *items*, or *default* when the list is empty.\n    \"\"\"\n    if items:\n        return items[0]\n    return default",
+        "expected": "<tests pass>",
+        "latency_ms": 10128.999,
+        "output_tokens": 523,
+        "category": "edge_cases",
+        "difficulty": "easy"
+      },
+      {
+        "id": "code-0091",
+        "correct": true,
+        "predicted": "def at_index(items: list, index: int, default=None):\n    \"\"\"Return items[index], supporting negative indices, and *default* when the index is\n    out of range.\n    \"\"\"\n    try:\n        return items[index]\n    except IndexError:\n        return default",
+        "expected": "<tests pass>",
+        "latency_ms": 15694.976,
+        "output_tokens": 798,
+        "category": "edge_cases",
+        "difficulty": "medium"
+      },
+      {
+        "id": "code-0092",
+        "correct": true,
+        "predicted": "def mean_or_zero(numbers: list) -> float:\n    \"\"\"Return the arithmetic mean of *numbers*, or 0.0 for an empty list.\n    \"\"\"\n    if not numbers:\n        return 0.0\n    return sum(numbers) / len(numbers)",
+        "expected": "<tests pass>",
+        "latency_ms": 10033.56,
+        "output_tokens": 509,
+        "category": "edge_cases",
+        "difficulty": "easy"
+      },
+      {
+        "id": "code-0093",
+        "correct": true,
+        "predicted": "def to_int(value, default: int = 0) -> int:\n    \"\"\"Convert *value* to an int, returning *default* when it cannot be converted. Strings\n    with surrounding whitespace are accepted; floats are truncated toward zero;\n    booleans convert to 1 and 0.\n    \"\"\"\n    if isinstance(value, bool):\n        return 1 if value else 0\n\n    if isinstance(value, str):\n        try:\n            # Accept strings with surrounding whitespace\n            return int(value.strip())\n        except ValueError:\n            ",
+        "expected": "<tests pass>",
+        "latency_ms": 20744.76,
+        "output_tokens": 1070,
+        "category": "edge_cases",
+        "difficulty": "medium"
+      },
+      {
+        "id": "code-0094",
+        "correct": true,
+        "predicted": "def take(items: list, n: int) -> list:\n    \"\"\"Return the first *n* elements. A negative *n* gives an empty list, and an *n* larger\n    than the list gives the whole list.\n    \"\"\"\n    if n <= 0:\n        return []\n    return items[:n]",
+        "expected": "<tests pass>",
+        "latency_ms": 13740.321,
+        "output_tokens": 714,
+        "category": "edge_cases",
+        "difficulty": "easy"
+      },
+      {
+        "id": "code-0095",
+        "correct": true,
+        "predicted": "def last_n(items: list, n: int) -> list:\n    \"\"\"Return the last *n* elements in their original order. A negative or zero *n* gives\n    an empty list.\n    \"\"\"\n    if n <= 0:\n        return []\n    return items[-n:]",
+        "expected": "<tests pass>",
+        "latency_ms": 23920.883,
+        "output_tokens": 1239,
+        "category": "edge_cases",
+        "difficulty": "easy"
+      },
+      {
+        "id": "code-0096",
+        "correct": true,
+        "predicted": "def is_blank(text) -> bool:\n    \"\"\"Return True when *text* is None, empty, or only whitespace.\n    \"\"\"\n    if text is None:\n        return True\n    \n    if isinstance(text, str):\n        return not text.strip()\n    \n    return False",
+        "expected": "<tests pass>",
+        "latency_ms": 19853.31,
+        "output_tokens": 1028,
+        "category": "edge_cases",
+        "difficulty": "easy"
+      },
+      {
+        "id": "code-0097",
+        "correct": true,
+        "predicted": "def drop_none(items: list) -> list:\n    \"\"\"Remove every None from the list, keeping the order. Falsy values that are not None,\n    such as 0 and '', are kept.\n    \"\"\"\n    return [item for item in items if item is not None]",
+        "expected": "<tests pass>",
+        "latency_ms": 8940.713,
+        "output_tokens": 458,
+        "category": "edge_cases",
+        "difficulty": "medium"
+      },
+      {
+        "id": "code-0098",
+        "correct": true,
+        "predicted": "def split_or_empty(text: str, sep: str = ',') -> list:\n    \"\"\"Split *text* on *sep* and strip each part, dropping parts that are empty after\n    stripping. An empty or whitespace-only input gives an empty list.\n    \"\"\"\n    if not text or not text.strip():\n        return []\n\n    parts = text.split(sep)\n    result = []\n    for part in parts:\n        stripped_part = part.strip()\n        if stripped_part:\n            result.append(stripped_part)\n    return result",
+        "expected": "<tests pass>",
+        "latency_ms": 20947.688,
+        "output_tokens": 1080,
+        "category": "edge_cases",
+        "difficulty": "easy"
+      },
+      {
+        "id": "code-0099",
+        "correct": true,
+        "predicted": "def ensure_list(value) -> list:\n    \"\"\"Wrap *value* in a list unless it already is one. None becomes an empty list, and a\n    string is treated as a single value, not a sequence.\n    \"\"\"\n    if isinstance(value, list):\n        return value\n\n    if value is None:\n        return []\n\n    # This handles all other types, including strings (treating them as single elements)\n    return [value]",
+        "expected": "<tests pass>",
+        "latency_ms": 22231.328,
+        "output_tokens": 1147,
+        "category": "edge_cases",
+        "difficulty": "easy"
+      },
+      {
+        "id": "code-0100",
+        "correct": true,
+        "predicted": "def clamp_slice(items: list, start: int, end: int) -> list:\n    \"\"\"Return items[start:end] with the bounds clamped into range and with start never\n    greater than end. Negative bounds are clamped to 0, not counted from the end.\n    \"\"\"\n    n = len(items)\n\n    # Clamp start bound: must be non-negative and cannot exceed list length\n    clamped_start = max(0, start)\n    clamped_start = min(n, clamped_start)\n\n    # Clamp end bound: must be non-negative and cannot exceed list length\n    clamped_end ",
+        "expected": "<tests pass>",
+        "latency_ms": 23340.753,
+        "output_tokens": 1197,
+        "category": "edge_cases",
+        "difficulty": "medium"
+      },
+      {
+        "id": "code-0101",
+        "correct": true,
+        "predicted": "def mask_email(email: str) -> str:\n    \"\"\"Mask an email address: keep the first character of the local part, replace the\n    rest of it with one '*' per character, and leave the domain untouched. A string\n    with no '@', or with an empty local part, is returned unchanged.\n    \"\"\"\n    at_index = email.find('@')\n\n    # Rule: A string with no '@' is returned unchanged.\n    if at_index == -1:\n        return email\n\n    local_part = email[:at_index]\n    domain_part = email[at_index + 1:]\n\n    # Rule:",
+        "expected": "<tests pass>",
+        "latency_ms": 20357.184,
+        "output_tokens": 1047,
+        "category": "strings",
+        "difficulty": "medium"
+      },
+      {
+        "id": "code-0102",
+        "correct": true,
+        "predicted": "def starts_with_any(text: str, prefixes: list) -> bool:\n    \"\"\"Return True when *text* starts with any of the given prefixes. An empty list of\n    prefixes gives False; an empty prefix string counts as a match.\n    \"\"\"\n    if not prefixes:\n        return False\n\n    return any(text.startswith(prefix) for prefix in prefixes)",
+        "expected": "<tests pass>",
+        "latency_ms": 15586.778,
+        "output_tokens": 798,
+        "category": "strings",
+        "difficulty": "easy"
+      },
+      {
+        "id": "code-0103",
+        "correct": true,
+        "predicted": "def wrap_text(text: str, width: int) -> list:\n    \"\"\"Wrap *text* into lines of at most *width* characters, breaking only at spaces and\n    never splitting a word. A word longer than *width* gets a line of its own. Runs of\n    whitespace collapse; empty input gives an empty list. Raise ValueError when width\n    is below 1.\n    \"\"\"\n    if width < 1:\n        raise ValueError(\"Width must be at least 1.\")\n\n    # Collapse runs of whitespace and split into words\n    words = text.split()\n\n    if not wor",
+        "expected": "<tests pass>",
+        "latency_ms": 29742.785,
+        "output_tokens": 1529,
+        "category": "strings",
+        "difficulty": "hard"
+      },
+      {
+        "id": "code-0104",
+        "correct": true,
+        "predicted": "def zip_fill(a: list, b: list, fill=None) -> list:\n    \"\"\"Pair up elements of *a* and *b*, padding the shorter list with *fill* so the result\n    is as long as the longer input.\n    \"\"\"\n    result = []\n    len_a = len(a)\n    len_b = len(b)\n    max_len = max(len_a, len_b)\n\n    for i in range(max_len):\n        # Determine element from list a, padding if index is out of bounds\n        if i < len_a:\n            val_a = a[i]\n        else:\n            val_a = fill\n\n        # Determine element from lis",
+        "expected": "<tests pass>",
+        "latency_ms": 25714.825,
+        "output_tokens": 1331,
+        "category": "lists",
+        "difficulty": "medium"
+      },
+      {
+        "id": "code-0105",
+        "correct": true,
+        "predicted": "def count_occurrences(items: list, value) -> int:\n    \"\"\"Count how many elements of *items* are equal to *value*.\n    \"\"\"\n    return sum(1 for item in items if item == value)",
+        "expected": "<tests pass>",
+        "latency_ms": 10858.489,
+        "output_tokens": 563,
+        "category": "lists",
+        "difficulty": "easy"
+      },
+      {
+        "id": "code-0106",
+        "correct": false,
+        "predicted": "from collections import Counter\n\ndef rank(numbers: list) -> list:\n    \"\"\"Return the competition rank of each number: the largest gets rank 1, equal values\n    share a rank, and the next distinct value skips the ranks that were used up\n    (10, 8, 8, 5 gives 1, 2, 2, 4).\n    \"\"\"\n    if not numbers:\n        return []\n\n    # 1. Count occurrences and find unique values\n    counts = Counter(numbers)\n    unique_sorted_values = sorted(counts.keys(), reverse=True)\n\n    # 2. Determine the rank mapping fo",
+        "expected": "<tests pass>",
+        "latency_ms": 45630.458,
+        "output_tokens": 2336,
+        "category": "lists",
+        "difficulty": "hard"
+      },
+      {
+        "id": "code-0107",
+        "correct": true,
+        "predicted": "def deep_merge(a: dict, b: dict) -> dict:\n    \"\"\"Merge two nested dicts recursively and return a new dict. Where both sides hold a\n    dict the merge continues one level deeper; otherwise the value from *b* wins.\n    Neither input is modified.\n    \"\"\"\n    merged = a.copy()\n\n    for key, value_b in b.items():\n        if key in merged:\n            value_a = merged[key]\n\n            # Check if both values are dictionaries for recursive merge\n            if isinstance(value_a, dict) and isinstance(v",
+        "expected": "<tests pass>",
+        "latency_ms": 23071.862,
+        "output_tokens": 1188,
+        "category": "dicts",
+        "difficulty": "hard"
+      },
+      {
+        "id": "code-0108",
+        "correct": true,
+        "predicted": "def keys_with_value(mapping: dict, value) -> list:\n    \"\"\"Return the keys whose value equals *value*, sorted ascending.\n    \"\"\"\n    matching_keys = [key for key, val in mapping.items() if val == value]\n    return sorted(matching_keys)",
+        "expected": "<tests pass>",
+        "latency_ms": 12168.191,
+        "output_tokens": 613,
+        "category": "dicts",
+        "difficulty": "easy"
+      },
+      {
+        "id": "code-0109",
+        "correct": true,
+        "predicted": "def invert_multi(mapping: dict) -> dict:\n    \"\"\"Invert a dict, collecting the keys that share a value into a sorted list.\n    \"\"\"\n    inverted_map = {}\n\n    # Step 1: Group keys by their values\n    for key, value in mapping.items():\n        if value not in inverted_map:\n            inverted_map[value] = []\n        inverted_map[value].append(key)\n\n    # Step 2: Sort the lists of keys\n    result = {}\n    for value, keys in inverted_map.items():\n        keys.sort()\n        result[value] = keys\n\n   ",
+        "expected": "<tests pass>",
+        "latency_ms": 18897.119,
+        "output_tokens": 961,
+        "category": "dicts",
+        "difficulty": "medium"
+      },
+      {
+        "id": "code-0110",
+        "correct": true,
+        "predicted": "def average_of_top(numbers: list, k: int) -> float:\n    \"\"\"Return the mean of the *k* largest values. When *k* exceeds the length, average\n    everything. Raise ValueError when *k* is below 1 or the list is empty.\n    \"\"\"\n    if not numbers:\n        raise ValueError(\"Input list cannot be empty.\")\n    if k < 1:\n        raise ValueError(\"k must be 1 or greater.\")\n\n    # Sort the list in descending order\n    sorted_numbers = sorted(numbers, reverse=True)\n\n    # Determine how many elements to consid",
+        "expected": "<tests pass>",
+        "latency_ms": 22529.036,
+        "output_tokens": 1140,
+        "category": "math",
+        "difficulty": "medium"
+      },
+      {
+        "id": "code-0111",
+        "correct": true,
+        "predicted": "def prime_factors(n: int) -> list:\n    \"\"\"Return the prime factors of *n* in ascending order, repeating a factor as often as\n    it divides. prime_factors(1) is []. Raise ValueError for n below 1.\n    \"\"\"\n    if n < 1:\n        raise ValueError(\"Input must be an integer greater than or equal to 1.\")\n\n    if n == 1:\n        return []\n\n    factors = []\n    temp_n = n\n\n    # Handle factor 2\n    while temp_n % 2 == 0:\n        factors.append(2)\n        temp_n //= 2\n\n    # Handle odd factors starting f",
+        "expected": "<tests pass>",
+        "latency_ms": 23408.217,
+        "output_tokens": 1188,
+        "category": "math",
+        "difficulty": "hard"
+      },
+      {
+        "id": "code-0112",
+        "correct": true,
+        "predicted": "import math\n\ndef parse_size(text: str) -> int:\n    \"\"\"Parse a size such as '1.5MB' or '512' into whole bytes, rounded down. Suffixes are\n    B, KB, MB and GB, case insensitive, each 1024 times the one before; a missing\n    suffix means bytes. Raise ValueError for anything else.\n    \"\"\"\n    text = text.strip()\n    lower_text = text.lower()\n\n    # Define suffixes and their corresponding power of 1024\n    SUFFIXES = {\n        'b': 0,  # Bytes (Base unit)\n        'kb': 1, # Kilobytes\n        'mb': 2",
+        "expected": "<tests pass>",
+        "latency_ms": 28677.847,
+        "output_tokens": 1470,
+        "category": "parsing",
+        "difficulty": "medium"
+      },
+      {
+        "id": "code-0113",
+        "correct": false,
+        "predicted": "def parse_flags(argv: list) -> dict:\n    \"\"\"Parse a simple argument list. '--name=value' and '--name value' both map name to\n    the value; a flag with no value maps to True. Leading dashes are stripped from\n    the key. Arguments that are not flags are ignored.\n    \"\"\"\n    results = {}\n    i = 0\n    n = len(argv)\n\n    while i < n:\n        arg = argv[i]\n\n        if not arg.startswith('--'):\n            i += 1\n            continue\n\n        # Strip leading dashes to get the base name\n        key =",
+        "expected": "<tests pass>",
+        "latency_ms": 25817.123,
+        "output_tokens": 1329,
+        "category": "parsing",
+        "difficulty": "hard"
+      },
+      {
+        "id": "code-0114",
+        "correct": true,
+        "predicted": "def deep_get_path(data, keys: list, default=None):\n    \"\"\"Walk a nested structure recursively following *keys*, returning *default* when a\n    step is missing or the current value is not a dict. An empty key list returns the\n    data itself.\n    \"\"\"\n    current = data\n\n    if not keys:\n        return current\n\n    for key in keys:\n        try:\n            if isinstance(current, dict):\n                current = current[key]\n            elif isinstance(current, (list, tuple)):\n                # Att",
+        "expected": "<tests pass>",
+        "latency_ms": 19958.552,
+        "output_tokens": 1016,
+        "category": "recursion",
+        "difficulty": "medium"
+      },
+      {
+        "id": "code-0115",
+        "correct": true,
+        "predicted": "def permutations_of(items: list) -> list:\n    \"\"\"Return every permutation of *items* as a list of tuples, sorted ascending, using\n    recursion and without itertools. An empty input gives [()].\n    \"\"\"\n    if not items:\n        return [()]\n\n    results = []\n    n = len(items)\n\n    for i in range(n):\n        current_item = items[i]\n        # Create the list of remaining items by excluding the current item at index i\n        remaining_items = items[:i] + items[i+1:]\n\n        # Recursively find per",
+        "expected": "<tests pass>",
+        "latency_ms": 29945.887,
+        "output_tokens": 1535,
+        "category": "recursion",
+        "difficulty": "hard"
+      },
+      {
+        "id": "code-0116",
+        "correct": true,
+        "predicted": "def count_down(n: int) -> list:\n    \"\"\"Return [n, n-1, ..., 1] using recursion. A non-positive n gives an empty list.\n    \"\"\"\n    if n <= 0:\n        return []\n    else:\n        return [n] + count_down(n - 1)",
+        "expected": "<tests pass>",
+        "latency_ms": 15524.152,
+        "output_tokens": 793,
+        "category": "recursion",
+        "difficulty": "easy"
+      },
+      {
+        "id": "code-0117",
+        "correct": true,
+        "predicted": "def is_subsequence(needle: str, haystack: str) -> bool:\n    \"\"\"Return True when every character of *needle* appears in *haystack* in the same\n    order, not necessarily next to each other. An empty needle is always a\n    subsequence.\n    \"\"\"\n    needle_ptr = 0\n    n_len = len(needle)\n\n    if n_len == 0:\n        return True\n\n    haystack_len = len(haystack)\n\n    for char_h in haystack:\n        if needle_ptr < n_len and char_h == needle[needle_ptr]:\n            needle_ptr += 1\n\n    return needle_p",
+        "expected": "<tests pass>",
+        "latency_ms": 19371.975,
+        "output_tokens": 992,
+        "category": "algorithms",
+        "difficulty": "medium"
+      },
+      {
+        "id": "code-0118",
+        "correct": true,
+        "predicted": "def lcs_length(a: str, b: str) -> int:\n    \"\"\"Return the length of the longest common subsequence of two strings.\n    \"\"\"\n    m = len(a)\n    n = len(b)\n\n    # dp[i][j] will store the length of LCS of a[:i] and b[:j]\n    dp = [[0] * (n + 1) for _ in range(m + 1)]\n\n    for i in range(1, m + 1):\n        for j in range(1, n + 1):\n            if a[i - 1] == b[j - 1]:\n                dp[i][j] = 1 + dp[i - 1][j - 1]\n            else:\n                dp[i][j] = max(dp[i - 1][j], dp[i][j - 1])\n\n    retur",
+        "expected": "<tests pass>",
+        "latency_ms": 18956.554,
+        "output_tokens": 970,
+        "category": "algorithms",
+        "difficulty": "hard"
+      },
+      {
+        "id": "code-0119",
+        "correct": true,
+        "predicted": "def normalise_bool(value, default: bool = False) -> bool:\n    \"\"\"Coerce a value to a boolean: real booleans pass through, numbers use 0 as False,\n    strings accept true/yes/y/on/1 and false/no/n/off/0 case insensitively, and\n    anything else (including None) returns *default*.\n    \"\"\"\n    # Rule 1: Real booleans pass through\n    if isinstance(value, bool):\n        return value\n\n    # Rule 3: Handle strings (case insensitive)\n    if isinstance(value, str):\n        lower_value = value.lower().st",
+        "expected": "<tests pass>",
+        "latency_ms": 17763.003,
+        "output_tokens": 895,
+        "category": "edge_cases",
+        "difficulty": "medium"
+      },
+      {
+        "id": "code-0120",
+        "correct": true,
+        "predicted": "def first_matching(items: list, prefix: str):\n    \"\"\"Return the first string in *items* that starts with *prefix*, or None when there is\n    none. Non-string elements are skipped.\n    \"\"\"\n    for item in items:\n        if isinstance(item, str) and item.startswith(prefix):\n            return item\n    return None",
+        "expected": "<tests pass>",
+        "latency_ms": 10651.015,
+        "output_tokens": 545,
+        "category": "edge_cases",
+        "difficulty": "easy"
+      },
+      {
+        "id": "code-0121",
+        "correct": true,
+        "predicted": "def average(numbers):\n    \"\"\"Return the mean of *numbers*, or 0.0 when the list is empty.\"\"\"\n    if not numbers:\n        return 0.0\n    return sum(numbers) / len(numbers)",
+        "expected": "<tests pass>",
+        "latency_ms": 7644.616,
+        "output_tokens": 386,
+        "category": "bugfix",
+        "difficulty": "easy"
+      },
+      {
+        "id": "code-0122",
+        "correct": true,
+        "predicted": "def count_up(n):\n    \"\"\"Return [1, 2, ..., n].\"\"\"\n    return list(range(1, n + 1))",
+        "expected": "<tests pass>",
+        "latency_ms": 7211.096,
+        "output_tokens": 370,
+        "category": "bugfix",
+        "difficulty": "easy"
+      },
+      {
+        "id": "code-0123",
+        "correct": true,
+        "predicted": "def add_item(item, bucket=None):\n    \"\"\"Append *item* to *bucket* and return it. A fresh call starts a fresh list.\"\"\"\n    if bucket is None:\n        bucket = []\n    bucket.append(item)\n    return bucket",
+        "expected": "<tests pass>",
+        "latency_ms": 7953.917,
+        "output_tokens": 394,
+        "category": "bugfix",
+        "difficulty": "medium"
+      },
+      {
+        "id": "code-0124",
+        "correct": true,
+        "predicted": "def remove_evens(numbers):\n    \"\"\"Return *numbers* with every even value removed, keeping order.\"\"\"\n    return [x for x in numbers if x % 2 != 0]",
+        "expected": "<tests pass>",
+        "latency_ms": 10476.89,
+        "output_tokens": 526,
+        "category": "bugfix",
+        "difficulty": "medium"
+      },
+      {
+        "id": "code-0125",
+        "correct": false,
+        "predicted": "def starts_with_vowel(word):\n    \"\"\"Return True when *word* starts with a, e, i, o or u, ignoring case.\"\"\"\n    return word[:1].lower() in 'aeiou'",
+        "expected": "<tests pass>",
+        "latency_ms": 7385.864,
+        "output_tokens": 365,
+        "category": "bugfix",
+        "difficulty": "easy"
+      },
+      {
+        "id": "code-0126",
+        "correct": true,
+        "predicted": "def percentage(part, whole):\n    \"\"\"Return part as a percentage of whole, or 0.0 when whole is 0.\"\"\"\n    if whole == 0:\n        return 0.0\n    return (part / whole) * 100",
+        "expected": "<tests pass>",
+        "latency_ms": 11602.017,
+        "output_tokens": 588,
+        "category": "bugfix",
+        "difficulty": "medium"
+      },
+      {
+        "id": "code-0127",
+        "correct": true,
+        "predicted": "def last_element(items):\n    \"\"\"Return the last element, or None when the list is empty.\"\"\"\n    if not items:\n        return None\n    return items[len(items) - 1]",
+        "expected": "<tests pass>",
+        "latency_ms": 8850.934,
+        "output_tokens": 453,
+        "category": "bugfix",
+        "difficulty": "medium"
+      },
+      {
+        "id": "code-0128",
+        "correct": true,
+        "predicted": "def merge_configs(defaults, overrides):\n    \"\"\"Return a new dict of *defaults* updated with *overrides*, leaving both inputs alone.\"\"\"\n    return {**defaults, **overrides}",
+        "expected": "<tests pass>",
+        "latency_ms": 10361.108,
+        "output_tokens": 515,
+        "category": "bugfix",
+        "difficulty": "medium"
+      },
+      {
+        "id": "code-0129",
+        "correct": true,
+        "predicted": "def find_index(items, target):\n    \"\"\"Return the index of the first occurrence of *target*, or -1.\"\"\"\n    for i, item in enumerate(items):\n        if item == target:\n            return i\n    return -1",
+        "expected": "<tests pass>",
+        "latency_ms": 6872.868,
+        "output_tokens": 341,
+        "category": "bugfix",
+        "difficulty": "hard"
+      },
+      {
+        "id": "code-0130",
+        "correct": false,
+        "predicted": "def title_case(text):\n    \"\"\"Capitalise every word, treating both spaces and hyphens as separators.\"\"\"\n    processed_text = text.replace('-', ' ')\n    words = processed_text.split()\n    return ' '.join(w.capitalize() for w in words)",
+        "expected": "<tests pass>",
+        "latency_ms": 25904.459,
+        "output_tokens": 1321,
+        "category": "bugfix",
+        "difficulty": "medium"
+      },
+      {
+        "id": "code-0131",
+        "correct": true,
+        "predicted": "def running_max(numbers):\n    \"\"\"Return the running maximum: element i is max(numbers[0..i]).\"\"\"\n    if not numbers:\n        return []\n\n    out = []\n    best = numbers[0]\n    out.append(best)\n\n    for x in numbers[1:]:\n        best = max(best, x)\n        out.append(best)\n    return out",
+        "expected": "<tests pass>",
+        "latency_ms": 24170.983,
+        "output_tokens": 1243,
+        "category": "bugfix",
+        "difficulty": "medium"
+      },
+      {
+        "id": "code-0132",
+        "correct": true,
+        "predicted": "def dedupe(items):\n    \"\"\"Remove duplicates, keeping the first occurrence of each value in order.\"\"\"\n    seen = set()\n    result = []\n    for item in items:\n        if item not in seen:\n            seen.add(item)\n            result.append(item)\n    return result",
+        "expected": "<tests pass>",
+        "latency_ms": 6964.645,
+        "output_tokens": 359,
+        "category": "bugfix",
+        "difficulty": "hard"
+      },
+      {
+        "id": "code-0133",
+        "correct": true,
+        "predicted": "def clamp_value(value, low, high):\n    \"\"\"Return *value* limited to [low, high].\"\"\"\n    return min(high, max(low, value))",
+        "expected": "<tests pass>",
+        "latency_ms": 14943.769,
+        "output_tokens": 783,
+        "category": "bugfix",
+        "difficulty": "medium"
+      },
+      {
+        "id": "code-0134",
+        "correct": true,
+        "predicted": "def count_matches(items, predicate_value):\n    \"\"\"Count how many elements equal *predicate_value*.\"\"\"\n    total = 0\n    for item in items:\n        if item == predicate_value:\n            total += 1\n    return total",
+        "expected": "<tests pass>",
+        "latency_ms": 10892.901,
+        "output_tokens": 561,
+        "category": "bugfix",
+        "difficulty": "medium"
+      },
+      {
+        "id": "code-0135",
+        "correct": true,
+        "predicted": "def chunk_list(items, size):\n    \"\"\"Split *items* into lists of at most *size* elements.\"\"\"\n    return [items[i:i + size] for i in range(0, len(items), size)]",
+        "expected": "<tests pass>",
+        "latency_ms": 18889.892,
+        "output_tokens": 964,
+        "category": "bugfix",
+        "difficulty": "hard"
+      },
+      {
+        "id": "code-0136",
+        "correct": true,
+        "predicted": "def strip_prefix(text, prefix):\n    \"\"\"Remove *prefix* from the start of *text* if it is there, otherwise return *text*.\"\"\"\n    if text.startswith(prefix):\n        return text[len(prefix):]\n    return text",
+        "expected": "<tests pass>",
+        "latency_ms": 27169.259,
+        "output_tokens": 1399,
+        "category": "bugfix",
+        "difficulty": "medium"
+      },
+      {
+        "id": "code-0137",
+        "correct": true,
+        "predicted": "def sum_positive(numbers):\n    \"\"\"Add up every number greater than 0, skipping the rest.\"\"\"\n    total = 0\n    for x in numbers:\n        if x > 0:\n            total += x\n    return total",
+        "expected": "<tests pass>",
+        "latency_ms": 9902.527,
+        "output_tokens": 511,
+        "category": "bugfix",
+        "difficulty": "hard"
+      },
+      {
+        "id": "code-0138",
+        "correct": true,
+        "predicted": "def get_setting(config, key, default=None):\n    \"\"\"Return config[key], or *default* only when the key is missing.\"\"\"\n    return config.get(key, default)",
+        "expected": "<tests pass>",
+        "latency_ms": 26103.175,
+        "output_tokens": 1414,
+        "category": "bugfix",
+        "difficulty": "medium"
+      },
+      {
+        "id": "code-0139",
+        "correct": true,
+        "predicted": "def is_sorted(numbers):\n    \"\"\"Return True when *numbers* is non-decreasing.\"\"\"\n    for i in range(len(numbers) - 1):\n        if numbers[i] > numbers[i + 1]:\n            return False\n    return True",
+        "expected": "<tests pass>",
+        "latency_ms": 17496.989,
+        "output_tokens": 1007,
+        "category": "bugfix",
+        "difficulty": "hard"
+      },
+      {
+        "id": "code-0140",
+        "correct": true,
+        "predicted": "def word_lengths(text):\n    \"\"\"Return the length of every word, ignoring leading and trailing . , ! and ?\"\"\"\n    return [len(w.strip('.,!?')) for w in text.split()]",
+        "expected": "<tests pass>",
+        "latency_ms": 12289.711,
+        "output_tokens": 655,
+        "category": "bugfix",
+        "difficulty": "medium"
+      }
+    ]
+  },
+  "failures": [],
+  "gotchas": [],
+  "derived": {
+    "cost_per_1m_output_tokens_usd": null,
+    "tokens_per_watt": null,
+    "tok_s_per_gb_bandwidth": null,
+    "bandwidth_efficiency": null,
+    "memory_headroom_gb": null
+  },
+  "raw": {
+    "harness": "atlas-bench",
+    "harness_version": "0.1.0",
+    "sha256": "f78bf08ee15135fabdbcfcada75be708856ab5dc6445dff7eb1b03214617f86a",
+    "payload_path": null,
+    "payload": {
+      "scorer": "code_exec",
+      "scorers_used": [
+        "code_exec"
+      ],
+      "engine_endpoint": {
+        "attached": true,
+        "base_url": "http://127.0.0.1:1234/v1",
+        "served_model_id": "google/gemma-4-e2b",
+        "advertised_models": [
+          "rr",
+          "text-embedding-qwen.qwen3-embedding-0.6b",
+          "google/gemma-4-e2b",
+          "text-embedding-qwen.qwen3-embedding-4b",
+          "qwen.qwen3-reranker-0.6b",
+          "text-embedding-nomic-embed-text-v1.5"
+        ]
+      }
+    },
+    "truncated": false
+  },
+  "provenance": {
+    "github_login": "0xBakeer",
+    "github_user_id": null,
+    "started_at": "2026-08-24T11:31:53Z",
+    "finished_at": "2026-08-24T11:43:18Z",
+    "submitted_at": null,
+    "commit": null,
+    "pr": null,
+    "method": "atlas-bench",
+    "agent": null,
+    "notes": "Mac Studio M2 Max 32GB, desktop session active (browser + dev tools running, not a clean idle box). LM Studio 0.4.21, model loaded via 'lms load google/gemma-4-e2b --parallel 32 --context-length 131072'; 2 other small models resident (qwen3-reranker-0.6b, qwen3-embedding-0.6b, ~1.3 GB combined). Ambient ~22C. Thinking left at LM Studio template default (enabled) for google/gemma-4-e2b. Second measurement session on the same cell as the 2026-08-23 runs."
+  },
+  "verification": {
+    "level": "self-reported",
+    "reproduced_by": [],
+    "flags": []
+  }
+}
