@@ -9,10 +9,12 @@ name: ingest-engines
 # starts no model, so the whole job is a container pull and a few seconds of Python. A GPU
 # runner would buy nothing.
 
+# The nightly schedule is off: the only engine being measured right now is lmstudio, whose
+# flags are not introspectable from a container, so every scheduled run was a multi-gigabyte
+# vllm image pull that failed on runner disk and reported nothing. Dispatch it by hand when a
+# vllm/sglang version is actually wanted; restore the cron when those engines are back in the
+# measurement plan.
 on:
-  schedule:
-    # 03:30 UTC — after most projects' release automation has settled.
-    - cron: '30 3 * * *'
   workflow_dispatch:
     inputs:
       engine:
