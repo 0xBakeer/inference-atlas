@@ -1,0 +1,1007 @@
+{
+  "schema_version": 1,
+  "run_id": "3a7140b911cd5012--eval-tools-v1--322d59",
+  "config_id": "3a7140b911cd5012",
+  "cell_id": "261775590aef",
+  "workload_id": "eval-tools-v1",
+  "kind": "eval",
+  "engine": {
+    "id": "vllm",
+    "version": "0.27.1",
+    "commit": null,
+    "container": "vllm/vllm-openai:v0.27.1",
+    "install_method": "docker"
+  },
+  "model": {
+    "id": "google/gemma-4-E2B-it",
+    "quant_id": "bf16",
+    "hf_id": "google/gemma-4-E2B-it",
+    "revision": null,
+    "dtype": "auto",
+    "local_path": null
+  },
+  "hardware": {
+    "id": "nvidia-gb10-dgx-spark",
+    "count": 1,
+    "driver": "580.173.02",
+    "cuda": "13.0",
+    "host": {
+      "cpu": "Cortex-A725",
+      "cpu_cores": 20,
+      "ram_gb": 121.6,
+      "os": "Ubuntu 24.04.4 LTS",
+      "kernel": "6.17.0-1029-nvidia",
+      "arch": "aarch64"
+    },
+    "fingerprint": "sha256:52ea2bdd513719724db88c162b6cc2c9fb4e5b67e02dbe41b9de00687acefb91",
+    "captured": {
+      "nvidia_smi": {
+        "driver": "580.173.02",
+        "cuda": "13.0",
+        "products": [
+          "NVIDIA GB10"
+        ],
+        "fb_memory_total_mib": 0
+      },
+      "lscpu": {
+        "architecture": "aarch64",
+        "cpus": "20",
+        "vendor_id": "ARM",
+        "model_name": "Cortex-A725",
+        "cores_per_socket": "10",
+        "sockets": "1",
+        "cpu_max_mhz": "2808.0000"
+      }
+    }
+  },
+  "args": {
+    "max-model-len": 131072,
+    "max-num-seqs": 32,
+    "gpu-memory-utilization": 0.6,
+    "enable-auto-tool-choice": true,
+    "tool-call-parser": "gemma4",
+    "enable-prefix-caching": false
+  },
+  "args_canonical": "@dtype=auto;@quant=bf16;enable-auto-tool-choice=true;enable-prefix-caching=false;gpu-memory-utilization=0.6;max-model-len=131072;max-num-seqs=32;tool-call-parser=gemma4",
+  "serve_command": null,
+  "workload": {
+    "id": "eval-tools-v1",
+    "resolved_params": {
+      "dataset_id": "eval-tools-v1",
+      "suite": "tools",
+      "scorer": "json",
+      "items": 80,
+      "concurrency": 4,
+      "max_output_tokens": 2048,
+      "timeout_s": 300,
+      "temperature": 0,
+      "reasoning": "default",
+      "dataset_categories": null,
+      "dataset_target_tokens": null,
+      "pass_threshold": null,
+      "seed": 42
+    }
+  },
+  "metrics": {
+    "requests_total": 80,
+    "requests_ok": 80,
+    "requests_failed": 0,
+    "success_rate": 1,
+    "duration_s": 40.779,
+    "input_tokens_total": 26602,
+    "output_tokens_total": 5668,
+    "e2e_ms": {
+      "mean": 1694.075,
+      "p50": 815.464,
+      "p90": 2699.103,
+      "p95": 8869.611,
+      "p99": 12197.891,
+      "min": 145.654,
+      "max": 15679.008
+    },
+    "vram_peak_gb": null,
+    "ram_peak_gb": 78.236,
+    "power_avg_w": 35.04,
+    "power_peak_w": 41.22,
+    "energy_wh": 0.3896,
+    "gpu_util_avg_pct": 96,
+    "temp_max_c": 63,
+    "thermal_throttle_detected": false
+  },
+  "scores": {
+    "suite": "tools",
+    "total": 80,
+    "correct": 80,
+    "accuracy": 1,
+    "success_rate": 1,
+    "by_category": {
+      "no_call": {
+        "total": 20,
+        "correct": 20
+      },
+      "single_call": {
+        "total": 60,
+        "correct": 60
+      }
+    },
+    "by_difficulty": {
+      "easy": {
+        "total": 29,
+        "correct": 29
+      },
+      "hard": {
+        "total": 10,
+        "correct": 10
+      },
+      "medium": {
+        "total": 41,
+        "correct": 41
+      }
+    },
+    "avg_output_tokens": 70.85,
+    "avg_latency_ms": 1694.07,
+    "failures": 0,
+    "items": [
+      {
+        "id": "tools-0001",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"city\": \"Kesswater\", \"unit\": \"fahrenheit\"}, \"name\": \"get_weather\"}",
+        "expected": "{\"arguments\": {\"city\": \"Kesswater\", \"unit\": \"fahrenheit\"}, \"name\": \"get_weather\"}",
+        "latency_ms": 645.234,
+        "output_tokens": 24,
+        "category": "single_call",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tools-0002",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"city\": \"Aberholt\"}, \"name\": \"get_weather\"}",
+        "expected": "{\"arguments\": {\"city\": \"Aberholt\"}, \"name\": \"get_weather\"}",
+        "latency_ms": 458.402,
+        "output_tokens": 16,
+        "category": "single_call",
+        "difficulty": "easy"
+      },
+      {
+        "id": "tools-0003",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"city\": \"Valcrest\", \"unit\": \"celsius\"}, \"name\": \"get_weather\"}",
+        "expected": "{\"arguments\": {\"city\": \"Valcrest\", \"unit\": \"celsius\"}, \"name\": \"get_weather\"}",
+        "latency_ms": 643.787,
+        "output_tokens": 23,
+        "category": "single_call",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tools-0004",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"city\": \"Threeford\"}, \"name\": \"get_weather\"}",
+        "expected": "{\"arguments\": {\"city\": \"Threeford\"}, \"name\": \"get_weather\"}",
+        "latency_ms": 457.513,
+        "output_tokens": 16,
+        "category": "single_call",
+        "difficulty": "easy"
+      },
+      {
+        "id": "tools-0005",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"city\": \"Marren Bay\", \"unit\": \"fahrenheit\"}, \"name\": \"get_weather\"}",
+        "expected": "{\"arguments\": {\"city\": \"Marren Bay\", \"unit\": \"fahrenheit\"}, \"name\": \"get_weather\"}",
+        "latency_ms": 645.325,
+        "output_tokens": 24,
+        "category": "single_call",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tools-0006",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"date\": \"2026-09-10\", \"destination\": \"Threeford\", \"origin\": \"Kesswater\"}, \"name\": \"search_flights\"}",
+        "expected": "{\"arguments\": {\"date\": \"2026-09-10\", \"destination\": \"Threeford\", \"origin\": \"Kesswater\"}, \"name\": \"search_flights\"}",
+        "latency_ms": 1017.736,
+        "output_tokens": 39,
+        "category": "single_call",
+        "difficulty": "easy"
+      },
+      {
+        "id": "tools-0007",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"date\": \"2026-09-11\", \"destination\": \"Marren Bay\", \"origin\": \"Aberholt\", \"passengers\": 2}, \"name\": \"search_flights\"}",
+        "expected": "{\"arguments\": {\"date\": \"2026-09-11\", \"destination\": \"Marren Bay\", \"origin\": \"Aberholt\", \"passengers\": 2}, \"name\": \"search_flights\"}",
+        "latency_ms": 1106.725,
+        "output_tokens": 44,
+        "category": "single_call",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tools-0008",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"date\": \"2026-09-12\", \"destination\": \"Dunhallow\", \"origin\": \"Valcrest\"}, \"name\": \"search_flights\"}",
+        "expected": "{\"arguments\": {\"date\": \"2026-09-12\", \"destination\": \"Dunhallow\", \"origin\": \"Valcrest\"}, \"name\": \"search_flights\"}",
+        "latency_ms": 978.321,
+        "output_tokens": 39,
+        "category": "single_call",
+        "difficulty": "easy"
+      },
+      {
+        "id": "tools-0009",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"date\": \"2026-09-13\", \"destination\": \"Oldmarsh\", \"origin\": \"Threeford\", \"passengers\": 1}, \"name\": \"search_flights\"}",
+        "expected": "{\"arguments\": {\"date\": \"2026-09-13\", \"destination\": \"Oldmarsh\", \"origin\": \"Threeford\", \"passengers\": 1}, \"name\": \"search_flights\"}",
+        "latency_ms": 1072.926,
+        "output_tokens": 43,
+        "category": "single_call",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tools-0010",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"date\": \"2026-09-14\", \"destination\": \"Kesswater\", \"origin\": \"Marren Bay\"}, \"name\": \"search_flights\"}",
+        "expected": "{\"arguments\": {\"date\": \"2026-09-14\", \"destination\": \"Kesswater\", \"origin\": \"Marren Bay\"}, \"name\": \"search_flights\"}",
+        "latency_ms": 1009.552,
+        "output_tokens": 40,
+        "category": "single_call",
+        "difficulty": "easy"
+      },
+      {
+        "id": "tools-0011",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"duration_minutes\": 60, \"start\": \"2026-09-01T09:00:00\", \"title\": \"Dentist\"}, \"name\": \"create_calendar_event\"}",
+        "expected": "{\"arguments\": {\"duration_minutes\": 60, \"start\": \"2026-09-01T09:00:00\", \"title\": \"Dentist\"}, \"name\": \"create_calendar_event\"}",
+        "latency_ms": 1210.26,
+        "output_tokens": 49,
+        "category": "single_call",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tools-0012",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"duration_minutes\": 90, \"start\": \"2026-09-02T10:00:00\", \"title\": \"Team retro\"}, \"name\": \"create_calendar_event\"}",
+        "expected": "{\"arguments\": {\"duration_minutes\": 90, \"start\": \"2026-09-02T10:00:00\", \"title\": \"Team retro\"}, \"name\": \"create_calendar_event\"}",
+        "latency_ms": 1211.166,
+        "output_tokens": 49,
+        "category": "single_call",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tools-0013",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"duration_minutes\": 60, \"start\": \"2026-09-03T11:00:00\", \"title\": \"Budget review\"}, \"name\": \"create_calendar_event\"}",
+        "expected": "{\"arguments\": {\"duration_minutes\": 60, \"start\": \"2026-09-03T11:00:00\", \"title\": \"Budget review\"}, \"name\": \"create_calendar_event\"}",
+        "latency_ms": 1203.486,
+        "output_tokens": 49,
+        "category": "single_call",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tools-0014",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"duration_minutes\": 90, \"start\": \"2026-09-04T12:00:00\", \"title\": \"Handover call\"}, \"name\": \"create_calendar_event\"}",
+        "expected": "{\"arguments\": {\"duration_minutes\": 90, \"start\": \"2026-09-04T12:00:00\", \"title\": \"Handover call\"}, \"name\": \"create_calendar_event\"}",
+        "latency_ms": 1217.175,
+        "output_tokens": 50,
+        "category": "single_call",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tools-0015",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"duration_minutes\": 45, \"start\": \"2026-09-05T13:00:00\", \"title\": \"Site visit\"}, \"name\": \"create_calendar_event\"}",
+        "expected": "{\"arguments\": {\"duration_minutes\": 45, \"start\": \"2026-09-05T13:00:00\", \"title\": \"Site visit\"}, \"name\": \"create_calendar_event\"}",
+        "latency_ms": 1197.954,
+        "output_tokens": 49,
+        "category": "single_call",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tools-0016",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"body\": \"The invoice is attached, please confirm receipt.\", \"subject\": \"Invoice 2000\", \"to\": \"ines@example.org\"}, \"name\": \"send_email\"}",
+        "expected": "{\"arguments\": {\"body\": \"The invoice is attached, please confirm receipt.\", \"subject\": \"Invoice 2000\", \"to\": \"ines@example.org\"}, \"name\": \"send_email\"}",
+        "latency_ms": 1069.538,
+        "output_tokens": 44,
+        "category": "single_call",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tools-0017",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"body\": \"The invoice is attached, please confirm receipt.\", \"subject\": \"Invoice 2001\", \"to\": \"tomas@example.org\"}, \"name\": \"send_email\"}",
+        "expected": "{\"arguments\": {\"body\": \"The invoice is attached, please confirm receipt.\", \"subject\": \"Invoice 2001\", \"to\": \"tomas@example.org\"}, \"name\": \"send_email\"}",
+        "latency_ms": 1104.131,
+        "output_tokens": 45,
+        "category": "single_call",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tools-0018",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"body\": \"The invoice is attached, please confirm receipt.\", \"subject\": \"Invoice 2002\", \"to\": \"nadia@example.org\"}, \"name\": \"send_email\"}",
+        "expected": "{\"arguments\": {\"body\": \"The invoice is attached, please confirm receipt.\", \"subject\": \"Invoice 2002\", \"to\": \"nadia@example.org\"}, \"name\": \"send_email\"}",
+        "latency_ms": 1102.819,
+        "output_tokens": 45,
+        "category": "single_call",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tools-0019",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"body\": \"The invoice is attached, please confirm receipt.\", \"subject\": \"Invoice 2003\", \"to\": \"rafael@example.org\"}, \"name\": \"send_email\"}",
+        "expected": "{\"arguments\": {\"body\": \"The invoice is attached, please confirm receipt.\", \"subject\": \"Invoice 2003\", \"to\": \"rafael@example.org\"}, \"name\": \"send_email\"}",
+        "latency_ms": 1101.022,
+        "output_tokens": 45,
+        "category": "single_call",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tools-0020",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"body\": \"The invoice is attached, please confirm receipt.\", \"subject\": \"Invoice 2004\", \"to\": \"juno@example.org\"}, \"name\": \"send_email\"}",
+        "expected": "{\"arguments\": {\"body\": \"The invoice is attached, please confirm receipt.\", \"subject\": \"Invoice 2004\", \"to\": \"juno@example.org\"}, \"name\": \"send_email\"}",
+        "latency_ms": 1098.35,
+        "output_tokens": 45,
+        "category": "single_call",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tools-0021",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"amount\": 1500, \"from_currency\": \"EUR\", \"to_currency\": \"GBP\"}, \"name\": \"convert_currency\"}",
+        "expected": "{\"arguments\": {\"amount\": 1500, \"from_currency\": \"EUR\", \"to_currency\": \"GBP\"}, \"name\": \"convert_currency\"}",
+        "latency_ms": 814.535,
+        "output_tokens": 32,
+        "category": "single_call",
+        "difficulty": "easy"
+      },
+      {
+        "id": "tools-0022",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"amount\": 120, \"from_currency\": \"USD\", \"to_currency\": \"CHF\"}, \"name\": \"convert_currency\"}",
+        "expected": "{\"arguments\": {\"amount\": 120, \"from_currency\": \"USD\", \"to_currency\": \"CHF\"}, \"name\": \"convert_currency\"}",
+        "latency_ms": 795.214,
+        "output_tokens": 31,
+        "category": "single_call",
+        "difficulty": "easy"
+      },
+      {
+        "id": "tools-0023",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"amount\": 1500, \"from_currency\": \"GBP\", \"to_currency\": \"JPY\"}, \"name\": \"convert_currency\"}",
+        "expected": "{\"arguments\": {\"amount\": 1500, \"from_currency\": \"GBP\", \"to_currency\": \"JPY\"}, \"name\": \"convert_currency\"}",
+        "latency_ms": 817.045,
+        "output_tokens": 32,
+        "category": "single_call",
+        "difficulty": "easy"
+      },
+      {
+        "id": "tools-0024",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"amount\": 1500, \"from_currency\": \"CHF\", \"to_currency\": \"EUR\"}, \"name\": \"convert_currency\"}",
+        "expected": "{\"arguments\": {\"amount\": 1500, \"from_currency\": \"CHF\", \"to_currency\": \"EUR\"}, \"name\": \"convert_currency\"}",
+        "latency_ms": 816.393,
+        "output_tokens": 32,
+        "category": "single_call",
+        "difficulty": "easy"
+      },
+      {
+        "id": "tools-0025",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"amount\": 480, \"from_currency\": \"JPY\", \"to_currency\": \"USD\"}, \"name\": \"convert_currency\"}",
+        "expected": "{\"arguments\": {\"amount\": 480, \"from_currency\": \"JPY\", \"to_currency\": \"USD\"}, \"name\": \"convert_currency\"}",
+        "latency_ms": 787.224,
+        "output_tokens": 31,
+        "category": "single_call",
+        "difficulty": "easy"
+      },
+      {
+        "id": "tools-0026",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"symbol\": \"ACME\"}, \"name\": \"get_stock_quote\"}",
+        "expected": "{\"arguments\": {\"symbol\": \"ACME\"}, \"name\": \"get_stock_quote\"}",
+        "latency_ms": 484.234,
+        "output_tokens": 18,
+        "category": "single_call",
+        "difficulty": "easy"
+      },
+      {
+        "id": "tools-0027",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"symbol\": \"NTRX\"}, \"name\": \"get_stock_quote\"}",
+        "expected": "{\"arguments\": {\"symbol\": \"NTRX\"}, \"name\": \"get_stock_quote\"}",
+        "latency_ms": 520.443,
+        "output_tokens": 19,
+        "category": "single_call",
+        "difficulty": "easy"
+      },
+      {
+        "id": "tools-0028",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"symbol\": \"VLCR\"}, \"name\": \"get_stock_quote\"}",
+        "expected": "{\"arguments\": {\"symbol\": \"VLCR\"}, \"name\": \"get_stock_quote\"}",
+        "latency_ms": 498.408,
+        "output_tokens": 18,
+        "category": "single_call",
+        "difficulty": "easy"
+      },
+      {
+        "id": "tools-0029",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"symbol\": \"KSWT\"}, \"name\": \"get_stock_quote\"}",
+        "expected": "{\"arguments\": {\"symbol\": \"KSWT\"}, \"name\": \"get_stock_quote\"}",
+        "latency_ms": 495.072,
+        "output_tokens": 18,
+        "category": "single_call",
+        "difficulty": "easy"
+      },
+      {
+        "id": "tools-0030",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"symbol\": \"ORBP\"}, \"name\": \"get_stock_quote\"}",
+        "expected": "{\"arguments\": {\"symbol\": \"ORBP\"}, \"name\": \"get_stock_quote\"}",
+        "latency_ms": 494.488,
+        "output_tokens": 18,
+        "category": "single_call",
+        "difficulty": "easy"
+      },
+      {
+        "id": "tools-0031",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"target_language\": \"de\", \"text\": \"Where is the nearest pharmacy?\"}, \"name\": \"translate_text\"}",
+        "expected": "{\"arguments\": {\"target_language\": \"de\", \"text\": \"Where is the nearest pharmacy?\"}, \"name\": \"translate_text\"}",
+        "latency_ms": 717.5,
+        "output_tokens": 28,
+        "category": "single_call",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tools-0032",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"target_language\": \"fr\", \"text\": \"The lift is out of order.\"}, \"name\": \"translate_text\"}",
+        "expected": "{\"arguments\": {\"target_language\": \"fr\", \"text\": \"The lift is out of order.\"}, \"name\": \"translate_text\"}",
+        "latency_ms": 738.608,
+        "output_tokens": 29,
+        "category": "single_call",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tools-0033",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"target_language\": \"es\", \"text\": \"Please leave the parcel with a neighbour.\"}, \"name\": \"translate_text\"}",
+        "expected": "{\"arguments\": {\"target_language\": \"es\", \"text\": \"Please leave the parcel with a neighbour.\"}, \"name\": \"translate_text\"}",
+        "latency_ms": 767.111,
+        "output_tokens": 30,
+        "category": "single_call",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tools-0034",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"target_language\": \"ja\", \"text\": \"The meeting has been moved.\"}, \"name\": \"translate_text\"}",
+        "expected": "{\"arguments\": {\"target_language\": \"ja\", \"text\": \"The meeting has been moved.\"}, \"name\": \"translate_text\"}",
+        "latency_ms": 722.001,
+        "output_tokens": 28,
+        "category": "single_call",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tools-0035",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"due\": \"2026-10-12T08:30:00\", \"text\": \"call the landlord\"}, \"name\": \"set_reminder\"}",
+        "expected": "{\"arguments\": {\"due\": \"2026-10-12T08:30:00\", \"text\": \"call the landlord\"}, \"name\": \"set_reminder\"}",
+        "latency_ms": 1023.696,
+        "output_tokens": 41,
+        "category": "single_call",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tools-0036",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"due\": \"2026-10-13T08:30:00\", \"text\": \"Renew the parking permit\"}, \"name\": \"set_reminder\"}",
+        "expected": "{\"arguments\": {\"due\": \"2026-10-13T08:30:00\", \"text\": \"renew the parking permit\"}, \"name\": \"set_reminder\"}",
+        "latency_ms": 1055.961,
+        "output_tokens": 42,
+        "category": "single_call",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tools-0037",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"due\": \"2026-10-14T08:30:00\", \"text\": \"back up the laptop\"}, \"name\": \"set_reminder\"}",
+        "expected": "{\"arguments\": {\"due\": \"2026-10-14T08:30:00\", \"text\": \"back up the laptop\"}, \"name\": \"set_reminder\"}",
+        "latency_ms": 1045.982,
+        "output_tokens": 42,
+        "category": "single_call",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tools-0038",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"due\": \"2026-10-15T08:30:00\", \"text\": \"Book the annual service\"}, \"name\": \"set_reminder\"}",
+        "expected": "{\"arguments\": {\"due\": \"2026-10-15T08:30:00\", \"text\": \"book the annual service\"}, \"name\": \"set_reminder\"}",
+        "latency_ms": 1045.508,
+        "output_tokens": 42,
+        "category": "single_call",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tools-0039",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"due\": \"2026-10-16T08:30:00\", \"text\": \"send the meter reading\"}, \"name\": \"set_reminder\"}",
+        "expected": "{\"arguments\": {\"due\": \"2026-10-16T08:30:00\", \"text\": \"send the meter reading\"}, \"name\": \"set_reminder\"}",
+        "latency_ms": 1088.754,
+        "output_tokens": 42,
+        "category": "single_call",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tools-0040",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"city\": \"Valcrest\", \"cuisine\": \"Georgian\", \"party_size\": 2}, \"name\": \"find_restaurant\"}",
+        "expected": "{\"arguments\": {\"city\": \"Valcrest\", \"cuisine\": \"Georgian\", \"party_size\": 2}, \"name\": \"find_restaurant\"}",
+        "latency_ms": 718.618,
+        "output_tokens": 28,
+        "category": "single_call",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tools-0041",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"city\": \"Threeford\", \"cuisine\": \"Vietnamese\", \"party_size\": 2}, \"name\": \"find_restaurant\"}",
+        "expected": "{\"arguments\": {\"city\": \"Threeford\", \"cuisine\": \"Vietnamese\", \"party_size\": 2}, \"name\": \"find_restaurant\"}",
+        "latency_ms": 736.717,
+        "output_tokens": 29,
+        "category": "single_call",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tools-0042",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"city\": \"Marren Bay\", \"cuisine\": \"Ethiopian\", \"party_size\": 8}, \"name\": \"find_restaurant\"}",
+        "expected": "{\"arguments\": {\"city\": \"Marren Bay\", \"cuisine\": \"Ethiopian\", \"party_size\": 8}, \"name\": \"find_restaurant\"}",
+        "latency_ms": 777.919,
+        "output_tokens": 30,
+        "category": "single_call",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tools-0043",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"city\": \"Dunhallow\", \"cuisine\": \"Portuguese\", \"party_size\": 6}, \"name\": \"find_restaurant\"}",
+        "expected": "{\"arguments\": {\"city\": \"Dunhallow\", \"cuisine\": \"Portuguese\", \"party_size\": 6}, \"name\": \"find_restaurant\"}",
+        "latency_ms": 758.217,
+        "output_tokens": 29,
+        "category": "single_call",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tools-0044",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"destination\": \"Marren Bay\", \"mode\": \"driving\", \"origin\": \"Kesswater\"}, \"name\": \"get_directions\"}",
+        "expected": "{\"arguments\": {\"destination\": \"Marren Bay\", \"mode\": \"driving\", \"origin\": \"Kesswater\"}, \"name\": \"get_directions\"}",
+        "latency_ms": 800.595,
+        "output_tokens": 31,
+        "category": "single_call",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tools-0045",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"destination\": \"Dunhallow\", \"mode\": \"walking\", \"origin\": \"Aberholt\"}, \"name\": \"get_directions\"}",
+        "expected": "{\"arguments\": {\"destination\": \"Dunhallow\", \"mode\": \"walking\", \"origin\": \"Aberholt\"}, \"name\": \"get_directions\"}",
+        "latency_ms": 771.499,
+        "output_tokens": 30,
+        "category": "single_call",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tools-0046",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"destination\": \"Oldmarsh\", \"mode\": \"cycling\", \"origin\": \"Valcrest\"}, \"name\": \"get_directions\"}",
+        "expected": "{\"arguments\": {\"destination\": \"Oldmarsh\", \"mode\": \"cycling\", \"origin\": \"Valcrest\"}, \"name\": \"get_directions\"}",
+        "latency_ms": 743.704,
+        "output_tokens": 29,
+        "category": "single_call",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tools-0047",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"order_id\": \"ORD-7000\"}, \"name\": \"lookup_order\"}",
+        "expected": "{\"arguments\": {\"order_id\": \"ORD-7000\"}, \"name\": \"lookup_order\"}",
+        "latency_ms": 587.827,
+        "output_tokens": 22,
+        "category": "single_call",
+        "difficulty": "easy"
+      },
+      {
+        "id": "tools-0048",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"order_id\": \"ORD-7013\"}, \"name\": \"lookup_order\"}",
+        "expected": "{\"arguments\": {\"order_id\": \"ORD-7013\"}, \"name\": \"lookup_order\"}",
+        "latency_ms": 587.847,
+        "output_tokens": 22,
+        "category": "single_call",
+        "difficulty": "easy"
+      },
+      {
+        "id": "tools-0049",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"order_id\": \"ORD-7026\"}, \"name\": \"lookup_order\"}",
+        "expected": "{\"arguments\": {\"order_id\": \"ORD-7026\"}, \"name\": \"lookup_order\"}",
+        "latency_ms": 573.618,
+        "output_tokens": 22,
+        "category": "single_call",
+        "difficulty": "easy"
+      },
+      {
+        "id": "tools-0050",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"order_id\": \"ORD-7039\"}, \"name\": \"lookup_order\"}",
+        "expected": "{\"arguments\": {\"order_id\": \"ORD-7039\"}, \"name\": \"lookup_order\"}",
+        "latency_ms": 595.579,
+        "output_tokens": 22,
+        "category": "single_call",
+        "difficulty": "easy"
+      },
+      {
+        "id": "tools-0051",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"component\": \"billing\", \"priority\": \"high\", \"title\": \"Export button does nothing\"}, \"name\": \"create_ticket\"}",
+        "expected": "{\"arguments\": {\"component\": \"billing\", \"priority\": \"high\", \"title\": \"Export button does nothing\"}, \"name\": \"create_ticket\"}",
+        "latency_ms": 771.491,
+        "output_tokens": 30,
+        "category": "single_call",
+        "difficulty": "hard"
+      },
+      {
+        "id": "tools-0052",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"component\": \"search\", \"priority\": \"urgent\", \"title\": \"Password reset email never arrives\"}, \"name\": \"create_ticket\"}",
+        "expected": "{\"arguments\": {\"component\": \"search\", \"priority\": \"urgent\", \"title\": \"Password reset email never arrives\"}, \"name\": \"create_ticket\"}",
+        "latency_ms": 800.596,
+        "output_tokens": 31,
+        "category": "single_call",
+        "difficulty": "hard"
+      },
+      {
+        "id": "tools-0053",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"component\": \"auth\", \"priority\": \"medium\", \"title\": \"Report totals are off by one day\"}, \"name\": \"create_ticket\"}",
+        "expected": "{\"arguments\": {\"component\": \"auth\", \"priority\": \"medium\", \"title\": \"Report totals are off by one day\"}, \"name\": \"create_ticket\"}",
+        "latency_ms": 861.552,
+        "output_tokens": 33,
+        "category": "single_call",
+        "difficulty": "hard"
+      },
+      {
+        "id": "tools-0054",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"component\": \"notifications\", \"priority\": \"low\", \"title\": \"Push notifications arrive twice\"}, \"name\": \"create_ticket\"}",
+        "expected": "{\"arguments\": {\"component\": \"notifications\", \"priority\": \"low\", \"title\": \"Push notifications arrive twice\"}, \"name\": \"create_ticket\"}",
+        "latency_ms": 760.993,
+        "output_tokens": 30,
+        "category": "single_call",
+        "difficulty": "hard"
+      },
+      {
+        "id": "tools-0055",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"minutes\": 45, \"room\": \"Ash\", \"start\": \"2026-11-03T14:00:00\"}, \"name\": \"book_meeting_room\"}",
+        "expected": "{\"arguments\": {\"minutes\": 45, \"room\": \"Ash\", \"start\": \"2026-11-03T14:00:00\"}, \"name\": \"book_meeting_room\"}",
+        "latency_ms": 1144.571,
+        "output_tokens": 46,
+        "category": "single_call",
+        "difficulty": "hard"
+      },
+      {
+        "id": "tools-0056",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"minutes\": 45, \"room\": \"Birch\", \"start\": \"2026-11-04T14:00:00\"}, \"name\": \"book_meeting_room\"}",
+        "expected": "{\"arguments\": {\"minutes\": 45, \"room\": \"Birch\", \"start\": \"2026-11-04T14:00:00\"}, \"name\": \"book_meeting_room\"}",
+        "latency_ms": 1160.96,
+        "output_tokens": 47,
+        "category": "single_call",
+        "difficulty": "hard"
+      },
+      {
+        "id": "tools-0057",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"minutes\": 45, \"room\": \"Cedar\", \"start\": \"2026-11-05T14:00:00\"}, \"name\": \"book_meeting_room\"}",
+        "expected": "{\"arguments\": {\"minutes\": 45, \"room\": \"Cedar\", \"start\": \"2026-11-05T14:00:00\"}, \"name\": \"book_meeting_room\"}",
+        "latency_ms": 1137.746,
+        "output_tokens": 46,
+        "category": "single_call",
+        "difficulty": "hard"
+      },
+      {
+        "id": "tools-0058",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"from_unit\": \"miles\", \"to_unit\": \"kilometres\", \"value\": 12}, \"name\": \"unit_convert\"}",
+        "expected": "{\"arguments\": {\"from_unit\": \"miles\", \"to_unit\": \"kilometres\", \"value\": 12}, \"name\": \"unit_convert\"}",
+        "latency_ms": 766.021,
+        "output_tokens": 31,
+        "category": "single_call",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tools-0059",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"from_unit\": \"kilograms\", \"to_unit\": \"pounds\", \"value\": 3.5}, \"name\": \"unit_convert\"}",
+        "expected": "{\"arguments\": {\"from_unit\": \"kilograms\", \"to_unit\": \"pounds\", \"value\": 3.5}, \"name\": \"unit_convert\"}",
+        "latency_ms": 824.189,
+        "output_tokens": 32,
+        "category": "single_call",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tools-0060",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"from_unit\": \"millilitres\", \"to_unit\": \"cups\", \"value\": 450}, \"name\": \"unit_convert\"}",
+        "expected": "{\"arguments\": {\"from_unit\": \"millilitres\", \"to_unit\": \"cups\", \"value\": 450}, \"name\": \"unit_convert\"}",
+        "latency_ms": 852.628,
+        "output_tokens": 33,
+        "category": "single_call",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tools-0061",
+        "correct": true,
+        "predicted": "no tool call",
+        "expected": "no tool call",
+        "latency_ms": 387.49,
+        "output_tokens": 14,
+        "category": "no_call",
+        "difficulty": "easy"
+      },
+      {
+        "id": "tools-0062",
+        "correct": true,
+        "predicted": "no tool call",
+        "expected": "no tool call",
+        "latency_ms": 1278.403,
+        "output_tokens": 51,
+        "category": "no_call",
+        "difficulty": "easy"
+      },
+      {
+        "id": "tools-0063",
+        "correct": true,
+        "predicted": "no tool call",
+        "expected": "no tool call",
+        "latency_ms": 377.158,
+        "output_tokens": 13,
+        "category": "no_call",
+        "difficulty": "easy"
+      },
+      {
+        "id": "tools-0064",
+        "correct": true,
+        "predicted": "no tool call",
+        "expected": "no tool call",
+        "latency_ms": 9536.543,
+        "output_tokens": 417,
+        "category": "no_call",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tools-0065",
+        "correct": true,
+        "predicted": "no tool call",
+        "expected": "no tool call",
+        "latency_ms": 274.746,
+        "output_tokens": 9,
+        "category": "no_call",
+        "difficulty": "easy"
+      },
+      {
+        "id": "tools-0066",
+        "correct": true,
+        "predicted": "no tool call",
+        "expected": "no tool call",
+        "latency_ms": 3666.079,
+        "output_tokens": 158,
+        "category": "no_call",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tools-0067",
+        "correct": true,
+        "predicted": "no tool call",
+        "expected": "no tool call",
+        "latency_ms": 746.736,
+        "output_tokens": 30,
+        "category": "no_call",
+        "difficulty": "easy"
+      },
+      {
+        "id": "tools-0068",
+        "correct": true,
+        "predicted": "no tool call",
+        "expected": "no tool call",
+        "latency_ms": 11131.219,
+        "output_tokens": 490,
+        "category": "no_call",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tools-0069",
+        "correct": true,
+        "predicted": "no tool call",
+        "expected": "no tool call",
+        "latency_ms": 145.654,
+        "output_tokens": 4,
+        "category": "no_call",
+        "difficulty": "easy"
+      },
+      {
+        "id": "tools-0070",
+        "correct": true,
+        "predicted": "no tool call",
+        "expected": "no tool call",
+        "latency_ms": 1939.707,
+        "output_tokens": 84,
+        "category": "no_call",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tools-0071",
+        "correct": true,
+        "predicted": "no tool call",
+        "expected": "no tool call",
+        "latency_ms": 11272.531,
+        "output_tokens": 495,
+        "category": "no_call",
+        "difficulty": "hard"
+      },
+      {
+        "id": "tools-0072",
+        "correct": true,
+        "predicted": "no tool call",
+        "expected": "no tool call",
+        "latency_ms": 262.903,
+        "output_tokens": 9,
+        "category": "no_call",
+        "difficulty": "easy"
+      },
+      {
+        "id": "tools-0073",
+        "correct": true,
+        "predicted": "no tool call",
+        "expected": "no tool call",
+        "latency_ms": 8834.51,
+        "output_tokens": 389,
+        "category": "no_call",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tools-0074",
+        "correct": true,
+        "predicted": "no tool call",
+        "expected": "no tool call",
+        "latency_ms": 2591.661,
+        "output_tokens": 112,
+        "category": "no_call",
+        "difficulty": "easy"
+      },
+      {
+        "id": "tools-0075",
+        "correct": true,
+        "predicted": "no tool call",
+        "expected": "no tool call",
+        "latency_ms": 6015.572,
+        "output_tokens": 263,
+        "category": "no_call",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tools-0076",
+        "correct": true,
+        "predicted": "no tool call",
+        "expected": "no tool call",
+        "latency_ms": 15679.008,
+        "output_tokens": 670,
+        "category": "no_call",
+        "difficulty": "hard"
+      },
+      {
+        "id": "tools-0077",
+        "correct": true,
+        "predicted": "no tool call",
+        "expected": "no tool call",
+        "latency_ms": 306.534,
+        "output_tokens": 11,
+        "category": "no_call",
+        "difficulty": "easy"
+      },
+      {
+        "id": "tools-0078",
+        "correct": true,
+        "predicted": "no tool call",
+        "expected": "no tool call",
+        "latency_ms": 1180.604,
+        "output_tokens": 50,
+        "category": "no_call",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tools-0079",
+        "correct": true,
+        "predicted": "no tool call",
+        "expected": "no tool call",
+        "latency_ms": 8123.524,
+        "output_tokens": 364,
+        "category": "no_call",
+        "difficulty": "hard"
+      },
+      {
+        "id": "tools-0080",
+        "correct": true,
+        "predicted": "no tool call",
+        "expected": "no tool call",
+        "latency_ms": 762.913,
+        "output_tokens": 31,
+        "category": "no_call",
+        "difficulty": "easy"
+      }
+    ]
+  },
+  "failures": [],
+  "gotchas": [
+    {
+      "severity": "info",
+      "text": "Prefill and needle workloads reuse prompts within a run, so any engine with prefix caching on reports cache-hit latency as prefill. Measure prefill with caching disabled, as this cell does, or compare only against another caching-disabled cell."
+    },
+    {
+      "severity": "info",
+      "text": "vllm/vllm-openai:v0.27.1-aarch64 cannot serve Gemma 4 as shipped: transformers 5.15.0 raises AmbiguousGlobalPerLayerAttributeError on head_dim. Pinning transformers==5.8.1 inside the container is what made this run possible."
+    },
+    {
+      "severity": "info",
+      "text": "The haystack generator sizes context by chars/4, which overshoots Gemma tokenization by about 1.2-1.3x: a 131072-token target sends roughly 158k real tokens and is rejected by a 131072-token window, so the 128k workloads cannot pass at this max-model-len."
+    }
+  ],
+  "derived": {
+    "cost_per_1m_output_tokens_usd": null,
+    "tokens_per_watt": null,
+    "tok_s_per_gb_bandwidth": null,
+    "bandwidth_efficiency": null,
+    "memory_headroom_gb": null
+  },
+  "raw": {
+    "harness": "atlas-bench",
+    "harness_version": "0.1.0",
+    "sha256": "87318dff429ac3ebb1541b83349d552837b7e4212bfe4e49fb8855596389b6f1",
+    "payload_path": null,
+    "payload": {
+      "scorer": "json",
+      "scorers_used": [
+        "json"
+      ],
+      "engine_endpoint": {
+        "attached": true,
+        "base_url": "http://127.0.0.1:8000/v1",
+        "served_model_id": "google/gemma-4-E2B-it",
+        "advertised_models": [
+          "google/gemma-4-E2B-it"
+        ]
+      }
+    },
+    "truncated": false
+  },
+  "provenance": {
+    "github_login": "0xBakeer",
+    "github_user_id": 17404809,
+    "started_at": "2026-08-24T16:47:46Z",
+    "finished_at": "2026-08-24T16:48:26Z",
+    "submitted_at": null,
+    "commit": null,
+    "pr": null,
+    "method": "atlas-bench",
+    "agent": null,
+    "notes": "NVIDIA DGX Spark (ASUS Ascent GX10, GB10) on Ubuntu 24.04 / DGX OS, driver 580.173.02, CUDA 13.0. Same server as the prefix-caching-on cell on this machine (vLLM 0.27.1, stock vllm/vllm-openai:v0.27.1-aarch64 with transformers pinned to 5.8.1, TRITON_ATTN forced by Gemma 4 heterogeneous head dimensions, thinking off by chat-template default), with one change: --no-enable-prefix-caching. This cell exists because the prefill and needle workloads reuse prompts, so with vLLM's default prefix caching on they measure cache hits rather than prefill: on this machine prefill-8k returned 1057ms cold and 68ms warm for the same prompt, and all six longctx-needle-32k retrievals were cache hits. These numbers are cold prefill. The DeepSeek-v4-Flash service normally resident on this machine was stopped for the duration of the run."
+  },
+  "verification": {
+    "level": "self-reported",
+    "reproduced_by": [],
+    "flags": []
+  }
+}
