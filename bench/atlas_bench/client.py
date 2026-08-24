@@ -38,7 +38,8 @@ _OOM_PATTERNS = re.compile(
 _CONTEXT_PATTERNS = re.compile(
     r"maximum context length|context length exceeded|longer than the maximum|"
     r"exceeds the maximum|reduce the length|too many tokens|context window|"
-    r"n_ctx|prompt is too long",
+    r"n_ctx|prompt is too long|greater than the context length|"
+    r"provide a shorter input",
     re.IGNORECASE,
 )
 _REFUSAL_PATTERNS = re.compile(
@@ -47,6 +48,10 @@ _REFUSAL_PATTERNS = re.compile(
     re.IGNORECASE,
 )
 _TIMEOUT_PATTERNS = re.compile(r"timed out|timeout", re.IGNORECASE)
+
+#: Shortest span between the first and last streamed delta that counts as an observed decode
+#: interval. Anything faster is a buffered flush, not decoding (see ``measured_decode``).
+MIN_DECODE_WINDOW_S = 0.001
 
 
 def utc_now() -> str:
@@ -146,8 +151,16 @@ class RequestResult:
         rate was observed, and dividing by that near-zero window produces a four-digit tok/s
         that is pure artifact. Two content deltas is the minimum for the question to mean
         anything.
+
+        Counting deltas is not enough on its own. A server that buffers a short answer and
+        flushes it whole emits several deltas microseconds apart after a long time to first
+        token — six deltas inside half a millisecond, which reads as 9,000 tok/s. No engine
+        decodes tokens that fast, so a sub-millisecond window is the same non-measurement as
+        a single delta, however many deltas it contains.
         """
-        return len(self.chunk_times) >= 2
+        if len(self.chunk_times) < 2:
+            return False
+        return self.chunk_times[-1] - self.chunk_times[0] >= MIN_DECODE_WINDOW_S
 
     @property
     def tpot_s(self) -> float | None:
@@ -357,6 +370,14 @@ class ChatClient:
                         chunk = json.loads(payload)
                     except json.JSONDecodeError as exc:
                         return self._fail(result, response.status_code, f"malformed chunk: {exc}")
+                    # Not every engine reports a failure with a failing status. LM Studio
+                    # answers 200 and then writes the error into the stream as an `event:
+                    # error` frame, so a prompt that overflows the context window arrives
+                    # here rather than in the status branch above. Dropping it would leave
+                    # the request looking like an empty answer instead of the refusal it is.
+                    if error := chunk.get("error"):
+                        message = error.get("message") if isinstance(error, dict) else str(error)
+                        return self._fail(result, response.status_code, message or "stream error")
                     if chunk.get("usage"):
                         usage = chunk["usage"]
                     for choice in chunk.get("choices") or []:
