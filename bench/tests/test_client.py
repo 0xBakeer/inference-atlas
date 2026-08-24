@@ -20,6 +20,14 @@ MESSAGES = [{"role": "user", "content": "hello"}]
         (400, "No available memory for the cache blocks", None, "oom"),
         (400, "This model's maximum context length is 8192 tokens", None, "context-overflow"),
         (400, "Please reduce the length of the messages", None, "context-overflow"),
+        (
+            200,
+            "The number of tokens to keep from the initial prompt is greater than the "
+            "context length. Try to load the model with a larger context length, or "
+            "provide a shorter input",
+            None,
+            "context-overflow",
+        ),
         (500, "internal server error", None, "http-5xx"),
         (404, "model not found", None, "http-4xx"),
         (429, "rate limited", None, "http-4xx"),
@@ -96,6 +104,37 @@ async def test_a_single_chunk_response_reports_no_decode_rate() -> None:
     assert result.e2e_s is not None
 
 
+async def test_a_buffered_flush_is_not_a_decode_measurement() -> None:
+    """Several deltas arriving at once is a flush, not a decode interval.
+
+    LM Studio buffers short answers behind a long prefill: at a 65k-token context the six
+    tokens of the answer landed inside half a millisecond after a 40s time to first token,
+    which the delta count alone accepted as 9,197 tok/s — past what the memory bandwidth of
+    the machine allows, and enough to fail plausibility on an otherwise good run.
+    """
+    server = FakeOpenAIServer(chunks=6, chunk_delay_s=0)
+    async with ChatClient("http://fake", "fake-model", transport=server.transport) as client:
+        result = await client.chat_stream(MESSAGES, request_id="r1", max_tokens=16)
+
+    assert result.ok
+    assert len(result.chunk_times) == 6, "the deltas are still counted as tokens"
+    assert result.measured_decode is False
+    assert result.decode_tok_s is None
+    assert result.tpot_s is None
+    assert result.ttft_s is not None
+
+
+async def test_a_real_decode_interval_is_still_measured() -> None:
+    """Deltas spread over a real interval keep producing a decode rate."""
+    server = FakeOpenAIServer(chunks=6, chunk_delay_s=0.004)
+    async with ChatClient("http://fake", "fake-model", transport=server.transport) as client:
+        result = await client.chat_stream(MESSAGES, request_id="r1", max_tokens=16)
+
+    assert result.measured_decode is True
+    assert result.decode_tok_s is not None
+    assert result.tpot_s is not None
+
+
 async def test_stream_without_usage_falls_back_to_counting_deltas() -> None:
     """An engine that never reports usage still produces a token count, marked as such."""
     server = FakeOpenAIServer(report_usage=False, chunks=5)
@@ -140,6 +179,27 @@ async def test_a_real_400_is_not_retried_forever() -> None:
     assert not result.ok
     assert result.error_category == "context-overflow"
     assert len(server.requests) == 2, "exactly one retry, then the real error"
+
+
+async def test_an_error_frame_inside_a_200_stream_is_surfaced() -> None:
+    """LM Studio answers 200 and puts the failure in the stream; it is still a failure.
+
+    An overlong prompt comes back as `event: error` with the reason in the payload. Ignoring
+    frames without `choices` used to reduce this to "stream produced no content deltas",
+    which reads as a model that answered nothing rather than a request that was refused, and
+    threw away the one sentence saying why.
+    """
+    overflow = (
+        "The number of tokens to keep from the initial prompt is greater than the context "
+        "length. Try to load the model with a larger context length, or provide a shorter input"
+    )
+    server = FakeOpenAIServer(stream_error=overflow)
+    async with ChatClient("http://fake", "fake-model", transport=server.transport) as client:
+        result = await client.chat_stream(MESSAGES, request_id="r1")
+
+    assert not result.ok
+    assert result.error_category == "context-overflow"
+    assert result.error_message == overflow
 
 
 async def test_http_error_is_captured_not_raised() -> None:

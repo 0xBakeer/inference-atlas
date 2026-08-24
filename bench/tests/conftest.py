@@ -58,6 +58,7 @@ class FakeOpenAIServer:
         fail_body: str = "internal error",
         report_usage: bool = True,
         reject_stream_options: bool = False,
+        stream_error: str | None = None,
     ) -> None:
         self.model = model
         self.chunks = chunks
@@ -72,6 +73,8 @@ class FakeOpenAIServer:
         self.report_usage = report_usage
         #: LM Studio-style: reject the request outright, without naming the field.
         self.reject_stream_options = reject_stream_options
+        #: LM Studio-style: answer 200, then report the failure inside the stream.
+        self.stream_error = stream_error
         self.requests: list[dict[str, Any]] = []
 
     # ------------------------------------------------------------------ wiring
@@ -115,6 +118,16 @@ class FakeOpenAIServer:
         return [w + (" " if i < len(words) - 1 else "") for i, w in enumerate(words)]
 
     def _stream(self, body: dict[str, Any], text: str | None) -> httpx.Response:
+        if self.stream_error is not None:
+            frames = [
+                b"event: error\n" + _frame({"error": {"message": self.stream_error}}),
+                b"data: [DONE]\n\n",
+            ]
+            return httpx.Response(
+                200,
+                headers={"content-type": "text/event-stream"},
+                stream=_SSEStream(frames, self.chunk_delay_s),
+            )
         pieces = self._pieces(text)
         frames: list[bytes] = []
         for piece in pieces:
