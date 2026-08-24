@@ -1,0 +1,349 @@
+{
+  "schema_version": 1,
+  "run_id": "3a7140b911cd5012--prefill-32k-v1--28608a",
+  "config_id": "3a7140b911cd5012",
+  "cell_id": "261775590aef",
+  "workload_id": "prefill-32k-v1",
+  "kind": "prefill",
+  "engine": {
+    "id": "vllm",
+    "version": "0.27.1",
+    "commit": null,
+    "container": "vllm/vllm-openai:v0.27.1",
+    "install_method": "docker"
+  },
+  "model": {
+    "id": "google/gemma-4-E2B-it",
+    "quant_id": "bf16",
+    "hf_id": "google/gemma-4-E2B-it",
+    "revision": null,
+    "dtype": "auto",
+    "local_path": null
+  },
+  "hardware": {
+    "id": "nvidia-gb10-dgx-spark",
+    "count": 1,
+    "driver": "580.173.02",
+    "cuda": "13.0",
+    "host": {
+      "cpu": "Cortex-A725",
+      "cpu_cores": 20,
+      "ram_gb": 121.6,
+      "os": "Ubuntu 24.04.4 LTS",
+      "kernel": "6.17.0-1029-nvidia",
+      "arch": "aarch64"
+    },
+    "fingerprint": "sha256:52ea2bdd513719724db88c162b6cc2c9fb4e5b67e02dbe41b9de00687acefb91",
+    "captured": {
+      "nvidia_smi": {
+        "driver": "580.173.02",
+        "cuda": "13.0",
+        "products": [
+          "NVIDIA GB10"
+        ],
+        "fb_memory_total_mib": 0.0
+      },
+      "lscpu": {
+        "architecture": "aarch64",
+        "cpus": "20",
+        "vendor_id": "ARM",
+        "model_name": "Cortex-A725",
+        "cores_per_socket": "10",
+        "sockets": "1",
+        "cpu_max_mhz": "2808.0000"
+      }
+    }
+  },
+  "args": {
+    "max-model-len": 131072,
+    "max-num-seqs": 32,
+    "gpu-memory-utilization": 0.6,
+    "enable-auto-tool-choice": true,
+    "tool-call-parser": "gemma4",
+    "enable-prefix-caching": false
+  },
+  "args_canonical": "@dtype=auto;@quant=bf16;enable-auto-tool-choice=true;enable-prefix-caching=false;gpu-memory-utilization=0.6;max-model-len=131072;max-num-seqs=32;tool-call-parser=gemma4",
+  "serve_command": null,
+  "workload": {
+    "id": "prefill-32k-v1",
+    "resolved_params": {
+      "concurrency": 1,
+      "num_requests": 10,
+      "input_tokens": 32768,
+      "output_tokens": 16,
+      "warmup_requests": 1,
+      "prompts_padded": false,
+      "needle_check": false,
+      "timeout_s": 900.0,
+      "seed": 42
+    }
+  },
+  "metrics": {
+    "requests_total": 10,
+    "requests_ok": 10,
+    "requests_failed": 0,
+    "success_rate": 1.0,
+    "duration_s": 79.254,
+    "input_tokens_total": 398281,
+    "output_tokens_total": 90,
+    "output_tok_s": 1.136,
+    "total_tok_s": 5026.511,
+    "req_s": 0.126,
+    "prefill_tok_s": 5159.748,
+    "ttft_ms": {
+      "mean": 7719.001,
+      "p50": 7714.798,
+      "p90": 7767.678,
+      "p95": 7773.851,
+      "p99": 7778.79,
+      "min": 7670.336,
+      "max": 7780.025
+    },
+    "tpot_ms": {
+      "mean": 24.867,
+      "p50": 24.288,
+      "p90": 27.291,
+      "p95": 27.434,
+      "p99": 27.549,
+      "min": 23.133,
+      "max": 27.578
+    },
+    "itl_ms": {
+      "mean": 25.206,
+      "p50": 29.252,
+      "p90": 30.691,
+      "p95": 31.315,
+      "p99": 32.807,
+      "min": 0.011,
+      "max": 33.264
+    },
+    "e2e_ms": {
+      "mean": 7925.341,
+      "p50": 7834.149,
+      "p90": 8177.036,
+      "p95": 8185.363,
+      "p99": 8192.024,
+      "min": 7792.212,
+      "max": 8193.69
+    },
+    "decode_tok_s_per_request": {
+      "mean": 40.388,
+      "p50": 41.173,
+      "p90": 42.966,
+      "p95": 43.097,
+      "p99": 43.203,
+      "min": 36.261,
+      "max": 43.229
+    },
+    "vram_peak_gb": null,
+    "ram_peak_gb": 78.066,
+    "kv_cache_tokens": null,
+    "power_avg_w": 75.56,
+    "power_peak_w": 82.15,
+    "energy_wh": 1.8323,
+    "gpu_util_avg_pct": 94.79,
+    "temp_max_c": 72.0,
+    "thermal_throttle_detected": false
+  },
+  "failures": [],
+  "gotchas": [
+    {
+      "severity": "info",
+      "text": "Prefill and needle workloads reuse prompts within a run, so any engine with prefix caching on reports cache-hit latency as prefill. Measure prefill with caching disabled, as this cell does, or compare only against another caching-disabled cell."
+    },
+    {
+      "severity": "info",
+      "text": "vllm/vllm-openai:v0.27.1-aarch64 cannot serve Gemma 4 as shipped: transformers 5.15.0 raises AmbiguousGlobalPerLayerAttributeError on head_dim. Pinning transformers==5.8.1 inside the container is what made this run possible."
+    },
+    {
+      "severity": "info",
+      "text": "The haystack generator sizes context by chars/4, which overshoots Gemma tokenization by about 1.2-1.3x: a 131072-token target sends roughly 158k real tokens and is rejected by a 131072-token window, so the 128k workloads cannot pass at this max-model-len."
+    }
+  ],
+  "derived": {
+    "cost_per_1m_output_tokens_usd": null,
+    "tokens_per_watt": 0.015,
+    "tok_s_per_gb_bandwidth": 0.147941,
+    "bandwidth_efficiency": 0.683866,
+    "memory_headroom_gb": null
+  },
+  "raw": {
+    "harness": "atlas-bench",
+    "harness_version": "0.1.0",
+    "sha256": "185ccee2fe10bf21fc6d1723444eb14434a4e69e2cf921a036828941c7e27cd3",
+    "payload_path": null,
+    "payload": {
+      "requests": [
+        {
+          "id": "prefill-w00000",
+          "prompt_id": "hay-32k-d10",
+          "warmup": true,
+          "status": "ok",
+          "ttft_ms": 7682.857,
+          "e2e_ms": 7800.895,
+          "prompt_tokens": 39732,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00000",
+          "prompt_id": "hay-32k-d10",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 7670.336,
+          "e2e_ms": 7792.212,
+          "prompt_tokens": 39732,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00001",
+          "prompt_id": "hay-32k-multi",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 7743.805,
+          "e2e_ms": 8151.328,
+          "prompt_tokens": 39967,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00002",
+          "prompt_id": "hay-32k-d50",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 7685.865,
+          "e2e_ms": 7803.826,
+          "prompt_tokens": 39781,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00003",
+          "prompt_id": "hay-32k-d90",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 7711.732,
+          "e2e_ms": 7833.982,
+          "prompt_tokens": 39811,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00004",
+          "prompt_id": "hay-32k-d10",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 7679.113,
+          "e2e_ms": 7797.244,
+          "prompt_tokens": 39732,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00005",
+          "prompt_id": "hay-32k-multi",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 7766.306,
+          "e2e_ms": 8175.186,
+          "prompt_tokens": 39967,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00006",
+          "prompt_id": "hay-32k-d50",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 7725.147,
+          "e2e_ms": 7846.15,
+          "prompt_tokens": 39781,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00007",
+          "prompt_id": "hay-32k-d90",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 7717.864,
+          "e2e_ms": 7834.316,
+          "prompt_tokens": 39811,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00008",
+          "prompt_id": "hay-32k-d10",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 7709.814,
+          "e2e_ms": 7825.477,
+          "prompt_tokens": 39732,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00009",
+          "prompt_id": "hay-32k-multi",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 7780.025,
+          "e2e_ms": 8193.69,
+          "prompt_tokens": 39967,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        }
+      ],
+      "engine_endpoint": {
+        "attached": true,
+        "base_url": "http://127.0.0.1:8000/v1",
+        "served_model_id": "google/gemma-4-E2B-it",
+        "advertised_models": [
+          "google/gemma-4-E2B-it"
+        ]
+      }
+    },
+    "truncated": false
+  },
+  "provenance": {
+    "github_login": "0xBakeer",
+    "github_user_id": null,
+    "started_at": "2026-08-24T16:05:16Z",
+    "finished_at": "2026-08-24T16:06:44Z",
+    "submitted_at": null,
+    "commit": null,
+    "pr": null,
+    "method": "atlas-bench",
+    "agent": null,
+    "notes": "NVIDIA DGX Spark (ASUS Ascent GX10, GB10) on Ubuntu 24.04 / DGX OS, driver 580.173.02, CUDA 13.0. Same server as the prefix-caching-on cell on this machine (vLLM 0.27.1, stock vllm/vllm-openai:v0.27.1-aarch64 with transformers pinned to 5.8.1, TRITON_ATTN forced by Gemma 4 heterogeneous head dimensions, thinking off by chat-template default), with one change: --no-enable-prefix-caching. This cell exists because the prefill and needle workloads reuse prompts, so with vLLM's default prefix caching on they measure cache hits rather than prefill: on this machine prefill-8k returned 1057ms cold and 68ms warm for the same prompt, and all six longctx-needle-32k retrievals were cache hits. These numbers are cold prefill. The DeepSeek-v4-Flash service normally resident on this machine was stopped for the duration of the run."
+  },
+  "verification": {
+    "level": "self-reported",
+    "reproduced_by": [],
+    "flags": []
+  }
+}
