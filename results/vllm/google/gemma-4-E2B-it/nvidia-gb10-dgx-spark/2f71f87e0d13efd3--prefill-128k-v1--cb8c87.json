@@ -1,0 +1,320 @@
+{
+  "schema_version": 1,
+  "run_id": "2f71f87e0d13efd3--prefill-128k-v1--cb8c87",
+  "config_id": "2f71f87e0d13efd3",
+  "cell_id": "261775590aef",
+  "workload_id": "prefill-128k-v1",
+  "kind": "prefill",
+  "engine": {
+    "id": "vllm",
+    "version": "0.27.1",
+    "commit": null,
+    "container": "vllm/vllm-openai:v0.27.1",
+    "install_method": "docker"
+  },
+  "model": {
+    "id": "google/gemma-4-E2B-it",
+    "quant_id": "bf16",
+    "hf_id": "google/gemma-4-E2B-it",
+    "revision": null,
+    "dtype": "auto",
+    "local_path": null
+  },
+  "hardware": {
+    "id": "nvidia-gb10-dgx-spark",
+    "count": 1,
+    "driver": "580.173.02",
+    "cuda": "13.0",
+    "host": {
+      "cpu": "Cortex-A725",
+      "cpu_cores": 20,
+      "ram_gb": 121.6,
+      "os": "Ubuntu 24.04.4 LTS",
+      "kernel": "6.17.0-1029-nvidia",
+      "arch": "aarch64"
+    },
+    "fingerprint": "sha256:52ea2bdd513719724db88c162b6cc2c9fb4e5b67e02dbe41b9de00687acefb91",
+    "captured": {
+      "nvidia_smi": {
+        "driver": "580.173.02",
+        "cuda": "13.0",
+        "products": [
+          "NVIDIA GB10"
+        ],
+        "fb_memory_total_mib": 0
+      },
+      "lscpu": {
+        "architecture": "aarch64",
+        "cpus": "20",
+        "vendor_id": "ARM",
+        "model_name": "Cortex-A725",
+        "cores_per_socket": "10",
+        "sockets": "1",
+        "cpu_max_mhz": "2808.0000"
+      }
+    }
+  },
+  "args": {
+    "max-model-len": 131072,
+    "max-num-seqs": 32,
+    "gpu-memory-utilization": 0.6,
+    "enable-auto-tool-choice": true,
+    "tool-call-parser": "gemma4"
+  },
+  "args_canonical": "@dtype=auto;@quant=bf16;enable-auto-tool-choice=true;gpu-memory-utilization=0.6;max-model-len=131072;max-num-seqs=32;tool-call-parser=gemma4",
+  "serve_command": null,
+  "workload": {
+    "id": "prefill-128k-v1",
+    "resolved_params": {
+      "concurrency": 1,
+      "num_requests": 10,
+      "input_tokens": 131072,
+      "output_tokens": 16,
+      "warmup_requests": 1,
+      "prompts_padded": false,
+      "needle_check": false,
+      "timeout_s": 900,
+      "seed": 42
+    }
+  },
+  "metrics": {
+    "requests_total": 10,
+    "requests_ok": 0,
+    "requests_failed": 10,
+    "success_rate": 0,
+    "duration_s": 3.725,
+    "input_tokens_total": 0,
+    "output_tokens_total": 0,
+    "output_tok_s": 0,
+    "total_tok_s": 0,
+    "req_s": 0,
+    "prefill_tok_s": null,
+    "ttft_ms": null,
+    "tpot_ms": null,
+    "itl_ms": null,
+    "e2e_ms": null,
+    "decode_tok_s_per_request": null,
+    "vram_peak_gb": null,
+    "ram_peak_gb": 79.861,
+    "kv_cache_tokens": null,
+    "power_avg_w": 16.35,
+    "power_peak_w": 26.23,
+    "energy_wh": 0.0131,
+    "gpu_util_avg_pct": 24,
+    "temp_max_c": 61,
+    "thermal_throttle_detected": false
+  },
+  "failures": [
+    {
+      "at": "request",
+      "count": 10,
+      "category": "context-overflow",
+      "message": "{\"error\":{\"message\":\"This model's maximum context length is 131072 tokens. However, you requested 16 output tokens and your prompt contains at least 131057 input tokens, for a total of at least 131073 tokens. Please reduce the length of the input prompt or the number of requested output tokens. (parameter=input_tokens, value=131057)\",\"type\":\"BadRequestError\",\"param\":\"input_tokens\",\"code\":400}}",
+      "sample_request_id": "prefill-r00000"
+    }
+  ],
+  "gotchas": [
+    {
+      "severity": "warn",
+      "text": "Requests exceeded the model's context window; the workload's input length does not fit this configuration."
+    },
+    {
+      "severity": "info",
+      "text": "vllm/vllm-openai:v0.27.1-aarch64 cannot serve Gemma 4 as shipped: transformers 5.15.0 raises AmbiguousGlobalPerLayerAttributeError on head_dim because Gemma 4 uses per-layer head dimensions. Pinning transformers==5.8.1 inside the container is what made this run possible."
+    },
+    {
+      "severity": "info",
+      "text": "Gemma 4 forces the TRITON_ATTN backend on this build. FA4 does not support its heterogeneous head dimensions (256 local, 512 global), so these are Triton attention numbers, not FlashAttention."
+    },
+    {
+      "severity": "info",
+      "text": "vLLM rejects every tool-calling request with a 400 unless --enable-auto-tool-choice and --tool-call-parser are set, so a server started without them scores 0 on eval-tools for a configuration reason rather than a model one. This cell sets --tool-call-parser gemma4, verified against a live tool call before the run."
+    }
+  ],
+  "derived": {
+    "cost_per_1m_output_tokens_usd": null,
+    "tokens_per_watt": null,
+    "tok_s_per_gb_bandwidth": null,
+    "bandwidth_efficiency": null,
+    "memory_headroom_gb": null
+  },
+  "raw": {
+    "harness": "atlas-bench",
+    "harness_version": "0.1.0",
+    "sha256": "c03334f28be3196495942647012bc7ccfbdf77798acb3abb5c7a67a0f0de1dc9",
+    "payload_path": null,
+    "payload": {
+      "requests": [
+        {
+          "id": "prefill-w00000",
+          "prompt_id": "hay-128k-d10",
+          "warmup": true,
+          "status": "error",
+          "ttft_ms": null,
+          "e2e_ms": 185.233,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "token_source": "usage",
+          "finish_reason": null,
+          "error_category": "context-overflow"
+        },
+        {
+          "id": "prefill-r00000",
+          "prompt_id": "hay-128k-d10",
+          "warmup": false,
+          "status": "error",
+          "ttft_ms": null,
+          "e2e_ms": 182.969,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "token_source": "usage",
+          "finish_reason": null,
+          "error_category": "context-overflow"
+        },
+        {
+          "id": "prefill-r00001",
+          "prompt_id": "hay-128k-multi",
+          "warmup": false,
+          "status": "error",
+          "ttft_ms": null,
+          "e2e_ms": 187.63,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "token_source": "usage",
+          "finish_reason": null,
+          "error_category": "context-overflow"
+        },
+        {
+          "id": "prefill-r00002",
+          "prompt_id": "hay-128k-d50",
+          "warmup": false,
+          "status": "error",
+          "ttft_ms": null,
+          "e2e_ms": 189.455,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "token_source": "usage",
+          "finish_reason": null,
+          "error_category": "context-overflow"
+        },
+        {
+          "id": "prefill-r00003",
+          "prompt_id": "hay-128k-d90",
+          "warmup": false,
+          "status": "error",
+          "ttft_ms": null,
+          "e2e_ms": 184.092,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "token_source": "usage",
+          "finish_reason": null,
+          "error_category": "context-overflow"
+        },
+        {
+          "id": "prefill-r00004",
+          "prompt_id": "hay-128k-d10",
+          "warmup": false,
+          "status": "error",
+          "ttft_ms": null,
+          "e2e_ms": 186.633,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "token_source": "usage",
+          "finish_reason": null,
+          "error_category": "context-overflow"
+        },
+        {
+          "id": "prefill-r00005",
+          "prompt_id": "hay-128k-multi",
+          "warmup": false,
+          "status": "error",
+          "ttft_ms": null,
+          "e2e_ms": 184.67,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "token_source": "usage",
+          "finish_reason": null,
+          "error_category": "context-overflow"
+        },
+        {
+          "id": "prefill-r00006",
+          "prompt_id": "hay-128k-d50",
+          "warmup": false,
+          "status": "error",
+          "ttft_ms": null,
+          "e2e_ms": 187.528,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "token_source": "usage",
+          "finish_reason": null,
+          "error_category": "context-overflow"
+        },
+        {
+          "id": "prefill-r00007",
+          "prompt_id": "hay-128k-d90",
+          "warmup": false,
+          "status": "error",
+          "ttft_ms": null,
+          "e2e_ms": 184.89,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "token_source": "usage",
+          "finish_reason": null,
+          "error_category": "context-overflow"
+        },
+        {
+          "id": "prefill-r00008",
+          "prompt_id": "hay-128k-d10",
+          "warmup": false,
+          "status": "error",
+          "ttft_ms": null,
+          "e2e_ms": 183.416,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "token_source": "usage",
+          "finish_reason": null,
+          "error_category": "context-overflow"
+        },
+        {
+          "id": "prefill-r00009",
+          "prompt_id": "hay-128k-multi",
+          "warmup": false,
+          "status": "error",
+          "ttft_ms": null,
+          "e2e_ms": 184.314,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "token_source": "usage",
+          "finish_reason": null,
+          "error_category": "context-overflow"
+        }
+      ],
+      "engine_endpoint": {
+        "attached": true,
+        "base_url": "http://127.0.0.1:8000/v1",
+        "served_model_id": "google/gemma-4-E2B-it",
+        "advertised_models": [
+          "google/gemma-4-E2B-it"
+        ]
+      }
+    },
+    "truncated": false
+  },
+  "provenance": {
+    "github_login": "0xBakeer",
+    "github_user_id": 17404809,
+    "started_at": "2026-08-24T14:53:16Z",
+    "finished_at": "2026-08-24T14:53:21Z",
+    "submitted_at": null,
+    "commit": null,
+    "pr": null,
+    "method": "atlas-bench",
+    "agent": null,
+    "notes": "NVIDIA DGX Spark (ASUS Ascent GX10, GB10) on Ubuntu 24.04 / DGX OS, driver 580.173.02, CUDA 13.0, headless apart from an idle desktop session. vLLM 0.27.1 from the stock vllm/vllm-openai:v0.27.1-aarch64 image, with transformers pinned to 5.8.1 at container start: the image ships transformers 5.15.0, whose per-layer heterogeneous-config guard makes vLLM 0.27.1 fail to read the Gemma 4 head_dim (AmbiguousGlobalPerLayerAttributeError) before the engine starts. vLLM reports that Gemma 4 has heterogeneous head dimensions (head_dim 256 local, 512 global) and forces the TRITON_ATTN backend because FA4 does not support them. GPU KV cache 9,493,769 tokens. Thinking is OFF here: the stock Gemma 4 chat template defaults enable_thinking=false, unlike the LM Studio cell on apple-m2-max-32gb where the LM Studio model.yaml turns it on, so output token counts and the reasoning-sensitive eval scores are not comparable between the two cells on that axis. The DeepSeek-v4-Flash service normally resident on this machine was stopped for the duration of the run."
+  },
+  "verification": {
+    "level": "self-reported",
+    "reproduced_by": [],
+    "flags": []
+  }
+}
