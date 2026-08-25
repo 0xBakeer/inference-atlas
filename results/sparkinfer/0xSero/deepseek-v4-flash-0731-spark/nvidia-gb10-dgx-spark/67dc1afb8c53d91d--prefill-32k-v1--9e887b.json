@@ -1,0 +1,356 @@
+{
+  "schema_version": 1,
+  "run_id": "67dc1afb8c53d91d--prefill-32k-v1--9e887b",
+  "config_id": "67dc1afb8c53d91d",
+  "cell_id": "6c58eafe9bc8",
+  "workload_id": "prefill-32k-v1",
+  "kind": "prefill",
+  "engine": {
+    "id": "sparkinfer",
+    "version": "960652b",
+    "commit": null,
+    "container": "ghcr.io/0xsero/deepseek-v4-flash-0731-spark-sparkinfer",
+    "install_method": "docker"
+  },
+  "model": {
+    "id": "0xSero/deepseek-v4-flash-0731-spark",
+    "quant_id": "exl3-3.0bpw",
+    "hf_id": "0xSero/deepseek-v4-flash-0731-spark",
+    "revision": "22f28d32b9b29b4352eaa380ff8c2c170b2847ab",
+    "dtype": "auto",
+    "local_path": null
+  },
+  "hardware": {
+    "id": "nvidia-gb10-dgx-spark",
+    "count": 1,
+    "driver": "580.173.02",
+    "cuda": "13.0",
+    "host": {
+      "cpu": "Cortex-A725",
+      "cpu_cores": 20,
+      "ram_gb": 121.6,
+      "os": "Ubuntu 24.04.4 LTS",
+      "kernel": "6.17.0-1029-nvidia",
+      "arch": "aarch64"
+    },
+    "fingerprint": "sha256:52ea2bdd513719724db88c162b6cc2c9fb4e5b67e02dbe41b9de00687acefb91",
+    "captured": {
+      "nvidia_smi": {
+        "driver": "580.173.02",
+        "cuda": "13.0",
+        "products": [
+          "NVIDIA GB10"
+        ],
+        "fb_memory_total_mib": 0.0
+      },
+      "lscpu": {
+        "architecture": "aarch64",
+        "cpus": "20",
+        "vendor_id": "ARM",
+        "model_name": "Cortex-A725",
+        "cores_per_socket": "10",
+        "sockets": "1",
+        "cpu_max_mhz": "2808.0000"
+      }
+    }
+  },
+  "args": {
+    "max-model-len": 262144,
+    "max-num-seqs": 4,
+    "gpu-memory-utilization": 0.95,
+    "ablate": true,
+    "long-prefill-token-threshold": 0
+  },
+  "args_canonical": "@dtype=auto;@quant=exl3-3.0bpw;ablate=true;gpu-memory-utilization=0.95;long-prefill-token-threshold=0;max-model-len=262144;max-num-seqs=4",
+  "serve_command": null,
+  "workload": {
+    "id": "prefill-32k-v1",
+    "resolved_params": {
+      "concurrency": 1,
+      "num_requests": 10,
+      "input_tokens": 32768,
+      "output_tokens": 16,
+      "warmup_requests": 1,
+      "prompts_padded": false,
+      "needle_check": false,
+      "timeout_s": 900.0,
+      "seed": 42
+    }
+  },
+  "metrics": {
+    "requests_total": 10,
+    "requests_ok": 10,
+    "requests_failed": 0,
+    "success_rate": 1.0,
+    "duration_s": 92.594,
+    "input_tokens_total": 318453,
+    "output_tokens_total": 160,
+    "output_tok_s": 1.728,
+    "total_tok_s": 3440.953,
+    "req_s": 0.108,
+    "prefill_tok_s": 3661.477,
+    "ttft_ms": {
+      "mean": 8697.393,
+      "p50": 2724.683,
+      "p90": 24816.894,
+      "p95": 24844.223,
+      "p99": 24866.085,
+      "min": 536.617,
+      "max": 24871.551
+    },
+    "tpot_ms": {
+      "mean": 37.466,
+      "p50": 38.926,
+      "p90": 39.968,
+      "p95": 42.68,
+      "p99": 44.849,
+      "min": 31.258,
+      "max": 45.392
+    },
+    "itl_ms": {
+      "mean": 98.501,
+      "p50": 99.676,
+      "p90": 104.457,
+      "p95": 105.712,
+      "p99": 149.652,
+      "min": 74.378,
+      "max": 204.183
+    },
+    "e2e_ms": {
+      "mean": 9259.383,
+      "p50": 3215.77,
+      "p90": 25402.092,
+      "p95": 25427.944,
+      "p99": 25448.626,
+      "min": 1118.438,
+      "max": 25453.797
+    },
+    "decode_tok_s_per_request": {
+      "mean": 27.051,
+      "p50": 25.69,
+      "p90": 31.778,
+      "p95": 31.885,
+      "p99": 31.97,
+      "min": 22.03,
+      "max": 31.992
+    },
+    "vram_peak_gb": null,
+    "ram_peak_gb": 120.577,
+    "kv_cache_tokens": null,
+    "power_avg_w": 79.48,
+    "power_peak_w": 86.82,
+    "energy_wh": 2.5898,
+    "gpu_util_avg_pct": 94.82,
+    "temp_max_c": 87.0,
+    "thermal_throttle_detected": true
+  },
+  "failures": [],
+  "gotchas": [
+    {
+      "severity": "warn",
+      "text": "The driver reported thermal/hardware slowdown during the run — the numbers are throttled."
+    },
+    {
+      "severity": "info",
+      "text": "Runtime refusal-direction ablation is ENABLED for this cell (ablate=true, lambda 3.5, layers 10-42). It changes what the model is willing to answer, so any eval score sensitive to refusals is a score for the ablated model and not for the stock checkpoint."
+    },
+    {
+      "severity": "info",
+      "text": "The served weights are a REAP-pruned derivative keeping 216 of 256 routed experts per layer, quantized to EXL3 trellis 3.0 bpw. Active parameters per token are unchanged at 20.4B, so the decode bandwidth bound matches the unpruned model; only the footprint falls."
+    },
+    {
+      "severity": "info",
+      "text": "SparkInfer publishes no version. This cell names the short git commit of the configuration repository, which is what actually determines the build, because compose.yml pins the container by digest."
+    },
+    {
+      "severity": "info",
+      "text": "SparkInfer streams its thought block as delta.reasoning rather than delta.reasoning_content. A harness that reads only the two common spellings records every streaming request on this stack as an empty answer; atlas-bench counts all three since 2026-08-25."
+    }
+  ],
+  "derived": {
+    "cost_per_1m_output_tokens_usd": null,
+    "tokens_per_watt": 0.0217,
+    "tok_s_per_gb_bandwidth": 0.099088,
+    "bandwidth_efficiency": 0.811985,
+    "memory_headroom_gb": null
+  },
+  "raw": {
+    "harness": "atlas-bench",
+    "harness_version": "0.1.0",
+    "sha256": "d9107d6ca3c2d66e1ccf6acdc1de8355ba17305445d8a5d6350efad4b3154d72",
+    "payload_path": null,
+    "payload": {
+      "requests": [
+        {
+          "id": "prefill-w00000",
+          "prompt_id": "hay-32k-d10",
+          "warmup": true,
+          "status": "ok",
+          "ttft_ms": 24706.125,
+          "e2e_ms": 25177.053,
+          "prompt_tokens": 31804,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00000",
+          "prompt_id": "hay-32k-d10",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 2715.503,
+          "e2e_ms": 3187.888,
+          "prompt_tokens": 31804,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00001",
+          "prompt_id": "hay-32k-multi",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 24871.551,
+          "e2e_ms": 25453.797,
+          "prompt_tokens": 31915,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00002",
+          "prompt_id": "hay-32k-d50",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 24745.56,
+          "e2e_ms": 25334.234,
+          "prompt_tokens": 31793,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00003",
+          "prompt_id": "hay-32k-d90",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 24810.821,
+          "e2e_ms": 25396.347,
+          "prompt_tokens": 31855,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00004",
+          "prompt_id": "hay-32k-d10",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 2733.864,
+          "e2e_ms": 3215.118,
+          "prompt_tokens": 31804,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00005",
+          "prompt_id": "hay-32k-multi",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 548.582,
+          "e2e_ms": 1139.069,
+          "prompt_tokens": 31915,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00006",
+          "prompt_id": "hay-32k-d50",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 2710.067,
+          "e2e_ms": 3297.831,
+          "prompt_tokens": 31793,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00007",
+          "prompt_id": "hay-32k-d90",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 536.617,
+          "e2e_ms": 1118.438,
+          "prompt_tokens": 31855,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00008",
+          "prompt_id": "hay-32k-d10",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 2747.554,
+          "e2e_ms": 3216.423,
+          "prompt_tokens": 31804,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00009",
+          "prompt_id": "hay-32k-multi",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 553.81,
+          "e2e_ms": 1234.687,
+          "prompt_tokens": 31915,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        }
+      ],
+      "engine_endpoint": {
+        "attached": true,
+        "base_url": "http://127.0.0.1:8888/v1",
+        "served_model_id": "deepseek-v4-flash-0731",
+        "advertised_models": [
+          "deepseek-v4-flash-0731"
+        ]
+      }
+    },
+    "truncated": false
+  },
+  "provenance": {
+    "github_login": "0xBakeer",
+    "github_user_id": null,
+    "started_at": "2026-08-25T03:47:10Z",
+    "finished_at": "2026-08-25T03:49:09Z",
+    "submitted_at": null,
+    "commit": null,
+    "pr": null,
+    "method": "atlas-bench",
+    "agent": null,
+    "notes": "NVIDIA DGX Spark (ASUS Ascent GX10, GB10) on Ubuntu 24.04 / DGX OS, driver 580.173.02, CUDA 13.0. SparkInfer stack at commit 960652b of https://github.com/0xBakeer/DeepSeek-v4-Flash-One-DGX-Spark (branch atlas-run-20260824), a fork of MiaAI-Lab/DeepSeek-v4-Flash-One-DGX-Spark; compose.yml pins the image ghcr.io/0xsero/deepseek-v4-flash-0731-spark-sparkinfer@sha256:2e077489a83a0360952828051fe7f7a32c1801e5ce8436d85f7267583d614ff4 by digest and bind-mounts twelve patch files over it, so image plus commit together define the stack. Model revision 22f28d32b9b29b4352eaa380ff8c2c170b2847ab. This configuration differs from the upstream repository defaults in five places, all carried explicitly in args: max-model-len 262144 (upstream 384000), max-num-seqs 4 (upstream 1), gpu-memory-utilization 0.95 (upstream 0.94), long-prefill-token-threshold 0 (upstream 1024), and ablate true (upstream false). Thinking is ON and effort is max, both engine defaults. eval-vision-v1 was not run: this model is text-only, so a vision score would be an absence of the modality rather than a measurement of it. The machine is otherwise idle."
+  },
+  "verification": {
+    "level": "self-reported",
+    "reproduced_by": [],
+    "flags": []
+  }
+}
