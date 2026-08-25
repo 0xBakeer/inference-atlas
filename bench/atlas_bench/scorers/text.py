@@ -107,12 +107,14 @@ def score_needle(output: str, row: Any) -> ScoreResult:
 _ABSTENTION_RE = re.compile(
     r"\b(?:i (?:do not|don't) know"
     r"|i(?:'m| am) not sure"
-    r"|(?:i )?cannot (?:determine|answer|say|verify)"
-    r"|(?:i )?can't (?:determine|answer|say|verify)"
-    r"|unable to (?:determine|answer|verify)"
+    r"|(?:i )?(?:cannot|can't|could not|couldn't) (?:determine|answer|say|verify|provide|name|give"
+    r"|recall|confirm|identify|specify|access)"
+    r"|(?:i )?(?:do not|don't) have (?:access|the specific|that information|enough information)"
+    r"|unable to (?:determine|answer|verify|provide|name|identify|access)"
     r"|no (?:reliable |sufficient )?information"
     r"|insufficient information"
     r"|not (?:enough|sufficient) information"
+    r"|no way to (?:determine|know|tell)"
     r"|unknown to me)\b",
     re.IGNORECASE,
 )
@@ -133,6 +135,16 @@ def score_abstention(output: str, row: Any) -> ScoreResult:
     text = extract_answer(output)
     haystack = collapse_ws(text).casefold()
     expected = "" if answer is None else str(answer)
+
+    if not text.strip():
+        # No answer at all is not a wrong answer, and calling it one would be the single
+        # most misleading thing this scorer could do: on a server with thinking enabled and
+        # a fixed output budget the thought block can consume the whole allowance and leave
+        # `content` empty, and 315 such items once turned a 3% score into a 97%
+        # "hallucination rate" that described the output cap rather than the model.
+        return ScoreResult(
+            False, scored=False, predicted="", expected=expected, detail="empty-output"
+        )
 
     if _entry_matches(expected, haystack) if expected else False:
         return ScoreResult(True, predicted=text[:200], expected=expected, detail="correct")

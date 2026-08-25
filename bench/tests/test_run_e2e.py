@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from types import SimpleNamespace
 from pathlib import Path
 
 import pytest
@@ -14,6 +15,7 @@ from atlas_bench.registry import Registry
 from atlas_bench.runner import plan_spec, run_spec
 from atlas_bench.spec import TaskSpec
 from atlas_bench.validate import validate_file
+from atlas_bench.scorers import get_scorer
 from tests.conftest import FakeOpenAIServer, drop_pre_migration_schema_errors
 
 LOGIN = "tester"
@@ -337,6 +339,98 @@ async def test_abstaining_beats_guessing_in_the_index(atlas_repo: Path) -> None:
     assert guessing["omniscience_index"] == pytest.approx(0.0)
     assert guessing["hallucination_rate"] == pytest.approx(0.5)
     assert guessing["omniscience_index"] < honest["omniscience_index"]
+
+
+@pytest.mark.parametrize(
+    ("reply", "expected_detail"),
+    [
+        ("The reference is ASC 606-10-25-15.", "correct"),
+        ("I do not know.", "abstained"),
+        ("I do not have access to that database, so I cannot provide the figure.", "abstained"),
+        ("I am an AI and cannot name the individual directly.", "abstained"),
+        ("It is ASC 999-99-99.", "incorrect"),
+    ],
+)
+def test_abstention_verdicts(reply: str, expected_detail: str) -> None:
+    """The three verdicts, including the phrasings a real model actually used.
+
+    "I cannot provide" and "I do not have access" are how gemma-4-E2B declined 52 times in
+    a 600-item run, and a regex that only knew "I don't know" scored every one of them as a
+    fabrication.
+    """
+    row = SimpleNamespace(answer="ASC 606-10-25-15", meta={})
+    result = get_scorer("abstention")(reply, row)
+    assert result.detail == expected_detail
+    assert result.scored is True
+
+
+def test_an_empty_answer_is_unscorable_not_wrong() -> None:
+    """Silence is not a wrong answer.
+
+    With thinking on and a fixed output budget the thought block can consume the whole
+    allowance and leave `content` empty. Counting those as fabrications once turned a 3%
+    score into a 97% "hallucination rate" that described the output cap, not the model.
+    """
+    row = SimpleNamespace(answer="ASC 606-10-25-15", meta={})
+    result = get_scorer("abstention")("   ", row)
+    assert result.scored is False
+    assert result.detail == "empty-output"
+    assert result.correct is False
+
+
+async def test_documents_are_prepended_to_the_question(atlas_repo: Path) -> None:
+    """The corpus goes in front of the question, and the question survives.
+
+    The missing-corpus path returns before it ever builds a prompt, so testing only that
+    branch left the path that actually runs unexercised — and it shipped broken, reaching
+    for a `prompt` attribute EvalRow does not have.
+    """
+    dataset_dir = atlas_repo / "datasets" / "eval-test-v1"
+    corpus_dir = dataset_dir / "documents" / "lcr" / "Legal" / "set_a"
+    corpus_dir.mkdir(parents=True)
+    (corpus_dir / "one.txt").write_text("Apple prevailed on the design claim.", encoding="utf-8")
+    (corpus_dir / "two.txt").write_text("Crocs lost on appeal.", encoding="utf-8")
+
+    items = [
+        {
+            "id": "lcr-1",
+            "category": "Legal",
+            "difficulty": "unrated",
+            "prompt": "Which party prevailed on the design claim?",
+            "answer": "Apple",
+            "scorer": "contains",
+            "meta": {
+                "documents": {
+                    "set_id": "set_a",
+                    "category": "Legal",
+                    "files": ["one.txt", "two.txt"],
+                }
+            },
+        }
+    ]
+    (dataset_dir / "items.jsonl").write_text(
+        "\n".join(json.dumps(i) for i in items) + "\n", encoding="utf-8"
+    )
+    meta = json.loads((dataset_dir / "dataset.json").read_text())
+    meta["count"] = len(items)
+    (dataset_dir / "dataset.json").write_text(json.dumps(meta), encoding="utf-8")
+
+    server = FakeOpenAIServer(responder=lambda m: "Apple")
+    output = await run(atlas_repo, server, make_spec("eval-test-v1"))
+    record = json.loads(output.paths[0].read_text())
+
+    sent = server.requests[-1]["messages"]
+    body = "\n".join(str(m.get("content") or "") for m in sent)
+    assert "Apple prevailed on the design claim." in body, "document one is missing"
+    assert "Crocs lost on appeal." in body, "document two is missing"
+    assert "Which party prevailed on the design claim?" in body, "the question was dropped"
+    assert body.index("Apple prevailed") < body.index("Which party prevailed"), (
+        "documents must precede the question"
+    )
+
+    scores = record["scores"]
+    assert scores["total"] == 1, "with its documents present the item is scorable"
+    assert scores["correct"] == 1
 
 
 async def test_documents_missing_leaves_the_item_unscored(atlas_repo: Path) -> None:
