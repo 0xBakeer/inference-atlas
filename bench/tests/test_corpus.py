@@ -257,9 +257,16 @@ def _reference_output(row: EvalRow) -> str:
     if scorer == "json":
         return f"Sure, here is the object:\n\n```json\n{json.dumps(answer)}\n```"
     if scorer == "contains":
+        # A scalar answer is a valid `contains` row — score_contains wraps it into a
+        # single required entry — and aa-lcr-v1 uses that shape throughout. Building an
+        # empty reference for it made every such row look broken.
+        if not isinstance(answer, dict):
+            entries = answer if isinstance(answer, (list, tuple)) else [answer]
+            body = " ".join(str(entry) for entry in entries if entry is not None)
+            return f"<think>let me translate</think>\n{body}"
         parts: list[str] = []
         for key in ("all", "any"):
-            for entry in (answer or {}).get(key, []) if isinstance(answer, dict) else []:
+            for entry in (answer or {}).get(key, []):
                 parts.append(entry[0] if isinstance(entry, list) else str(entry))
                 if key == "any":
                     break

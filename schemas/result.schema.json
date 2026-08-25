@@ -200,6 +200,10 @@
             },
             "avg_output_tokens": { "$ref": "#/$defs/nnum" },
             "avg_latency_ms": { "$ref": "#/$defs/nnum" },
+            "abstained": { "type": "integer", "minimum": 0, "description": "Items the model declined to answer rather than guessing. Only present for suites that measure abstention." },
+            "incorrect": { "type": "integer", "minimum": 0, "description": "Items answered wrongly, as opposed to declined. Only present alongside `abstained`." },
+            "hallucination_rate": { "$ref": "#/$defs/nnum", "description": "incorrect / (correct + incorrect): how often a committed answer was wrong. Only present alongside `abstained`." },
+            "omniscience_index": { "type": ["number", "null"], "minimum": -1, "maximum": 1, "description": "(correct - incorrect) / total, after AA-Omniscience: a wrong answer costs as much as a right one earns and declining costs nothing, so a model that guesses freely scores below one that admits ignorance." },
             "failures": { "type": "integer", "minimum": 0 },
             "items": {
               "type": "array",

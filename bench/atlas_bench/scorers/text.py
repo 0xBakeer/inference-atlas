@@ -7,7 +7,7 @@ from typing import Any
 
 from . import ScoreResult, collapse_ws, extract_answer, unwrap_boxed
 
-__all__ = ["needle_key", "score_contains", "score_exact", "score_needle"]
+__all__ = ["needle_key", "score_abstention", "score_contains", "score_exact", "score_needle"]
 
 _NEEDLE_STRIP_RE = re.compile(r"[ ,\-‐-―]")
 
@@ -99,3 +99,45 @@ def score_needle(output: str, row: Any) -> ScoreResult:
         if key and key in haystack:
             return ScoreResult(True, extracted[:500], candidate)
     return ScoreResult(False, extracted[:500], candidates[0] if candidates else "")
+
+
+#: Ways a model says it does not know. Deliberately narrow: a hedge inside an answer
+#: ("possibly ASC 606-10-25-15") is still an answer, and only a reply that commits to
+#: nothing counts as declining.
+_ABSTENTION_RE = re.compile(
+    r"\b(?:i (?:do not|don't) know"
+    r"|i(?:'m| am) not sure"
+    r"|(?:i )?cannot (?:determine|answer|say|verify)"
+    r"|(?:i )?can't (?:determine|answer|say|verify)"
+    r"|unable to (?:determine|answer|verify)"
+    r"|no (?:reliable |sufficient )?information"
+    r"|insufficient information"
+    r"|not (?:enough|sufficient) information"
+    r"|unknown to me)\b",
+    re.IGNORECASE,
+)
+
+
+def score_abstention(output: str, row: Any) -> ScoreResult:
+    """Three-way scoring: right, wrong, or declined to answer.
+
+    A knowledge test that only counts right answers rewards a model for guessing, because a
+    confident fabrication and an honest "I don't know" both score zero. This separates them,
+    so ``omniscience_index`` can charge for the fabrication. After AA-Omniscience.
+
+    Correctness itself is substring matching on the extracted answer, which suits the short
+    factual targets these datasets use ("ASC 606-10-25-15"); it is not the grader Artificial
+    Analysis run, so a score here is not comparable to a published AA figure.
+    """
+    answer = getattr(row, "answer", None)
+    text = extract_answer(output)
+    haystack = collapse_ws(text).casefold()
+    expected = "" if answer is None else str(answer)
+
+    if _entry_matches(expected, haystack) if expected else False:
+        return ScoreResult(True, predicted=text[:200], expected=expected, detail="correct")
+    # Only ask about declining once the answer is known to be absent: a reply that gives the
+    # right answer and then hedges has still answered.
+    if _ABSTENTION_RE.search(text or ""):
+        return ScoreResult(False, predicted=text[:200], expected=expected, detail="abstained")
+    return ScoreResult(False, predicted=text[:200], expected=expected, detail="incorrect")

@@ -291,6 +291,92 @@ async def test_eval_result_is_schema_valid(atlas_repo: Path) -> None:
 # ------------------------------------------------------------------- dry run
 
 
+async def test_abstaining_beats_guessing_in_the_index(atlas_repo: Path) -> None:
+    """Declining costs nothing; a wrong answer costs what a right one earns.
+
+    Accuracy alone cannot tell an honest "I don't know" from a fabrication — both score
+    zero — which pays a model to guess. omniscience_index has to separate them.
+    """
+    items = [
+        {"id": "k-1", "category": "Finance", "difficulty": "unrated",
+         "prompt": "Which reference?", "answer": "ASC 606-10-25-15", "scorer": "abstention"},
+        {"id": "k-2", "category": "Finance", "difficulty": "unrated",
+         "prompt": "Which reference?", "answer": "ASC 842-10-15-3", "scorer": "abstention"},
+    ]
+    dataset_dir = atlas_repo / "datasets" / "eval-test-v1"
+    (dataset_dir / "items.jsonl").write_text(
+        "\n".join(json.dumps(i) for i in items) + "\n", encoding="utf-8"
+    )
+    meta = json.loads((dataset_dir / "dataset.json").read_text())
+    meta["count"] = len(items)
+    (dataset_dir / "dataset.json").write_text(json.dumps(meta), encoding="utf-8")
+
+    # One right, one declined: nothing was fabricated, so the index is not dragged down.
+    replies = iter(["The reference is ASC 606-10-25-15.", "I do not know."])
+
+    def responder(messages):
+        return next(replies)
+
+    output = await run(atlas_repo, FakeOpenAIServer(responder=responder), make_spec("eval-test-v1"))
+    honest = json.loads(output.paths[0].read_text())["scores"]
+    assert honest["correct"] == 1
+    assert honest["abstained"] == 1
+    assert honest["incorrect"] == 0
+    assert honest["accuracy"] == pytest.approx(0.5)
+    assert honest["omniscience_index"] == pytest.approx(0.5)
+    assert honest["hallucination_rate"] == pytest.approx(0.0)
+
+    # One right, one fabricated: identical accuracy, and the index says the difference.
+    guesses = iter(["The reference is ASC 606-10-25-15.", "It is ASC 999-99-99."])
+    output = await run(
+        atlas_repo, FakeOpenAIServer(responder=lambda m: next(guesses)), make_spec("eval-test-v1")
+    )
+    guessing = json.loads(output.paths[0].read_text())["scores"]
+    assert guessing["accuracy"] == pytest.approx(honest["accuracy"]), "accuracy cannot tell them apart"
+    assert guessing["incorrect"] == 1
+    assert guessing["omniscience_index"] == pytest.approx(0.0)
+    assert guessing["hallucination_rate"] == pytest.approx(0.5)
+    assert guessing["omniscience_index"] < honest["omniscience_index"]
+
+
+async def test_documents_missing_leaves_the_item_unscored(atlas_repo: Path) -> None:
+    """A long-context question asked without its documents is not a smaller measurement.
+
+    aa-lcr items carry `meta.documents`; when the fetched corpus is absent the item must be
+    left unscored and counted as a failure, never answered on the bare question and folded
+    into accuracy as though the model had read 95k tokens it never saw.
+    """
+    items = [
+        {
+            "id": "lcr-1",
+            "category": "Legal",
+            "difficulty": "unrated",
+            "prompt": "Which party prevailed?",
+            "answer": "Apple",
+            "scorer": "contains",
+            "meta": {"documents": {"set_id": "missing_set", "category": "Legal", "files": ["a.txt"]}},
+        }
+    ]
+    dataset_dir = atlas_repo / "datasets" / "eval-test-v1"
+    (dataset_dir / "items.jsonl").write_text(
+        "\n".join(json.dumps(i) for i in items) + "\n", encoding="utf-8"
+    )
+    meta = json.loads((dataset_dir / "dataset.json").read_text())
+    meta["count"] = len(items)
+    (dataset_dir / "dataset.json").write_text(json.dumps(meta), encoding="utf-8")
+
+    server = FakeOpenAIServer(responder=lambda m: "Apple")
+    output = await run(atlas_repo, server, make_spec("eval-test-v1"))
+    record = json.loads(output.paths[0].read_text())
+
+    scores = record["scores"]
+    assert scores["total"] == 0, "an item with no documents must not reach accuracy"
+    assert scores["items"] == []
+    assert scores["failures"] >= 1
+    # The request itself completed — the item is unscorable, not failed on the wire.
+    assert record["metrics"]["requests_ok"] == 1
+
+
 async def test_agentic_replays_the_recording_not_the_model(atlas_repo: Path) -> None:
     """Every assistant turn is measured, and the history that grows is the recording's.
 
