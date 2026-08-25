@@ -1,6 +1,6 @@
 import { html, nothing, type TemplateResult } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
-import type { Hardware } from '@atlas/core';
+import { activeWeightGb, type Hardware } from '@atlas/core';
 import { addButton } from '../components/add-modal.js';
 import { icon } from '../components/icons.js';
 import '../components/mini-coverage.js';
@@ -185,16 +185,27 @@ export class AtlasHardwareView extends ViewElement {
       .flatMap((m) => m.quants.map((qq) => ({ m, qq })))
       .filter(({ qq }) => qq.size_gb != null && (!h.memory_gb || qq.size_gb! <= h.memory_gb))
       .map(({ m, qq }) => {
-        const weight =
-          m.model.moe && m.model.active_params_b
-            ? (qq.size_gb! * m.model.active_params_b) / m.model.params_b
-            : qq.size_gb!;
+        // Bytes actually read per decoded token, which is not the checkpoint size. Gating
+        // this on `moe` was wrong: gemma-4-E2B is dense and still reads 2.3B of its 5.1B
+        // per token, because Per-Layer Embeddings are looked up rather than multiplied —
+        // its own model record says decode bandwidth follows the effective figure. Using
+        // the full 10.25 GB put its ceiling at 26.6 tok/s and made a real 49.9 tok/s
+        // measurement read as 187% of a physical bound. `activeWeightGb` is the shared
+        // definition the validator already bounds results with; the two must not disagree.
+        const weight = activeWeightGb(m.model, qq) ?? qq.size_gb!;
         const ceiling = bw ? bw / weight : null;
         const measured = runs
           .filter((r) => r.model.id === m.model.id && r.model.quant_id === qq.id)
           .map((r) => r.metrics.decode_tok_s_per_request ?? null)
           .filter((v): v is number => v !== null);
-        return { m, qq, weight, ceiling, best: measured.length ? Math.max(...measured) : null };
+        return {
+          m,
+          qq,
+          weight,
+          checkpoint: qq.size_gb!,
+          ceiling,
+          best: measured.length ? Math.max(...measured) : null,
+        };
       })
       .sort(
         (a, b) =>
@@ -340,10 +351,15 @@ export class AtlasHardwareView extends ViewElement {
           <p class="small muted mb-3">
             ${
               bw
-                ? html`At ${bw} GB/s, a single stream cannot decode faster than the weights can be
-                  read once per token. The ceiling below is that bound (MoE uses active weights);
-                  speculative decoding is the only way past it. Measured numbers are the best
-                  single-stream decode on this device.`
+                ? html`At ${bw} GB/s, a single stream cannot decode faster than its weights can be
+                  read once per token. <b>Read / token</b> is what a token actually costs, which is
+                  below the checkpoint size whenever a model activates only part of itself — an MoE
+                  routing to a few experts, or a dense model like gemma-4-E2B whose Per-Layer
+                  Embeddings are looked up rather than multiplied. The ceiling is bandwidth over
+                  that figure. A measurement above it is marked: decoding more than one token per
+                  pass (speculative decoding) is the legitimate way past, and the other explanation
+                  is that the model's active-parameter figure is wrong. Measured numbers are the
+                  best single-stream decode recorded on this device.`
                 : 'No bandwidth figure is registered for this device, so no ceiling can be computed — a pull request with the vendor figure would fix that.'
             }
           </p>
@@ -354,7 +370,8 @@ export class AtlasHardwareView extends ViewElement {
                     <thead>
                       <tr>
                         <th>model / quant</th>
-                        <th class="num">weights</th>
+                        <th class="num">checkpoint</th>
+                        <th class="num">read / token</th>
                         <th class="num">ceiling</th>
                         <th class="num">measured</th>
                         <th class="num">of ceiling</th>
@@ -369,7 +386,14 @@ export class AtlasHardwareView extends ViewElement {
                                 >${x.m.model.id}</a
                               ><span class="muted">/${x.qq.id}</span>
                             </td>
-                            <td class="num">${fmtNum(x.weight, 1)} GB</td>
+                            <td class="num">${fmtNum(x.checkpoint, 1)} GB</td>
+                            <td class="num">
+                              ${fmtNum(x.weight, 1)} GB${
+                                x.weight < x.checkpoint * 0.995
+                                  ? html`<span class="muted small"> active</span>`
+                                  : nothing
+                              }
+                            </td>
                             <td class="num">
                               ${x.ceiling === null ? '–' : `${fmtTokS(x.ceiling)}`}
                             </td>
@@ -377,7 +401,16 @@ export class AtlasHardwareView extends ViewElement {
                               ${x.best === null ? html`<span class="faint">–</span>` : html`<b>${fmtTokS(x.best)}</b>`}
                             </td>
                             <td class="num">
-                              ${x.best !== null && x.ceiling ? `${Math.round((x.best / x.ceiling) * 100)}%` : ''}
+                              ${
+                                x.best !== null && x.ceiling
+                                  ? x.best > x.ceiling
+                                    ? html`<span
+                                        title="Above the single-pass bound. Either the engine decoded more than one token per pass — speculative decoding — or the active-weight figure for this model is wrong. Open the run to see which."
+                                        >${Math.round((x.best / x.ceiling) * 100)}%&nbsp;⚠</span
+                                      >`
+                                    : `${Math.round((x.best / x.ceiling) * 100)}%`
+                                  : ''
+                              }
                             </td>
                           </tr>`,
                       )}

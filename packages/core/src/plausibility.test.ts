@@ -81,6 +81,27 @@ function result(metrics: MetricBlock, over: Partial<ResultRecord> = {}): ResultR
 
 const codes = (issues: ReturnType<typeof checkPlausibility>) => issues.map((i) => i.code);
 
+describe('speculative decoding raises the bound', () => {
+  it('recognises the dspark and eagle spellings, not just "speculative"', () => {
+    // SparkInfer speaks dspark and several engines speak eagle. Matching only on the word
+    // "speculative" bounded them at one token per pass and turned a legitimate measurement
+    // into a physics violation.
+    expect(tokensPerForwardPass({ 'dspark-tokens': 5 })).toBe(6);
+    expect(tokensPerForwardPass({ 'speculative-eagle-topk': 1 })).toBeGreaterThan(1);
+    expect(tokensPerForwardPass({ 'speculative-num-draft-tokens': 4 })).toBe(5);
+  });
+
+  it('leaves a non-speculative configuration at one token per pass', () => {
+    expect(tokensPerForwardPass({ 'max-num-seqs': 4, 'gpu-memory-utilization': 0.95 })).toBe(1);
+  });
+
+  it('prefers a measured acceptance rate over the configured draft length', () => {
+    expect(tokensPerForwardPass({ 'dspark-tokens': 5 }, { accepted_tokens_per_step: 2.4 } as never)).toBe(
+      2.4,
+    );
+  });
+});
+
 describe('weights and the bandwidth ceiling', () => {
   it('uses active weights for MoE models', () => {
     expect(activeWeightGb(dense, fp8)).toBeCloseTo(28.5, 5);
