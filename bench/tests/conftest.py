@@ -333,6 +333,72 @@ EVAL_WORKLOAD = {
     "params": {"concurrency": 2, "output_tokens": 64},
     "eval": {"suite": "math", "scorer": "numeric"},
 }
+AGENTIC_WORKLOAD = {
+    "schema_version": 1,
+    "id": "agentic-test-v1",
+    "name": "Test agentic replay",
+    "kind": "agentic",
+    "dataset_id": "agentic-test-v1",
+    "params": {"concurrency": 1, "output_tokens": 32, "honour_tool_delays": False},
+}
+AGENTIC_DATASET = {
+    "schema_version": 1,
+    "id": "agentic-test-v1",
+    "name": "Test agentic session",
+    "kind": "conversations",
+    "licence": "Apache-2.0",
+    "files": ["turns.jsonl"],
+    "count": 5,
+}
+AGENTIC_TURNS = [
+    {
+        "conversation_id": "sess-1",
+        "turn": 1,
+        "role": "user",
+        "content": "Fix the failing test.",
+        "system": "You are a coding agent.",
+        "tools": [
+            {
+                "type": "function",
+                "function": {"name": "shell", "description": "Run a command",
+                             "parameters": {"type": "object", "properties": {"cmd": {"type": "string"}}}},
+            }
+        ],
+    },
+    {
+        "conversation_id": "sess-1",
+        "turn": 2,
+        "role": "assistant",
+        "tool_calls": [
+            {"id": "c1", "type": "function",
+             "function": {"name": "shell", "arguments": "{\"cmd\": \"pytest\"}"}}
+        ],
+        "reasoning_content": "Run the tests first.",
+    },
+    {
+        "conversation_id": "sess-1",
+        "turn": 3,
+        "role": "tool",
+        "tool_results": [{"tool_call_id": "c1", "name": "shell", "content": "1 failed"}],
+        "delay_seconds": 30.0,
+    },
+    {
+        "conversation_id": "sess-1",
+        "turn": 4,
+        "role": "assistant",
+        "tool_calls": [
+            {"id": "c2", "type": "function",
+             "function": {"name": "shell", "arguments": "{\"cmd\": \"patch\"}"}}
+        ],
+    },
+    {
+        "conversation_id": "sess-1",
+        "turn": 5,
+        "role": "tool",
+        "tool_results": [{"tool_call_id": "c2", "name": "shell", "content": "ok"}],
+        "delay_seconds": 0.0,
+    },
+]
 DATASET = {
     "schema_version": 1,
     "id": "prompts-test-v1",
@@ -425,7 +491,7 @@ def atlas_repo(tmp_path: Path) -> Path:
     _write(root / "engines" / "vllm" / "versions" / "0.27.1.json", ENGINE_VERSION)
     _write(root / "models" / "acme" / "test-model-1b" / "model.json", MODEL)
     _write(root / "models" / "acme" / "test-model-1b" / "quants" / "fp8.json", QUANT)
-    for workload in (WORKLOAD, SWEEP_WORKLOAD, EVAL_WORKLOAD):
+    for workload in (WORKLOAD, SWEEP_WORKLOAD, EVAL_WORKLOAD, AGENTIC_WORKLOAD):
         _write(root / "workloads" / f"{workload['id']}.json", workload)
     _write(root / "datasets" / "prompts-test-v1" / "dataset.json", DATASET)
     (root / "datasets" / "prompts-test-v1" / "prompts.jsonl").write_text(
@@ -443,6 +509,10 @@ def atlas_repo(tmp_path: Path) -> Path:
         )
         + "\n",
         encoding="utf-8",
+    )
+    _write(root / "datasets" / "agentic-test-v1" / "dataset.json", AGENTIC_DATASET)
+    (root / "datasets" / "agentic-test-v1" / "turns.jsonl").write_text(
+        "\n".join(json.dumps(turn) for turn in AGENTIC_TURNS) + "\n", encoding="utf-8"
     )
     _write(root / "datasets" / "eval-test-v1" / "dataset.json", EVAL_DATASET)
     (root / "datasets" / "eval-test-v1" / "items.jsonl").write_text(

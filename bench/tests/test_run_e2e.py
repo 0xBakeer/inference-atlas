@@ -291,6 +291,59 @@ async def test_eval_result_is_schema_valid(atlas_repo: Path) -> None:
 # ------------------------------------------------------------------- dry run
 
 
+async def test_agentic_replays_the_recording_not_the_model(atlas_repo: Path) -> None:
+    """Every assistant turn is measured, and the history that grows is the recording's.
+
+    The point of a replay is that the prompt is identical on every engine. If the model's
+    own answer were appended instead, two servers would diverge after the first turn and the
+    comparison would be between trajectories rather than between servers.
+    """
+    server = FakeOpenAIServer(responder=lambda m: "I would do something else entirely")
+    output = await run(atlas_repo, server, make_spec("agentic-test-v1"))
+    record = json.loads(output.paths[0].read_text())
+
+    assert record["kind"] == "agentic"
+    # Two assistant turns in the recording, so two measured requests.
+    assert record["metrics"]["requests_ok"] == 2
+    sessions = record["sweep"]
+    assert len(sessions) == 1
+    assert sessions[0]["conversation_id"] == "sess-1"
+    assert sessions[0]["turns_measured"] == 2
+
+    # The second request must carry the recorded tool call and its result, never the text
+    # the fake server just produced.
+    second = server.requests[-1]["messages"]
+    roles = [m["role"] for m in second]
+    assert roles == ["system", "user", "assistant", "tool"]
+    assert second[2]["tool_calls"][0]["function"]["name"] == "shell"
+    assert second[3]["content"] == "1 failed"
+    assert all("something else entirely" not in json.dumps(m) for m in second)
+
+    # Tools travel with every turn, not just the first.
+    assert server.requests[-1]["tools"][0]["function"]["name"] == "shell"
+
+
+async def test_agentic_context_grows_turn_over_turn(atlas_repo: Path) -> None:
+    """Each turn sends strictly more than the last — the property the workload exists for."""
+    server = FakeOpenAIServer(responder=lambda m: "ack")
+    await run(atlas_repo, server, make_spec("agentic-test-v1"))
+    lengths = [len(req["messages"]) for req in server.requests if "messages" in req]
+    assert lengths == sorted(lengths)
+    assert lengths[-1] > lengths[0]
+
+
+async def test_agentic_records_whether_tool_delays_were_honoured(atlas_repo: Path) -> None:
+    """Skipping the recorded pauses is an upper bound, and says so in the result."""
+    server = FakeOpenAIServer(responder=lambda m: "ack")
+    output = await run(atlas_repo, server, make_spec("agentic-test-v1"))
+    record = json.loads(output.paths[0].read_text())
+
+    # The fixture sets honour_tool_delays: False so the 30s pause is not slept through.
+    assert record["workload"]["resolved_params"]["honour_tool_delays"] is False
+    assert any("upper bound" in g["text"] for g in record["gotchas"])
+    assert record["sweep"][0]["tool_delay_s"] == 0.0
+
+
 async def test_dry_run_touches_nothing(atlas_repo: Path, fake_server: FakeOpenAIServer) -> None:
     """``--dry-run`` resolves the plan without sending a request or writing a file."""
     output = await run(atlas_repo, fake_server, make_spec(), dry_run=True)

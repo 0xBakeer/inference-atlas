@@ -1,7 +1,7 @@
 """Workload runners.
 
 ``RUNNERS`` maps a workload ``kind`` onto its coroutine. A workload file selects the kind
-(``serving`` | ``sweep`` | ``prefill`` | ``longctx`` | ``eval``); the packet only names the
+(``serving`` | ``sweep`` | ``prefill`` | ``longctx`` | ``eval`` | ``agentic``); the packet only names the
 workload id, and the resolved parameter snapshot is stored in the result so a run stays
 reproducible even if a workload file is later superseded.
 """
@@ -11,6 +11,7 @@ from __future__ import annotations
 from collections.abc import Awaitable, Callable
 from typing import Any
 
+from .agentic import run_agentic
 from .base import RunContext, WorkloadOutcome
 from .eval import run_eval
 from .longctx import run_longctx
@@ -26,6 +27,7 @@ RUNNERS: dict[str, Callable[[RunContext], Awaitable[WorkloadOutcome]]] = {
     "prefill": run_prefill,
     "longctx": run_longctx,
     "eval": run_eval,
+    "agentic": run_agentic,
 }
 
 
@@ -64,4 +66,5 @@ def _kind_from_id(workload_id: str) -> str:
         "prefill": "prefill",
         "longctx": "longctx",
         "eval": "eval",
+        "agentic": "agentic",
     }.get(prefix, "serving")

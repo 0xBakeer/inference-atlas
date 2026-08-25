@@ -196,6 +196,10 @@ def test_workload_params_the_runners_read(path: Path) -> None:
         "item_timeout_s",
         "input_tokens_list",
         "depths",
+        # agentic
+        "num_conversations",
+        "honour_tool_delays",
+        "max_turns_per_conversation",
     }
     record = json.loads(path.read_text(encoding="utf-8"))
     unknown = set(record["params"]) - known

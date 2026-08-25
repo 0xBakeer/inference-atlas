@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "id": "agentic-coding-replay-v1",
+  "name": "Agentic coding session replay v1",
+  "kind": "conversations",
+  "description": "20 recorded agentic coding sessions from SWE-bench-style tasks, 20 user turns, 1007 assistant turns and 987 tool turns over a single file-and-shell tool. Each session is replayed turn by turn: the recorded assistant and tool turns are appended to the history regardless of what the model answers, so the request sequence is identical on every engine and only serving is measured.",
+  "licence": "Apache-2.0",
+  "created": "2026-08-25",
+  "files": [
+    "turns.jsonl"
+  ],
+  "count": 2014,
+  "provenance": "Vendored unchanged from mlcommons/endpoints, examples/11_Edge_Agentic_Example/agentic_coding_2.5h.jsonl, the reference dataset of the MLPerf Inference v6.1 Edge Agentic benchmark (Apache-2.0). Retrieved 2026-08-25.",
+  "links": {
+    "upstream": "https://github.com/mlcommons/endpoints/tree/main/examples/11_Edge_Agentic_Example",
+    "announcement": "https://mlcommons.org/2026/07/mlperf-inference-v61-edge-agentic/",
+    "background": "https://mlcommons.org/2026/07/agentic-inference-for-mlperf-inference/"
+  },
+  "token_heuristic": "approx_tokens = ceil(len(json.dumps(turn)) / 4); real counts come from the server's usage block.",
+  "counts": {
+    "conversations": 20,
+    "turns_total": 2014,
+    "by_role": {
+      "user": 20,
+      "assistant": 1007,
+      "tool": 987
+    },
+    "turns_per_conversation": {
+      "min": 54,
+      "median": 104,
+      "max": 122
+    }
+  },
+  "notes": [
+    "A record is one turn: role user|assistant|tool, keyed by conversation_id and ordered by turn.",
+    "The first turn of a session carries the system prompt and the tool schemas; later turns inherit them.",
+    "Assistant turns carry reasoning_content and tool_calls as recorded. They are the reference trajectory, NOT something to score the model against \u2014 replaying them is what keeps the token sequence identical across engines.",
+    "Tool turns carry tool_results and delay_seconds. The delay is how long the real tool took; honouring it changes what the KV cache still holds by the next turn, so whether it was honoured is recorded in the workload's resolved params.",
+    "Context grows monotonically within a session, which is the point: prefill cost and cache reuse both climb turn over turn in a way no single-shot workload reproduces."
+  ]
+}
