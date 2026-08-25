@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "name": "Long-context reasoning over real documents",
+  "id": "eval-longctx-reasoning-v1",
+  "kind": "eval",
+  "dataset_id": "aa-lcr-v1",
+  "description": "100 questions over 30 sets of real documents — company filings, government consultations, legal judgments, academic papers — at 72k to 115k input tokens. Answering means combining facts spread across several documents. Distinct from eval-longctx-v1 and the longctx-needle workloads, which plant one sentence in synthetic filler and ask the model to find it.",
+  "params": {
+    "concurrency": 1,
+    "num_requests": 100,
+    "output_tokens": 1024,
+    "temperature": 0,
+    "seed": 42,
+    "timeout_s": 1800,
+    "repeat": 1,
+    "warmup_requests": 0,
+    "reasoning": "default"
+  },
+  "eval": {
+    "suite": "longctx-reasoning",
+    "scorer": "contains",
+    "max_output_tokens": 1024
+  },
+  "metrics_required": ["accuracy", "success_rate", "avg_latency_ms"],
+  "notes": "Needs the document corpus: run `python3 datasets/aa-lcr-v1/prepare.py` first. It is fetched rather than vendored because it is third-party material this repository does not redistribute. Without it every item is left UNSCORED rather than answered without its documents — a long-context question asked with no documents attached is not a smaller measurement, it is an easier and different one. Concurrency is 1 because a single item is already 72k-115k tokens of prefill. A configuration whose context window is smaller than the item will fail it outright; that is a true statement about the configuration, not a defect in the run. Scoring is casefolded substring matching, NOT the grader Artificial Analysis run, so a number from here is not comparable to a published AA figure and must not be quoted as one. Source: AA-LCR, https://huggingface.co/datasets/ArtificialAnalysis/AA-LCR (Apache-2.0), part of the Artificial Analysis Intelligence Index v4.1.1."
+}

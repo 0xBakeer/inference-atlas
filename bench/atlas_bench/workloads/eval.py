@@ -81,17 +81,68 @@ def build_messages(row: EvalRow, dataset_dir: Path) -> list[dict[str, Any]]:
     return messages
 
 
+def _document_prompt(row: EvalRow, dataset_dir: Path) -> tuple[str | None, list[str]]:
+    """Concatenate a row's source documents ahead of its question.
+
+    Returns ``(None, warnings)`` when the corpus is absent. That is deliberate: a
+    long-context question asked without its documents is not a smaller measurement, it is a
+    different and much easier one, and answering it would put a meaningless score in the
+    table. The item is left unscored and the reason is reported.
+    """
+    spec = row.meta.get("documents") or {}
+    files = list(spec.get("files") or ())
+    category, set_id = spec.get("category"), spec.get("set_id")
+    if not (files and category and set_id):
+        return None, [f"documents-underspecified:{row.id}"]
+
+    base = dataset_dir / "documents" / "lcr" / str(category) / str(set_id)
+    if not base.is_dir():
+        return None, [f"documents-missing:{set_id} (run datasets/aa-lcr-v1/prepare.py)"]
+
+    parts, missing = [], []
+    for name in files:
+        path = base / name
+        if not path.is_file():
+            missing.append(name)
+            continue
+        parts.append(f"=== {name} ===\n{path.read_text(encoding='utf-8', errors='replace')}")
+    if missing:
+        return None, [f"documents-incomplete:{set_id} missing {', '.join(missing)}"]
+    return "\n\n".join(parts), []
+
+
 def _row_messages(row: EvalRow, ctx: RunContext, dataset_dir: Path) -> list[dict[str, Any]]:
     """Everything that has to happen to a row before it goes on the wire."""
     if row.meta.get("haystack"):
         messages, warnings = render_haystack_prompt(row, ctx.registry)
         ctx.warnings.extend(warnings)
         row = EvalRow(**{**row.__dict__, "messages": messages})
+    elif row.meta.get("documents"):
+        corpus, warnings = _document_prompt(row, dataset_dir)
+        ctx.warnings.extend(warnings)
+        if corpus is None:
+            # Marked, not silently downgraded: _score leaves it unscored so it lands in
+            # failures rather than in accuracy.
+            row.meta["documents_unavailable"] = True
+        else:
+            prompt = (
+                f"{corpus}\n\n"
+                "Answer the following question using only the documents above.\n\n"
+                f"{row.prompt or ''}"
+            )
+            row = EvalRow(**{**row.__dict__, "prompt": prompt, "messages": None})
     return build_messages(row, dataset_dir)
 
 
 def _score(row: EvalRow, result: RequestResult, default_scorer: str) -> ScoreResult:
     """Score one completed item with the row's own scorer."""
+    if row.meta.get("documents_unavailable"):
+        return ScoreResult(
+            False,
+            scored=False,
+            detail="documents-unavailable",
+            expected=str(getattr(row, "answer", "") or "")[:200],
+        )
     if row.meta.get("tools"):
         row.tool_calls = result.tool_calls
         return score_tool_call(result.text, row)
@@ -198,6 +249,7 @@ async def run_eval(ctx: RunContext) -> WorkloadOutcome:
     failures_by_category: dict[str, list[RequestResult]] = defaultdict(list)
     scored_total = 0
     correct_total = 0
+    verdicts: dict[str, int] = defaultdict(int)
 
     for row, result, score in outcomes:
         latency_ms = round((result.e2e_s or 0.0) * 1000, 3)
@@ -207,12 +259,19 @@ async def run_eval(ctx: RunContext) -> WorkloadOutcome:
         if score.scored:
             scored_total += 1
             correct_total += int(score.correct)
+            if score.detail in ("correct", "incorrect", "abstained"):
+                verdicts[score.detail] += 1
             by_category[row.category]["total"] += 1
             by_category[row.category]["correct"] += int(score.correct)
             by_difficulty[row.difficulty]["total"] += 1
             by_difficulty[row.difficulty]["correct"] += int(score.correct)
         if not result.ok:
             failures_by_category[result.error_category or "other"].append(result)
+        elif not score.scored:
+            # The request completed and the item still could not be judged. The comment
+            # below promises these are counted in `failures`; without this branch they were
+            # counted nowhere and simply disappeared from the report.
+            failures_by_category[score.detail or "unscored"].append(result)
         elif not score.correct and is_refusal(result.text):
             failures_by_category["refusal"].append(result)
         if score.scored:
@@ -251,6 +310,20 @@ async def run_eval(ctx: RunContext) -> WorkloadOutcome:
         "failures": sum(len(v) for v in failures_by_category.values()),
         "items": items,
     }
+
+    # A suite that lets the model decline reports what it declined, because a knowledge
+    # score that only counts right answers pays a model to guess: a fabrication and an
+    # honest "I don't know" both land on zero. The index charges for the fabrication.
+    if verdicts:
+        abstained = verdicts.get("abstained", 0)
+        incorrect = verdicts.get("incorrect", 0)
+        committed = correct_total + incorrect
+        scores["abstained"] = abstained
+        scores["incorrect"] = incorrect
+        scores["hallucination_rate"] = round(incorrect / committed, 6) if committed else None
+        scores["omniscience_index"] = (
+            round((correct_total - incorrect) / scored_total, 6) if scored_total else None
+        )
 
     failures = [
         {

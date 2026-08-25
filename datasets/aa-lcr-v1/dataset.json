@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "id": "aa-lcr-v1",
+  "name": "AA-LCR long-context reasoning",
+  "kind": "eval",
+  "licence": "Apache-2.0",
+  "created": "2026-08-25",
+  "files": [
+    "items.jsonl"
+  ],
+  "count": 100,
+  "description": "100 reasoning questions over 30 sets of real documents \u2014 company filings, government consultations, legal judgments, academic papers \u2014 at 71,691 to 114,563 input tokens (median 95,288). Answering requires combining facts spread across several documents, not locating one planted sentence, which is what separates it from longctx-needle-* and eval-longctx-v1.",
+  "provenance": "Questions and answers converted from AA-LCR_Dataset.csv in the Hugging Face dataset ArtificialAnalysis/AA-LCR (Apache-2.0), sha256 2f90d9c30cfb4dd8df2c0f46547c384065e4c76917bd347a9a97bf797235c1ea, retrieved 2026-08-25; only field names and the id format changed, with one documented exception: 19 answers that ended in a full stop had it removed, because the harness strips a single trailing '.' from the model's output during answer extraction and the expected string has to match after that. The untouched original is kept on each affected item as meta.answer_verbatim. The document corpus is NOT vendored here: it is third-party material (company reports, EU consultations, court judgments) that Artificial Analysis extracted, and this repository does not redistribute it. Run `prepare.py` to fetch and verify it.",
+  "links": {
+    "upstream": "https://huggingface.co/datasets/ArtificialAnalysis/AA-LCR",
+    "index": "https://artificialanalysis.ai/evaluations/artificial-analysis-intelligence-index",
+    "methodology": "https://artificialanalysis.ai/methodology/intelligence-benchmarking"
+  },
+  "default_scorer": "contains",
+  "token_heuristic": "meta.input_tokens is Artificial Analysis's own count for the assembled document set plus question.",
+  "categories": [
+    "Academia",
+    "Company_Documents",
+    "Government_Consultations",
+    "Industry_Reports",
+    "Legal",
+    "Marketing",
+    "Survey_Reports"
+  ],
+  "difficulties": [
+    "unrated"
+  ],
+  "counts": {
+    "by_category": {
+      "Academia": 5,
+      "Company_Documents": 63,
+      "Government_Consultations": 11,
+      "Legal": 6,
+      "Industry_Reports": 8,
+      "Marketing": 6,
+      "Survey_Reports": 1
+    },
+    "by_scorer": {
+      "contains": 100
+    },
+    "document_sets": 30,
+    "input_tokens": {
+      "min": 71691,
+      "median": 95288,
+      "max": 114563
+    }
+  },
+  "corpus": {
+    "url": "https://huggingface.co/datasets/ArtificialAnalysis/AA-LCR/resolve/main/extracted_text/AA-LCR_extracted-text.zip",
+    "sha256": "5e839249826f6b9bd5324f0d139089c9dc481ccb3f212a6dfad00c51045d9d8a",
+    "bytes": 4023468,
+    "extract_to": "documents/",
+    "prepare": "prepare.py"
+  },
+  "notes": [
+    "The corpus is fetched, not vendored. Without it every item is unscorable and the workload says so rather than silently measuring a question with no documents attached.",
+    "Scoring is casefolded substring matching on short answers ('Prompt Hacking', 'Medium-sized business'), NOT the grader Artificial Analysis run. A score from this repository is not comparable to a published AA figure and must not be quoted as one.",
+    "At a median of 95k input tokens this does not fit every configuration in the atlas. A config whose context window is smaller will fail these items outright, which is a true statement about that config rather than a defect in the run.",
+    "This is not a duplicate of eval-longctx-v1 or the longctx-needle workloads: those hide one sentence in synthetic filler and ask the model to find it. Here the documents are real and the answer has to be assembled from several of them.",
+    "19 answers were stripped of a trailing full stop to match the harness's extraction rule; meta.answer_verbatim holds the original in each case."
+  ]
+}

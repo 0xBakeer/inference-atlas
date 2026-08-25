@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "id": "aa-omniscience-v1",
+  "name": "AA-Omniscience (public subset)",
+  "kind": "eval",
+  "licence": "Apache-2.0",
+  "created": "2026-08-25",
+  "files": [
+    "items.jsonl"
+  ],
+  "count": 600,
+  "description": "600 short factual questions across 6 domains, scored three ways \u2014 right, wrong, or declined \u2014 so that a confident fabrication is separable from an honest admission of ignorance. This is not a second knowledge test: eval-knowledge-v1 measures what a model knows, this measures what it does when it does not know.",
+  "provenance": "Converted from AA-Omniscience_dataset_public.csv in the Hugging Face dataset ArtificialAnalysis/AA-Omniscience-Public (Apache-2.0), sha256 1e04603dafa3bd0d16d8151f07a5eb74c43d90c3a85d2fca120da2359174d02f, retrieved 2026-08-25. Only the field names and the id format changed; question and answer text are verbatim. This is the 600-question public subset; the full evaluation Artificial Analysis run is 6,000 questions.",
+  "links": {
+    "upstream": "https://huggingface.co/datasets/ArtificialAnalysis/AA-Omniscience-Public",
+    "index": "https://artificialanalysis.ai/evaluations/artificial-analysis-intelligence-index",
+    "methodology": "https://artificialanalysis.ai/methodology/intelligence-benchmarking"
+  },
+  "default_scorer": "abstention",
+  "token_heuristic": "approx_tokens = ceil(len(prompt) / 4)",
+  "categories": [
+    "Finance",
+    "Health",
+    "Humanities and Social Sciences",
+    "Law",
+    "Science Engineering and Mathematics",
+    "Software Engineering"
+  ],
+  "difficulties": [
+    "unrated"
+  ],
+  "counts": {
+    "by_category": {
+      "Finance": 100,
+      "Health": 100,
+      "Humanities and Social Sciences": 100,
+      "Law": 100,
+      "Science Engineering and Mathematics": 100,
+      "Software Engineering": 100
+    },
+    "by_scorer": {
+      "abstention": 600
+    }
+  },
+  "notes": [
+    "Scoring here is substring matching plus a narrow abstention regex, NOT the grader Artificial Analysis run. A score from this repository is therefore not comparable to a published AA figure, and should never be quoted as one.",
+    "omniscience_index = (correct - incorrect) / total: a wrong answer costs exactly what a right one earns and declining costs nothing, so a model that guesses freely scores below one that admits ignorance.",
+    "hallucination_rate = incorrect / (correct + incorrect): of the answers a model actually committed to, how many were wrong.",
+    "Answers are short and factual (an accounting reference, a date, a name), which is what makes substring matching defensible; it would not be on free-form answers.",
+    "The abstention regex only fires when the reply commits to nothing. A reply that gives the right answer and then hedges has still answered."
+  ]
+}

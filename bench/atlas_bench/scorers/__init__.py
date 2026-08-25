@@ -161,13 +161,14 @@ from .json_match import score_json  # noqa: E402
 from .judge import score_judge  # noqa: E402
 from .mc import score_mc  # noqa: E402
 from .numeric import score_numeric  # noqa: E402
-from .text import score_contains, score_exact, score_needle  # noqa: E402
+from .text import score_abstention, score_contains, score_exact, score_needle  # noqa: E402
 from .tools import score_tool_call  # noqa: E402
 from .vision import score_vision  # noqa: E402
 
 SCORERS.update(
     {
         "exact": score_exact,
+        "abstention": score_abstention,
         "contains": score_contains,
         "needle": score_needle,
         "numeric": score_numeric,
