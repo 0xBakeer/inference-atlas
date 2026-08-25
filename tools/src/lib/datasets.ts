@@ -27,6 +27,11 @@ const REQUIRED: Record<Dataset['kind'], { all: string[]; oneOf: string[][] }> = 
       ['prompt', 'messages'],
     ],
   },
+  // A conversations row is one turn of a recorded session, not a standalone item: it is
+  // keyed by the session it belongs to and by its position in it, and what else it carries
+  // depends on the role — a tool turn has results and no content, an assistant turn has
+  // tool_calls and often no content either.
+  conversations: { all: ['conversation_id', 'turn', 'role'], oneOf: [] },
 };
 
 export interface DatasetStats {

@@ -27,6 +27,8 @@ from typing import Any
 from .registry import Registry
 
 __all__ = [
+    "AgenticTurn",
+    "load_agentic_conversations",
     "WORDS_PER_TOKEN",
     "EvalRow",
     "PromptRow",
@@ -154,6 +156,58 @@ class EvalRow:
         """Nominal prompt length of a long-context row, when it declares one."""
         value = self.meta.get("target_tokens") or self.meta.get("approx_tokens")
         return int(value) if isinstance(value, (int, float)) else None
+
+
+@dataclass(slots=True)
+class AgenticTurn:
+    """One recorded turn of an agentic session.
+
+    ``role`` is ``user``, ``assistant`` or ``tool``. A user turn carries the text plus the
+    session's ``system`` prompt and ``tools``; an assistant turn carries the recorded
+    ``tool_calls`` and ``reasoning_content``; a tool turn carries ``tool_results`` and the
+    ``delay_seconds`` the real tool took.
+    """
+
+    conversation_id: str
+    turn: int
+    role: str
+    content: str | None = None
+    system: str | None = None
+    tools: list[dict[str, Any]] | None = None
+    tool_calls: list[dict[str, Any]] | None = None
+    tool_results: list[dict[str, Any]] | None = None
+    reasoning_content: str | None = None
+    delay_seconds: float = 0.0
+
+
+def load_agentic_conversations(
+    registry: Registry, dataset_id: str
+) -> list[list[AgenticTurn]]:
+    """Recorded sessions, each a turn-ordered list, ordered by conversation id.
+
+    Ordering is deterministic on purpose: two runs of the same workload must send the same
+    sessions in the same order, or the comparison is between two different measurements.
+    """
+    grouped: dict[str, list[AgenticTurn]] = {}
+    for row in load_rows(registry, dataset_id):
+        cid = str(row.get("conversation_id") or "")
+        if not cid:
+            continue
+        grouped.setdefault(cid, []).append(
+            AgenticTurn(
+                conversation_id=cid,
+                turn=int(row.get("turn") or 0),
+                role=str(row.get("role") or ""),
+                content=row.get("content"),
+                system=row.get("system"),
+                tools=row.get("tools"),
+                tool_calls=row.get("tool_calls"),
+                tool_results=row.get("tool_results"),
+                reasoning_content=row.get("reasoning_content"),
+                delay_seconds=float(row.get("delay_seconds") or 0.0),
+            )
+        )
+    return [sorted(turns, key=lambda t: t.turn) for _, turns in sorted(grouped.items())]
 
 
 def _jsonl_files(registry: Registry, dataset_id: str) -> list[Path]:

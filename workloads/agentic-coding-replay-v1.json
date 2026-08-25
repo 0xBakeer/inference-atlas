@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "id": "agentic-coding-replay-v1",
+  "name": "Agentic coding session replay",
+  "kind": "agentic",
+  "dataset_id": "agentic-coding-replay-v1",
+  "description": "Replays 20 recorded agentic coding sessions turn by turn against the server, one session at a time. Each session runs 54-122 turns of assistant tool calls and tool results, so the prompt grows monotonically and every turn pays for a longer prefill than the last. Recorded turns are appended to the history rather than the model's own output, which keeps the token sequence identical across engines and makes this a measurement of serving, not of the model.",
+  "params": {
+    "concurrency": 1,
+    "num_conversations": 20,
+    "output_tokens": 2048,
+    "temperature": 0,
+    "seed": 42,
+    "timeout_s": 600,
+    "honour_tool_delays": true,
+    "max_turns_per_conversation": 0,
+    "repeat": 1,
+    "warmup_requests": 0
+  },
+  "metrics_required": [
+    "output_tok_s",
+    "ttft_ms",
+    "prefill_tok_s",
+    "requests_ok"
+  ],
+  "notes": "Single session at a time by default: the MLPerf edge profile targets one interactive user on one accelerator, and running sessions concurrently measures a different thing. Tool delays are honoured by default. A KV cache that survives a 200 ms gap may not survive a 30 s one, and that is exactly what an agent subjects a server to. TTFT here is per turn, not per session, and it climbs with the history. Reading only the p50 hides the shape; the per-session prompt_tokens_first / prompt_tokens_last in the sweep block is what shows the growth. Nothing in this workload scores the model. Capability under the same shape needs ground truth attached, which this recording does not carry. Source: MLPerf Inference v6.1 Edge Agentic reference dataset, https://github.com/mlcommons/endpoints/tree/main/examples/11_Edge_Agentic_Example (Apache-2.0)."
+}
