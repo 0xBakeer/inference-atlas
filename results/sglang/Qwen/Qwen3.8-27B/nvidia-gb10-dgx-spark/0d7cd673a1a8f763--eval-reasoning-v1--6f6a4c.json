@@ -1,0 +1,1440 @@
+{
+  "schema_version": 1,
+  "run_id": "0d7cd673a1a8f763--eval-reasoning-v1--6f6a4c",
+  "config_id": "0d7cd673a1a8f763",
+  "cell_id": "9b8e9d20cb36",
+  "workload_id": "eval-reasoning-v1",
+  "kind": "eval",
+  "engine": {
+    "id": "sglang",
+    "version": "0.0.0.dev0+qwen38.27b.g561c8f3",
+    "commit": null,
+    "container": "lmsysorg/sglang:v0.0.0.dev0+qwen38.27b.g561c8f3-cu126",
+    "install_method": "docker"
+  },
+  "model": {
+    "id": "Qwen/Qwen3.8-27B",
+    "quant_id": "nvfp4-bf16-lmhead",
+    "hf_id": "Qwen/Qwen3.8-27B",
+    "revision": null,
+    "dtype": "auto",
+    "local_path": null
+  },
+  "hardware": {
+    "id": "nvidia-gb10-dgx-spark",
+    "count": 1,
+    "driver": "580.173.02",
+    "cuda": "13.0",
+    "host": {
+      "cpu": "Cortex-A725",
+      "cpu_cores": 20,
+      "ram_gb": 121.6,
+      "os": "Ubuntu 24.04.4 LTS",
+      "kernel": "6.17.0-1029-nvidia",
+      "arch": "aarch64"
+    },
+    "fingerprint": "sha256:52ea2bdd513719724db88c162b6cc2c9fb4e5b67e02dbe41b9de00687acefb91",
+    "captured": {
+      "nvidia_smi": {
+        "driver": "580.173.02",
+        "cuda": "13.0",
+        "products": [
+          "NVIDIA GB10"
+        ],
+        "fb_memory_total_mib": 0.0
+      },
+      "lscpu": {
+        "architecture": "aarch64",
+        "cpus": "20",
+        "vendor_id": "ARM",
+        "model_name": "Cortex-A725",
+        "cores_per_socket": "10",
+        "sockets": "1",
+        "cpu_max_mhz": "2808.0000"
+      }
+    }
+  },
+  "args": {
+    "mem-fraction-static": 0.95,
+    "attention-backend": "flashinfer",
+    "chunked-prefill-size": 8192,
+    "disable-prefill-cuda-graph": true,
+    "kv-cache-dtype": "fp8_e4m3",
+    "mamba-ssm-dtype": "bfloat16",
+    "mamba-full-memory-ratio": 4.21,
+    "mamba-radix-cache-strategy": "extra_buffer_lazy",
+    "max-mamba-cache-size": 64,
+    "max-running-requests": 16,
+    "context-length": 262144,
+    "speculative-algorithm": "EAGLE",
+    "speculative-num-steps": 3,
+    "speculative-eagle-topk": 1,
+    "speculative-num-draft-tokens": 4,
+    "reasoning-parser": "qwen3",
+    "tool-call-parser": "qwen3_coder",
+    "trust-remote-code": true
+  },
+  "args_canonical": "@dtype=auto;@quant=nvfp4-bf16-lmhead;attention-backend=flashinfer;chunked-prefill-size=8192;context-length=262144;disable-prefill-cuda-graph=true;kv-cache-dtype=fp8_e4m3;mamba-full-memory-ratio=4.21;mamba-radix-cache-strategy=extra_buffer_lazy;mamba-ssm-dtype=bfloat16;max-mamba-cache-size=64;max-running-requests=16;mem-fraction-static=0.95;reasoning-parser=qwen3;speculative-algorithm=EAGLE;speculative-eagle-topk=1;speculative-num-draft-tokens=4;speculative-num-steps=3;tool-call-parser=qwen3_coder;trust-remote-code=true",
+  "serve_command": null,
+  "workload": {
+    "id": "eval-reasoning-v1",
+    "resolved_params": {
+      "dataset_id": "eval-reasoning-v1",
+      "suite": "reasoning",
+      "scorer": "exact",
+      "items": 120,
+      "concurrency": 4,
+      "max_output_tokens": 2048,
+      "timeout_s": 300.0,
+      "temperature": 0,
+      "reasoning": "default",
+      "dataset_categories": null,
+      "dataset_target_tokens": null,
+      "pass_threshold": null,
+      "seed": 42
+    }
+  },
+  "metrics": {
+    "requests_total": 120,
+    "requests_ok": 120,
+    "requests_failed": 0,
+    "success_rate": 1.0,
+    "duration_s": 474.747,
+    "input_tokens_total": 15394,
+    "output_tokens_total": 36803,
+    "e2e_ms": {
+      "mean": 15720.245,
+      "p50": 9328.746,
+      "p90": 27961.437,
+      "p95": 51482.958,
+      "p99": 99026.037,
+      "min": 2955.464,
+      "max": 102018.991
+    },
+    "vram_peak_gb": null,
+    "ram_peak_gb": 120.612,
+    "power_avg_w": 35.88,
+    "power_peak_w": 45.06,
+    "energy_wh": 4.7311,
+    "gpu_util_avg_pct": 95.86,
+    "temp_max_c": 66.0,
+    "thermal_throttle_detected": false
+  },
+  "scores": {
+    "suite": "reasoning",
+    "total": 120,
+    "correct": 118,
+    "accuracy": 0.983333,
+    "success_rate": 1.0,
+    "by_category": {
+      "counting": {
+        "total": 20,
+        "correct": 20
+      },
+      "datetime": {
+        "total": 18,
+        "correct": 16
+      },
+      "deduction": {
+        "total": 15,
+        "correct": 15
+      },
+      "ordering": {
+        "total": 18,
+        "correct": 18
+      },
+      "spatial": {
+        "total": 15,
+        "correct": 15
+      },
+      "syllogism": {
+        "total": 18,
+        "correct": 18
+      },
+      "truth_liar": {
+        "total": 16,
+        "correct": 16
+      }
+    },
+    "by_difficulty": {
+      "easy": {
+        "total": 31,
+        "correct": 31
+      },
+      "hard": {
+        "total": 39,
+        "correct": 39
+      },
+      "medium": {
+        "total": 50,
+        "correct": 48
+      }
+    },
+    "avg_output_tokens": 306.69,
+    "avg_latency_ms": 15720.25,
+    "failures": 0,
+    "items": [
+      {
+        "id": "reason-0001",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 6128.452,
+        "output_tokens": 102,
+        "category": "syllogism",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0002",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 4359.045,
+        "output_tokens": 79,
+        "category": "syllogism",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0003",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 5095.666,
+        "output_tokens": 91,
+        "category": "syllogism",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0004",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 4210.035,
+        "output_tokens": 78,
+        "category": "syllogism",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0005",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 4283.061,
+        "output_tokens": 69,
+        "category": "syllogism",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0006",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 5615.284,
+        "output_tokens": 98,
+        "category": "syllogism",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0007",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 84970.863,
+        "output_tokens": 1553,
+        "category": "syllogism",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0008",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 4431.845,
+        "output_tokens": 74,
+        "category": "syllogism",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0009",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 6669.445,
+        "output_tokens": 106,
+        "category": "syllogism",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0010",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 7260.279,
+        "output_tokens": 110,
+        "category": "syllogism",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0011",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 13342.564,
+        "output_tokens": 240,
+        "category": "syllogism",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0012",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 3991.01,
+        "output_tokens": 76,
+        "category": "syllogism",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0013",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 92076.264,
+        "output_tokens": 1584,
+        "category": "syllogism",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0014",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 6376.478,
+        "output_tokens": 112,
+        "category": "syllogism",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0015",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 3853.109,
+        "output_tokens": 70,
+        "category": "syllogism",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0016",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 4893.38,
+        "output_tokens": 92,
+        "category": "syllogism",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0017",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 82741.998,
+        "output_tokens": 1511,
+        "category": "syllogism",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0018",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 2969.207,
+        "output_tokens": 60,
+        "category": "syllogism",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0019",
+        "correct": true,
+        "predicted": "Hana",
+        "expected": "Hana",
+        "latency_ms": 22348.929,
+        "output_tokens": 461,
+        "category": "ordering",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0020",
+        "correct": true,
+        "predicted": "Fenna",
+        "expected": "Fenna",
+        "latency_ms": 33729.752,
+        "output_tokens": 696,
+        "category": "ordering",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0021",
+        "correct": true,
+        "predicted": "Cai",
+        "expected": "Cai",
+        "latency_ms": 8491.15,
+        "output_tokens": 195,
+        "category": "ordering",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0022",
+        "correct": true,
+        "predicted": "Dita",
+        "expected": "Dita",
+        "latency_ms": 15055.069,
+        "output_tokens": 289,
+        "category": "ordering",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0023",
+        "correct": true,
+        "predicted": "Fenna",
+        "expected": "Fenna",
+        "latency_ms": 58066.843,
+        "output_tokens": 1069,
+        "category": "ordering",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0024",
+        "correct": true,
+        "predicted": "Lars",
+        "expected": "Lars",
+        "latency_ms": 13226.36,
+        "output_tokens": 272,
+        "category": "ordering",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0025",
+        "correct": true,
+        "predicted": "Ivo",
+        "expected": "Ivo",
+        "latency_ms": 11844.48,
+        "output_tokens": 251,
+        "category": "ordering",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0026",
+        "correct": true,
+        "predicted": "Fenna",
+        "expected": "Fenna",
+        "latency_ms": 13768.612,
+        "output_tokens": 277,
+        "category": "ordering",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0027",
+        "correct": true,
+        "predicted": "Kira",
+        "expected": "Kira",
+        "latency_ms": 15860.429,
+        "output_tokens": 308,
+        "category": "ordering",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0028",
+        "correct": true,
+        "predicted": "Hana",
+        "expected": "Hana",
+        "latency_ms": 22107.478,
+        "output_tokens": 414,
+        "category": "ordering",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0029",
+        "correct": true,
+        "predicted": "Emre",
+        "expected": "Emre",
+        "latency_ms": 11292.225,
+        "output_tokens": 222,
+        "category": "ordering",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0030",
+        "correct": true,
+        "predicted": "Emre",
+        "expected": "Emre",
+        "latency_ms": 24933.748,
+        "output_tokens": 494,
+        "category": "ordering",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0031",
+        "correct": true,
+        "predicted": "Ivo",
+        "expected": "Ivo",
+        "latency_ms": 24482.137,
+        "output_tokens": 503,
+        "category": "ordering",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0032",
+        "correct": true,
+        "predicted": "Cai",
+        "expected": "Cai",
+        "latency_ms": 11739.244,
+        "output_tokens": 245,
+        "category": "ordering",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0033",
+        "correct": true,
+        "predicted": "Hana",
+        "expected": "Hana",
+        "latency_ms": 13633.588,
+        "output_tokens": 269,
+        "category": "ordering",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0034",
+        "correct": true,
+        "predicted": "Ada",
+        "expected": "Ada",
+        "latency_ms": 19289.718,
+        "output_tokens": 382,
+        "category": "ordering",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0035",
+        "correct": true,
+        "predicted": "Gus",
+        "expected": "Gus",
+        "latency_ms": 7712.216,
+        "output_tokens": 146,
+        "category": "ordering",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0036",
+        "correct": true,
+        "predicted": "Hana",
+        "expected": "Hana",
+        "latency_ms": 15135.896,
+        "output_tokens": 311,
+        "category": "ordering",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0037",
+        "correct": true,
+        "predicted": "Juno",
+        "expected": "Juno",
+        "latency_ms": 16785.509,
+        "output_tokens": 319,
+        "category": "truth_liar",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0038",
+        "correct": true,
+        "predicted": "Dita, Juno",
+        "expected": "Dita, Juno",
+        "latency_ms": 33433.051,
+        "output_tokens": 641,
+        "category": "truth_liar",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0039",
+        "correct": true,
+        "predicted": "Ada",
+        "expected": "Ada",
+        "latency_ms": 25412.24,
+        "output_tokens": 495,
+        "category": "truth_liar",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0040",
+        "correct": true,
+        "predicted": "0",
+        "expected": "0",
+        "latency_ms": 19921.842,
+        "output_tokens": 411,
+        "category": "truth_liar",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0041",
+        "correct": true,
+        "predicted": "1",
+        "expected": "1",
+        "latency_ms": 27508.473,
+        "output_tokens": 568,
+        "category": "truth_liar",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0042",
+        "correct": true,
+        "predicted": "1",
+        "expected": "1",
+        "latency_ms": 19922.945,
+        "output_tokens": 348,
+        "category": "truth_liar",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0043",
+        "correct": true,
+        "predicted": "0",
+        "expected": "0",
+        "latency_ms": 26564.884,
+        "output_tokens": 457,
+        "category": "truth_liar",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0044",
+        "correct": true,
+        "predicted": "1",
+        "expected": "1",
+        "latency_ms": 13376.076,
+        "output_tokens": 249,
+        "category": "truth_liar",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0045",
+        "correct": true,
+        "predicted": "1",
+        "expected": "1",
+        "latency_ms": 22977.167,
+        "output_tokens": 432,
+        "category": "truth_liar",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0046",
+        "correct": true,
+        "predicted": "1",
+        "expected": "1",
+        "latency_ms": 17328.676,
+        "output_tokens": 348,
+        "category": "truth_liar",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0047",
+        "correct": true,
+        "predicted": "1",
+        "expected": "1",
+        "latency_ms": 19412.455,
+        "output_tokens": 359,
+        "category": "truth_liar",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0048",
+        "correct": true,
+        "predicted": "2",
+        "expected": "2",
+        "latency_ms": 20912.284,
+        "output_tokens": 391,
+        "category": "truth_liar",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0049",
+        "correct": true,
+        "predicted": "0",
+        "expected": "0",
+        "latency_ms": 24748.767,
+        "output_tokens": 473,
+        "category": "truth_liar",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0050",
+        "correct": true,
+        "predicted": "Bo",
+        "expected": "Bo",
+        "latency_ms": 33730.055,
+        "output_tokens": 627,
+        "category": "truth_liar",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0051",
+        "correct": true,
+        "predicted": "Ada, Gus",
+        "expected": "Ada, Gus",
+        "latency_ms": 17065.208,
+        "output_tokens": 319,
+        "category": "truth_liar",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0052",
+        "correct": true,
+        "predicted": "Cai",
+        "expected": "Cai",
+        "latency_ms": 23617.096,
+        "output_tokens": 437,
+        "category": "truth_liar",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0053",
+        "correct": true,
+        "predicted": "3024",
+        "expected": "3024",
+        "latency_ms": 3993.727,
+        "output_tokens": 83,
+        "category": "counting",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0054",
+        "correct": true,
+        "predicted": "119",
+        "expected": "119",
+        "latency_ms": 3534.354,
+        "output_tokens": 73,
+        "category": "counting",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0055",
+        "correct": true,
+        "predicted": "210",
+        "expected": "210",
+        "latency_ms": 3680.877,
+        "output_tokens": 71,
+        "category": "counting",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0056",
+        "correct": true,
+        "predicted": "276",
+        "expected": "276",
+        "latency_ms": 3989.235,
+        "output_tokens": 84,
+        "category": "counting",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0057",
+        "correct": true,
+        "predicted": "504",
+        "expected": "504",
+        "latency_ms": 3988.162,
+        "output_tokens": 78,
+        "category": "counting",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0058",
+        "correct": true,
+        "predicted": "15",
+        "expected": "15",
+        "latency_ms": 3088.577,
+        "output_tokens": 66,
+        "category": "counting",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0059",
+        "correct": true,
+        "predicted": "60",
+        "expected": "60",
+        "latency_ms": 7063.837,
+        "output_tokens": 151,
+        "category": "counting",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0060",
+        "correct": true,
+        "predicted": "170",
+        "expected": "170",
+        "latency_ms": 3537.41,
+        "output_tokens": 70,
+        "category": "counting",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0061",
+        "correct": true,
+        "predicted": "60",
+        "expected": "60",
+        "latency_ms": 7207.433,
+        "output_tokens": 146,
+        "category": "counting",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0062",
+        "correct": true,
+        "predicted": "58",
+        "expected": "58",
+        "latency_ms": 8075.386,
+        "output_tokens": 155,
+        "category": "counting",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0063",
+        "correct": true,
+        "predicted": "35",
+        "expected": "35",
+        "latency_ms": 3087.621,
+        "output_tokens": 66,
+        "category": "counting",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0064",
+        "correct": true,
+        "predicted": "45",
+        "expected": "45",
+        "latency_ms": 3372.384,
+        "output_tokens": 66,
+        "category": "counting",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0065",
+        "correct": true,
+        "predicted": "703",
+        "expected": "703",
+        "latency_ms": 4395.337,
+        "output_tokens": 85,
+        "category": "counting",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0066",
+        "correct": true,
+        "predicted": "72",
+        "expected": "72",
+        "latency_ms": 8375.972,
+        "output_tokens": 164,
+        "category": "counting",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0067",
+        "correct": true,
+        "predicted": "1287",
+        "expected": "1287",
+        "latency_ms": 8384.185,
+        "output_tokens": 181,
+        "category": "counting",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0068",
+        "correct": true,
+        "predicted": "87",
+        "expected": "87",
+        "latency_ms": 11469.732,
+        "output_tokens": 237,
+        "category": "counting",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0069",
+        "correct": true,
+        "predicted": "20",
+        "expected": "20",
+        "latency_ms": 3249.039,
+        "output_tokens": 70,
+        "category": "counting",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0070",
+        "correct": true,
+        "predicted": "330",
+        "expected": "330",
+        "latency_ms": 7928.961,
+        "output_tokens": 169,
+        "category": "counting",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0071",
+        "correct": true,
+        "predicted": "210",
+        "expected": "210",
+        "latency_ms": 3677.332,
+        "output_tokens": 72,
+        "category": "counting",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0072",
+        "correct": true,
+        "predicted": "720",
+        "expected": "720",
+        "latency_ms": 3678.818,
+        "output_tokens": 78,
+        "category": "counting",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0073",
+        "correct": true,
+        "predicted": "Tuesday",
+        "expected": "Tuesday",
+        "latency_ms": 26171.109,
+        "output_tokens": 495,
+        "category": "datetime",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0074",
+        "correct": true,
+        "predicted": "2014-01-13",
+        "expected": "2014-01-13",
+        "latency_ms": 21013.96,
+        "output_tokens": 440,
+        "category": "datetime",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0075",
+        "correct": true,
+        "predicted": "4",
+        "expected": "4",
+        "latency_ms": 15553.929,
+        "output_tokens": 345,
+        "category": "datetime",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0076",
+        "correct": true,
+        "predicted": "22:00",
+        "expected": "22:00",
+        "latency_ms": 6962.66,
+        "output_tokens": 144,
+        "category": "datetime",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0077",
+        "correct": true,
+        "predicted": "5",
+        "expected": "5",
+        "latency_ms": 19675.736,
+        "output_tokens": 425,
+        "category": "datetime",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0078",
+        "correct": true,
+        "predicted": "04:00",
+        "expected": "04:00",
+        "latency_ms": 5031.304,
+        "output_tokens": 99,
+        "category": "datetime",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0079",
+        "correct": true,
+        "predicted": "18:45",
+        "expected": "18:45",
+        "latency_ms": 3984.128,
+        "output_tokens": 75,
+        "category": "datetime",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0080",
+        "correct": true,
+        "predicted": "4",
+        "expected": "4",
+        "latency_ms": 51136.438,
+        "output_tokens": 1034,
+        "category": "datetime",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0081",
+        "correct": false,
+        "predicted": "",
+        "expected": "Monday",
+        "latency_ms": 100656.23,
+        "output_tokens": 2048,
+        "category": "datetime",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0082",
+        "correct": true,
+        "predicted": "Monday",
+        "expected": "Monday",
+        "latency_ms": 7842.337,
+        "output_tokens": 162,
+        "category": "datetime",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0083",
+        "correct": true,
+        "predicted": "07:00",
+        "expected": "07:00",
+        "latency_ms": 5469.51,
+        "output_tokens": 111,
+        "category": "datetime",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0084",
+        "correct": true,
+        "predicted": "07:40",
+        "expected": "07:40",
+        "latency_ms": 3978.355,
+        "output_tokens": 76,
+        "category": "datetime",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0085",
+        "correct": true,
+        "predicted": "2022-11-25",
+        "expected": "2022-11-25",
+        "latency_ms": 27619.662,
+        "output_tokens": 586,
+        "category": "datetime",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0086",
+        "correct": true,
+        "predicted": "2037-01-26",
+        "expected": "2037-01-26",
+        "latency_ms": 31037.409,
+        "output_tokens": 676,
+        "category": "datetime",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0087",
+        "correct": true,
+        "predicted": "05:15",
+        "expected": "05:15",
+        "latency_ms": 3707.478,
+        "output_tokens": 74,
+        "category": "datetime",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0088",
+        "correct": false,
+        "predicted": "",
+        "expected": "859",
+        "latency_ms": 102018.991,
+        "output_tokens": 2048,
+        "category": "datetime",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0089",
+        "correct": true,
+        "predicted": "2010-05-19",
+        "expected": "2010-05-19",
+        "latency_ms": 15477.263,
+        "output_tokens": 322,
+        "category": "datetime",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0090",
+        "correct": true,
+        "predicted": "4",
+        "expected": "4",
+        "latency_ms": 10433.808,
+        "output_tokens": 227,
+        "category": "datetime",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0091",
+        "correct": true,
+        "predicted": "north",
+        "expected": "north",
+        "latency_ms": 2955.464,
+        "output_tokens": 48,
+        "category": "spatial",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0092",
+        "correct": true,
+        "predicted": "9",
+        "expected": "9",
+        "latency_ms": 16322.159,
+        "output_tokens": 344,
+        "category": "spatial",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0093",
+        "correct": true,
+        "predicted": "Ada",
+        "expected": "Ada",
+        "latency_ms": 4603.385,
+        "output_tokens": 85,
+        "category": "spatial",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0094",
+        "correct": true,
+        "predicted": "Cai",
+        "expected": "Cai",
+        "latency_ms": 4461.701,
+        "output_tokens": 89,
+        "category": "spatial",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0095",
+        "correct": true,
+        "predicted": "north",
+        "expected": "north",
+        "latency_ms": 3110.821,
+        "output_tokens": 47,
+        "category": "spatial",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0096",
+        "correct": true,
+        "predicted": "Hana",
+        "expected": "Hana",
+        "latency_ms": 4445.137,
+        "output_tokens": 87,
+        "category": "spatial",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0097",
+        "correct": true,
+        "predicted": "east",
+        "expected": "east",
+        "latency_ms": 3111.135,
+        "output_tokens": 50,
+        "category": "spatial",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0098",
+        "correct": true,
+        "predicted": "Dita",
+        "expected": "Dita",
+        "latency_ms": 4324.88,
+        "output_tokens": 83,
+        "category": "spatial",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0099",
+        "correct": true,
+        "predicted": "Lars",
+        "expected": "Lars",
+        "latency_ms": 5060.123,
+        "output_tokens": 92,
+        "category": "spatial",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0100",
+        "correct": true,
+        "predicted": "Ada",
+        "expected": "Ada",
+        "latency_ms": 5042.19,
+        "output_tokens": 95,
+        "category": "spatial",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0101",
+        "correct": true,
+        "predicted": "east",
+        "expected": "east",
+        "latency_ms": 8485.02,
+        "output_tokens": 153,
+        "category": "spatial",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0102",
+        "correct": true,
+        "predicted": "Gus",
+        "expected": "Gus",
+        "latency_ms": 6706.551,
+        "output_tokens": 129,
+        "category": "spatial",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0103",
+        "correct": true,
+        "predicted": "20",
+        "expected": "20",
+        "latency_ms": 49247.773,
+        "output_tokens": 976,
+        "category": "spatial",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0104",
+        "correct": true,
+        "predicted": "Kira",
+        "expected": "Kira",
+        "latency_ms": 5201.832,
+        "output_tokens": 110,
+        "category": "spatial",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0105",
+        "correct": true,
+        "predicted": "Cai",
+        "expected": "Cai",
+        "latency_ms": 5662.966,
+        "output_tokens": 121,
+        "category": "spatial",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0106",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 9252.614,
+        "output_tokens": 202,
+        "category": "deduction",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0107",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 10301.236,
+        "output_tokens": 221,
+        "category": "deduction",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0108",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 11342.835,
+        "output_tokens": 242,
+        "category": "deduction",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0109",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 7483.659,
+        "output_tokens": 153,
+        "category": "deduction",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0110",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 9418.047,
+        "output_tokens": 165,
+        "category": "deduction",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0111",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 10741.466,
+        "output_tokens": 231,
+        "category": "deduction",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0112",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 7924.772,
+        "output_tokens": 149,
+        "category": "deduction",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0113",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 8527.138,
+        "output_tokens": 161,
+        "category": "deduction",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0114",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 8663.967,
+        "output_tokens": 157,
+        "category": "deduction",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0115",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 9404.878,
+        "output_tokens": 166,
+        "category": "deduction",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0116",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 9997.788,
+        "output_tokens": 196,
+        "category": "deduction",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0117",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 12375.436,
+        "output_tokens": 267,
+        "category": "deduction",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0118",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 9981.085,
+        "output_tokens": 182,
+        "category": "deduction",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0119",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 10470.878,
+        "output_tokens": 245,
+        "category": "deduction",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0120",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 9551.248,
+        "output_tokens": 222,
+        "category": "deduction",
+        "difficulty": "hard"
+      }
+    ]
+  },
+  "failures": [],
+  "gotchas": [
+    {
+      "severity": "info",
+      "text": "EAGLE speculative decoding is enabled (3 steps, eagle-topk 1, 4 draft tokens). Decode numbers in this cell include the speculative speedup; compare only against another cell with the same speculative settings."
+    },
+    {
+      "severity": "info",
+      "text": "The image lmsysorg/sglang:qwen38-27b is a purpose-built branch reporting sglang 0.0.0.dev0+qwen38.27b.g561c8f3, not a release. Its 476 parameters were introspected out of the container rather than typed, because the recipe uses mamba cache flags that no released SGLang version file carries."
+    },
+    {
+      "severity": "info",
+      "text": "QUANT=nvfp4 in this recipe means RadixArk/Qwen3.8-27B-NVFP4-BF16-LMHead. RadixArk also publishes an FP4-lm_head variant under a similar name and the two are different quantizations; check which one a comparison is against."
+    }
+  ],
+  "derived": {
+    "cost_per_1m_output_tokens_usd": null,
+    "tokens_per_watt": null,
+    "tok_s_per_gb_bandwidth": null,
+    "bandwidth_efficiency": null,
+    "memory_headroom_gb": null
+  },
+  "raw": {
+    "harness": "atlas-bench",
+    "harness_version": "0.1.0",
+    "sha256": "04ad40cce2b34cf69c47da8911b7b69561953f5daf94576b01eb0ea2d48c3eed",
+    "payload_path": null,
+    "payload": {
+      "scorer": "exact",
+      "scorers_used": [
+        "exact",
+        "mc"
+      ],
+      "engine_endpoint": {
+        "attached": true,
+        "base_url": "http://127.0.0.1:8888/v1",
+        "served_model_id": "qwen3.8-27b-sglang",
+        "advertised_models": [
+          "qwen3.8-27b-sglang"
+        ]
+      }
+    },
+    "truncated": false
+  },
+  "provenance": {
+    "github_login": "0xBakeer",
+    "github_user_id": null,
+    "started_at": "2026-08-25T15:54:34Z",
+    "finished_at": "2026-08-25T16:02:29Z",
+    "submitted_at": null,
+    "commit": null,
+    "pr": null,
+    "method": "atlas-bench",
+    "agent": null,
+    "notes": "NVIDIA DGX Spark (ASUS Ascent GX10, GB10) on Ubuntu 24.04 / DGX OS, driver 580.173.02, CUDA 13.0. Served with the MiaAI-Lab SGLang recipe (https://github.com/MiaAI-Lab/Qwen3.8-27B-SGLang-DGX-Spark) at commit 751e29e, image lmsysorg/sglang:qwen38-27b (digest sha256:febfb971c7352570fc445c466ebd6ffc9d896024958e544a60f2137fd85856b1), which reports itself as sglang 0.0.0.dev0+qwen38.27b.g561c8f3. Recipe .env: QUANT=nvfp4, YARN=0, CONTEXT_LENGTH=262144, MAX_CONCURRENT_REQUESTS=16. QUANT=nvfp4 selects RadixArk/Qwen3.8-27B-NVFP4-BF16-LMHead, the BF16-lm_head variant, not the FP4-head one. EAGLE speculative decoding is on with 3 steps, topk 1 and 4 draft tokens, so decode throughput here includes the speculative win and is not comparable to a non-speculative cell. KV cache is fp8_e4m3 and the mamba state is bfloat16. Thinking is ON: the chat template reports enable_thinking default_enabled=True, and SGLang parses it with reasoning-parser qwen3. The DeepSeek-V4-Flash service normally resident on this machine was stopped for the duration of the run. CPU pinning per the recipe (cpuset 5-9,15-19)."
+  },
+  "verification": {
+    "level": "self-reported",
+    "reproduced_by": [],
+    "flags": []
+  }
+}

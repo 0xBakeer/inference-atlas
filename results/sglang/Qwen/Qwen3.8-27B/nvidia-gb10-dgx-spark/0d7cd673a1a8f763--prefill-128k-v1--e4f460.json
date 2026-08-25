@@ -1,0 +1,361 @@
+{
+  "schema_version": 1,
+  "run_id": "0d7cd673a1a8f763--prefill-128k-v1--e4f460",
+  "config_id": "0d7cd673a1a8f763",
+  "cell_id": "9b8e9d20cb36",
+  "workload_id": "prefill-128k-v1",
+  "kind": "prefill",
+  "engine": {
+    "id": "sglang",
+    "version": "0.0.0.dev0+qwen38.27b.g561c8f3",
+    "commit": null,
+    "container": "lmsysorg/sglang:v0.0.0.dev0+qwen38.27b.g561c8f3-cu126",
+    "install_method": "docker"
+  },
+  "model": {
+    "id": "Qwen/Qwen3.8-27B",
+    "quant_id": "nvfp4-bf16-lmhead",
+    "hf_id": "Qwen/Qwen3.8-27B",
+    "revision": null,
+    "dtype": "auto",
+    "local_path": null
+  },
+  "hardware": {
+    "id": "nvidia-gb10-dgx-spark",
+    "count": 1,
+    "driver": "580.173.02",
+    "cuda": "13.0",
+    "host": {
+      "cpu": "Cortex-A725",
+      "cpu_cores": 20,
+      "ram_gb": 121.6,
+      "os": "Ubuntu 24.04.4 LTS",
+      "kernel": "6.17.0-1029-nvidia",
+      "arch": "aarch64"
+    },
+    "fingerprint": "sha256:52ea2bdd513719724db88c162b6cc2c9fb4e5b67e02dbe41b9de00687acefb91",
+    "captured": {
+      "nvidia_smi": {
+        "driver": "580.173.02",
+        "cuda": "13.0",
+        "products": [
+          "NVIDIA GB10"
+        ],
+        "fb_memory_total_mib": 0.0
+      },
+      "lscpu": {
+        "architecture": "aarch64",
+        "cpus": "20",
+        "vendor_id": "ARM",
+        "model_name": "Cortex-A725",
+        "cores_per_socket": "10",
+        "sockets": "1",
+        "cpu_max_mhz": "2808.0000"
+      }
+    }
+  },
+  "args": {
+    "mem-fraction-static": 0.95,
+    "attention-backend": "flashinfer",
+    "chunked-prefill-size": 8192,
+    "disable-prefill-cuda-graph": true,
+    "kv-cache-dtype": "fp8_e4m3",
+    "mamba-ssm-dtype": "bfloat16",
+    "mamba-full-memory-ratio": 4.21,
+    "mamba-radix-cache-strategy": "extra_buffer_lazy",
+    "max-mamba-cache-size": 64,
+    "max-running-requests": 16,
+    "context-length": 262144,
+    "speculative-algorithm": "EAGLE",
+    "speculative-num-steps": 3,
+    "speculative-eagle-topk": 1,
+    "speculative-num-draft-tokens": 4,
+    "reasoning-parser": "qwen3",
+    "tool-call-parser": "qwen3_coder",
+    "trust-remote-code": true
+  },
+  "args_canonical": "@dtype=auto;@quant=nvfp4-bf16-lmhead;attention-backend=flashinfer;chunked-prefill-size=8192;context-length=262144;disable-prefill-cuda-graph=true;kv-cache-dtype=fp8_e4m3;mamba-full-memory-ratio=4.21;mamba-radix-cache-strategy=extra_buffer_lazy;mamba-ssm-dtype=bfloat16;max-mamba-cache-size=64;max-running-requests=16;mem-fraction-static=0.95;reasoning-parser=qwen3;speculative-algorithm=EAGLE;speculative-eagle-topk=1;speculative-num-draft-tokens=4;speculative-num-steps=3;tool-call-parser=qwen3_coder;trust-remote-code=true",
+  "serve_command": null,
+  "workload": {
+    "id": "prefill-128k-v1",
+    "resolved_params": {
+      "concurrency": 1,
+      "num_requests": 10,
+      "input_tokens": 131072,
+      "output_tokens": 16,
+      "warmup_requests": 1,
+      "prompts_padded": false,
+      "needle_check": false,
+      "timeout_s": 900.0,
+      "seed": 42
+    }
+  },
+  "metrics": {
+    "requests_total": 10,
+    "requests_ok": 10,
+    "requests_failed": 0,
+    "success_rate": 1.0,
+    "duration_s": 1772.926,
+    "input_tokens_total": 1609545,
+    "output_tokens_total": 160,
+    "output_tok_s": 0.09,
+    "total_tok_s": 907.937,
+    "req_s": 0.006,
+    "prefill_tok_s": 912.773,
+    "ttft_ms": {
+      "mean": 176335.752,
+      "p50": 195878.826,
+      "p90": 196243.274,
+      "p95": 196285.562,
+      "p99": 196319.393,
+      "min": 753.598,
+      "max": 196327.851
+    },
+    "tpot_ms": {
+      "mean": 63.782,
+      "p50": 66.127,
+      "p90": 66.388,
+      "p95": 66.388,
+      "p99": 66.388,
+      "min": 54.241,
+      "max": 66.388
+    },
+    "itl_ms": {
+      "mean": 199.165,
+      "p50": 175.004,
+      "p90": 294.4,
+      "p95": 294.929,
+      "p99": 296.641,
+      "min": 153.376,
+      "max": 297.556
+    },
+    "e2e_ms": {
+      "mean": 177292.482,
+      "p50": 196794.223,
+      "p90": 197231.68,
+      "p95": 197273.887,
+      "p99": 197307.653,
+      "min": 1747.163,
+      "max": 197316.094
+    },
+    "decode_tok_s_per_request": {
+      "mean": 15.777,
+      "p50": 15.122,
+      "p90": 18.418,
+      "p95": 18.427,
+      "p99": 18.434,
+      "min": 15.063,
+      "max": 18.436
+    },
+    "vram_peak_gb": null,
+    "ram_peak_gb": 120.482,
+    "kv_cache_tokens": null,
+    "power_avg_w": 80.68,
+    "power_peak_w": 94.95,
+    "energy_wh": 44.1408,
+    "gpu_util_avg_pct": 95.62,
+    "temp_max_c": 85.0,
+    "thermal_throttle_detected": false
+  },
+  "failures": [],
+  "gotchas": [
+    {
+      "severity": "info",
+      "text": "EAGLE speculative decoding is enabled (3 steps, eagle-topk 1, 4 draft tokens). Decode numbers in this cell include the speculative speedup; compare only against another cell with the same speculative settings."
+    },
+    {
+      "severity": "info",
+      "text": "The image lmsysorg/sglang:qwen38-27b is a purpose-built branch reporting sglang 0.0.0.dev0+qwen38.27b.g561c8f3, not a release. Its 476 parameters were introspected out of the container rather than typed, because the recipe uses mamba cache flags that no released SGLang version file carries."
+    },
+    {
+      "severity": "info",
+      "text": "QUANT=nvfp4 in this recipe means RadixArk/Qwen3.8-27B-NVFP4-BF16-LMHead. RadixArk also publishes an FP4-lm_head variant under a similar name and the two are different quantizations; check which one a comparison is against."
+    }
+  ],
+  "derived": {
+    "cost_per_1m_output_tokens_usd": null,
+    "tokens_per_watt": 0.0011,
+    "tok_s_per_gb_bandwidth": 0.057791,
+    "bandwidth_efficiency": 1.373697,
+    "memory_headroom_gb": null
+  },
+  "raw": {
+    "harness": "atlas-bench",
+    "harness_version": "0.1.0",
+    "sha256": "337536323f22784ba96b3fd59fdd98404ed41ffc364ce251475017d0185abb75",
+    "payload_path": null,
+    "payload": {
+      "requests": [
+        {
+          "id": "prefill-w00000",
+          "prompt_id": "hay-128k-d10",
+          "warmup": true,
+          "status": "ok",
+          "ttft_ms": 196142.06,
+          "e2e_ms": 196961.259,
+          "prompt_tokens": 161064,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00000",
+          "prompt_id": "hay-128k-d10",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 753.598,
+          "e2e_ms": 1747.163,
+          "prompt_tokens": 161064,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00001",
+          "prompt_id": "hay-128k-multi",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 195497.001,
+          "e2e_ms": 196492.818,
+          "prompt_tokens": 160779,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00002",
+          "prompt_id": "hay-128k-d50",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 196327.851,
+          "e2e_ms": 197316.094,
+          "prompt_tokens": 161140,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00003",
+          "prompt_id": "hay-128k-d90",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 195889.941,
+          "e2e_ms": 196880.857,
+          "prompt_tokens": 160868,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00004",
+          "prompt_id": "hay-128k-d10",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 195925.96,
+          "e2e_ms": 196740.477,
+          "prompt_tokens": 161064,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00005",
+          "prompt_id": "hay-128k-multi",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 195420.287,
+          "e2e_ms": 196413.76,
+          "prompt_tokens": 160779,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00006",
+          "prompt_id": "hay-128k-d50",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 196233.876,
+          "e2e_ms": 197222.301,
+          "prompt_tokens": 161140,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00007",
+          "prompt_id": "hay-128k-d90",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 195867.711,
+          "e2e_ms": 196860.62,
+          "prompt_tokens": 160868,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00008",
+          "prompt_id": "hay-128k-d10",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 196034.348,
+          "e2e_ms": 196847.969,
+          "prompt_tokens": 161064,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00009",
+          "prompt_id": "hay-128k-multi",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 195406.952,
+          "e2e_ms": 196402.765,
+          "prompt_tokens": 160779,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        }
+      ],
+      "engine_endpoint": {
+        "attached": true,
+        "base_url": "http://127.0.0.1:8888/v1",
+        "served_model_id": "qwen3.8-27b-sglang",
+        "advertised_models": [
+          "qwen3.8-27b-sglang"
+        ]
+      }
+    },
+    "truncated": false
+  },
+  "provenance": {
+    "github_login": "0xBakeer",
+    "github_user_id": null,
+    "started_at": "2026-08-25T16:40:38Z",
+    "finished_at": "2026-08-25T17:13:29Z",
+    "submitted_at": null,
+    "commit": null,
+    "pr": null,
+    "method": "atlas-bench",
+    "agent": null,
+    "notes": "NVIDIA DGX Spark (ASUS Ascent GX10, GB10) on Ubuntu 24.04 / DGX OS, driver 580.173.02, CUDA 13.0. Served with the MiaAI-Lab SGLang recipe (https://github.com/MiaAI-Lab/Qwen3.8-27B-SGLang-DGX-Spark) at commit 751e29e, image lmsysorg/sglang:qwen38-27b (digest sha256:febfb971c7352570fc445c466ebd6ffc9d896024958e544a60f2137fd85856b1), which reports itself as sglang 0.0.0.dev0+qwen38.27b.g561c8f3. Recipe .env: QUANT=nvfp4, YARN=0, CONTEXT_LENGTH=262144, MAX_CONCURRENT_REQUESTS=16. QUANT=nvfp4 selects RadixArk/Qwen3.8-27B-NVFP4-BF16-LMHead, the BF16-lm_head variant, not the FP4-head one. EAGLE speculative decoding is on with 3 steps, topk 1 and 4 draft tokens, so decode throughput here includes the speculative win and is not comparable to a non-speculative cell. KV cache is fp8_e4m3 and the mamba state is bfloat16. Thinking is ON: the chat template reports enable_thinking default_enabled=True, and SGLang parses it with reasoning-parser qwen3. The DeepSeek-V4-Flash service normally resident on this machine was stopped for the duration of the run. CPU pinning per the recipe (cpuset 5-9,15-19)."
+  },
+  "verification": {
+    "level": "self-reported",
+    "reproduced_by": [],
+    "flags": []
+  }
+}
