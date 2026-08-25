@@ -291,7 +291,7 @@ export interface Quant {
 
 /* -------------------------------------------------------------------- workload */
 
-export type WorkloadKind = 'serving' | 'sweep' | 'prefill' | 'longctx' | 'eval';
+export type WorkloadKind = 'serving' | 'sweep' | 'prefill' | 'longctx' | 'eval' | 'agentic';
 
 export type ScorerKind =
   'exact' | 'numeric' | 'mc' | 'contains' | 'json' | 'code-exec' | 'judge' | 'needle' | 'vision';
@@ -327,7 +327,7 @@ export interface Dataset {
   schema_version: 1;
   id: string;
   name: string;
-  kind: 'prompts' | 'eval' | 'images' | 'haystack';
+  kind: 'prompts' | 'eval' | 'images' | 'haystack' | 'conversations';
   description?: string | null;
   licence: string;
   files: string[];

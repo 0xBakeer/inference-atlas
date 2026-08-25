@@ -84,7 +84,19 @@ export function tokensPerForwardPass(args: Args, metrics?: MetricBlock | null): 
   let drafts: number | null = null;
   for (const [rawKey, rawValue] of Object.entries(args ?? {})) {
     const key = normalizeKey(rawKey);
-    if (!key.includes('speculative') && !key.startsWith('draft') && key !== 'model-draft') continue;
+    // `dspark` is SparkInfer's speculative route and `eagle` is how several engines spell
+    // theirs; neither contains the word "speculative", so matching on that alone missed
+    // them entirely and bounded a speculating engine as though it decoded one token per
+    // pass. That is the one bound a measurement is allowed to beat, and reporting it as a
+    // violation blames the engine for doing the thing it was configured to do.
+    if (
+      !key.includes('speculative') &&
+      !key.includes('dspark') &&
+      !key.includes('eagle') &&
+      !key.startsWith('draft') &&
+      key !== 'model-draft'
+    )
+      continue;
     configured = true;
     const n = draftTokensFrom(key, rawValue);
     if (n !== null) drafts = Math.max(drafts ?? 0, n);
@@ -99,7 +111,8 @@ function draftTokensFrom(key: string, value: ArgValue): number | null {
     key === 'speculative-num-steps' ||
     key === 'speculative-num-draft-tokens' ||
     key === 'draft-max' ||
-    key === 'draft'
+    key === 'draft' ||
+    key === 'dspark-tokens'
   ) {
     const n = Number(value);
     return Number.isFinite(n) && n > 0 ? n : null;
