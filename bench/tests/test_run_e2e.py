@@ -378,6 +378,27 @@ def test_an_empty_answer_is_unscorable_not_wrong() -> None:
     assert result.correct is False
 
 
+def test_zip_entry_names_survive_a_missing_utf8_flag() -> None:
+    """A zip that stores UTF-8 names without setting bit 11 must still round-trip.
+
+    zipfile falls back to CP437, so a curly apostrophe arrives as mojibake and the file no
+    longer exists under the name the questions reference. Four AA-LCR items went unscorable
+    for exactly that reason, with nothing wrong in the data.
+    """
+    from zipfile import ZipInfo
+
+    from datasets_prepare_aa_lcr import _entry_name  # type: ignore[import-not-found]
+
+    real = "EU\u2019s Official Journal.txt"
+    mangled = ZipInfo(real.encode("utf-8").decode("cp437"))
+    mangled.flag_bits = 0
+    assert _entry_name(mangled) == real
+
+    proper = ZipInfo(real)
+    proper.flag_bits = 0x800
+    assert _entry_name(proper) == real
+
+
 async def test_documents_are_prepended_to_the_question(atlas_repo: Path) -> None:
     """The corpus goes in front of the question, and the question survives.
 

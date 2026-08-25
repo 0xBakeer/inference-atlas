@@ -146,6 +146,18 @@ def _row_messages(row: EvalRow, ctx: RunContext, dataset_dir: Path) -> list[dict
     return build_messages(row, dataset_dir)
 
 
+def _failure_message(
+    category: str, sample: RequestResult, unscorable_reasons: dict[str, int]
+) -> str:
+    """What actually went wrong, in words a reader can act on."""
+    if category == "unscorable":
+        parts = ", ".join(f"{n} {reason}" for reason, n in sorted(unscorable_reasons.items()))
+        return f"completed but could not be judged: {parts}"
+    if category == "refusal":
+        return "refusal detected"
+    return sample.error_message or category
+
+
 def _score(row: EvalRow, result: RequestResult, default_scorer: str) -> ScoreResult:
     """Score one completed item with the row's own scorer."""
     if row.meta.get("documents_unavailable"):
@@ -262,6 +274,7 @@ async def run_eval(ctx: RunContext) -> WorkloadOutcome:
     scored_total = 0
     correct_total = 0
     verdicts: dict[str, int] = defaultdict(int)
+    unscorable_reasons: dict[str, int] = defaultdict(int)
 
     for row, result, score in outcomes:
         latency_ms = round((result.e2e_s or 0.0) * 1000, 3)
@@ -282,8 +295,11 @@ async def run_eval(ctx: RunContext) -> WorkloadOutcome:
         elif not score.scored:
             # The request completed and the item still could not be judged. The comment
             # below promises these are counted in `failures`; without this branch they were
-            # counted nowhere and simply disappeared from the report.
-            failures_by_category[score.detail or "unscored"].append(result)
+            # counted nowhere and simply disappeared from the report. The category is the
+            # SPEC's closed vocabulary — the specific reason travels in the message, so a
+            # new scorer cannot quietly invent a category the schema rejects.
+            unscorable_reasons[score.detail or "unscored"] += 1
+            failures_by_category["unscorable"].append(result)
         elif not score.correct and is_refusal(result.text):
             failures_by_category["refusal"].append(result)
         if score.scored:
@@ -342,7 +358,7 @@ async def run_eval(ctx: RunContext) -> WorkloadOutcome:
             "at": "score" if category == "refusal" else "request",
             "count": len(results),
             "category": category,
-            "message": (results[0].error_message or "refusal detected")[:500],
+            "message": _failure_message(category, results[0], unscorable_reasons)[:500],
             "sample_request_id": results[0].request_id,
         }
         for category, results in sorted(failures_by_category.items())
