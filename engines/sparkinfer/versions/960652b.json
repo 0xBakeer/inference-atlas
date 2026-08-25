@@ -1,0 +1,236 @@
+{
+  "schema_version": 1,
+  "engine_id": "sparkinfer",
+  "version": "960652b",
+  "released": "2026-08-24",
+  "extraction_method": "hand-seeded",
+  "extracted_at": "2026-08-24T18:00:00Z",
+  "source": "start.sh of MiaAI-Lab/DeepSeek-v4-Flash-One-DGX-Spark at the commit this version names",
+  "notes": "Defaults are the upstream repository's, not any operator's fork. That is deliberate: canonicalization drops a value that equals the default, so if a fork's local override were seeded here the override would vanish from the fingerprint. ABLATE in particular defaults to 0 upstream, so a run with refusal-direction ablation on carries ABLATE=1 explicitly. Parameter names are recorded lower-case and hyphenated to satisfy the registry id pattern; each help string names the upper-case environment variable start.sh actually reads.",
+  "params": [
+    {
+      "name": "max-model-len",
+      "type": "int",
+      "default": 384000,
+      "help": "Context window the KV pool is sized for. Environment variable: MAX_MODEL_LEN.",
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "max-num-seqs",
+      "type": "int",
+      "default": 1,
+      "help": "Concurrent sequences admitted. 1 is a single-deep-context profile; raise it for serving. Environment variable: MAX_NUM_SEQS.",
+      "group": "batching",
+      "impact": "high"
+    },
+    {
+      "name": "max-num-batched-tokens",
+      "type": "int",
+      "default": 8224,
+      "help": "Also sizes and locks the b12x MLA workspace after warmup; lowering it to recover KV crashes later on a wide attend. Environment variable: MAX_NUM_BATCHED_TOKENS.",
+      "group": "batching",
+      "impact": "high"
+    },
+    {
+      "name": "gpu-memory-utilization",
+      "type": "float",
+      "default": 0.94,
+      "help": "Fraction of the unified 128 GB the engine may claim. Environment variable: GPU_MEMORY_UTILIZATION.",
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "mode",
+      "type": "str",
+      "default": "dspark",
+      "help": "Inference path: dspark enables the speculative draft-expert route. Environment variable: MODE.",
+      "group": "model",
+      "impact": "high"
+    },
+    {
+      "name": "ablate",
+      "type": "bool",
+      "default": false,
+      "help": "Runtime refusal-direction ablation. Changes what the model will answer, so it changes eval scores; it is not a performance knob. Environment variable: ABLATE.",
+      "group": "model",
+      "impact": "high"
+    },
+    {
+      "name": "dsv4-ablate-lambda",
+      "type": "float",
+      "default": 3.5,
+      "help": "Strength of the ablation direction. Only read when ABLATE=1. Environment variable: DSV4_ABLATE_LAMBDA.",
+      "group": "model",
+      "impact": "high"
+    },
+    {
+      "name": "dsv4-ablate-layers",
+      "type": "str",
+      "default": "10-42",
+      "help": "Layer range the ablation direction is applied to. Only read when ABLATE=1. Environment variable: DSV4_ABLATE_LAYERS.",
+      "group": "model",
+      "impact": "high"
+    },
+    {
+      "name": "dspark-tokens",
+      "type": "int",
+      "default": 5,
+      "help": "Speculative tokens proposed per step. Environment variable: DSPARK_TOKENS.",
+      "group": "speculative",
+      "impact": "high"
+    },
+    {
+      "name": "dspark-draft-experts",
+      "type": "int",
+      "default": 64,
+      "help": "Experts the draft pass may route to. Environment variable: DSPARK_DRAFT_EXPERTS.",
+      "group": "speculative",
+      "impact": "high"
+    },
+    {
+      "name": "dspark-dynamic-draft-depth",
+      "type": "bool",
+      "default": false,
+      "help": "Vary draft depth with acceptance rate. Environment variable: DSPARK_DYNAMIC_DRAFT_DEPTH.",
+      "group": "speculative",
+      "impact": "medium"
+    },
+    {
+      "name": "dspark-dynamic-draft-depth-window",
+      "type": "int",
+      "default": 8,
+      "help": "Window over which acceptance is measured for dynamic draft depth. Environment variable: DSPARK_DYNAMIC_DRAFT_DEPTH_WINDOW.",
+      "group": "speculative",
+      "impact": "low"
+    },
+    {
+      "name": "dspark-structured-experts-per-category",
+      "type": "int",
+      "default": 32,
+      "help": "Experts held per output category by the structured router. Environment variable: DSPARK_STRUCTURED_EXPERTS_PER_CATEGORY.",
+      "group": "speculative",
+      "impact": "medium"
+    },
+    {
+      "name": "dspark-capacity",
+      "type": "int",
+      "default": 0,
+      "help": "Draft capacity override; 0 lets the engine choose. Environment variable: DSPARK_CAPACITY.",
+      "group": "speculative",
+      "impact": "low"
+    },
+    {
+      "name": "long-prefill-token-threshold",
+      "type": "int",
+      "default": 1024,
+      "help": "Chunk size above which a prefill is split for fairness; 0 disables. Caps prefill throughput when set below MAX_NUM_BATCHED_TOKENS. Environment variable: LONG_PREFILL_TOKEN_THRESHOLD.",
+      "group": "batching",
+      "impact": "high"
+    },
+    {
+      "name": "max-num-partial-prefills",
+      "type": "int",
+      "default": 0,
+      "help": "Partial prefills allowed in flight; 0 disables. Environment variable: MAX_NUM_PARTIAL_PREFILLS.",
+      "group": "batching",
+      "impact": "medium"
+    },
+    {
+      "name": "kv-offload-gb",
+      "type": "int",
+      "default": 0,
+      "help": "KV cache offloaded to host memory. Environment variable: KV_OFFLOAD_GB.",
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "kv-fp8-rope",
+      "type": "bool",
+      "default": false,
+      "help": "Store RoPE-applied keys in fp8. Environment variable: KV_FP8_ROPE.",
+      "group": "memory",
+      "impact": "medium"
+    },
+    {
+      "name": "kv-record",
+      "type": "str",
+      "default": "stock432",
+      "help": "KV layout record the pool is built from. Environment variable: KV_RECORD.",
+      "group": "memory",
+      "impact": "medium"
+    },
+    {
+      "name": "vllm-use-simple-kv-offload",
+      "type": "bool",
+      "default": false,
+      "help": "Use the simple offload path rather than the paged one. Environment variable: VLLM_USE_SIMPLE_KV_OFFLOAD.",
+      "group": "memory",
+      "impact": "medium"
+    },
+    {
+      "name": "vllm-use-b12x-wo-projection",
+      "type": "bool",
+      "default": true,
+      "help": "b12x MLA output projection kernel. Environment variable: VLLM_USE_B12X_WO_PROJECTION.",
+      "group": "kernels",
+      "impact": "medium"
+    },
+    {
+      "name": "vllm-dsv4-padded-nvfp4",
+      "type": "bool",
+      "default": false,
+      "help": "Pad NVFP4 tensors for the fused kernel. Environment variable: VLLM_DSV4_PADDED_NVFP4.",
+      "group": "kernels",
+      "impact": "medium"
+    },
+    {
+      "name": "max-cudagraph-capture-size",
+      "type": "int",
+      "default": 24,
+      "help": "Largest batch captured into a CUDA graph. Environment variable: MAX_CUDAGRAPH_CAPTURE_SIZE.",
+      "group": "kernels",
+      "impact": "medium"
+    },
+    {
+      "name": "cudagraph-capture-sizes",
+      "type": "str",
+      "default": "6,12,24",
+      "help": "Batch sizes captured into CUDA graphs. Environment variable: CUDAGRAPH_CAPTURE_SIZES.",
+      "group": "kernels",
+      "impact": "medium"
+    },
+    {
+      "name": "vllm-memory-profiler-estimate-cudagraphs",
+      "type": "bool",
+      "default": false,
+      "help": "Let the memory profiler estimate CUDA graph cost instead of measuring it. Environment variable: VLLM_MEMORY_PROFILER_ESTIMATE_CUDAGRAPHS.",
+      "group": "memory",
+      "impact": "low"
+    },
+    {
+      "name": "default-chat-template-kwargs-thinking",
+      "type": "bool",
+      "default": true,
+      "help": "Thinking on by default in the chat template. Changes output token counts by a large factor. Environment variable: DEFAULT_CHAT_TEMPLATE_KWARGS_THINKING.",
+      "group": "template",
+      "impact": "high"
+    },
+    {
+      "name": "default-chat-template-kwargs-effort",
+      "type": "str",
+      "default": "max",
+      "help": "Reasoning effort passed to the chat template. Environment variable: DEFAULT_CHAT_TEMPLATE_KWARGS_EFFORT.",
+      "group": "template",
+      "impact": "high"
+    },
+    {
+      "name": "extra-vllm-args",
+      "type": "str",
+      "default": null,
+      "help": "Raw arguments appended to the server command. Environment variable: EXTRA_VLLM_ARGS.",
+      "group": "model",
+      "impact": "high"
+    }
+  ]
+}

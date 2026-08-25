@@ -5,17 +5,17 @@
   "hf_id": "deepseek-ai/DeepSeek-V4-Flash",
   "family": "deepseek-v4",
   "vendor": "deepseek",
-  "params_b": 96,
-  "active_params_b": 9,
+  "params_b": 290.9,
+  "active_params_b": 20.4,
   "architecture": "DeepseekV4ForCausalLM",
   "moe": true,
   "experts": 256,
-  "experts_active": 8,
+  "experts_active": 6,
   "attention": "mla",
   "modalities": [
     "text"
   ],
-  "context_length": 163840,
+  "context_length": 1048576,
   "licence": "MIT",
   "released": "2026-08-05",
   "tags": [
@@ -23,5 +23,5 @@
     "reasoning",
     "moe"
   ],
-  "notes": "Placeholder record for a very recent release: params_b, active_params_b, architecture and context_length are NOT verified against config.json. Anyone running this model should verify them and correct this file in the same PR, because the plausibility bound is derived from active_params_b."
+  "notes": "Verified against config.json and the Hugging Face safetensors index on 2026-08-24, replacing the placeholder figures. params_b is measured: the safetensors total is 290,944,616,402 parameters (283.5B I8, 6.0B F8_E4M3, 1.4B BF16), not the 96 previously recorded. active_params_b is DERIVED: 43 layers x (6 routed + 1 shared) experts x 3 x 2048 x 4096 = 7.57B of experts, plus a 12.84B dense remainder (total minus the 278.11B held in all 257 experts per layer). context_length is max_position_embeddings = 1,048,576, not 163,840. experts_active is num_experts_per_tok = 6, not 8. The plausibility bound derives from active_params_b, so these corrections change what results this model is held to."
 }

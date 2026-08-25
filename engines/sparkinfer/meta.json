@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "id": "sparkinfer",
+  "name": "SparkInfer",
+  "repo": "https://github.com/MiaAI-Lab/DeepSeek-v4-Flash-One-DGX-Spark",
+  "docs": "https://github.com/MiaAI-Lab/DeepSeek-v4-Flash-One-DGX-Spark#readme",
+  "description": "A vLLM-derived stack purpose-built to run DeepSeek-V4-Flash on a single 128 GB DGX Spark: EXL3 trellis expert kernels, a rewritten MLA prefill, and the dspark speculative path. Shipped as a pinned container plus a repository of patch files, so the git commit \u2014 not a released version number \u2014 identifies the build.",
+  "api": "openai",
+  "default_port": 8888,
+  "platforms": [
+    "linux-cuda"
+  ],
+  "quant_formats": [
+    "exl3",
+    "nvfp4",
+    "fp8"
+  ],
+  "install": [
+    {
+      "method": "docker",
+      "image": "ghcr.io/0xsero/deepseek-v4-flash-0731-spark-sparkinfer",
+      "arch": [
+        "aarch64"
+      ],
+      "notes": "compose.yml pins the image by digest and bind-mounts the repository's patch files over it, so the image alone does not define the stack. Check out the commit named by the engine version and run ./start.sh."
+    }
+  ],
+  "serve": {
+    "command_template": "./start.sh",
+    "model_ref": "hf_id",
+    "flag_style": "{NAME}={value}",
+    "bool_style": "{NAME}=1",
+    "bool_false_style": "{NAME}=0",
+    "env_style": "{NAME}={value}",
+    "notes": "Every knob is an environment variable read by start.sh, which composes the docker run. Registry parameter names are lower-case and hyphenated; {NAME} renders them as the upper-case underscored environment variable."
+  },
+  "health": {
+    "path": "/health",
+    "models_path": "/v1/models",
+    "ready_timeout_s": 7200
+  },
+  "bench_harness": "atlas-bench",
+  "drop_params": [
+    "model-repo",
+    "model-revision",
+    "served-model-name",
+    "serving-host",
+    "serving-port",
+    "hf-cache",
+    "hf-token",
+    "remote-host",
+    "remote-user",
+    "remote-share-dir",
+    "mia-mount",
+    "startup-wait",
+    "poll-interval",
+    "local-min-free-gib",
+    "share-min-free-gib",
+    "verify-model-checksums"
+  ],
+  "param_aliases": {},
+  "version_source": {
+    "kind": "manual",
+    "repo": "MiaAI-Lab/DeepSeek-v4-Flash-One-DGX-Spark",
+    "version_scheme": "opaque"
+  },
+  "versions_available": [
+    "960652b"
+  ],
+  "links": {
+    "image": "https://ghcr.io/0xsero/deepseek-v4-flash-0731-spark-sparkinfer"
+  },
+  "notes": "There are no releases or tags: the stack is a pinned image plus a working tree of patches, so a version here is the short git commit of the configuration repository that produced the run. A fork's commit is a valid version as long as it is public and reachable \u2014 record the exact repository in the run's provenance, because forks diverge in their defaults."
+}

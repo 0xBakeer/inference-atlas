@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "id": "0xSero/deepseek-v4-flash-0731-spark",
+  "name": "DeepSeek-V4-Flash 0731 Spark (REAP-216)",
+  "hf_id": "0xSero/deepseek-v4-flash-0731-spark",
+  "family": "deepseek-v4",
+  "vendor": "community",
+  "params_b": 247.7,
+  "active_params_b": 20.4,
+  "architecture": "DeepseekV4ForCausalLM",
+  "moe": true,
+  "experts": 216,
+  "experts_active": 6,
+  "attention": "mla",
+  "modalities": [
+    "text"
+  ],
+  "context_length": 1048576,
+  "licence": "MIT",
+  "released": "2026-07-31",
+  "tags": [
+    "chat",
+    "reasoning",
+    "moe",
+    "pruned",
+    "derivative"
+  ],
+  "links": {
+    "hf": "https://huggingface.co/0xSero/deepseek-v4-flash-0731-spark",
+    "base": "https://huggingface.co/deepseek-ai/DeepSeek-V4-Flash"
+  },
+  "notes": "A derivative of deepseek-ai/DeepSeek-V4-Flash, not a quantization of it, which is why it has its own record. config.json carries a reap_pruning block: structured-output-constrained REAP expert pruning keeps 216 of 256 routed experts per layer, with 32 mandatory top experts per output category, observed over 21,289 rows spanning code generation, reasoning and agentic tool trajectories. Quality on those categories is the base model's; anywhere else it is the derivative's own and should not be read as DeepSeek-V4-Flash. Read from config.json: 43 layers, hidden 4096, moe_intermediate 2048, 6 routed experts per token plus 1 shared, vocab 129,280, max_position_embeddings 1,048,576. params_b and active_params_b are DERIVED, not read: expert parameters are layers x experts x 3 x 2048 x 4096, and the dense remainder (12.84B) is the base model's measured 290.94B safetensors total minus its 278.11B of experts. Pruning removes capacity, not work: active parameters per token are unchanged at 20.4B, so the decode bandwidth bound is the same as the base model's and only the memory footprint falls."
+}
