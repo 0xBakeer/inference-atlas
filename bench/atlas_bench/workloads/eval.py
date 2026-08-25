@@ -125,12 +125,24 @@ def _row_messages(row: EvalRow, ctx: RunContext, dataset_dir: Path) -> list[dict
             # failures rather than in accuracy.
             row.meta["documents_unavailable"] = True
         else:
-            prompt = (
+            # `prompt` is not a field on EvalRow — from_dict folds a raw row's prompt into
+            # `messages` on load — so the documents go in front of the user turn that
+            # already exists rather than into a field that does not.
+            question = next(
+                (
+                    str(m.get("content") or "")
+                    for m in reversed(row.messages or [])
+                    if m.get("role") == "user"
+                ),
+                "",
+            )
+            body = (
                 f"{corpus}\n\n"
                 "Answer the following question using only the documents above.\n\n"
-                f"{row.prompt or ''}"
+                f"{question}"
             )
-            row = EvalRow(**{**row.__dict__, "prompt": prompt, "messages": None})
+            rest = [m for m in (row.messages or []) if m.get("role") != "user"]
+            row = EvalRow(**{**row.__dict__, "messages": [*rest, {"role": "user", "content": body}]})
     return build_messages(row, dataset_dir)
 
 
