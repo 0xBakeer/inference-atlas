@@ -59,6 +59,7 @@ class FakeOpenAIServer:
         report_usage: bool = True,
         reject_stream_options: bool = False,
         stream_error: str | None = None,
+        delta_key: str = "content",
     ) -> None:
         self.model = model
         self.chunks = chunks
@@ -75,6 +76,8 @@ class FakeOpenAIServer:
         self.reject_stream_options = reject_stream_options
         #: LM Studio-style: answer 200, then report the failure inside the stream.
         self.stream_error = stream_error
+        #: Which delta field the text arrives under: SparkInfer uses "reasoning".
+        self.delta_key = delta_key
         self.requests: list[dict[str, Any]] = []
 
     # ------------------------------------------------------------------ wiring
@@ -131,7 +134,7 @@ class FakeOpenAIServer:
         pieces = self._pieces(text)
         frames: list[bytes] = []
         for piece in pieces:
-            frames.append(_frame({"choices": [{"index": 0, "delta": {"content": piece}}]}))
+            frames.append(_frame({"choices": [{"index": 0, "delta": {self.delta_key: piece}}]}))
         frames.append(_frame({"choices": [{"index": 0, "delta": {}, "finish_reason": "length"}]}))
         if self.report_usage and (body.get("stream_options") or {}).get("include_usage"):
             frames.append(

@@ -54,6 +54,22 @@ _TIMEOUT_PATTERNS = re.compile(r"timed out|timeout", re.IGNORECASE)
 MIN_DECODE_WINDOW_S = 0.001
 
 
+#: Keys a streamed delta may carry its text under. `content` is the OpenAI field;
+#: `reasoning_content` is what vLLM and LM Studio put a thought block in; `reasoning` is a
+#: third spelling in the wild (SparkInfer). A server that emits only a thought block still
+#: decoded tokens, and missing them makes a working request look like an empty answer.
+_DELTA_TEXT_KEYS = ("content", "reasoning_content", "reasoning")
+
+
+def _delta_text(delta: dict[str, Any]) -> str:
+    """The text of one streamed delta, whichever field the server used for it."""
+    for key in _DELTA_TEXT_KEYS:
+        value = delta.get(key)
+        if value:
+            return str(value)
+    return ""
+
+
 def utc_now() -> str:
     """Current UTC time as ``2026-08-23T10:00:00Z``."""
     return datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -382,7 +398,7 @@ class ChatClient:
                         usage = chunk["usage"]
                     for choice in chunk.get("choices") or []:
                         delta = choice.get("delta") or {}
-                        content = delta.get("content") or delta.get("reasoning_content") or ""
+                        content = _delta_text(delta)
                         if content:
                             now = time.perf_counter()
                             if result.first_token_at is None:

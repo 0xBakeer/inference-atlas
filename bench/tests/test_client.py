@@ -104,6 +104,24 @@ async def test_a_single_chunk_response_reports_no_decode_rate() -> None:
     assert result.e2e_s is not None
 
 
+@pytest.mark.parametrize("delta_key", ["content", "reasoning_content", "reasoning"])
+async def test_text_is_counted_whatever_field_the_delta_uses(delta_key: str) -> None:
+    """A thought-only stream is still decoded tokens, not an empty answer.
+
+    `reasoning_content` is what vLLM and LM Studio use; SparkInfer emits `reasoning`. A
+    server whose whole 256-token budget goes into a thought block sends no `content` at all,
+    and reading only the two known fields turned every such request into
+    "stream produced no content deltas" — 594 of 600 requests on a working server.
+    """
+    server = FakeOpenAIServer(chunks=5, delta_key=delta_key)
+    async with ChatClient("http://fake", "fake-model", transport=server.transport) as client:
+        result = await client.chat_stream(MESSAGES, request_id="r1", max_tokens=32)
+
+    assert result.ok, f"{delta_key} deltas must count as output"
+    assert len(result.chunk_times) == 5
+    assert result.ttft_s is not None
+
+
 async def test_a_buffered_flush_is_not_a_decode_measurement() -> None:
     """Several deltas arriving at once is a flush, not a decode interval.
 
