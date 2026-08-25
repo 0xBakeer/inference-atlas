@@ -1,0 +1,3748 @@
+{
+  "schema_version": 1,
+  "engine_id": "sglang",
+  "version": "0.0.0.dev0+qwen38.27b.g561c8f3",
+  "released": null,
+  "extraction_method": "argparse",
+  "extracted_at": "2026-08-25T13:38:44Z",
+  "source": "captured output (/private/tmp/claude-501/-Users-khaledbakeer-Projects-inf-atlas/d63c9c70-9493-440c-b2a3-cacf36c53550/scratchpad/sglang_dump.json)",
+  "notes": null,
+  "params": [
+    {
+      "name": "abort-on-priority-when-disabled",
+      "type": "bool",
+      "default": false,
+      "help": "If set, abort requests that specify a priority when priority scheduling is disabled."
+    },
+    {
+      "name": "admin-api-key",
+      "type": "str",
+      "default": null,
+      "help": "Set admin API key for sensitive management endpoints (e.g. /clear_hicache_storage_backend). When set, admin endpoints require this key and do NOT accept --api-key."
+    },
+    {
+      "name": "allow-auto-truncate",
+      "type": "bool",
+      "default": false,
+      "help": "Allow automatically truncating requests that exceed the maximum input length instead of returning an error."
+    },
+    {
+      "name": "api-key",
+      "type": "str",
+      "default": null,
+      "help": "Set API key of the server. It is also used in the OpenAI API compatible server.",
+      "group": "server",
+      "impact": "low"
+    },
+    {
+      "name": "asr-max-buffer-seconds",
+      "type": "int",
+      "default": 60,
+      "help": "Maximum seconds of PCM audio the streaming ASR WebSocket handler will accumulate before closing the session with a buffer_overflow error. Guards against OOM when a client streams audio faster than inference can consume it. Default 60s."
+    },
+    {
+      "name": "asr-max-concurrent-sessions",
+      "type": "int",
+      "default": 32,
+      "help": "Maximum number of concurrent realtime ASR WebSocket sessions served by /v1/realtime. New connections beyond this cap are accepted, sent an error{code:too_many_sessions} frame, and closed. Default 32."
+    },
+    {
+      "name": "attention-backend",
+      "type": "enum",
+      "default": null,
+      "choices": [
+        "triton",
+        "torch_native",
+        "flex_attention",
+        "dsa",
+        "nsa",
+        "dsv4",
+        "compressed",
+        "cutlass_mla",
+        "fa3",
+        "fa4",
+        "flashinfer",
+        "flashmla",
+        "trtllm_mla",
+        "cutedsl_mla",
+        "tokenspeed_mla",
+        "trtllm_mha",
+        "dual_chunk_flash_attn",
+        "hpc_ops",
+        "aiter",
+        "wave",
+        "intel_amx",
+        "ascend",
+        "intel_xpu"
+      ],
+      "help": "Choose the kernels for attention layers.",
+      "group": "compilation",
+      "impact": "high"
+    },
+    {
+      "name": "attention-context-parallel-size",
+      "type": "int",
+      "default": 1,
+      "help": "The attention context parallelism size.",
+      "aliases": [
+        "--attn-cp-size"
+      ]
+    },
+    {
+      "name": "base-gpu-id",
+      "type": "int",
+      "default": 0,
+      "help": "The base GPU ID to start allocating GPUs from. Useful when running multiple instances on the same machine."
+    },
+    {
+      "name": "batch-notify-size",
+      "type": "int",
+      "default": 16,
+      "help": "Number of streaming notifications to batch before yielding to the event loop. Reduces asyncio wakeup overhead under high concurrency."
+    },
+    {
+      "name": "bf16-gemm-backend",
+      "type": "enum",
+      "default": "auto",
+      "choices": [
+        "auto",
+        "cutedsl",
+        "flashinfer_pr4266",
+        "gemv",
+        "torch"
+      ],
+      "help": "Choose the backend for unquantized BF16 GEMM operations. Options: 'auto' (default; selects 'cutedsl' on SM100/SM103 (Blackwell), otherwise uses cuBLAS via torch.nn.functional.linear), 'cutedsl' (SGLang JIT CuTe DSL TGV BF16 GEMM on SM10X; dispatches between the allowlisted low-M Split-K kernel, the CuTe DSL kernel, and cuBLAS; set SGLANG_ENABLE_BF16_SPLITK_GEMM=0 to disable Split-K), 'flashinfer_pr4266' (legacy compatibility alias for the optimized CuTe DSL path), 'torch' (always uses cuBLAS via torch.nn.functional.linear, even on SM100/SM103)."
+    },
+    {
+      "name": "bucket-e2e-request-latency",
+      "type": "float",
+      "default": null,
+      "help": "The buckets of end-to-end request latency, specified as a list of floats."
+    },
+    {
+      "name": "bucket-inter-token-latency",
+      "type": "float",
+      "default": null,
+      "help": "The buckets of inter-token latency, specified as a list of floats."
+    },
+    {
+      "name": "bucket-time-to-first-token",
+      "type": "float",
+      "default": null,
+      "help": "The buckets of time to first token, specified as a list of floats."
+    },
+    {
+      "name": "chat-template",
+      "type": "str",
+      "default": null,
+      "help": "The buliltin chat template name or the path of the chat template file. This is only used for OpenAI-compatible API server."
+    },
+    {
+      "name": "checkpoint-engine-wait-weights-before-ready",
+      "type": "bool",
+      "default": false,
+      "help": "If set, the server will wait for initial weights to be loaded via checkpoint-engine or other update methods before serving inference requests."
+    },
+    {
+      "name": "chunked-prefill-size",
+      "type": "int",
+      "default": null,
+      "help": "The maximum number of tokens in a chunk for the chunked prefill. Setting this to -1 means disabling chunked prefill.",
+      "group": "batching",
+      "impact": "high"
+    },
+    {
+      "name": "collect-tokens-histogram",
+      "type": "list",
+      "default": null,
+      "help": "Deprecated. Token histograms are now automatically collected when --enable-metrics is set."
+    },
+    {
+      "name": "completion-template",
+      "type": "str",
+      "default": null,
+      "help": "The buliltin completion template name or the path of the completion template file. This is only used for OpenAI-compatible API server. only for code completion currently."
+    },
+    {
+      "name": "config",
+      "type": "str",
+      "default": null,
+      "help": "Read CLI options from a config file. Must be a YAML file with configuration options."
+    },
+    {
+      "name": "constrained-json-disable-any-whitespace",
+      "type": "bool",
+      "default": false,
+      "help": "(xgrammar and llguidance backends only) Enforce compact representation in JSON constrained output."
+    },
+    {
+      "name": "constrained-json-whitespace-pattern",
+      "type": "str",
+      "default": null,
+      "help": "(outlines and llguidance backends only) Regex pattern for syntactic whitespaces allowed in JSON constrained output. For example, to allow the model generate consecutive whitespaces, set the pattern to [ ]*"
+    },
+    {
+      "name": "context-length",
+      "type": "str",
+      "default": null,
+      "help": "The model's maximum context length. Defaults to None (will use the value from the model's config.json instead). Supports standard SI suffixes (k, M, G, T) and IEC suffixes (Ki, Mi, Gi, Ti). Suffixes are case-sensitive. Decimals are allowed for SI suffixes only. Examples: '1k' -> 1000 '1M' -> 1000000 '25.6k' -> 25600 '1Ki' -> 1024 '1Mi' -> 1048576",
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "cp-strategy",
+      "type": "enum",
+      "default": null,
+      "choices": [
+        "zigzag",
+        "interleave"
+      ],
+      "help": "Sharding strategy for prefill CP. 'zigzag' is the former in-seq-split mode; 'interleave' is the former round-robin-split mode."
+    },
+    {
+      "name": "cpu-offload-gb",
+      "type": "int",
+      "default": 0,
+      "help": "How many GBs of RAM to reserve for CPU offloading."
+    },
+    {
+      "name": "crash-dump-folder",
+      "type": "str",
+      "default": null,
+      "help": "Folder path to dump requests from the last 5 min before a crash (if any). If not specified, crash dumping is disabled."
+    },
+    {
+      "name": "cuda-graph-backend-decode",
+      "type": "enum",
+      "default": null,
+      "choices": [
+        "full",
+        "breakable",
+        "tc_piecewise",
+        "disabled"
+      ],
+      "help": "Backend for the decode phase. Folds into cuda_graph_config[decode].backend."
+    },
+    {
+      "name": "cuda-graph-backend-prefill",
+      "type": "enum",
+      "default": null,
+      "choices": [
+        "full",
+        "breakable",
+        "tc_piecewise",
+        "disabled"
+      ],
+      "help": "Backend for the prefill phase. Folds into cuda_graph_config[prefill].backend."
+    },
+    {
+      "name": "cuda-graph-bs",
+      "type": "int",
+      "default": null,
+      "help": "Deprecated alias for --cuda-graph-bs-decode."
+    },
+    {
+      "name": "cuda-graph-bs-decode",
+      "type": "int",
+      "default": null,
+      "help": "Explicit list of batch sizes to capture for the decode cuda graph."
+    },
+    {
+      "name": "cuda-graph-bs-prefill",
+      "type": "int",
+      "default": null,
+      "help": "Explicit list of batch sizes to capture for the prefill cuda graph."
+    },
+    {
+      "name": "cuda-graph-config",
+      "type": "str",
+      "default": null,
+      "help": "Per-phase CUDA graph settings as JSON, e.g. '{\"decode\":{\"backend\":\"full\",\"max_bs\":256},\"prefill\":{\"backend\":\"tc_piecewise\",\"tc_compiler\":\"eager\"}}'. Allowed backends per phase: full, breakable, tc_piecewise, disabled (full is decode-only). JSON wins over the per-phase --cuda-graph-* convenience flags and over legacy flags."
+    },
+    {
+      "name": "cuda-graph-max-bs",
+      "type": "int",
+      "default": null,
+      "help": "Deprecated alias for --cuda-graph-max-bs-decode.",
+      "group": "compilation",
+      "impact": "medium"
+    },
+    {
+      "name": "cuda-graph-max-bs-decode",
+      "type": "int",
+      "default": null,
+      "help": "Maximum batch size captured for the decode cuda graph."
+    },
+    {
+      "name": "cuda-graph-max-bs-prefill",
+      "type": "int",
+      "default": null,
+      "help": "Maximum batch size captured for the prefill cuda graph."
+    },
+    {
+      "name": "cuda-graph-tc-compiler",
+      "type": "enum",
+      "default": null,
+      "choices": [
+        "eager",
+        "inductor"
+      ],
+      "help": "Compiler used by the tc_piecewise backend (currently only the prefill phase consumes it)."
+    },
+    {
+      "name": "custom-weight-loader",
+      "type": "list",
+      "default": null,
+      "help": "The custom dataloader which used to update the model. Should be set with a valid import path, such as my_package.weight_load_func"
+    },
+    {
+      "name": "data-parallel-size",
+      "type": "int",
+      "default": 1,
+      "help": "The data parallelism size.",
+      "aliases": [
+        "--dp-size"
+      ]
+    },
+    {
+      "name": "dcp-comm-backend",
+      "type": "enum",
+      "default": "ag_rs",
+      "choices": [
+        "ag_rs",
+        "a2a",
+        "fi_a2a"
+      ],
+      "help": "Communication backend for the decode context-parallel (DCP) attention reduction: 'ag_rs' (AllGather + ReduceScatter), 'a2a' (fused NCCL All-to-All exchange of output+LSE + local Triton LSE combine), or 'fi_a2a' (FlashInfer MNNVL All-to-All kernel; requires SM90+ and MNNVL fabric memory, e.g. GB200 NVL72)."
+    },
+    {
+      "name": "debug-cuda-graph",
+      "type": "bool",
+      "default": false,
+      "help": "Enable debug/eager mode for CUDA graph using breakable CUDA graph. When enabled, graph breaks are inserted so every operation runs eagerly while still going through the CUDA graph capture / replay path. Useful for debugging CUDA graph capture / replay issues."
+    },
+    {
+      "name": "debug-tensor-dump-input-file",
+      "type": "path",
+      "default": null,
+      "help": "The input filename for dumping tensors"
+    },
+    {
+      "name": "debug-tensor-dump-layers",
+      "type": "int",
+      "default": null,
+      "help": "The layer ids to dump. Dump all layers if not specified."
+    },
+    {
+      "name": "debug-tensor-dump-output-folder",
+      "type": "str",
+      "default": null,
+      "help": "The output folder for dumping tensors. In Eagle mode, tensor outputs from draft and target models are stored in separate subdirectories ('draft' and 'target')."
+    },
+    {
+      "name": "decode-attention-backend",
+      "type": "enum",
+      "default": null,
+      "choices": [
+        "triton",
+        "torch_native",
+        "flex_attention",
+        "dsa",
+        "nsa",
+        "dsv4",
+        "compressed",
+        "cutlass_mla",
+        "fa3",
+        "fa4",
+        "flashinfer",
+        "flashmla",
+        "trtllm_mla",
+        "cutedsl_mla",
+        "tokenspeed_mla",
+        "trtllm_mha",
+        "dual_chunk_flash_attn",
+        "hpc_ops",
+        "aiter",
+        "wave",
+        "intel_amx",
+        "ascend",
+        "intel_xpu"
+      ],
+      "help": "Choose the kernels for decode attention layers (have priority over --attention-backend)."
+    },
+    {
+      "name": "decode-context-parallel-size",
+      "type": "int",
+      "default": 1,
+      "help": "The decode context parallelism size.",
+      "aliases": [
+        "--dcp-size"
+      ]
+    },
+    {
+      "name": "decode-log-interval",
+      "type": "int",
+      "default": 40,
+      "help": "The log and metrics reporting interval (in decode iterations) for decode batches."
+    },
+    {
+      "name": "decoupled-spec-bind-endpoint",
+      "type": "str",
+      "default": null,
+      "help": "ZMQ endpoint this engine binds for its inbound channel in decoupled speculative decoding (verifier: result PULL; drafter: control PULL)."
+    },
+    {
+      "name": "decoupled-spec-connect-endpoints",
+      "type": "json",
+      "default": null,
+      "help": "Peer inbound (bind) endpoints to connect to, ordered by peer rank, for decoupled speculative decoding."
+    },
+    {
+      "name": "decoupled-spec-rank",
+      "type": "int",
+      "default": null,
+      "help": "This engine's rank within its own role space (verifier-rank or drafter-rank) for decoupled speculative decoding."
+    },
+    {
+      "name": "decoupled-spec-role",
+      "type": "enum",
+      "default": "null",
+      "choices": [
+        "null",
+        "verifier",
+        "drafter"
+      ],
+      "help": "Role in decoupled speculative decoding: 'null' disables it, 'verifier' runs the target/verify half, 'drafter' runs the draft half."
+    },
+    {
+      "name": "decrypted-config-file",
+      "type": "path",
+      "default": null,
+      "help": "The path of the decrypted config file."
+    },
+    {
+      "name": "decrypted-draft-config-file",
+      "type": "path",
+      "default": null,
+      "help": "The path of the decrypted draft config file."
+    },
+    {
+      "name": "deepep-config",
+      "type": "str",
+      "default": null,
+      "help": "Tuned DeepEP config suitable for your own cluster. It can be either a string with JSON content or a file path."
+    },
+    {
+      "name": "deepep-dispatcher-output-dtype",
+      "type": "enum",
+      "default": "auto",
+      "choices": [
+        "auto",
+        "bf16",
+        "fp8",
+        "int8",
+        "nvfp4"
+      ],
+      "help": "Select DeepEP dispatcher output dtype"
+    },
+    {
+      "name": "deepep-mode",
+      "type": "enum",
+      "default": "auto",
+      "choices": [
+        "auto",
+        "normal",
+        "low_latency"
+      ],
+      "help": "Select the mode when enable DeepEP or MoriEP MoE, could be `normal`, `low_latency` or `auto`. Default is `auto`, which means `low_latency` for decode batch and `normal` for prefill batch."
+    },
+    {
+      "name": "deepep-v2-dispatcher-output-dtype",
+      "type": "enum",
+      "default": "auto",
+      "choices": [
+        "auto",
+        "bf16",
+        "fp8"
+      ],
+      "help": "DeepEP v2 dispatcher output dtype. `auto`: fp8 for the DeepGEMM runner, bf16 for Triton."
+    },
+    {
+      "name": "deepep-v2-mode",
+      "type": "enum",
+      "default": "direct",
+      "choices": [
+        "direct",
+        "hybrid"
+      ],
+      "help": "DeepEP v2 ElasticBuffer communication topology, fixed at server init: `direct` (single-node NVLink) or `hybrid` (multi-node scale-out). Layout/grouped-GEMM and the decode CUDA graph are chosen per batch by inference phase, independent of this knob; not equivalent to DeepEP v1 normal/low_latency."
+    },
+    {
+      "name": "default-chat-template-kwargs",
+      "type": "json",
+      "default": null,
+      "help": "Default chat template kwargs applied to every request when not overridden per-request. Keys must match what the model's chat template expects (e.g. enable_thinking, thinking, reasoning_effort). Per-request chat_template_kwargs takes precedence."
+    },
+    {
+      "name": "default-priority-value",
+      "type": "int",
+      "default": null,
+      "help": "Default priority for requests without explicit priority."
+    },
+    {
+      "name": "delete-ckpt-after-loading",
+      "type": "bool",
+      "default": false,
+      "help": "Delete the model checkpoint after loading the model."
+    },
+    {
+      "name": "detokenizer-worker-num",
+      "type": "int",
+      "default": 1,
+      "help": "The worker num of the detokenizer manager."
+    },
+    {
+      "name": "device",
+      "type": "str",
+      "default": null,
+      "help": "The device to use ('cuda', 'xpu', 'hpu', 'npu', 'cpu', 'musa'). Defaults to auto-detection if not specified."
+    },
+    {
+      "name": "disable-attn-tp-gather",
+      "type": "bool",
+      "default": false,
+      "help": "Disable scheduler-side attn_tp_gather (the upstream SP path that pads num_tokens to attn_tp_size and pre-allocates a gathered buffer). Use for models that manage SP scatter/gather at the model level (e.g., perform their own all_gather/reduce_scatter inside attention) and do not consume the upstream gathered_buffer. Without this, the cuda graph runner pads num_tokens to attn_tp_size, which can cause kernel autotuners to select wrong-sized variants at small batches."
+    },
+    {
+      "name": "disable-chunked-prefix-cache",
+      "type": "bool",
+      "default": false,
+      "help": "Disable chunked prefix cache feature for deepseek, which should save overhead for short sequences."
+    },
+    {
+      "name": "disable-cuda-graph",
+      "type": "list",
+      "default": false,
+      "help": "Deprecated. Use --cuda-graph-backend-{decode,prefill}=disabled instead.",
+      "group": "compilation",
+      "impact": "high"
+    },
+    {
+      "name": "disable-cuda-graph-padding",
+      "type": "bool",
+      "default": false,
+      "help": "Disable cuda graph when padding is needed. Still uses cuda graph when padding is not needed."
+    },
+    {
+      "name": "disable-custom-all-reduce",
+      "type": "bool",
+      "default": false,
+      "help": "Disable the custom all-reduce kernel and fall back to NCCL."
+    },
+    {
+      "name": "disable-decode-cuda-graph",
+      "type": "bool",
+      "default": false,
+      "help": "Disable the decode-phase CUDA graph. Convenience for --cuda-graph-backend-decode=disabled."
+    },
+    {
+      "name": "disable-fast-image-processor",
+      "type": "bool",
+      "default": false,
+      "help": "Adopt base image processor instead of fast image processor."
+    },
+    {
+      "name": "disable-flashinfer-autotune",
+      "type": "bool",
+      "default": false,
+      "help": "Disable FlashInfer autotuning."
+    },
+    {
+      "name": "disable-flashinfer-cutlass-moe-fp4-allgather",
+      "type": "bool",
+      "default": false,
+      "help": "Disables quantize before all-gather for flashinfer cutlass moe."
+    },
+    {
+      "name": "disable-hybrid-swa-memory",
+      "type": "bool",
+      "default": false,
+      "help": "Disable the hybrid SWA memory pool."
+    },
+    {
+      "name": "disable-outlines-disk-cache",
+      "type": "bool",
+      "default": false,
+      "help": "Disable disk cache of outlines to avoid possible crashes related to file system or high concurrency."
+    },
+    {
+      "name": "disable-overlap-schedule",
+      "type": "bool",
+      "default": false,
+      "help": "Disable the overlap scheduler, which overlaps the CPU scheduler with GPU model worker."
+    },
+    {
+      "name": "disable-piecewise-cuda-graph",
+      "type": "list",
+      "default": null,
+      "help": "Deprecated alias for --cuda-graph-backend-prefill=disabled."
+    },
+    {
+      "name": "disable-prefill-cuda-graph",
+      "type": "bool",
+      "default": false,
+      "help": "Disable the prefill-phase CUDA graph. Convenience for --cuda-graph-backend-prefill=disabled."
+    },
+    {
+      "name": "disable-priority-preemption",
+      "type": "bool",
+      "default": false,
+      "help": "Disable priority scheduling preemption."
+    },
+    {
+      "name": "disable-radix-cache",
+      "type": "bool",
+      "default": false,
+      "help": "Disable RadixAttention for prefix caching.",
+      "group": "caching",
+      "impact": "high"
+    },
+    {
+      "name": "disable-shared-experts-fusion",
+      "type": "bool",
+      "default": false,
+      "help": "Disable the built-in shared experts fusion optimization for DeepSeek V3/R1. Note: Waterfill (--enable-waterfill) routes the shared expert as an extra MoE slot, so the shared expert is not separated from the MoE path when Waterfill is enabled."
+    },
+    {
+      "name": "disable-tokenizer-batch-decode",
+      "type": "bool",
+      "default": false,
+      "help": "Disable batch decoding when decoding multiple completions."
+    },
+    {
+      "name": "disaggregation-bootstrap-port",
+      "type": "int",
+      "default": 8998,
+      "help": "Bootstrap server port on the prefill server. Default is 8998."
+    },
+    {
+      "name": "disaggregation-decode-enable-offload-kvcache",
+      "type": "bool",
+      "default": false,
+      "help": "Enable async KV cache offloading on decode server (PD mode)."
+    },
+    {
+      "name": "disaggregation-decode-enable-radix-cache",
+      "type": "bool",
+      "default": false,
+      "help": "Enable radix cache on decode server (PD mode). Caches KV prefixes to avoid redundant transfers. Incompatible with --enable-hisparse, speculative decoding, and --disaggregation-transfer-backend fake."
+    },
+    {
+      "name": "disaggregation-decode-extra-slots",
+      "type": "int",
+      "default": null,
+      "help": "Number of extra decode req_to_token slots pre-allocated for in-transfer requests (PD mode). If unset, defaults to 0 (or 2x the per-worker running batch for small batches)."
+    },
+    {
+      "name": "disaggregation-decode-polling-interval",
+      "type": "int",
+      "default": 1,
+      "help": "The interval to poll requests in decode server. Can be set to >1 to reduce the overhead of this."
+    },
+    {
+      "name": "disaggregation-ib-device",
+      "type": "str",
+      "default": null,
+      "help": "The InfiniBand devices for disaggregation transfer. Supports a single device (e.g., --disaggregation-ib-device mlx5_0), a shared comma-separated list (e.g., --disaggregation-ib-device mlx5_0,mlx5_1), a per-GPU JSON mapping (e.g., --disaggregation-ib-device '{\"0\": \"mlx5_0,mlx5_1\", \"1\": \"mlx5_2\"}'), or a path to a JSON file containing that mapping. Default is None, which triggers automatic device detection when mooncake backend is enabled."
+    },
+    {
+      "name": "disaggregation-mode",
+      "type": "enum",
+      "default": "null",
+      "choices": [
+        "null",
+        "prefill",
+        "decode"
+      ],
+      "help": "Only used for PD disaggregation. \"prefill\" for prefill-only server, and \"decode\" for decode-only server. If not specified, it is not PD disaggregated"
+    },
+    {
+      "name": "disaggregation-transfer-backend",
+      "type": "enum",
+      "default": "mooncake",
+      "choices": [
+        "mooncake",
+        "nixl",
+        "ascend",
+        "fake",
+        "mori",
+        "mooncake_tcp"
+      ],
+      "help": "The backend for disaggregation transfer. Default is mooncake."
+    },
+    {
+      "name": "dist-init-addr",
+      "type": "str",
+      "default": null,
+      "help": "The host address for initializing distributed backend (e.g., `192.168.0.2:25000`).",
+      "aliases": [
+        "--nccl-init-addr"
+      ]
+    },
+    {
+      "name": "dist-timeout",
+      "type": "int",
+      "default": null,
+      "help": "Set timeout for torch.distributed initialization."
+    },
+    {
+      "name": "dllm-algorithm",
+      "type": "str",
+      "default": null,
+      "help": "The diffusion LLM algorithm, such as LowConfidence."
+    },
+    {
+      "name": "dllm-algorithm-config",
+      "type": "str",
+      "default": null,
+      "help": "The diffusion LLM algorithm configurations. Must be a YAML file."
+    },
+    {
+      "name": "download-dir",
+      "type": "path",
+      "default": null,
+      "help": "Model download directory for huggingface."
+    },
+    {
+      "name": "dsa-decode-backend",
+      "type": "enum",
+      "default": null,
+      "choices": [
+        "flashmla_sparse",
+        "flashmla_sparse_q8",
+        "flashmla_kv",
+        "flashmla_auto",
+        "flashinfer_sparse_mla",
+        "fa3",
+        "tilelang",
+        "aiter",
+        "trtllm"
+      ],
+      "help": "DSA (DeepSeek Sparse Attention) decode backend. If not specified, auto-detects based on hardware and kv_cache_dtype."
+    },
+    {
+      "name": "dsa-paged-mqa-logits-backend",
+      "type": "enum",
+      "default": "auto",
+      "choices": [
+        "auto",
+        "deepgemm",
+        "cutedsl",
+        "aiter"
+      ],
+      "help": "DSA indexer paged MQA logits kernel backend. Options: 'auto' (default; DeepGEMM on CUDA, aiter on ROCm), 'deepgemm', 'cutedsl' (CuTe DSL kernel, SM 100 (Blackwell) only; wins at low batch size and long context), 'aiter' (ROCm only)."
+    },
+    {
+      "name": "dsa-prefill-backend",
+      "type": "enum",
+      "default": null,
+      "choices": [
+        "flashmla_sparse",
+        "flashmla_sparse_q8",
+        "flashmla_kv",
+        "flashmla_auto",
+        "flashinfer_sparse_mla",
+        "fa3",
+        "tilelang",
+        "aiter",
+        "trtllm"
+      ],
+      "help": "DSA (DeepSeek Sparse Attention) prefill backend. If not specified, auto-detects based on hardware and kv_cache_dtype."
+    },
+    {
+      "name": "dsa-prefill-cp-mode",
+      "type": "enum",
+      "default": "round-robin-split",
+      "choices": [
+        "in-seq-split",
+        "round-robin-split"
+      ],
+      "help": "[Deprecated] Use --cp-strategy {zigzag,interleave} instead. 'in-seq-split' maps to 'zigzag'; 'round-robin-split' maps to 'interleave'."
+    },
+    {
+      "name": "dsa-topk-backend",
+      "type": "enum",
+      "default": "sgl-kernel",
+      "choices": [
+        "sgl-kernel",
+        "torch",
+        "flashinfer"
+      ],
+      "help": "DSA indexer top-k backend. Options: 'sgl-kernel', 'torch', 'flashinfer'. The 'torch' backend currently requires SGLANG_DSA_FUSE_TOPK=false."
+    },
+    {
+      "name": "dtype",
+      "type": "enum",
+      "default": "auto",
+      "choices": [
+        "auto",
+        "half",
+        "float16",
+        "bfloat16",
+        "float",
+        "float32"
+      ],
+      "help": "Data type for model weights and activations. * \"auto\" will use FP16 precision for FP32 and FP16 models, and BF16 precision for BF16 models. * \"half\" for FP16. Recommended for AWQ quantization. * \"float16\" is the same as \"half\". * \"bfloat16\" for a balance between precision and range. * \"float\" is shorthand for FP32 precision. * \"float32\" for FP32 precision.",
+      "group": "quantization",
+      "impact": "high"
+    },
+    {
+      "name": "dwdp-size",
+      "type": "int",
+      "default": 1,
+      "help": "DWDP (Distributed Weight Data Parallelism) group size. When > 1, MoE prefill uses weight prefetch instead of token all-to-all. Must equal tp_size. Only supported with --disaggregation-mode null or prefill."
+    },
+    {
+      "name": "dynamic-batch-tokenizer-batch-size",
+      "type": "int",
+      "default": 32,
+      "help": "[Only used if --enable-dynamic-batch-tokenizer is set] Maximum batch size for dynamic batch tokenizer."
+    },
+    {
+      "name": "dynamic-batch-tokenizer-batch-timeout",
+      "type": "float",
+      "default": 0.002,
+      "help": "[Only used if --enable-dynamic-batch-tokenizer is set] Timeout in seconds for batching tokenization requests."
+    },
+    {
+      "name": "elastic-ep-backend",
+      "type": "enum",
+      "default": null,
+      "choices": [
+        "none",
+        "mooncake",
+        "nixl"
+      ],
+      "help": "Specify the collective communication backend for elastic EP. Supports 'mooncake' and 'nixl'."
+    },
+    {
+      "name": "elastic-ep-initial-size",
+      "type": "int",
+      "default": null,
+      "help": "EP size used to define the immutable per-rank expert storage layout. Scale joiners must use the primary deployment's launch-time EP size."
+    },
+    {
+      "name": "elastic-ep-join-mode",
+      "type": "enum",
+      "default": null,
+      "choices": [
+        "scale",
+        "recover"
+      ],
+      "help": "Join mode for elastic EP. 'recover' rejoins an existing slot after a fault. 'scale' joins as a new rank beyond the original group size and requires --node-rank 1."
+    },
+    {
+      "name": "elastic-ep-join-rank-offset",
+      "type": "int",
+      "default": 0,
+      "help": "Global rank offset of an elastic EP joining group. Scale joiners must set this to the current effective EP size."
+    },
+    {
+      "name": "elastic-ep-rejoin",
+      "type": "bool",
+      "default": false,
+      "help": "[Deprecated] Alias for --elastic-ep-join-mode recover."
+    },
+    {
+      "name": "elastic-ep-scale-timeout",
+      "type": "float",
+      "default": 600,
+      "help": "Timeout in seconds for a pending elastic EP scale operation."
+    },
+    {
+      "name": "enable-adaptive-dispatch-to-encoder",
+      "type": "bool",
+      "default": false,
+      "help": "When enabled, adaptively dispatch: multi-image requests go to encoder in language_only epd mode, single-image requests are processed locally."
+    },
+    {
+      "name": "enable-aiter-allreduce-fusion",
+      "type": "bool",
+      "default": false,
+      "help": "Enable Aiter AllReduce Fusion."
+    },
+    {
+      "name": "enable-attn-tp-input-scattered",
+      "type": "bool",
+      "default": false,
+      "help": "Allow input of attention to be scattered when only using tensor parallelism, to reduce the computational load of operations such as qkv latent."
+    },
+    {
+      "name": "enable-breakable-cuda-graph",
+      "type": "list",
+      "default": null,
+      "help": "Deprecated alias for --cuda-graph-backend-prefill=breakable."
+    },
+    {
+      "name": "enable-broadcast-mm-inputs-process",
+      "type": "bool",
+      "default": false,
+      "help": "Enable broadcast mm-inputs process in scheduler."
+    },
+    {
+      "name": "enable-cache-report",
+      "type": "bool",
+      "default": false,
+      "help": "Return number of cached tokens in usage.prompt_tokens_details for each openai request."
+    },
+    {
+      "name": "enable-cp-decode-attn-tp",
+      "type": "bool",
+      "default": false,
+      "help": "Enable attention tensor-parallel weight slicing during decode under context parallel (cp_size>1). Slices the replicated attention linears to the local CP partition, eliminating redundant decode GEMMs."
+    },
+    {
+      "name": "enable-cudagraph-gc",
+      "type": "bool",
+      "default": false,
+      "help": "Enable garbage collection during CUDA graph capture. If disabled (default), GC is frozen during capture to speed up the process."
+    },
+    {
+      "name": "enable-custom-logit-processor",
+      "type": "bool",
+      "default": false,
+      "help": "Enable users to pass custom logit processors to the server (disabled by default for security)"
+    },
+    {
+      "name": "enable-deepseek-v4-fp4-indexer",
+      "type": "bool",
+      "default": false,
+      "help": "Enable the experimental FP4 C4 indexer path for DeepSeek V4. Default keeps the existing indexer implementation."
+    },
+    {
+      "name": "enable-deterministic-inference",
+      "type": "bool",
+      "default": false,
+      "help": "Enable deterministic inference mode with batch invariant ops."
+    },
+    {
+      "name": "enable-dp-attention",
+      "type": "bool",
+      "default": false,
+      "help": "Enabling data parallelism for attention and tensor parallelism for FFN. The dp size should be equal to the tp size. Currently DeepSeek-V2 and Qwen 2/3 MoE models are supported.",
+      "group": "parallelism",
+      "impact": "medium"
+    },
+    {
+      "name": "enable-dp-attention-local-control-broadcast",
+      "type": "bool",
+      "default": false,
+      "help": "With DP-attention, send control messages to every DP group leader and broadcast within attn_tp_group instead of the full tp_group. Eliminates a costly all-ranks gloo sync on every scheduler iteration."
+    },
+    {
+      "name": "enable-dp-lm-head",
+      "type": "bool",
+      "default": false,
+      "help": "Enable vocabulary parallel across the attention TP group to avoid all-gather across DP groups, optimizing performance under DP attention."
+    },
+    {
+      "name": "enable-draft-weights-cpu-backup",
+      "type": "bool",
+      "default": false,
+      "help": "Save draft model weights to CPU memory during release_weights_occupation and resume_weights_occupation"
+    },
+    {
+      "name": "enable-dsa-cache-layer-split",
+      "type": "bool",
+      "default": false,
+      "help": "Split DSA (DeepSeek Sparse Attention) GPU KV/indexer cache layers across context-parallel ranks to reduce per-rank KV memory. Currently only supported with the mooncake transfer backend (mooncake / mooncake_tcp); mori/nixl support will be added later by the community."
+    },
+    {
+      "name": "enable-dsa-prefill-context-parallel",
+      "type": "list",
+      "default": false,
+      "help": "[Deprecated] Use --enable-prefill-cp instead."
+    },
+    {
+      "name": "enable-dynamic-batch-tokenizer",
+      "type": "bool",
+      "default": false,
+      "help": "Enable async dynamic batch tokenizer for improved performance when multiple requests arrive concurrently."
+    },
+    {
+      "name": "enable-dynamic-chunking",
+      "type": "bool",
+      "default": false,
+      "help": "Enable dynamic chunk size adjustment for pipeline parallelism. When enabled, chunk sizes are dynamically calculated based on fitted function to maintain consistent execution time across chunks."
+    },
+    {
+      "name": "enable-elastic-expert-backup",
+      "type": "bool",
+      "default": false,
+      "help": "Enable elastic expert backup feature."
+    },
+    {
+      "name": "enable-eplb",
+      "type": "bool",
+      "default": false,
+      "help": "Enable EPLB algorithm"
+    },
+    {
+      "name": "enable-expert-distribution-metrics",
+      "type": "bool",
+      "default": false,
+      "help": "Enable logging metrics for expert balancedness"
+    },
+    {
+      "name": "enable-flashinfer-allreduce-fusion",
+      "type": "bool",
+      "default": false,
+      "help": "(Deprecated: use --flashinfer-allreduce-fusion-backend=auto) Enable FlashInfer allreduce fusion with Residual RMSNorm."
+    },
+    {
+      "name": "enable-flexkv",
+      "type": "bool",
+      "default": false,
+      "help": "Route the default RadixCache through FlexKV's KVManager for host-tier (CPU / SSD / Remote) KV cache offload. Equivalent to --radix-cache-backend=flexkv but also participates in the auto-selection chain alongside --enable-lmcache."
+    },
+    {
+      "name": "enable-forward-pass-metrics",
+      "type": "bool",
+      "default": false,
+      "help": "Enable per-iteration forward pass metrics via ZMQ IPC. External consumers (e.g. Dynamo planner) subscribe to the IPC endpoint exposed in server_args.forward_pass_metrics_ipc_name."
+    },
+    {
+      "name": "enable-fp32-lm-head",
+      "type": "bool",
+      "default": false,
+      "help": "If set, the LM head outputs (logits) are in FP32."
+    },
+    {
+      "name": "enable-fused-moe-sum-all-reduce",
+      "type": "bool",
+      "default": false,
+      "help": "Enable fused moe triton and sum all reduce."
+    },
+    {
+      "name": "enable-fused-qk-norm-rope",
+      "type": "bool",
+      "default": false,
+      "help": "Enable fused qk normalization and rope rotary embedding."
+    },
+    {
+      "name": "enable-gdn-replayssm-spec",
+      "type": "list",
+      "default": false,
+      "help": "[Deprecated] Use --enable-linear-replayssm-spec instead."
+    },
+    {
+      "name": "enable-hierarchical-cache",
+      "type": "bool",
+      "default": false,
+      "help": "Enable hierarchical cache"
+    },
+    {
+      "name": "enable-hisparse",
+      "type": "bool",
+      "default": false,
+      "help": "Enable hierarchical sparse attention"
+    },
+    {
+      "name": "enable-http2",
+      "type": "bool",
+      "default": false,
+      "help": "Use Granian instead of Uvicorn as the ASGI server, enabling HTTP/1.1 and HTTP/2 auto-negotiation. Clients may use h2c (cleartext HTTP/2) or plain HTTP/1.1. Requires 'pip install sglang[http2]'."
+    },
+    {
+      "name": "enable-int8-mamba-checkpoint",
+      "type": "bool",
+      "default": false,
+      "help": "Store radix-cached linear-attn (mamba) states in int8 (separate checkpoint pool) for ~2x cached-prefix capacity at fixed memory."
+    },
+    {
+      "name": "enable-layerwise-nvtx-marker",
+      "type": "bool",
+      "default": false,
+      "help": "Enable layerwise NVTX profiling annotations for the model."
+    },
+    {
+      "name": "enable-linear-replayssm",
+      "type": "bool",
+      "default": false,
+      "help": "Enable the ReplaySSM buffered output-only linear-attn decode kernel. Primarily a GDN (scalar-gate) decode-bandwidth optimization (~1.2-1.5x at batch >= 64). The unified kernel also supports KDA (per-K gate) and is numerically correct, but KDA decode is SLOWER than the packed baseline (the per-K g_cache is K x larger and the reconstruction refolds the per-K decay every step), so it is not recommended for KDA models. Requires the Triton linear-attn decode backend and --mamba-radix-cache-strategy no_buffer (the default)."
+    },
+    {
+      "name": "enable-linear-replayssm-spec",
+      "type": "bool",
+      "default": false,
+      "help": "Enable the ReplaySSM spec-verify: fold-every-commit -- a per-slot raw-input window replaces the recurrent verify's per-draft full-state snapshots. GDN or KDA hybrid linear-attn models, linear-chain (--speculative-eagle-topk in {None, 1}) only."
+    },
+    {
+      "name": "enable-lmcache",
+      "type": "bool",
+      "default": false,
+      "help": "Using LMCache as an alternative hierarchical cache solution"
+    },
+    {
+      "name": "enable-lora",
+      "type": "bool",
+      "default": null,
+      "help": "Enable LoRA support for the model. This argument is automatically set to True if `--lora-paths` is provided for backward compatibility."
+    },
+    {
+      "name": "enable-lora-overlap-loading",
+      "type": "bool",
+      "default": null,
+      "help": "Enable asynchronous LoRA weight loading in order to overlap H2D transfers with GPU compute. This should be enabled if you find that your LoRA workloads are bottlenecked by adapter weight loading, for example when frequently loading large LoRA adapters."
+    },
+    {
+      "name": "enable-mamba-cache-stochastic-rounding",
+      "type": "bool",
+      "default": false,
+      "help": "Enable stochastic rounding when writing FP16 Mamba SSM cache states. Requires --mamba-ssm-dtype float16 and CUDA. With --mamba-backend triton, requires SM100."
+    },
+    {
+      "name": "enable-memory-saver",
+      "type": "bool",
+      "default": false,
+      "help": "Allow saving memory using release_memory_occupation and resume_memory_occupation"
+    },
+    {
+      "name": "enable-metrics",
+      "type": "bool",
+      "default": false,
+      "help": "Enable log prometheus metrics."
+    },
+    {
+      "name": "enable-metrics-for-all-schedulers",
+      "type": "bool",
+      "default": false,
+      "help": "Enable --enable-metrics-for-all-schedulers when you want schedulers on all TP ranks (not just TP 0) to record request metrics separately. This is especially useful when dp_attention is enabled, as otherwise all metrics appear to come from TP 0."
+    },
+    {
+      "name": "enable-mfu-metrics",
+      "type": "bool",
+      "default": false,
+      "help": "Enable estimated MFU-related prometheus metrics."
+    },
+    {
+      "name": "enable-mis",
+      "type": "bool",
+      "default": false,
+      "help": "Enable Multi-Item Scoring optimization. Combines query and multiple items into a single sequence for efficient batch processing. Requires --attention-backend flashinfer; auto-disables CUDA graph, radix cache, and chunked prefill."
+    },
+    {
+      "name": "enable-mixed-chunk",
+      "type": "bool",
+      "default": false,
+      "help": "Enabling mixing prefill and decode in a batch when using chunked prefill.",
+      "group": "batching",
+      "impact": "medium"
+    },
+    {
+      "name": "enable-mm-global-cache",
+      "type": "bool",
+      "default": false,
+      "help": "Enable global multimodal embedding cache to skip redundant ViT inference."
+    },
+    {
+      "name": "enable-mscclpp",
+      "type": "bool",
+      "default": false,
+      "help": "Enable using mscclpp for small messages for all-reduce kernel and fall back to NCCL."
+    },
+    {
+      "name": "enable-multi-layer-eagle",
+      "type": "bool",
+      "default": false,
+      "help": "Enable multi-layer Eagle speculative decoding."
+    },
+    {
+      "name": "enable-multimodal",
+      "type": "bool",
+      "default": null,
+      "help": "Enable the multimodal functionality for the served model. If the model being served is not multimodal, nothing will happen"
+    },
+    {
+      "name": "enable-nccl-nvls",
+      "type": "bool",
+      "default": false,
+      "help": "Enable NCCL NVLS for prefill heavy requests when available."
+    },
+    {
+      "name": "enable-nsa-prefill-context-parallel",
+      "type": "list",
+      "default": false,
+      "help": "[Deprecated] Use --enable-prefill-cp instead."
+    },
+    {
+      "name": "enable-p2p-check",
+      "type": "bool",
+      "default": false,
+      "help": "Enable P2P check for GPU access, otherwise the p2p access is allowed by default."
+    },
+    {
+      "name": "enable-page-major-kv-layout",
+      "type": "bool",
+      "default": false,
+      "help": "Enable the page-major KV layout: lay out the Mamba state and full/SWA KV caches in a page-granularity envelope (page is the outermost axis, layer-major within a page) instead of the default per-layer (layer-major) layout. Requires the Triton attention / linear-attn / Mamba backends."
+    },
+    {
+      "name": "enable-pdmux",
+      "type": "bool",
+      "default": false,
+      "help": "Enable PD-Multiplexing, PD running on greenctx stream."
+    },
+    {
+      "name": "enable-precise-embedding-interpolation",
+      "type": "bool",
+      "default": false,
+      "help": "Enable corner alignment for resize of embeddings grid to ensure more accurate(but slower) evaluation of interpolated embedding values."
+    },
+    {
+      "name": "enable-prefill-context-parallel",
+      "type": "list",
+      "default": false,
+      "help": "[Deprecated] Use --enable-prefill-cp instead."
+    },
+    {
+      "name": "enable-prefill-cp",
+      "type": "bool",
+      "default": false,
+      "help": "Enable context parallelism for the prefill phase. Select the layout with --cp-strategy."
+    },
+    {
+      "name": "enable-prefill-delayer",
+      "type": "bool",
+      "default": false,
+      "help": "Enable prefill delayer for DP attention to reduce idle time."
+    },
+    {
+      "name": "enable-prefix-mm-cache",
+      "type": "bool",
+      "default": false,
+      "help": "Enable prefix multimodal cache. Currently only supports mm-only."
+    },
+    {
+      "name": "enable-priority-scheduling",
+      "type": "bool",
+      "default": false,
+      "help": "Enable priority scheduling. Requests with higher priority integer values will be scheduled first by default."
+    },
+    {
+      "name": "enable-profile-cuda-graph",
+      "type": "bool",
+      "default": false,
+      "help": "Enable profiling of cuda graph capture."
+    },
+    {
+      "name": "enable-quant-communications",
+      "type": "bool",
+      "default": false,
+      "help": "Enable INT8 quantization of TP communications (limited support)."
+    },
+    {
+      "name": "enable-request-time-stats-logging",
+      "type": "bool",
+      "default": false,
+      "help": "Enable per request time stats logging"
+    },
+    {
+      "name": "enable-return-hidden-states",
+      "type": "bool",
+      "default": false,
+      "help": "Enable returning full hidden states with responses. Equivalent to `--return-hidden-states-mode full`."
+    },
+    {
+      "name": "enable-return-indexer-topk",
+      "type": "bool",
+      "default": false,
+      "help": "Enable returning indexer topk indices of layers with indexer with responses."
+    },
+    {
+      "name": "enable-return-routed-experts",
+      "type": "bool",
+      "default": false,
+      "help": "Enable returning routed experts of each layer with responses."
+    },
+    {
+      "name": "enable-scattered-sconv",
+      "type": "bool",
+      "default": false,
+      "help": "Inkling: replace the attention/MLP output all-reduce with a hidden-dimension reduce-scatter, run the channelwise output short convolution on the [T, H/P] shard, then all-gather before the residual add. This shards the convolution cache across tensor-parallel ranks without changing communication volume."
+    },
+    {
+      "name": "enable-session-radix-cache",
+      "type": "bool",
+      "default": false,
+      "help": "Track per-session references on UnifiedRadixCache KV: eviction consumes unreferenced entries before referenced ones, and closing a session only dereferences its KV."
+    },
+    {
+      "name": "enable-single-batch-overlap",
+      "type": "bool",
+      "default": false,
+      "help": "Let computation and communication overlap within one micro batch."
+    },
+    {
+      "name": "enable-ssl-refresh",
+      "type": "bool",
+      "default": false,
+      "help": "Enable automatic SSL certificate hot-reloading when cert/key files change on disk. Requires --ssl-certfile and --ssl-keyfile."
+    },
+    {
+      "name": "enable-streaming-session",
+      "type": "bool",
+      "default": false,
+      "help": "Enable streaming session mode and StreamingSession wrapper."
+    },
+    {
+      "name": "enable-strict-thinking",
+      "type": "bool",
+      "default": false,
+      "help": "Enable strict token filtering during the thinking phase. Blocks model-specific excluded tokens (e.g., tool call markers) during reasoning. Requires a grammar backend that supports token filtering."
+    },
+    {
+      "name": "enable-symm-mem",
+      "type": "bool",
+      "default": false,
+      "help": "Enable NCCL symmetric memory for fast collectives."
+    },
+    {
+      "name": "enable-tf32-matmul",
+      "type": "bool",
+      "default": false,
+      "help": "Enable float32 matmuls to use TensorFloat32 precision for better performance (via torch.set_float32_matmul_precision). CUDA only."
+    },
+    {
+      "name": "enable-tokenizer-batch-encode",
+      "type": "bool",
+      "default": false,
+      "help": "Enable batch tokenization for improved performance when processing multiple text inputs. Do not use with image inputs, pre-tokenized input_ids, or input_embeds."
+    },
+    {
+      "name": "enable-torch-compile",
+      "type": "bool",
+      "default": false,
+      "help": "Optimize the model with torch.compile. Experimental feature.",
+      "group": "compilation",
+      "impact": "high"
+    },
+    {
+      "name": "enable-torch-compile-debug-mode",
+      "type": "bool",
+      "default": false,
+      "help": "Enable debug mode for torch compile"
+    },
+    {
+      "name": "enable-torch-symm-mem",
+      "type": "bool",
+      "default": false,
+      "help": "Enable using torch symm mem for all-reduce kernel and fall back to NCCL. Only supports CUDA device SM90 and above. SM90 supports world size 4, 6, 8. SM100 supports world size 6, 8."
+    },
+    {
+      "name": "enable-trace",
+      "type": "bool",
+      "default": false,
+      "help": "Enable opentelemetry trace"
+    },
+    {
+      "name": "enable-two-batch-overlap",
+      "type": "bool",
+      "default": false,
+      "help": "Enabling two micro batches to overlap."
+    },
+    {
+      "name": "enable-unified-memory",
+      "type": "bool",
+      "default": false,
+      "help": "Replace the statically-partitioned hybrid-model pools (full-attn KV + SWA/Mamba state) with one byte buffer split dynamically between sub-pools. Requires the Triton attention / linear-attn / Mamba backends; not yet compatible with PD disaggregation or speculative decoding."
+    },
+    {
+      "name": "enable-waterfill",
+      "type": "bool",
+      "default": false,
+      "help": "Enable Waterfill: dispatch the fused shared expert as an extra routed expert slot to the least-loaded EP rank. Supports DeepEP and MegaMOE MoE A2A backends, implicitly enables shared-expert fusion, and supports --deepep-mode auto, normal, or low_latency when used with DeepEP. Use auto or low_latency for production DeepEP decode so CUDA graph remains enabled. Supported on DeepSeek-V3/R1 with EP >= 2."
+    },
+    {
+      "name": "enable-weights-cpu-backup",
+      "type": "bool",
+      "default": false,
+      "help": "Save model weights (both main model and draft model, if any) to CPU memory during release_weights_occupation and resume_weights_occupation"
+    },
+    {
+      "name": "encoder-bootstrap-port",
+      "type": "int",
+      "default": 8997,
+      "help": "Port for the EncoderBootstrapServer that runs in the language-only tokenizer manager process. Encoders register here, and language-only receivers fetch the current URL list from here."
+    },
+    {
+      "name": "encoder-only",
+      "type": "bool",
+      "default": false,
+      "help": "For MLLM with an encoder, launch an encoder-only server"
+    },
+    {
+      "name": "encoder-register-urls",
+      "type": "list",
+      "default": [],
+      "help": "One or more EncoderBootstrapServer URLs to register this encoder with on startup, for dynamic encoder discovery. Example: --encoder-register-urls http://prefill0:8997 http://prefill1:8997. Used with --encoder-only servers."
+    },
+    {
+      "name": "encoder-transfer-backend",
+      "type": "enum",
+      "default": "auto",
+      "choices": [
+        "auto",
+        "zmq_to_scheduler",
+        "zmq_to_tokenizer",
+        "mooncake"
+      ],
+      "help": "The backend for encoder disaggregation transfer. Auto selects a model- and TP-aware backend."
+    },
+    {
+      "name": "encoder-urls",
+      "type": "list",
+      "default": [],
+      "help": "List of encoder server urls."
+    },
+    {
+      "name": "enforce-disable-flashinfer-allreduce-fusion",
+      "type": "bool",
+      "default": false,
+      "help": "Enforce disable FlashInfer allreduce fusion."
+    },
+    {
+      "name": "enforce-piecewise-cuda-graph",
+      "type": "list",
+      "default": null,
+      "help": "Deprecated alias for --cuda-graph-backend-prefill=tc_piecewise. Explicitly setting the prefill backend now skips the auto-disable cascade automatically."
+    },
+    {
+      "name": "enforce-shared-experts-fusion",
+      "type": "bool",
+      "default": false,
+      "help": "Enforce shared experts fusion even when it would normally be disabled (e.g. under DeepEP). Mutually exclusive with --disable-shared-experts-fusion."
+    },
+    {
+      "name": "engine-info-bootstrap-port",
+      "type": "int",
+      "default": 6789,
+      "help": "Port for the engine info bootstrap server. Default is 6789. Must be set explicitly when running multiple instances on the same node."
+    },
+    {
+      "name": "ep-dispatch-algorithm",
+      "type": "enum",
+      "default": null,
+      "choices": [
+        "static",
+        "dynamic",
+        "fake",
+        "lp"
+      ],
+      "help": "The algorithm to choose ranks for redundant experts in expert parallel."
+    },
+    {
+      "name": "ep-num-redundant-experts",
+      "type": "int",
+      "default": 0,
+      "help": "Allocate this number of redundant experts in expert parallel."
+    },
+    {
+      "name": "eplb-algorithm",
+      "type": "str",
+      "default": "auto",
+      "help": "Chosen EPLB algorithm"
+    },
+    {
+      "name": "eplb-min-rebalancing-utilization-threshold",
+      "type": "float",
+      "default": 1,
+      "help": "Minimum threshold for GPU average utilization to trigger EPLB rebalancing. Must be in the range [0.0, 1.0]."
+    },
+    {
+      "name": "eplb-rebalance-layers-per-chunk",
+      "type": "int",
+      "default": null,
+      "help": "Number of layers to rebalance per forward pass."
+    },
+    {
+      "name": "eplb-rebalance-num-iterations",
+      "type": "int",
+      "default": 1000,
+      "help": "Number of iterations to automatically trigger a EPLB re-balance."
+    },
+    {
+      "name": "expert-distribution-recorder-buffer-size",
+      "type": "int",
+      "default": null,
+      "help": "Circular buffer size of expert distribution recorder. Set to -1 to denote infinite buffer."
+    },
+    {
+      "name": "expert-distribution-recorder-mode",
+      "type": "enum",
+      "default": null,
+      "choices": [
+        "stat",
+        "stat_approx",
+        "per_pass",
+        "per_token"
+      ],
+      "help": "Mode of expert distribution recorder."
+    },
+    {
+      "name": "expert-parallel-size",
+      "type": "int",
+      "default": 1,
+      "help": "The expert parallelism size.",
+      "aliases": [
+        "--ep-size",
+        "--ep"
+      ]
+    },
+    {
+      "name": "export-metrics-to-file",
+      "type": "bool",
+      "default": false,
+      "help": "Export performance metrics for each request to local file (e.g. for forwarding to external systems)."
+    },
+    {
+      "name": "export-metrics-to-file-dir",
+      "type": "path",
+      "default": null,
+      "help": "Directory path for writing performance metrics files (required when --export-metrics-to-file is enabled)."
+    },
+    {
+      "name": "extra-metric-labels",
+      "type": "json",
+      "default": null,
+      "help": "The custom labels for metrics. e.g. '{\"label1\": \"value1\", \"label2\": \"value2\"}'"
+    },
+    {
+      "name": "fastapi-root-path",
+      "type": "path",
+      "default": "",
+      "help": "App is behind a path based routing proxy."
+    },
+    {
+      "name": "file-storage-path",
+      "type": "path",
+      "default": "sglang_storage",
+      "help": "The path of the file storage in backend."
+    },
+    {
+      "name": "flashinfer-allreduce-fusion-backend",
+      "type": "enum",
+      "default": null,
+      "choices": [
+        "auto",
+        "trtllm",
+        "mnnvl"
+      ],
+      "help": "Enable FlashInfer allreduce fusion and choose backend. Requires SM90 or SM10X NVIDIA GPUs. Defaults to auto. 'auto': choose mnnvl on Blackwell (SM100/SM103) systems (single- and multi-node) and trtllm on SM90 single-node systems. 'trtllm': available on single-node systems only. 'mnnvl': available on SM90 single-node systems and SM100/SM103 single-node or multi-node systems via MNNVL fabric. Fuses allreduce with Residual + RMSNorm for supported MoE models."
+    },
+    {
+      "name": "flashinfer-autotune-skip-ops",
+      "type": "list",
+      "default": null,
+      "help": "FlashInfer custom-op identifiers to skip during autotuning. Skipped ops use FlashInfer's heuristic fallback. SGLang temporarily skips mxfp8_gemm by default due to an IMA."
+    },
+    {
+      "name": "flashinfer-mla-disable-ragged",
+      "type": "bool",
+      "default": false,
+      "help": "Not using ragged prefill wrapper when running flashinfer mla"
+    },
+    {
+      "name": "flashinfer-mxfp4-moe-precision",
+      "type": "enum",
+      "default": "default",
+      "choices": [
+        "default",
+        "bf16"
+      ],
+      "help": "Choose the computation precision of flashinfer mxfp4 moe"
+    },
+    {
+      "name": "flexkv-config-file",
+      "type": "path",
+      "default": null,
+      "help": "Path to the FlexKV YAML / JSON configuration file. Equivalent to setting the FLEXKV_CONFIG_PATH environment variable."
+    },
+    {
+      "name": "forward-hooks",
+      "type": "json",
+      "default": null,
+      "help": "JSON-formatted forward hook specifications to attach to the model."
+    },
+    {
+      "name": "forward-pass-metrics-ipc-name",
+      "type": "str",
+      "default": null,
+      "help": "==SUPPRESS=="
+    },
+    {
+      "name": "forward-pass-metrics-worker-id",
+      "type": "str",
+      "default": "",
+      "help": "==SUPPRESS=="
+    },
+    {
+      "name": "fp4-gemm-backend",
+      "type": "enum",
+      "default": "auto",
+      "choices": [
+        "auto",
+        "flashinfer_cudnn",
+        "flashinfer_cutedsl",
+        "flashinfer_cutlass",
+        "flashinfer_trtllm",
+        "marlin"
+      ],
+      "help": "Choose the runner backend for NVFP4 GEMM operations. Options: 'auto' (default; selects flashinfer_cutedsl on SM100, marlin on SM80-SM90, flashinfer_cutlass otherwise (including SM120)), 'flashinfer_cutlass' (FlashInfer CUTLASS backend), 'flashinfer_cudnn' (FlashInfer cuDNN backend, optimal on CUDA 13+ with cuDNN 9.15+), 'flashinfer_cutedsl' (FlashInfer CuTe DSL backend), 'flashinfer_trtllm' (FlashInfer TensorRT-LLM backend, requires different weight preparation with shuffling), 'marlin' (weight-only W4A16 fallback for SM80+)."
+    },
+    {
+      "name": "fp8-gemm-backend",
+      "type": "enum",
+      "default": "auto",
+      "choices": [
+        "auto",
+        "deep_gemm",
+        "flashinfer_trtllm",
+        "flashinfer_cutlass",
+        "flashinfer_deepgemm",
+        "cutlass",
+        "triton",
+        "aiter"
+      ],
+      "help": "Choose the runner backend for Blockwise FP8 GEMM operations. Options: 'auto' (default, auto-selects based on hardware), 'deep_gemm' (JIT-compiled; enabled by default on NVIDIA Hopper (SM90) and Blackwell (SM100) when DeepGEMM is installed), 'flashinfer_trtllm' (optimal for Blackwell and low-latency), 'flashinfer_cutlass' (FlashInfer CUTLASS groupwise FP8 GEMM), 'flashinfer_deepgemm' (Hopper SM90 only; uses swapAB optimization for small M dimensions in decoding), 'cutlass' (optimal for SM120 GPUs), 'triton' (fallback, widely compatible), 'aiter' (ROCm only)."
+    },
+    {
+      "name": "fuseep-mode",
+      "type": "enum",
+      "default": 2,
+      "choices": [
+        1,
+        2
+      ],
+      "help": "Select the mode when enable Ascend FuseEP MoE, 1 -> dispatch_gmm_combine_decode is executed；2 -> dispatch_ffn_combine is executed (support hybrid deployment when 2)."
+    },
+    {
+      "name": "gc-threshold",
+      "type": "int",
+      "default": null,
+      "help": "Set the garbage collection thresholds (the collection frequency). Accepts 1 to 3 integers."
+    },
+    {
+      "name": "gc-warning-threshold-secs",
+      "type": "float",
+      "default": 0,
+      "help": "The threshold for long GC warning. If a GC takes longer than this, a warning will be logged. Set to 0 to disable."
+    },
+    {
+      "name": "generation-tokens-buckets",
+      "type": "list",
+      "default": null,
+      "help": "The buckets rule for generation tokens histogram. Supports 3 rule types: 'default' uses predefined buckets; 'tse <middle> <base> <count>' generates two sides exponential distributed buckets (e.g., 'tse 1000 2 8' generates buckets [984.0, 992.0, 996.0, 998.0, 1000.0, 1002.0, 1004.0, 1008.0, 1016.0]).); 'custom <value1> <value2> ...' uses custom bucket values (e.g., 'custom 10 50 100 500')."
+    },
+    {
+      "name": "gpu-id-step",
+      "type": "int",
+      "default": 1,
+      "help": "The delta between consecutive GPU IDs that are used. For example, setting it to 2 will use GPU 0,2,4,..."
+    },
+    {
+      "name": "grammar-backend",
+      "type": "enum",
+      "default": null,
+      "choices": [
+        "xgrammar",
+        "outlines",
+        "llguidance",
+        "none"
+      ],
+      "help": "Choose the backend for grammar-guided decoding.",
+      "group": "sampling",
+      "impact": "medium"
+    },
+    {
+      "name": "grpc-http-sidecar-port",
+      "type": "int",
+      "default": null,
+      "help": "Port for the HTTP sidecar server in legacy SMG gRPC mode (--smg-grpc-mode). Serves Prometheus metrics and profiling endpoints. Defaults to --port + 1. Not used in HTTP mode.",
+      "aliases": [
+        "--smg-http-sidecar-port"
+      ]
+    },
+    {
+      "name": "grpc-mode",
+      "type": "bool",
+      "default": false,
+      "help": "(Deprecated, use --smg-grpc-mode) Legacy SMG gRPC server selector."
+    },
+    {
+      "name": "grpc-port",
+      "type": "int",
+      "default": null,
+      "help": "Port for the native gRPC server, started alongside HTTP. Setting this (or SGLANG_GRPC_PORT) enables the native gRPC server; it is off by default. In legacy --smg-grpc-mode this is the SMG server port and defaults to --port + 10000."
+    },
+    {
+      "name": "hf-chat-template-name",
+      "type": "str",
+      "default": null,
+      "help": "When the HuggingFace tokenizer has multiple chat templates (e.g., 'default', 'tool_use', 'rag'), specify which named template to use. If not set, the first available template is used."
+    },
+    {
+      "name": "hicache-io-backend",
+      "type": "enum",
+      "default": "kernel",
+      "choices": [
+        "direct",
+        "kernel",
+        "kernel_ascend"
+      ],
+      "help": "The IO backend for KV cache transfer between CPU and GPU"
+    },
+    {
+      "name": "hicache-mem-layout",
+      "type": "enum",
+      "default": "page_first",
+      "choices": [
+        "layer_first",
+        "page_first",
+        "page_first_direct",
+        "page_first_kv_split",
+        "page_head"
+      ],
+      "help": "The layout of host memory pool for hierarchical cache."
+    },
+    {
+      "name": "hicache-ratio",
+      "type": "float",
+      "default": 2,
+      "help": "The ratio of the size of host KV cache memory pool to the size of device pool."
+    },
+    {
+      "name": "hicache-size",
+      "type": "int",
+      "default": 0,
+      "help": "The size of host KV cache memory pool in gigabytes, which will override the hicache_ratio if set."
+    },
+    {
+      "name": "hicache-storage-backend",
+      "type": "enum",
+      "default": null,
+      "choices": [
+        "file",
+        "mooncake",
+        "hf3fs",
+        "nixl",
+        "aibrix",
+        "dynamic",
+        "eic",
+        "simm",
+        "mori",
+        "shm"
+      ],
+      "help": "The storage backend for hierarchical KV cache. Built-in backends: file, mooncake, hf3fs, nixl, aibrix. For dynamic backend, use --hicache-storage-backend-extra-config to specify: backend_name (custom name), module_path (Python module path), class_name (backend class name)."
+    },
+    {
+      "name": "hicache-storage-backend-extra-config",
+      "type": "str",
+      "default": null,
+      "help": "A dictionary in JSON string format, or a string starting with a leading '@' and a config file in JSON/YAML/TOML format, containing extra configuration for the storage backend."
+    },
+    {
+      "name": "hicache-storage-prefetch-policy",
+      "type": "enum",
+      "default": "timeout",
+      "choices": [
+        "best_effort",
+        "wait_complete",
+        "timeout"
+      ],
+      "help": "Control when prefetching from the storage backend should stop."
+    },
+    {
+      "name": "hicache-write-policy",
+      "type": "enum",
+      "default": "write_through",
+      "choices": [
+        "write_back",
+        "write_through",
+        "write_through_selective"
+      ],
+      "help": "The write policy of hierarchical cache."
+    },
+    {
+      "name": "hierarchical-sparse-attention-extra-config",
+      "type": "str",
+      "default": null,
+      "help": "A dictionary in JSON string format for hierarchical sparse attention configuration. Example: '{\"top_k\": 2048, \"device_buffer_size\": 4096, \"host_to_device_ratio\": 2}'",
+      "aliases": [
+        "--hisparse-config"
+      ]
+    },
+    {
+      "name": "host",
+      "type": "str",
+      "default": "127.0.0.1",
+      "help": "The host of the HTTP server.",
+      "group": "server",
+      "impact": "low"
+    },
+    {
+      "name": "incremental-streaming-output",
+      "type": "bool",
+      "default": false,
+      "help": "Whether to output as a sequence of disjoint segments."
+    },
+    {
+      "name": "init-expert-location",
+      "type": "str",
+      "default": "trivial",
+      "help": "Initial location of EP experts."
+    },
+    {
+      "name": "int8-mamba-ckpt-size",
+      "type": "int",
+      "default": null,
+      "help": "Number of int8 mamba checkpoint slots (default: 2x the active mamba pool size)."
+    },
+    {
+      "name": "is-embedding",
+      "type": "bool",
+      "default": false,
+      "help": "Whether to use a CausalLM as an embedding model."
+    },
+    {
+      "name": "json-model-override-args",
+      "type": "str",
+      "default": "{}",
+      "help": "A dictionary in JSON string format used to override default model configurations."
+    },
+    {
+      "name": "keep-mm-feature-on-device",
+      "type": "bool",
+      "default": false,
+      "help": "Deprecated. Use --mm-feature-transport=cuda_ipc for bounded GPU-resident multimodal feature transport."
+    },
+    {
+      "name": "kt-cpuinfer",
+      "type": "int",
+      "default": null,
+      "help": "[ktransformers parameter] The number of CPUInfer threads."
+    },
+    {
+      "name": "kt-max-deferred-experts-per-token",
+      "type": "int",
+      "default": null,
+      "help": "[ktransformers parameter] Maximum number of experts deferred to CPU per token. All MoE layers except the final one use this value; the final layer always uses 0."
+    },
+    {
+      "name": "kt-method",
+      "type": "str",
+      "default": "AMXINT4",
+      "help": "[ktransformers parameter] Quantization formats for CPU execution."
+    },
+    {
+      "name": "kt-num-gpu-experts",
+      "type": "int",
+      "default": null,
+      "help": "[ktransformers parameter] The number of GPU experts."
+    },
+    {
+      "name": "kt-threadpool-count",
+      "type": "int",
+      "default": 2,
+      "help": "[ktransformers parameter] One-to-one with the number of NUMA nodes (one thread pool per NUMA)."
+    },
+    {
+      "name": "kt-weight-path",
+      "type": "path",
+      "default": null,
+      "help": "[ktransformers parameter] The path of the quantized expert weights for amx kernel. A local folder."
+    },
+    {
+      "name": "kv-cache-dtype",
+      "type": "enum",
+      "default": "auto",
+      "choices": [
+        "auto",
+        "fp8_e5m2",
+        "fp8_e4m3",
+        "mxfp8",
+        "bf16",
+        "bfloat16",
+        "nvfp4",
+        "fp4_mx_block16",
+        "fp4_e2m1"
+      ],
+      "help": "Data type for kv cache storage. \"auto\" will use model data type. \"bf16\" or \"bfloat16\" for BF16 KV cache. \"fp8_e5m2\" and \"fp8_e4m3\" are supported for CUDA 11.8+. \"mxfp8\" is supported by the FA4 backend. \"nvfp4\" selects the NVFP4 FP4 E2M1 KV cache recipe; \"fp4_mx_block16\" selects the MX-style block-size-16 FP4 E2M1 KV cache recipe. Both require CUDA 12.8+ and PyTorch 2.8.0+",
+      "group": "caching",
+      "impact": "high"
+    },
+    {
+      "name": "kv-canary",
+      "type": "enum",
+      "default": "none",
+      "choices": [
+        "none",
+        "log",
+        "raise"
+      ],
+      "help": "KV cache canary mode. 'none' disables the canary (default). 'log' prints them while the server keeps running (production-safe). 'raise' fails the server on the first detected mismatch (CI lane)."
+    },
+    {
+      "name": "kv-canary-real-data",
+      "type": "enum",
+      "default": "none",
+      "choices": [
+        "none",
+        "partial",
+        "all"
+      ],
+      "help": "Check the real KV-cache in the canary. 'none' (default) disables the feature. 'partial' checks the first 16 bytes of each real-KV slot. 'all' checks the full real-KV slot."
+    },
+    {
+      "name": "kv-canary-sweep-interval",
+      "type": "int",
+      "default": 0,
+      "help": "Every N forward steps, run a full-pool sweep."
+    },
+    {
+      "name": "kv-events-config",
+      "type": "str",
+      "default": null,
+      "help": "Config in json format for NVIDIA dynamo KV event publishing. Publishing will be enabled if this flag is used."
+    },
+    {
+      "name": "language-only",
+      "type": "bool",
+      "default": false,
+      "help": "For VLM, load weights for the language model only."
+    },
+    {
+      "name": "limit-mm-data-per-request",
+      "type": "json",
+      "default": null,
+      "help": "Limit the number of multimodal inputs per request. e.g. '{\"image\": 1, \"video\": 1, \"audio\": 1}'"
+    },
+    {
+      "name": "linear-attn-backend",
+      "type": "enum",
+      "default": "triton",
+      "choices": [
+        "triton",
+        "cutedsl",
+        "flashinfer",
+        "flashkda",
+        "nvidia_kda",
+        "ptx_kda"
+      ],
+      "help": "The default kernel backend for linear attention (GDN/KDA). Can be overridden per-mode by --linear-attn-decode-backend and --linear-attn-prefill-backend."
+    },
+    {
+      "name": "linear-attn-decode-backend",
+      "type": "enum",
+      "default": null,
+      "choices": [
+        "triton",
+        "cutedsl",
+        "flashinfer",
+        "flashkda",
+        "nvidia_kda",
+        "ptx_kda"
+      ],
+      "help": "Override the kernel backend for linear attention decode. If not set, uses --linear-attn-backend."
+    },
+    {
+      "name": "linear-attn-prefill-backend",
+      "type": "enum",
+      "default": null,
+      "choices": [
+        "triton",
+        "cutedsl",
+        "flashinfer",
+        "flashkda",
+        "nvidia_kda",
+        "ptx_kda"
+      ],
+      "help": "Override the kernel backend for linear attention prefill/extend. If not set, uses --linear-attn-backend; compatible SM100 GDN models may automatically select FlashInfer."
+    },
+    {
+      "name": "linear-attn-verify-backend",
+      "type": "enum",
+      "default": null,
+      "choices": [
+        "triton",
+        "cutedsl",
+        "flashinfer",
+        "flashkda",
+        "nvidia_kda",
+        "ptx_kda",
+        "nv_cutedsl"
+      ],
+      "help": "Override the kernel backend for linear attention speculative target-verify. If not set, follows the decode backend (flashinfer decode -> flashinfer verify, otherwise triton). KDA supports triton, nv_cutedsl, and flashinfer verify backends."
+    },
+    {
+      "name": "linear-replayssm-cache-len",
+      "type": "int",
+      "default": 16,
+      "help": "Ring-buffer length L for ReplaySSM linear-attn decode. The full recurrent state is flushed to HBM every L decode steps."
+    },
+    {
+      "name": "lmcache-config-file",
+      "type": "path",
+      "default": null,
+      "help": "Path to the LMCache YAML configuration file"
+    },
+    {
+      "name": "load-balance-method",
+      "type": "enum",
+      "default": "auto",
+      "choices": [
+        "auto",
+        "round_robin",
+        "follow_bootstrap_room",
+        "total_requests",
+        "total_tokens"
+      ],
+      "help": "The load balancing strategy for data parallelism."
+    },
+    {
+      "name": "load-format",
+      "type": "enum",
+      "default": "auto",
+      "choices": [
+        "auto",
+        "pt",
+        "safetensors",
+        "npcache",
+        "dummy",
+        "sharded_state",
+        "presharded",
+        "gguf",
+        "bitsandbytes",
+        "mistral",
+        "layered",
+        "flash_rl",
+        "remote",
+        "remote_instance",
+        "fastsafetensors",
+        "private",
+        "runai_streamer"
+      ],
+      "help": "The format of the model weights to load. \"auto\" will try to load the weights in the safetensors format and fall back to the pytorch bin format if safetensors format is not available. \"pt\" will load the weights in the pytorch bin format. \"safetensors\" will load the weights in the safetensors format. \"npcache\" will load the weights in pytorch format and store a numpy cache to speed up the loading. \"dummy\" will initialize the weights with random values, which is mainly for profiling.\"gguf\" will load the weights in the gguf format. \"bitsandbytes\" will load the weights using bitsandbytes quantization.\"layered\" loads weights layer by layer so that one can quantize a layer before loading another to make the peak memory envelope smaller.\"presharded\" performs a normal first-time load (with quantization), then dumps a per-rank/per-tensor sharded checkpoint with content deduplication into <model_path>/presharded/<parallelism+quant subfolder>/. Subsequent runs with the same parallelism+quantization config load directly from this presharded checkpoint and skip re-quantization. The dump directory must be on a shared filesystem across all ranks/nodes. Optional model_loader_extra_config roots: presharded_path (target) and draft_presharded_path (speculative draft); each replaces <model_path>/presharded and still gets a config subfolder appended. Use a writable path when model_path is read-only (e.g. HF cache mounts)."
+    },
+    {
+      "name": "load-snapshot-publish-interval",
+      "type": "int",
+      "default": 15,
+      "help": "Publish load snapshot to shared memory every N decode iterations. Prefill and idle always publish immediately."
+    },
+    {
+      "name": "log-level",
+      "type": "str",
+      "default": "info",
+      "help": "The logging level of all loggers.",
+      "group": "server",
+      "impact": "low"
+    },
+    {
+      "name": "log-level-http",
+      "type": "str",
+      "default": null,
+      "help": "The logging level of HTTP server. If not set, reuse --log-level by default."
+    },
+    {
+      "name": "log-requests",
+      "type": "bool",
+      "default": false,
+      "help": "Log metadata, inputs, outputs of all requests. The verbosity is decided by --log-requests-level"
+    },
+    {
+      "name": "log-requests-format",
+      "type": "enum",
+      "default": "text",
+      "choices": [
+        "text",
+        "json"
+      ],
+      "help": "Format for request logging: 'text' (human-readable) or 'json' (structured)"
+    },
+    {
+      "name": "log-requests-level",
+      "type": "enum",
+      "default": 2,
+      "choices": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "help": "0: Log metadata (no sampling parameters). 1: Log metadata and sampling parameters. 2: Log metadata, sampling parameters and partial input/output. 3: Log every input/output."
+    },
+    {
+      "name": "log-requests-target",
+      "type": "list",
+      "default": null,
+      "help": "Target(s) for request logging: 'stdout' and/or directory path(s) for file output. Can specify multiple targets, e.g., '--log-requests-target stdout /my/path'."
+    },
+    {
+      "name": "lora-backend",
+      "type": "enum",
+      "default": "csgmv",
+      "choices": [
+        "triton",
+        "csgmv",
+        "ascend",
+        "torch_native"
+      ],
+      "help": "Choose the kernel backend for multi-LoRA serving."
+    },
+    {
+      "name": "lora-drain-wait-threshold",
+      "type": "float",
+      "default": 0,
+      "help": "When any LoRA adapter request waits longer than this threshold (in seconds), the scheduler will selectively drain one running adapter to make room. This mitigates extreme tail latency under high or skewed workloads by preventing a small set of adapters from monopolizing batch slots. Set to 0 to disable draining (default)."
+    },
+    {
+      "name": "lora-eviction-policy",
+      "type": "enum",
+      "default": "lru",
+      "choices": [
+        "lru",
+        "fifo"
+      ],
+      "help": "LoRA adapter eviction policy when memory pool is full. 'lru': Least Recently Used (default, better cache efficiency). 'fifo': First-In-First-Out."
+    },
+    {
+      "name": "lora-paths",
+      "type": "list",
+      "default": null,
+      "help": "The list of LoRA adapters to load. Each adapter must be specified in one of the following formats: <PATH> | <NAME>=<PATH> | JSON with schema {\"lora_name\":str,\"lora_path\":str,\"pinned\":bool}"
+    },
+    {
+      "name": "lora-target-modules",
+      "type": "enum",
+      "default": null,
+      "choices": [
+        "q_proj",
+        "k_proj",
+        "v_proj",
+        "o_proj",
+        "q_a_proj",
+        "kv_a_proj_with_mqa",
+        "q_b_proj",
+        "kv_b_proj",
+        "wq_b",
+        "wk",
+        "weights_proj",
+        "gate_proj",
+        "up_proj",
+        "down_proj",
+        "qkv_proj",
+        "gate_up_proj",
+        "embed_tokens",
+        "lm_head",
+        "qkvr",
+        "wo_ud",
+        "all"
+      ],
+      "help": "The union set of all target modules where LoRA should be applied. If not specified, it will be automatically inferred from the adapters provided in --lora-paths. If 'all' is specified, all supported modules will be targeted."
+    },
+    {
+      "name": "lora-use-virtual-experts",
+      "type": "bool",
+      "default": false,
+      "help": "Enable virtual expert computation for MoE models. When set, the model will use virtual expert computation."
+    },
+    {
+      "name": "mamba-backend",
+      "type": "enum",
+      "default": "triton",
+      "choices": [
+        "triton",
+        "flashinfer"
+      ],
+      "help": "Choose the kernel backend for Mamba SSM operations. Default is 'triton'. Options: 'triton' (default), 'flashinfer' (requires FlashInfer with Mamba support)."
+    },
+    {
+      "name": "mamba-cache-philox-rounds",
+      "type": "int",
+      "default": 0,
+      "help": "Number of Philox rounds to use for stochastic rounding of FP16 Mamba SSM cache writes. Triton uses the Triton default when set to 0; FlashInfer uses 10 rounds when set to 0."
+    },
+    {
+      "name": "mamba-full-memory-ratio",
+      "type": "float",
+      "default": 0.9,
+      "help": "The ratio of mamba state memory to full kv cache memory."
+    },
+    {
+      "name": "mamba-max-states-per-path",
+      "type": "int",
+      "default": -1,
+      "help": "Maximum number of cached Mamba states retained per root-to-tail path (-1 means unlimited). When enabled, after each insert the shallowest eligible interior states beyond the cap are removed while their full KV remains. Tail, fork, and locked nodes are preserved. Must be -1 or a positive integer."
+    },
+    {
+      "name": "mamba-radix-cache-strategy",
+      "type": "enum",
+      "default": "auto",
+      "choices": [
+        "auto",
+        "no_buffer",
+        "extra_buffer",
+        "extra_buffer_lazy"
+      ],
+      "help": "The strategy to use for mamba radix cache."
+    },
+    {
+      "name": "mamba-scheduler-strategy",
+      "type": "str",
+      "default": "auto",
+      "help": "Deprecated alias for --mamba-radix-cache-strategy."
+    },
+    {
+      "name": "mamba-ssm-dtype",
+      "type": "enum",
+      "default": null,
+      "choices": [
+        "float32",
+        "bfloat16",
+        "float16"
+      ],
+      "help": "The data type of the SSM states in mamba cache. If not set, will be read from model config (mamba_ssm_dtype)."
+    },
+    {
+      "name": "mamba-track-interval",
+      "type": "int",
+      "default": 256,
+      "help": "The interval to track the mamba state during decode."
+    },
+    {
+      "name": "max-ep-size",
+      "type": "int",
+      "default": null,
+      "help": "Maximum EP size the server can scale to at runtime. Pre-allocates active-rank state and backend buffers to this size. Defaults to the launch-time world size."
+    },
+    {
+      "name": "max-loaded-loras",
+      "type": "int",
+      "default": null,
+      "help": "If specified, it limits the maximum number of LoRA adapters loaded in CPU memory at a time. The value must be greater than or equal to `--max-loras-per-batch`."
+    },
+    {
+      "name": "max-lora-chunk-size",
+      "type": "enum",
+      "default": 16,
+      "choices": [
+        16,
+        32,
+        64,
+        128
+      ],
+      "help": "Maximum chunk size for the ChunkedSGMV LoRA backend. Only used when --lora-backend is 'csgmv'. Choosing a larger value might improve performance."
+    },
+    {
+      "name": "max-lora-rank",
+      "type": "int",
+      "default": null,
+      "help": "The maximum rank of LoRA adapters. If not specified, it will be automatically inferred from the adapters provided in --lora-paths."
+    },
+    {
+      "name": "max-loras-per-batch",
+      "type": "int",
+      "default": 8,
+      "help": "Maximum number of adapters for a running batch, include base-only request."
+    },
+    {
+      "name": "max-mamba-cache-size",
+      "type": "int",
+      "default": null,
+      "help": "The maximum size of the mamba cache."
+    },
+    {
+      "name": "max-prefill-tokens",
+      "type": "int",
+      "default": 16384,
+      "help": "The maximum number of tokens in a prefill batch. The real bound will be the maximum of this value and the model's maximum context length. Supports standard SI suffixes (k, M, G, T) and IEC suffixes (Ki, Mi, Gi, Ti). Suffixes are case-sensitive. Decimals are allowed for SI suffixes only. Examples: '1k' -> 1000 '1M' -> 1000000 '25.6k' -> 25600 '1Ki' -> 1024 '1Mi' -> 1048576",
+      "group": "batching",
+      "impact": "high"
+    },
+    {
+      "name": "max-queued-requests",
+      "type": "int",
+      "default": null,
+      "help": "The maximum number of queued requests. This option is ignored when using disaggregation-mode."
+    },
+    {
+      "name": "max-running-requests",
+      "type": "int",
+      "default": null,
+      "help": "The maximum number of running requests.",
+      "group": "batching",
+      "impact": "high"
+    },
+    {
+      "name": "max-total-tokens",
+      "type": "str",
+      "default": null,
+      "help": "The maximum number of tokens in the memory pool. If not specified, it will be automatically calculated based on the memory usage fraction. This option is typically used for development and debugging purposes. Supports standard SI suffixes (k, M, G, T) and IEC suffixes (Ki, Mi, Gi, Ti). Suffixes are case-sensitive. Decimals are allowed for SI suffixes only. Examples: '1k' -> 1000 '1M' -> 1000000 '25.6k' -> 25600 '1Ki' -> 1024 '1Mi' -> 1048576",
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "mem-fraction-static",
+      "type": "float",
+      "default": null,
+      "help": "The fraction of the memory used for static allocation (model weights and KV cache memory pool). Use a smaller value if you see out-of-memory errors.",
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "min-free-slots-delay",
+      "type": "int",
+      "default": null,
+      "help": "Hold new prefills until at least N running-request slots have freed up, so they are admitted in one batch instead of one at a time. Useful when each admission is disproportionately expensive, e.g. speculative decoding with a separate draft prefill pass. An explicit value always wins, capped by max-running-requests (1 disables). When unset, DFlash workloads auto-enable the formula; other workloads stay disabled. Not supported with pipeline parallelism."
+    },
+    {
+      "name": "mm-attention-backend",
+      "type": "enum",
+      "default": null,
+      "choices": [
+        "sdpa",
+        "fa3",
+        "fa4",
+        "triton_attn",
+        "ascend_attn",
+        "aiter_attn",
+        "flashinfer_cudnn",
+        "amx_attn",
+        "xpu_attn"
+      ],
+      "help": "Set multimodal attention backend."
+    },
+    {
+      "name": "mm-enable-dp-encoder",
+      "type": "bool",
+      "default": false,
+      "help": "Enabling data parallelism for mm encoder. The dp size will be set to the tp size automatically."
+    },
+    {
+      "name": "mm-feature-transport",
+      "type": "enum",
+      "default": null,
+      "choices": [
+        "cpu",
+        "cuda_ipc"
+      ],
+      "help": "Transport multimodal features through CPU memory or a bounded CUDA IPC pool. Unset resolves automatically: multimodal models on single-node CUDA deployments (without disaggregation) use cuda_ipc, everything else uses cpu. CUDA IPC reserves SGLANG_MM_FEATURE_CACHE_MB (default 1024 MiB) on the base GPU and falls back to CPU transport per tensor when the pool is full."
+    },
+    {
+      "name": "mm-io-worker-num",
+      "type": "int",
+      "default": 0,
+      "help": "Number of threads for multimodal data loading and decoding. 0 selects the model-specific default. SGLANG_IO_WORKERS remains supported as an environment override when this argument is 0."
+    },
+    {
+      "name": "mm-process-config",
+      "type": "json",
+      "default": null,
+      "help": "Multimodal preprocessing config, a json config contains keys: `image`, `video`, `audio`"
+    },
+    {
+      "name": "mm-processor-worker-num",
+      "type": "int",
+      "default": 0,
+      "help": "Number of threads for multimodal processor calls. 0 selects the model-specific default. Only processors with isolated-worker support can use more than one thread."
+    },
+    {
+      "name": "model-checksum",
+      "type": "str",
+      "default": null,
+      "help": "Model file integrity verification. If provided without value, uses model-path as HF repo ID. Otherwise, provide checksums JSON file path or HuggingFace repo ID."
+    },
+    {
+      "name": "model-config-parser",
+      "type": "str",
+      "default": "auto",
+      "help": "Which model-config parser to use. \"auto\" picks \"mistral\" via the is_mistral_model name heuristic, else \"hf\" (AutoConfig over config.json). Plugins can register additional parsers via @register_model_config_parser."
+    },
+    {
+      "name": "model-impl",
+      "type": "str",
+      "default": "auto",
+      "help": "Which implementation of the model to use. * \"auto\" will try to use the SGLang implementation if it exists and fall back to the Transformers implementation if no SGLang implementation is available. * \"sglang\" will use the SGLang model implementation. * \"transformers\" will use the Transformers model * \"mindspore\" will use the MindSpore model implementation."
+    },
+    {
+      "name": "model-loader-extra-config",
+      "type": "str",
+      "default": "{}",
+      "help": "Extra config for model loader. This will be passed to the model loader corresponding to the chosen load_format. For load_format=presharded, JSON may include presharded_path (target cache root), draft_presharded_path (draft cache root), max_file_bytes, hash_num_threads, and verify_on_load."
+    },
+    {
+      "name": "model-path",
+      "type": "path",
+      "default": null,
+      "help": "The path of the model weights. This can be a local folder or a Hugging Face repo ID.",
+      "aliases": [
+        "--model"
+      ],
+      "group": "model",
+      "impact": "low"
+    },
+    {
+      "name": "modelexpress-config",
+      "type": "str",
+      "default": null,
+      "help": "JSON config for ModelExpress P2P weight loading. Keys: \"url\" (optional gRPC host:port override), \"transport\" (\"nixl\" or \"transfer_engine\"). Example: '{\"url\": \"localhost:8001\", \"transport\": \"nixl\"}'"
+    },
+    {
+      "name": "modelopt-checkpoint-restore-path",
+      "type": "path",
+      "default": null,
+      "help": "Path to restore a previously saved ModelOpt quantized checkpoint. If provided, the quantization process will be skipped and the model will be loaded from this checkpoint."
+    },
+    {
+      "name": "modelopt-checkpoint-save-path",
+      "type": "path",
+      "default": null,
+      "help": "Path to save the ModelOpt quantized checkpoint after quantization. This allows reusing the quantized model in future runs."
+    },
+    {
+      "name": "modelopt-export-path",
+      "type": "path",
+      "default": null,
+      "help": "Path to export the quantized model in HuggingFace format after ModelOpt quantization. The exported model can then be used directly with SGLang for inference. If not provided, the model will not be exported."
+    },
+    {
+      "name": "modelopt-quant",
+      "type": "str",
+      "default": null,
+      "help": "The ModelOpt quantization configuration. Supported values: 'fp8', 'int4_awq', 'w4a8_awq', 'nvfp4', 'nvfp4_awq'. This requires the NVIDIA Model Optimizer library to be installed: pip install nvidia-modelopt"
+    },
+    {
+      "name": "moe-a2a-backend",
+      "type": "enum",
+      "default": "none",
+      "choices": [
+        "none",
+        "deepep",
+        "mooncake",
+        "nixl",
+        "mori",
+        "ascend_fuseep",
+        "flashinfer",
+        "megamoe",
+        "pplx",
+        "deepep_v2",
+        "ascend_tp"
+      ],
+      "help": "Choose the backend for MoE A2A."
+    },
+    {
+      "name": "moe-data-parallel-size",
+      "type": "int",
+      "default": 1,
+      "help": "The moe data parallelism size.",
+      "aliases": [
+        "--moe-dp-size"
+      ]
+    },
+    {
+      "name": "moe-dense-tp-size",
+      "type": "int",
+      "default": null,
+      "help": "TP size for MoE dense MLP layers. This flag is useful when, with large TP size, there are errors caused by weights in MLP layers having dimension smaller than the min dimension GEMM supports."
+    },
+    {
+      "name": "moe-runner-backend",
+      "type": "enum",
+      "default": "auto",
+      "choices": [
+        "auto",
+        "deep_gemm",
+        "triton",
+        "triton_kernel",
+        "flashinfer_trtllm",
+        "experimental_sgl_trtllm",
+        "flashinfer_trtllm_routed",
+        "flashinfer_cutlass",
+        "flashinfer_mxfp4",
+        "flashinfer_cutedsl",
+        "cutlass",
+        "aiter",
+        "marlin",
+        "humming",
+        "experimental_sgl_marlin",
+        "hpc_ops"
+      ],
+      "help": "Choose the runner backend for MoE."
+    },
+    {
+      "name": "mooncake-ib-device",
+      "type": "str",
+      "default": null,
+      "help": "The InfiniBand devices for Mooncake Backend transfer, accepts multiple comma-separated devices (e.g., --mooncake-ib-device mlx5_0,mlx5_1). Default is None, which triggers automatic device detection when Mooncake Backend is enabled."
+    },
+    {
+      "name": "msprobe-dump-config",
+      "type": "str",
+      "default": null,
+      "help": "The path of the JSON configuration file for msProbe. If specified, enables msProbe dump."
+    },
+    {
+      "name": "nccl-port",
+      "type": "int",
+      "default": null,
+      "help": "The port for NCCL distributed environment setup. Defaults to a random port."
+    },
+    {
+      "name": "nnodes",
+      "type": "int",
+      "default": 1,
+      "help": "The number of nodes."
+    },
+    {
+      "name": "no-dcp-replicate-q-proj",
+      "type": "bool",
+      "default": null,
+      "help": "For MLA decode context parallelism with the a2a/fi_a2a backend: replicate the Q projection so each DCP rank computes the full-head query locally (redundant projection compute), eliminating the per-layer head-dim all-gather of Q. Trades a small amount of extra GEMM for one fewer collective per layer. Use --no-dcp-replicate-q-proj to disable the model-specific default.",
+      "aliases": [
+        "--dcp-replicate-q-proj"
+      ]
+    },
+    {
+      "name": "no-dllm-fdfo",
+      "type": "bool",
+      "default": true,
+      "help": "Enable First-Done-First-Out (FDFO) scheduling for diffusion LLM inference. Enabled by default; use --no-dllm-fdfo to fall back to synchronous block scheduling.",
+      "aliases": [
+        "--dllm-fdfo"
+      ]
+    },
+    {
+      "name": "no-experts-shared-outer-loras",
+      "type": "bool",
+      "default": null,
+      "help": "Force shared outer LoRA mode for MoE models. When set, w1/w3 lora_A and w2 lora_B are shared across experts (expert_dim=1). Use --no-experts-shared-outer-loras to force disable. By default this is auto-detected from adapter weights.",
+      "aliases": [
+        "--experts-shared-outer-loras"
+      ]
+    },
+    {
+      "name": "no-lora-strict-loading",
+      "type": "bool",
+      "default": false,
+      "help": "Enable strict loading for LoRA adapters. When set, mismatched or missing keys in the adapter weights will raise an error.",
+      "aliases": [
+        "--lora-strict-loading"
+      ]
+    },
+    {
+      "name": "node-rank",
+      "type": "int",
+      "default": 0,
+      "help": "The node rank."
+    },
+    {
+      "name": "nsa-decode-backend",
+      "type": "enum",
+      "default": null,
+      "choices": [
+        "flashmla_sparse",
+        "flashmla_sparse_q8",
+        "flashmla_kv",
+        "flashmla_auto",
+        "flashinfer_sparse_mla",
+        "fa3",
+        "tilelang",
+        "aiter",
+        "trtllm"
+      ],
+      "help": "[Deprecated] Use --dsa-decode-backend instead."
+    },
+    {
+      "name": "nsa-prefill-backend",
+      "type": "enum",
+      "default": null,
+      "choices": [
+        "flashmla_sparse",
+        "flashmla_sparse_q8",
+        "flashmla_kv",
+        "flashmla_auto",
+        "flashinfer_sparse_mla",
+        "fa3",
+        "tilelang",
+        "aiter",
+        "trtllm"
+      ],
+      "help": "[Deprecated] Use --dsa-prefill-backend instead."
+    },
+    {
+      "name": "nsa-prefill-cp-mode",
+      "type": "enum",
+      "default": null,
+      "choices": [
+        "in-seq-split",
+        "round-robin-split"
+      ],
+      "help": "[Deprecated] Use --cp-strategy instead."
+    },
+    {
+      "name": "num-continuous-decode-steps",
+      "type": "int",
+      "default": 1,
+      "help": "Run multiple continuous decoding steps to reduce scheduling overhead. This can potentially increase throughput but may also increase time-to-first-token latency. The default value is 1, meaning only run one decoding step at a time."
+    },
+    {
+      "name": "num-reserved-decode-tokens",
+      "type": "int",
+      "default": 512,
+      "help": "Number of decode tokens that will have memory reserved when adding new request to the running batch."
+    },
+    {
+      "name": "numa-node",
+      "type": "int",
+      "default": null,
+      "help": "Sets the numa node for the subprocesses. i-th element corresponds to i-th subprocess. If unset, will be automatically detected on NUMA systems."
+    },
+    {
+      "name": "offload-group-size",
+      "type": "int",
+      "default": -1,
+      "help": "Number of layers per group in offloading."
+    },
+    {
+      "name": "offload-mode",
+      "type": "str",
+      "default": "cpu",
+      "help": "Mode of offloading."
+    },
+    {
+      "name": "offload-num-in-group",
+      "type": "int",
+      "default": 1,
+      "help": "Number of layers to be offloaded within a group."
+    },
+    {
+      "name": "offload-prefetch-step",
+      "type": "int",
+      "default": 1,
+      "help": "Steps to prefetch in offloading."
+    },
+    {
+      "name": "optimistic-prefill-attempts",
+      "type": "int",
+      "default": 0,
+      "help": "Number of optimistic prefill forward passes that skip the bootstrap wait."
+    },
+    {
+      "name": "otlp-traces-endpoint",
+      "type": "str",
+      "default": "localhost:4317",
+      "help": "Config opentelemetry collector endpoint if --enable-trace is set. format: <ip>:<port>"
+    },
+    {
+      "name": "page-size",
+      "type": "int",
+      "default": null,
+      "help": "The number of tokens in a page.",
+      "group": "caching",
+      "impact": "medium"
+    },
+    {
+      "name": "pdmux-config-path",
+      "type": "path",
+      "default": null,
+      "help": "The path of the PD-Multiplexing config file."
+    },
+    {
+      "name": "piecewise-cuda-graph-compiler",
+      "type": "enum",
+      "default": null,
+      "choices": [
+        "eager",
+        "inductor"
+      ],
+      "help": "Deprecated alias for --cuda-graph-tc-compiler."
+    },
+    {
+      "name": "piecewise-cuda-graph-max-tokens",
+      "type": "int",
+      "default": null,
+      "help": "Deprecated alias for --cuda-graph-max-bs-prefill."
+    },
+    {
+      "name": "piecewise-cuda-graph-tokens",
+      "type": "int",
+      "default": null,
+      "help": "Deprecated alias for --cuda-graph-bs-prefill."
+    },
+    {
+      "name": "pipeline-parallel-size",
+      "type": "int",
+      "default": 1,
+      "help": "The pipeline parallelism size.",
+      "aliases": [
+        "--pp-size"
+      ]
+    },
+    {
+      "name": "port",
+      "type": "int",
+      "default": 30000,
+      "help": "The port of the HTTP server.",
+      "group": "server",
+      "impact": "low"
+    },
+    {
+      "name": "pp-async-batch-depth",
+      "type": "int",
+      "default": 0,
+      "help": "The async batch depth of pipeline parallelism."
+    },
+    {
+      "name": "pp-max-micro-batch-size",
+      "type": "int",
+      "default": null,
+      "help": "The maximum micro batch size in pipeline parallelism."
+    },
+    {
+      "name": "pre-warm-nccl",
+      "type": "bool",
+      "default": false,
+      "help": "Pre-warm NCCL/RCCL communicators during startup to reduce P99 TTFT cold-start latency. Default: enabled for AMD/HIP (RCCL), disabled for NVIDIA/CUDA (NCCL)."
+    },
+    {
+      "name": "preferred-sampling-params",
+      "type": "json",
+      "default": null,
+      "help": "json-formatted sampling settings that will be returned in /get_model_info"
+    },
+    {
+      "name": "prefill-attention-backend",
+      "type": "enum",
+      "default": null,
+      "choices": [
+        "triton",
+        "torch_native",
+        "flex_attention",
+        "dsa",
+        "nsa",
+        "dsv4",
+        "compressed",
+        "cutlass_mla",
+        "fa3",
+        "fa4",
+        "flashinfer",
+        "flashmla",
+        "trtllm_mla",
+        "cutedsl_mla",
+        "tokenspeed_mla",
+        "trtllm_mha",
+        "dual_chunk_flash_attn",
+        "hpc_ops",
+        "aiter",
+        "wave",
+        "intel_amx",
+        "ascend",
+        "intel_xpu"
+      ],
+      "help": "Choose the kernels for prefill attention layers (have priority over --attention-backend)."
+    },
+    {
+      "name": "prefill-cp-mode",
+      "type": "enum",
+      "default": "in-seq-split",
+      "choices": [
+        "in-seq-split"
+      ],
+      "help": "[Deprecated] Use --cp-strategy {zigzag,interleave} instead. 'in-seq-split' maps to 'zigzag'."
+    },
+    {
+      "name": "prefill-delayer-forward-passes-buckets",
+      "type": "float",
+      "default": null,
+      "help": "Custom buckets for prefill delayer forward passes histogram. 0 and max_delay_passes-1 will be auto-added."
+    },
+    {
+      "name": "prefill-delayer-max-delay-ms",
+      "type": "float",
+      "default": null,
+      "help": "Wall-clock cap (ms) on a single queue-trigger delay; once exceeded, prefill is force-released to bound worst-case TTFT. Only consulted when --prefill-delayer-queue-min-ratio is set. Typical: 1000 ~ 5000; defaults to 5000 if unset."
+    },
+    {
+      "name": "prefill-delayer-max-delay-passes",
+      "type": "int",
+      "default": 30,
+      "help": "Maximum forward passes to delay prefill."
+    },
+    {
+      "name": "prefill-delayer-queue-min-ratio",
+      "type": "float",
+      "default": null,
+      "help": "Opt-in to the adaptive queue-based delay trigger (independent of the slot-based one). Delays prefill until the waiting queue reaches min(running_req * ratio, max_prefill_bs) so small fragments batch into a larger prefill. Unset (default) keeps the original slot-only behavior. Typical: 0.1 ~ 0.5."
+    },
+    {
+      "name": "prefill-delayer-token-usage-low-watermark",
+      "type": "float",
+      "default": null,
+      "help": "Token usage low watermark for prefill delayer."
+    },
+    {
+      "name": "prefill-delayer-wait-seconds-buckets",
+      "type": "float",
+      "default": null,
+      "help": "Custom buckets for prefill delayer wait seconds histogram. 0 will be auto-added."
+    },
+    {
+      "name": "prefill-max-requests",
+      "type": "int",
+      "default": null,
+      "help": "The maximum number of requests in a prefill batch. If not specified, there is no limit."
+    },
+    {
+      "name": "prefill-only-disable-kv-cache",
+      "type": "bool",
+      "default": false,
+      "help": "Skip the physical KV cache allocation for embedding-mode prefill-only workloads. Currently only valid with --is-embedding, --chunked-prefill-size=-1, --disable-radix-cache, an FA prefill backend, and non-FP4 KV cache so the fa_skip_kv_cache path is active (no layer reads or writes the cache). Other prefill-only workloads such as scoring/MIS may benefit from this later once their attention paths stop using paged KV. Scheduler admission accounting is unchanged; per-layer K/V tensors are sized to (page_size, head_num, head_dim) placeholders so GPU memory is not wasted."
+    },
+    {
+      "name": "prefill-round-robin-balance",
+      "type": "list",
+      "default": null,
+      "help": "Note: --prefill-round-robin-balance is deprecated now."
+    },
+    {
+      "name": "priority-scheduling-preemption-threshold",
+      "type": "int",
+      "default": 10,
+      "help": "Minimum difference in priorities for an incoming request to have to preempt running request(s)."
+    },
+    {
+      "name": "prompt-tokens-buckets",
+      "type": "list",
+      "default": null,
+      "help": "The buckets rule of prompt tokens. Supports 3 rule types: 'default' uses predefined buckets; 'tse <middle> <base> <count>' generates two sides exponential distributed buckets (e.g., 'tse 1000 2 8' generates buckets [984.0, 992.0, 996.0, 998.0, 1000.0, 1002.0, 1004.0, 1008.0, 1016.0]).); 'custom <value1> <value2> ...' uses custom bucket values (e.g., 'custom 10 50 100 500')."
+    },
+    {
+      "name": "quantization",
+      "type": "enum",
+      "default": null,
+      "choices": [
+        "awq",
+        "fp8",
+        "mxfp8",
+        "gptq",
+        "marlin",
+        "gptq_marlin",
+        "awq_marlin",
+        "bitsandbytes",
+        "gguf",
+        "modelopt",
+        "modelopt_fp8",
+        "modelopt_fp4",
+        "nvfp4_online",
+        "modelopt_mixed",
+        "petit_nvfp4",
+        "w8a8_int8",
+        "w8a8_fp8",
+        "moe_wna16",
+        "w4afp8",
+        "mxfp4",
+        "auto-round",
+        "auto-round-int8",
+        "compressed-tensors",
+        "modelslim",
+        "mxfp_w4a8",
+        "quark",
+        "quark_int4fp8_moe",
+        "quark_mxfp4",
+        "mlx_q4",
+        "mlx_q8",
+        "unquant",
+        "humming"
+      ],
+      "help": "The quantization method.",
+      "group": "quantization",
+      "impact": "high"
+    },
+    {
+      "name": "quantization-param-path",
+      "type": "path",
+      "default": null,
+      "help": "Path to the JSON file containing the KV cache scaling factors. This should generally be supplied, when KV cache dtype is FP8. Otherwise, KV cache scaling factors default to 1.0, which may cause accuracy issues."
+    },
+    {
+      "name": "quantize-and-serve",
+      "type": "bool",
+      "default": false,
+      "help": "Quantize the model with ModelOpt and immediately serve it without exporting. This is useful for development and prototyping. For production, it's recommended to use separate quantization and deployment steps."
+    },
+    {
+      "name": "radix-cache-backend",
+      "type": "str",
+      "default": null,
+      "help": "Name of a radix-cache backend previously registered via register_radix_cache_backend. Omit this flag to use the built-in default cache selection chain."
+    },
+    {
+      "name": "radix-eviction-policy",
+      "type": "enum",
+      "default": "lru",
+      "choices": [
+        "lru",
+        "lfu",
+        "slru",
+        "priority"
+      ],
+      "help": "The eviction policy of radix trees. 'lru' stands for Least Recently Used, 'lfu' stands for Least Frequently Used, 'slru' stands for Segmented Least Recently Used, and 'priority' evicts lower-priority requests first."
+    },
+    {
+      "name": "random-seed",
+      "type": "int",
+      "default": null,
+      "help": "The random seed.",
+      "group": "sampling",
+      "impact": "medium"
+    },
+    {
+      "name": "reasoning-parser",
+      "type": "enum",
+      "default": null,
+      "choices": [
+        "auto",
+        "apertus2509",
+        "deepseek-r1",
+        "deepseek-v3",
+        "deepseek-v4",
+        "glm45",
+        "hunyuan",
+        "gpt-oss",
+        "kimi",
+        "kimi_k2",
+        "kimi_k3",
+        "mimo",
+        "poolside_v1",
+        "qwen3",
+        "qwen3-thinking",
+        "minimax",
+        "minimax-append-think",
+        "minimax-m3",
+        "step3",
+        "step3p5",
+        "mistral",
+        "nemotron_3",
+        "interns1",
+        "gemma4",
+        "inkling",
+        "cohere_command4"
+      ],
+      "help": "Specify the parser for reasoning models. Use 'auto' to detect from chat template. Options include: ['apertus2509', 'deepseek-r1', 'deepseek-v3', 'deepseek-v4', 'glm45', 'hunyuan', 'gpt-oss', 'kimi', 'kimi_k2', 'kimi_k3', 'mimo', 'poolside_v1', 'qwen3', 'qwen3-thinking', 'minimax', 'minimax-append-think', 'minimax-m3', 'step3', 'step3p5', 'mistral', 'nemotron_3', 'interns1', 'gemma4', 'inkling', 'cohere_command4'].",
+      "group": "model",
+      "impact": "low"
+    },
+    {
+      "name": "remote-instance-weight-loader-backend",
+      "type": "enum",
+      "default": "nccl",
+      "choices": [
+        "transfer_engine",
+        "nccl",
+        "modelexpress"
+      ],
+      "help": "The backend for loading weights from remote instance. Can be 'transfer_engine', 'nccl', or 'modelexpress'. Default is 'nccl'."
+    },
+    {
+      "name": "remote-instance-weight-loader-seed-instance-ip",
+      "type": "str",
+      "default": null,
+      "help": "The ip of the seed instance for loading weights from remote instance."
+    },
+    {
+      "name": "remote-instance-weight-loader-seed-instance-service-port",
+      "type": "int",
+      "default": null,
+      "help": "The service port of the seed instance for loading weights from remote instance."
+    },
+    {
+      "name": "remote-instance-weight-loader-send-weights-group-ports",
+      "type": "json",
+      "default": null,
+      "help": "The communication group ports for loading weights from remote instance."
+    },
+    {
+      "name": "remote-instance-weight-loader-start-seed-via-transfer-engine",
+      "type": "bool",
+      "default": false,
+      "help": "Start seed server via transfer engine backend for remote instance weight loader."
+    },
+    {
+      "name": "retraction-policy",
+      "type": "enum",
+      "default": "length",
+      "choices": [
+        "length",
+        "priority"
+      ],
+      "help": "The decode retraction policy to use when the KV cache is full. 'length' preserves the existing behavior and retracts short-output, long-input requests first. 'priority' retracts lower-priority requests first, using the same priority direction as priority scheduling."
+    },
+    {
+      "name": "return-hidden-states-mode",
+      "type": "enum",
+      "default": null,
+      "choices": [
+        "last",
+        "full"
+      ],
+      "help": "Set the maximum hidden-state return mode supported by the server. `last` allows requests with return_hidden_states=False or `last`; `full` also allows return_hidden_states=True."
+    },
+    {
+      "name": "revision",
+      "type": "str",
+      "default": null,
+      "help": "The specific model version to use. It can be a branch name, a tag name, or a commit id. If unspecified, will use the default version."
+    },
+    {
+      "name": "rl-on-policy-target",
+      "type": "enum",
+      "default": null,
+      "choices": [
+        "fsdp"
+      ],
+      "help": "The training system that SGLang needs to match for true on-policy."
+    },
+    {
+      "name": "rl-quant-profile",
+      "type": "str",
+      "default": null,
+      "help": "Path to the FlashRL quantization profile. Required when using --load-format flash_rl."
+    },
+    {
+      "name": "sampling-backend",
+      "type": "enum",
+      "default": null,
+      "choices": [
+        "ascend",
+        "flashinfer",
+        "pytorch"
+      ],
+      "help": "Choose the kernels for sampling layers.",
+      "group": "compilation",
+      "impact": "medium"
+    },
+    {
+      "name": "sampling-defaults",
+      "type": "enum",
+      "default": "model",
+      "choices": [
+        "openai",
+        "model"
+      ],
+      "help": "Where to get default sampling parameters. 'openai' uses SGLang/OpenAI defaults (temperature=1.0, top_p=1.0, etc.). 'model' uses the model's generation_config.json to get the recommended sampling parameters if available. Default is 'model'."
+    },
+    {
+      "name": "schedule-conservativeness",
+      "type": "float",
+      "default": 1,
+      "help": "How conservative the schedule policy is. A larger value means more conservative scheduling. Use a larger value if you see requests being retracted frequently.",
+      "group": "scheduling",
+      "impact": "medium"
+    },
+    {
+      "name": "schedule-low-priority-values-first",
+      "type": "bool",
+      "default": false,
+      "help": "If specified with --enable-priority-scheduling, the scheduler will schedule requests with lower priority integer values first."
+    },
+    {
+      "name": "schedule-policy",
+      "type": "enum",
+      "default": "fcfs",
+      "choices": [
+        "lpm",
+        "random",
+        "fcfs",
+        "dfs-weight",
+        "lof",
+        "priority",
+        "routing-key"
+      ],
+      "help": "The scheduling policy of the requests.",
+      "group": "scheduling",
+      "impact": "high"
+    },
+    {
+      "name": "scheduler-recv-interval",
+      "type": "int",
+      "default": 1,
+      "help": "The interval to poll requests in scheduler. Can be set to >1 to reduce the overhead of this."
+    },
+    {
+      "name": "served-model-name",
+      "type": "str",
+      "default": null,
+      "help": "Override the model name returned by the v1/models endpoint in OpenAI API server."
+    },
+    {
+      "name": "show-time-cost",
+      "type": "bool",
+      "default": false,
+      "help": "Show time cost of custom marks."
+    },
+    {
+      "name": "sidecar",
+      "type": "str",
+      "default": null,
+      "help": "Start a locally managed sidecar against the native gRPC server. The selected module must expose main(argv) and read the resolved native gRPC endpoint from SGLANG_GRPC_ENDPOINT. Requires --grpc-port or SGLANG_GRPC_PORT."
+    },
+    {
+      "name": "sidecar-args",
+      "type": "json",
+      "default": null,
+      "help": "JSON array passed to the selected sidecar module's main(argv) function. --sidecar-shutdown-timeout SECONDS is consumed by SGLang."
+    },
+    {
+      "name": "skip-server-warmup",
+      "type": "bool",
+      "default": false,
+      "help": "If set, skip warmup."
+    },
+    {
+      "name": "skip-tokenizer-init",
+      "type": "bool",
+      "default": false,
+      "help": "If set, skip init tokenizer and pass input_ids in generate request."
+    },
+    {
+      "name": "sleep-on-idle",
+      "type": "bool",
+      "default": false,
+      "help": "Reduce CPU usage when sglang is idle."
+    },
+    {
+      "name": "sm-group-num",
+      "type": "int",
+      "default": 8,
+      "help": "Number of sm partition groups."
+    },
+    {
+      "name": "smg-grpc-mode",
+      "type": "bool",
+      "default": false,
+      "help": "Use the legacy SMG gRPC server (smg-grpc-servicer) instead of the HTTP server. Replaces the deprecated --grpc-mode."
+    },
+    {
+      "name": "soft-watchdog-timeout",
+      "type": "float",
+      "default": null,
+      "help": "Set soft watchdog timeout in seconds. If a forward batch takes longer than this, the server will dump information for debugging."
+    },
+    {
+      "name": "spec-trace-dir",
+      "type": "path",
+      "default": null,
+      "help": "Directory to write decoupled speculative decoding trace files."
+    },
+    {
+      "name": "speculative-accept-threshold-acc",
+      "type": "float",
+      "default": 1,
+      "help": "The accept probability of a draft token is raised from its target probability p to min(1, p / threshold_acc)."
+    },
+    {
+      "name": "speculative-accept-threshold-single",
+      "type": "float",
+      "default": 1,
+      "help": "Accept a draft token if its probability in the target model is greater than this threshold."
+    },
+    {
+      "name": "speculative-adaptive",
+      "type": "bool",
+      "default": false,
+      "help": "Enable adaptive speculative decoding that dynamically adjusts num_steps based on acceptance rate."
+    },
+    {
+      "name": "speculative-adaptive-config",
+      "type": "str",
+      "default": null,
+      "help": "Path to a JSON config file for adaptive speculative decoding tuning knobs."
+    },
+    {
+      "name": "speculative-algorithm",
+      "type": "str",
+      "default": null,
+      "help": "Speculative algorithm. Builtins: EAGLE, EAGLE3, NEXTN, STANDALONE, NGRAM, DFLASH, DSPARK. Or any name registered via `SpeculativeAlgorithm.register`.",
+      "group": "speculative",
+      "impact": "high"
+    },
+    {
+      "name": "speculative-attention-mode",
+      "type": "enum",
+      "default": "prefill",
+      "choices": [
+        "prefill",
+        "decode"
+      ],
+      "help": "Attention backend for speculative decoding operations (both target verify and draft extend). Can be one of 'prefill' (default) or 'decode'."
+    },
+    {
+      "name": "speculative-dflash-block-size",
+      "type": "int",
+      "default": null,
+      "help": "DFLASH only. Block size (verify window length). Alias of --speculative-num-draft-tokens for DFLASH."
+    },
+    {
+      "name": "speculative-dflash-draft-window-size",
+      "type": "int",
+      "default": null,
+      "help": "==SUPPRESS=="
+    },
+    {
+      "name": "speculative-draft-attention-backend",
+      "type": "str",
+      "default": null,
+      "help": "Attention backend for speculative decoding drafting."
+    },
+    {
+      "name": "speculative-draft-load-format",
+      "type": "enum",
+      "default": null,
+      "choices": [
+        "auto",
+        "pt",
+        "safetensors",
+        "npcache",
+        "dummy",
+        "sharded_state",
+        "presharded",
+        "gguf",
+        "bitsandbytes",
+        "mistral",
+        "layered",
+        "flash_rl",
+        "remote",
+        "remote_instance",
+        "fastsafetensors",
+        "private",
+        "runai_streamer"
+      ],
+      "help": "The format of the draft model weights to load. If not specified, will use the same format as --load-format. Use 'dummy' to initialize draft model weights with random values for profiling."
+    },
+    {
+      "name": "speculative-draft-model-path",
+      "type": "path",
+      "default": null,
+      "help": "The path of the draft model weights. This can be a local folder or a Hugging Face repo ID.",
+      "aliases": [
+        "--speculative-draft-model"
+      ],
+      "group": "speculative",
+      "impact": "high"
+    },
+    {
+      "name": "speculative-draft-model-quantization",
+      "type": "enum",
+      "default": null,
+      "choices": [
+        "awq",
+        "fp8",
+        "mxfp8",
+        "gptq",
+        "marlin",
+        "gptq_marlin",
+        "awq_marlin",
+        "bitsandbytes",
+        "gguf",
+        "modelopt",
+        "modelopt_fp8",
+        "modelopt_fp4",
+        "nvfp4_online",
+        "modelopt_mixed",
+        "petit_nvfp4",
+        "w8a8_int8",
+        "w8a8_fp8",
+        "moe_wna16",
+        "w4afp8",
+        "mxfp4",
+        "auto-round",
+        "auto-round-int8",
+        "compressed-tensors",
+        "modelslim",
+        "mxfp_w4a8",
+        "quark",
+        "quark_int4fp8_moe",
+        "quark_mxfp4",
+        "mlx_q4",
+        "mlx_q8",
+        "unquant",
+        "humming"
+      ],
+      "help": "The quantization method for speculative model."
+    },
+    {
+      "name": "speculative-draft-model-revision",
+      "type": "str",
+      "default": null,
+      "help": "The specific draft model version to use. It can be a branch name, a tag name, or a commit id. If unspecified, will use the default version."
+    },
+    {
+      "name": "speculative-draft-window-size",
+      "type": "int",
+      "default": null,
+      "help": "Sliding window size for the draft model. Honored by Llama EAGLE-3 (`LlamaForCausalLMEagle3`) and DFLASH only; other EAGLE-3 backends (e.g. MLA-based drafters) silently ignore it. For Llama EAGLE-3, the drafter only attends to the most recent N keys (verifier hidden states + its own outputs); the verifier is unaffected. For DFLASH, the draft worker keeps a recent target-token window in its local KV cache (paged backends may retain up to one extra page on the left for alignment). Default is full attention/context."
+    },
+    {
+      "name": "speculative-dspark-align-verify-tokens-to-graph-tier",
+      "type": "bool",
+      "default": false,
+      "help": "DSPARK compact ragged-verify only. Fill the per-request verify lengths so the total verify-token count reaches the cuda-graph tier the forward is already padded to: round the dp-max scheduled total up to the captured token bucket and let the top-k allocator admit that many real draft tokens (confidence-ordered). This recovers the padding the forward pays for anyway -- both the cuda-graph bucket round-up and the dp cross-rank max -- turning it into extra real verification at the same step time. Off by default; when off the schedule is byte-for-byte unchanged."
+    },
+    {
+      "name": "speculative-dspark-block-size",
+      "type": "int",
+      "default": null,
+      "help": "DSPARK only. Draft block size gamma (number of proposed draft tokens). The verify window is gamma + 1, so this sets --speculative-num-draft-tokens = gamma + 1. Omit to auto-infer gamma from the draft checkpoint block_size."
+    },
+    {
+      "name": "speculative-dspark-confidence-sts-path",
+      "type": "path",
+      "default": null,
+      "help": "DSPARK only. Optional path to a per-position STS (sequential temperature scaling) calibration JSON, fit offline with sglang.benchmark.dspark_sts_fit. Calibrates the confidence-head survival probabilities the ragged-verify scheduler consumes. Omit to use identity (no calibration); losslessness is unaffected either way."
+    },
+    {
+      "name": "speculative-dspark-sps-table-path",
+      "type": "path",
+      "default": null,
+      "help": "DSPARK only. Path to a pre-profiled SPS cost table (JSON) built offline with sglang.benchmark.dspark_sps_profiler, consumed by the ragged-verify scheduler (cap-accept / compact). Omit for an uninitialized flat constant-SPS table: the budget degenerates to verify-all (zero throughput gain by itself)."
+    },
+    {
+      "name": "speculative-eagle-topk",
+      "type": "int",
+      "default": null,
+      "help": "The number of tokens sampled from the draft model in eagle2 each step.",
+      "group": "speculative",
+      "impact": "medium"
+    },
+    {
+      "name": "speculative-moe-a2a-backend",
+      "type": "enum",
+      "default": null,
+      "choices": [
+        "none",
+        "deepep",
+        "mooncake",
+        "nixl",
+        "mori",
+        "ascend_fuseep",
+        "flashinfer",
+        "megamoe",
+        "pplx",
+        "deepep_v2",
+        "ascend_tp"
+      ],
+      "help": "Choose the backend for MoE A2A in speculative decoding"
+    },
+    {
+      "name": "speculative-moe-runner-backend",
+      "type": "enum",
+      "default": null,
+      "choices": [
+        "auto",
+        "deep_gemm",
+        "triton",
+        "triton_kernel",
+        "flashinfer_trtllm",
+        "experimental_sgl_trtllm",
+        "flashinfer_trtllm_routed",
+        "flashinfer_cutlass",
+        "flashinfer_mxfp4",
+        "flashinfer_cutedsl",
+        "cutlass",
+        "aiter",
+        "marlin",
+        "humming",
+        "experimental_sgl_marlin",
+        "hpc_ops"
+      ],
+      "help": "Choose the runner backend for MoE in speculative decoding."
+    },
+    {
+      "name": "speculative-ngram-capacity",
+      "type": "int",
+      "default": 10000000,
+      "help": "The cache capacity for ngram speculative decoding."
+    },
+    {
+      "name": "speculative-ngram-external-corpus-max-tokens",
+      "type": "int",
+      "default": 10000000,
+      "help": "Fail startup if the tokenized external ngram corpus exceeds this many tokens. Tune this based on your CPU memory budget."
+    },
+    {
+      "name": "speculative-ngram-external-corpus-path",
+      "type": "path",
+      "default": null,
+      "help": "Path to an external JSONL corpus to pre-load into SAM at startup. Additional corpora can be added at runtime via POST /add_external_corpus."
+    },
+    {
+      "name": "speculative-ngram-external-sam-budget",
+      "type": "int",
+      "default": 0,
+      "help": "Number of draft nodes reserved for the external SAM subtree in ngram speculative decoding."
+    },
+    {
+      "name": "speculative-ngram-match-type",
+      "type": "enum",
+      "default": "BFS",
+      "choices": [
+        "BFS",
+        "PROB"
+      ],
+      "help": "The match type for cache tree."
+    },
+    {
+      "name": "speculative-ngram-max-bfs-breadth",
+      "type": "int",
+      "default": 10,
+      "help": "The maximum breadth for BFS (Breadth-First Search) in ngram speculative decoding."
+    },
+    {
+      "name": "speculative-ngram-max-trie-depth",
+      "type": "int",
+      "default": 18,
+      "help": "The max trie depth for ngram speculative decoding."
+    },
+    {
+      "name": "speculative-ngram-min-bfs-breadth",
+      "type": "int",
+      "default": 1,
+      "help": "The minimum breadth for BFS (Breadth-First Search) in ngram speculative decoding."
+    },
+    {
+      "name": "speculative-num-draft-tokens",
+      "type": "int",
+      "default": null,
+      "help": "The number of tokens sampled from the draft model in Speculative Decoding.",
+      "group": "speculative",
+      "impact": "high"
+    },
+    {
+      "name": "speculative-num-steps",
+      "type": "int",
+      "default": null,
+      "help": "The number of steps sampled from draft model in Speculative Decoding.",
+      "group": "speculative",
+      "impact": "high"
+    },
+    {
+      "name": "speculative-skip-dp-mlp-sync",
+      "type": "bool",
+      "default": false,
+      "help": "Skip the extra MLP sync that the scheduler performs before merging a new batch when speculative decoding + DP attention are both enabled."
+    },
+    {
+      "name": "speculative-token-map",
+      "type": "str",
+      "default": null,
+      "help": "The path of the draft model's small vocab table."
+    },
+    {
+      "name": "speculative-use-rejection-sampling",
+      "type": "bool",
+      "default": false,
+      "help": "Use rejection sampling for speculative decoding (requires topk=1)."
+    },
+    {
+      "name": "ssl-ca-certs",
+      "type": "str",
+      "default": null,
+      "help": "The CA certificates file."
+    },
+    {
+      "name": "ssl-certfile",
+      "type": "str",
+      "default": null,
+      "help": "The file path to the SSL certificate file."
+    },
+    {
+      "name": "ssl-keyfile",
+      "type": "str",
+      "default": null,
+      "help": "The file path to the SSL key file."
+    },
+    {
+      "name": "ssl-keyfile-password",
+      "type": "str",
+      "default": null,
+      "help": "The password to decrypt the SSL keyfile."
+    },
+    {
+      "name": "stream-interval",
+      "type": "int",
+      "default": 1,
+      "help": "The interval (or buffer size) for streaming in terms of the token length. A smaller value makes streaming smoother, while a larger value makes the throughput higher",
+      "group": "scheduling",
+      "impact": "medium"
+    },
+    {
+      "name": "stream-output",
+      "type": "list",
+      "default": false,
+      "help": "[Deprecated] Use --incremental-streaming-output instead."
+    },
+    {
+      "name": "stream-response-default-include-usage",
+      "type": "bool",
+      "default": false,
+      "help": "Include usage in every streaming response (even when stream_options is not specified)."
+    },
+    {
+      "name": "strip-thinking-cache",
+      "type": "bool",
+      "default": false,
+      "help": "Skip caching reasoning-model output (thinking + answer) in the radix tree on finish; keep only the prompt prefix. Opt-in: changes cache contents."
+    },
+    {
+      "name": "swa-full-tokens-ratio",
+      "type": "float",
+      "default": 0.8,
+      "help": "The ratio of SWA layer KV tokens / full layer KV tokens, regardless of the number of swa:full layers. It should be between 0 and 1. E.g. 0.5 means if each swa layer has 50 tokens, then each full layer has 100 tokens."
+    },
+    {
+      "name": "tbo-token-distribution-threshold",
+      "type": "float",
+      "default": 0.48,
+      "help": "The threshold of token distribution between two batches in micro-batch-overlap, determines whether to two-batch-overlap or two-chunk-overlap. Set to 0 denote disable two-chunk-overlap."
+    },
+    {
+      "name": "tensor-parallel-size",
+      "type": "int",
+      "default": 1,
+      "help": "The tensor parallelism size.",
+      "aliases": [
+        "--tp-size"
+      ]
+    },
+    {
+      "name": "tokenizer-backend",
+      "type": "enum",
+      "default": "huggingface",
+      "choices": [
+        "huggingface",
+        "fastokens"
+      ],
+      "help": "Tokenizer backend. 'huggingface' uses the default HuggingFace tokenizers library, and 'fastokens' uses the fastokens library for faster tokenization. Requires the fastokens package to be installed."
+    },
+    {
+      "name": "tokenizer-metrics-allowed-custom-labels",
+      "type": "list",
+      "default": null,
+      "help": "The custom labels allowed for tokenizer metrics. The labels are specified via a dict in '--tokenizer-metrics-custom-labels-header' field in HTTP requests, e.g., {'label1': 'value1', 'label2': 'value2'} is allowed if '--tokenizer-metrics-allowed-custom-labels label1 label2' is set."
+    },
+    {
+      "name": "tokenizer-metrics-custom-labels-header",
+      "type": "str",
+      "default": "x-custom-labels",
+      "help": "Specify the HTTP header for passing custom labels for tokenizer metrics."
+    },
+    {
+      "name": "tokenizer-mode",
+      "type": "enum",
+      "default": "auto",
+      "choices": [
+        "auto",
+        "slow"
+      ],
+      "help": "Tokenizer mode. 'auto' will use the fast tokenizer if available, and 'slow' will always use the slow tokenizer."
+    },
+    {
+      "name": "tokenizer-path",
+      "type": "path",
+      "default": null,
+      "help": "The path of the tokenizer."
+    },
+    {
+      "name": "tokenizer-worker-num",
+      "type": "int",
+      "default": 1,
+      "help": "The worker num of the tokenizer manager."
+    },
+    {
+      "name": "tool-call-parser",
+      "type": "enum",
+      "default": null,
+      "choices": [
+        "auto",
+        "apertus2509",
+        "cohere_command4",
+        "deepseekv3",
+        "deepseekv31",
+        "deepseekv32",
+        "deepseekv4",
+        "glm",
+        "glm45",
+        "glm47",
+        "gpt-oss",
+        "kimi_k2",
+        "kimi_k3",
+        "lfm2",
+        "llama3",
+        "mimo",
+        "minicpm5",
+        "mistral",
+        "poolside_v1",
+        "pythonic",
+        "qwen",
+        "qwen25",
+        "qwen3_coder",
+        "step3",
+        "step3p5",
+        "minimax-m2",
+        "minimax-m3",
+        "trinity",
+        "interns1",
+        "hermes",
+        "hunyuan",
+        "gigachat3",
+        "gemma4",
+        "inkling"
+      ],
+      "help": "Specify the parser for handling tool-call interactions. Use 'auto' to detect from chat template. Options include: ['apertus2509', 'cohere_command4', 'deepseekv3', 'deepseekv31', 'deepseekv32', 'deepseekv4', 'glm', 'glm45', 'glm47', 'gpt-oss', 'kimi_k2', 'kimi_k3', 'lfm2', 'llama3', 'mimo', 'minicpm5', 'mistral', 'poolside_v1', 'pythonic', 'qwen', 'qwen25', 'qwen3_coder', 'step3', 'step3p5', 'minimax-m2', 'minimax-m3', 'trinity', 'interns1', 'hermes', 'hunyuan', 'gigachat3', 'gemma4', 'inkling'].",
+      "group": "model",
+      "impact": "low"
+    },
+    {
+      "name": "tool-server",
+      "type": "str",
+      "default": null,
+      "help": "Either 'demo' or a comma-separated list of tool server urls to use for the model. If not specified, no tool server will be used."
+    },
+    {
+      "name": "torch-compile-max-bs",
+      "type": "int",
+      "default": 32,
+      "help": "Set the maximum batch size when using torch compile.",
+      "group": "compilation",
+      "impact": "medium"
+    },
+    {
+      "name": "torchao-config",
+      "type": "str",
+      "default": "",
+      "help": "Optimize the model with torchao. Experimental feature. Current choices are: int8dq, int8wo, int4wo-<group_size>, fp8wo, fp8dq-per_tensor, fp8dq-per_row"
+    },
+    {
+      "name": "trace-modules",
+      "type": "str",
+      "default": "request",
+      "help": "Select the components to trace. Available options are 'request' and 'mooncake'. Format: <module1 name>,<module2 name>,..."
+    },
+    {
+      "name": "triton-attention-num-kv-splits",
+      "type": "int",
+      "default": 8,
+      "help": "The number of KV splits in flash decoding Triton kernel. Larger value is better in longer context scenarios. The default value is 8."
+    },
+    {
+      "name": "triton-attention-reduce-in-fp32",
+      "type": "bool",
+      "default": false,
+      "help": "Cast the intermediate attention results to fp32 to avoid possible crashes related to fp16.This only affects Triton attention kernels."
+    },
+    {
+      "name": "triton-attention-split-tile-size",
+      "type": "int",
+      "default": null,
+      "help": "The size of split KV tile in flash decoding Triton kernel. Used for deterministic inference."
+    },
+    {
+      "name": "trust-remote-code",
+      "type": "bool",
+      "default": false,
+      "help": "Whether or not to allow for custom models defined on the Hub in their own modeling files.",
+      "group": "model",
+      "impact": "low"
+    },
+    {
+      "name": "use-ray",
+      "type": "bool",
+      "default": false,
+      "help": "Use Ray actors for scheduler process management."
+    },
+    {
+      "name": "uvicorn-access-log-exclude-prefixes",
+      "type": "list",
+      "default": [],
+      "help": "Exclude uvicorn access logs whose request path starts with any of these prefixes. Defaults to empty (disabled). Example: --uvicorn-access-log-exclude-prefixes /metrics /health"
+    },
+    {
+      "name": "warmups",
+      "type": "str",
+      "default": null,
+      "help": "Specify custom warmup functions (csv) to run before server starts eg. --warmups=warmup_name1,warmup_name2 will run the functions `warmup_name1` and `warmup_name2` specified in warmup.py before the server starts listening for requests"
+    },
+    {
+      "name": "watchdog-timeout",
+      "type": "float",
+      "default": 300,
+      "help": "Set watchdog timeout in seconds. If a forward batch takes longer than this, the server will crash to prevent hanging.",
+      "group": "server",
+      "impact": "low"
+    },
+    {
+      "name": "weight-cache-mode",
+      "type": "enum",
+      "default": "off",
+      "choices": [
+        "off",
+        "daemon",
+        "client"
+      ],
+      "help": "Weight cache mode. 'off': normal disk loading. 'daemon': launch weight cache daemon (holds weights in GPU memory). Engine-spawned daemons are co-terminal with the engine and do NOT persist across restarts, so this alone does not speed up restart (the first start is slower). For fast recovery, run the standalone daemon (python -m sglang.srt.weight_cache.daemon) and connect with 'client'. 'client': connect to existing daemon and load via IPC."
+    },
+    {
+      "name": "weight-cache-socket",
+      "type": "str",
+      "default": null,
+      "help": "Unix socket path for weight cache daemon (client mode).If not set, uses /tmp/sglang_weight_cache_rank{global_rank}.sock"
+    },
+    {
+      "name": "weight-cache-timeout",
+      "type": "int",
+      "default": 1800,
+      "help": "Timeout in seconds for weight cache daemon readiness (default: 1800)."
+    },
+    {
+      "name": "weight-loader-disable-mmap",
+      "type": "bool",
+      "default": false,
+      "help": "Disable mmap while loading weight using safetensors."
+    },
+    {
+      "name": "weight-loader-drop-cache-after-load",
+      "type": "bool",
+      "default": false,
+      "help": "Call posix_fadvise(DONTNEED) on each safetensors shard after loading it."
+    },
+    {
+      "name": "weight-loader-prefetch-checkpoints",
+      "type": "bool",
+      "default": false,
+      "help": "Prefetch checkpoint files into OS page cache before loading. Each rank prefetches a fraction of the shards, reducing total network I/O on shared filesystems (NFS/Lustre) from N*checkpoint to 1*checkpoint. Recommended for models on network storage. When enabled, multi-threaded safetensors loading is disabled by default to avoid I/O oversubscription with the prefetch threads; set enable_multithread_load=true in --model-loader-extra-config to keep multi-threaded loading (e.g. on local NVMe where prefetch is a no-op)."
+    },
+    {
+      "name": "weight-loader-prefetch-num-threads",
+      "type": "int",
+      "default": 4,
+      "help": "Number of threads per rank for checkpoint prefetching (default: 4)."
+    },
+    {
+      "name": "weight-version",
+      "type": "str",
+      "default": "default",
+      "help": "Version identifier for the model weights. Defaults to 'default' if not specified."
+    }
+  ]
+}
