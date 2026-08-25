@@ -34,6 +34,23 @@ def _sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def _entry_name(entry: zipfile.ZipInfo) -> str:
+    """The entry's real filename, undoing zipfile's CP437 fallback.
+
+    A zip stores filenames as bytes and only promises UTF-8 when general-purpose bit 11 is
+    set. This archive stores UTF-8 without setting it, so zipfile decodes as CP437 and a
+    curly apostrophe arrives as "\u0393\u00c7\u00d6". Four documents then did not exist under the
+    names the questions reference, and four items went unscorable for a reason that had
+    nothing to do with the data.
+    """
+    if entry.flag_bits & 0x800:
+        return entry.filename
+    try:
+        return entry.filename.encode("cp437").decode("utf-8")
+    except (UnicodeEncodeError, UnicodeDecodeError):
+        return entry.filename
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--force", action="store_true", help="re-download and re-extract")
@@ -71,13 +88,19 @@ def main(argv: list[str] | None = None) -> int:
 
     with zipfile.ZipFile(archive) as bundle:
         for entry in bundle.infolist():
+            name = _entry_name(entry)
             # Zip entries are attacker-controlled paths in the general case; keep the
             # extraction inside the dataset directory whatever the archive claims.
-            destination = (target / entry.filename).resolve()
+            destination = (target / name).resolve()
             if not str(destination).startswith(str(target.resolve())):
-                print(f"refusing entry outside the target: {entry.filename}", file=sys.stderr)
+                print(f"refusing entry outside the target: {name}", file=sys.stderr)
                 return 1
-        bundle.extractall(target)
+            if entry.is_dir():
+                destination.mkdir(parents=True, exist_ok=True)
+                continue
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            with bundle.open(entry) as source, destination.open("wb") as out:
+                shutil.copyfileobj(source, out)
     archive.unlink(missing_ok=True)
 
     files = sum(1 for _ in target.rglob("*") if _.is_file())
