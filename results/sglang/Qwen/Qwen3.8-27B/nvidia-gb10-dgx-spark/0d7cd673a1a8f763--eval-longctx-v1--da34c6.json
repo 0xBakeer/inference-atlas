@@ -1,0 +1,1229 @@
+{
+  "schema_version": 1,
+  "run_id": "0d7cd673a1a8f763--eval-longctx-v1--da34c6",
+  "config_id": "0d7cd673a1a8f763",
+  "cell_id": "9b8e9d20cb36",
+  "workload_id": "eval-longctx-v1",
+  "kind": "eval",
+  "engine": {
+    "id": "sglang",
+    "version": "0.0.0.dev0+qwen38.27b.g561c8f3",
+    "commit": null,
+    "container": "lmsysorg/sglang:v0.0.0.dev0+qwen38.27b.g561c8f3-cu126",
+    "install_method": "docker"
+  },
+  "model": {
+    "id": "Qwen/Qwen3.8-27B",
+    "quant_id": "nvfp4-bf16-lmhead",
+    "hf_id": "Qwen/Qwen3.8-27B",
+    "revision": null,
+    "dtype": "auto",
+    "local_path": null
+  },
+  "hardware": {
+    "id": "nvidia-gb10-dgx-spark",
+    "count": 1,
+    "driver": "580.173.02",
+    "cuda": "13.0",
+    "host": {
+      "cpu": "Cortex-A725",
+      "cpu_cores": 20,
+      "ram_gb": 121.6,
+      "os": "Ubuntu 24.04.4 LTS",
+      "kernel": "6.17.0-1029-nvidia",
+      "arch": "aarch64"
+    },
+    "fingerprint": "sha256:52ea2bdd513719724db88c162b6cc2c9fb4e5b67e02dbe41b9de00687acefb91",
+    "captured": {
+      "nvidia_smi": {
+        "driver": "580.173.02",
+        "cuda": "13.0",
+        "products": [
+          "NVIDIA GB10"
+        ],
+        "fb_memory_total_mib": 0
+      },
+      "lscpu": {
+        "architecture": "aarch64",
+        "cpus": "20",
+        "vendor_id": "ARM",
+        "model_name": "Cortex-A725",
+        "cores_per_socket": "10",
+        "sockets": "1",
+        "cpu_max_mhz": "2808.0000"
+      }
+    }
+  },
+  "args": {
+    "mem-fraction-static": 0.95,
+    "attention-backend": "flashinfer",
+    "chunked-prefill-size": 8192,
+    "disable-prefill-cuda-graph": true,
+    "kv-cache-dtype": "fp8_e4m3",
+    "mamba-ssm-dtype": "bfloat16",
+    "mamba-full-memory-ratio": 4.21,
+    "mamba-radix-cache-strategy": "extra_buffer_lazy",
+    "max-mamba-cache-size": 64,
+    "max-running-requests": 16,
+    "context-length": 262144,
+    "speculative-algorithm": "EAGLE",
+    "speculative-num-steps": 3,
+    "speculative-eagle-topk": 1,
+    "speculative-num-draft-tokens": 4,
+    "reasoning-parser": "qwen3",
+    "tool-call-parser": "qwen3_coder",
+    "trust-remote-code": true
+  },
+  "args_canonical": "@dtype=auto;@quant=nvfp4-bf16-lmhead;attention-backend=flashinfer;chunked-prefill-size=8192;context-length=262144;disable-prefill-cuda-graph=true;kv-cache-dtype=fp8_e4m3;mamba-full-memory-ratio=4.21;mamba-radix-cache-strategy=extra_buffer_lazy;mamba-ssm-dtype=bfloat16;max-mamba-cache-size=64;max-running-requests=16;mem-fraction-static=0.95;reasoning-parser=qwen3;speculative-algorithm=EAGLE;speculative-eagle-topk=1;speculative-num-draft-tokens=4;speculative-num-steps=3;tool-call-parser=qwen3_coder;trust-remote-code=true",
+  "serve_command": null,
+  "workload": {
+    "id": "eval-longctx-v1",
+    "resolved_params": {
+      "dataset_id": "eval-longctx-v1",
+      "suite": "longctx",
+      "scorer": "needle",
+      "items": 100,
+      "concurrency": 1,
+      "max_output_tokens": 1024,
+      "timeout_s": 300,
+      "temperature": 0,
+      "reasoning": "default",
+      "dataset_categories": null,
+      "dataset_target_tokens": null,
+      "pass_threshold": null,
+      "seed": 42
+    }
+  },
+  "metrics": {
+    "requests_total": 100,
+    "requests_ok": 100,
+    "requests_failed": 0,
+    "success_rate": 1,
+    "duration_s": 3463.142,
+    "input_tokens_total": 2653661,
+    "output_tokens_total": 15664,
+    "e2e_ms": {
+      "mean": 34627.822,
+      "p50": 9629.34,
+      "p90": 201156.037,
+      "p95": 202635.931,
+      "p99": 212558.718,
+      "min": 3152.365,
+      "max": 216903.961
+    },
+    "vram_peak_gb": null,
+    "ram_peak_gb": 120.928,
+    "power_avg_w": 69.57,
+    "power_peak_w": 94.81,
+    "energy_wh": 66.7434,
+    "gpu_util_avg_pct": 95.64,
+    "temp_max_c": 85,
+    "thermal_throttle_detected": false
+  },
+  "scores": {
+    "suite": "longctx",
+    "total": 100,
+    "correct": 70,
+    "accuracy": 0.7,
+    "success_rate": 1,
+    "by_category": {
+      "absent": {
+        "total": 18,
+        "correct": 0
+      },
+      "line_lookup": {
+        "total": 13,
+        "correct": 1
+      },
+      "multi_needle": {
+        "total": 15,
+        "correct": 15
+      },
+      "needle": {
+        "total": 54,
+        "correct": 54
+      }
+    },
+    "by_difficulty": {
+      "easy": {
+        "total": 45,
+        "correct": 39
+      },
+      "hard": {
+        "total": 34,
+        "correct": 10
+      },
+      "medium": {
+        "total": 21,
+        "correct": 21
+      }
+    },
+    "avg_output_tokens": 156.64,
+    "avg_latency_ms": 34627.82,
+    "failures": 0,
+    "items": [
+      {
+        "id": "lctx-0001",
+        "correct": true,
+        "predicted": "18687",
+        "expected": "18687",
+        "latency_ms": 4226.467,
+        "output_tokens": 84,
+        "category": "needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0002",
+        "correct": true,
+        "predicted": "81149",
+        "expected": "81149",
+        "latency_ms": 4642.066,
+        "output_tokens": 89,
+        "category": "needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0003",
+        "correct": true,
+        "predicted": "71944",
+        "expected": "71944",
+        "latency_ms": 3452.3,
+        "output_tokens": 71,
+        "category": "needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0004",
+        "correct": true,
+        "predicted": "47948",
+        "expected": "47948",
+        "latency_ms": 3152.365,
+        "output_tokens": 60,
+        "category": "needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0005",
+        "correct": true,
+        "predicted": "41180",
+        "expected": "41180",
+        "latency_ms": 4028.389,
+        "output_tokens": 76,
+        "category": "needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0006",
+        "correct": true,
+        "predicted": "60364",
+        "expected": "60364",
+        "latency_ms": 3166.75,
+        "output_tokens": 66,
+        "category": "needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0007",
+        "correct": true,
+        "predicted": "35623",
+        "expected": "35623",
+        "latency_ms": 5773.5,
+        "output_tokens": 128,
+        "category": "needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0008",
+        "correct": true,
+        "predicted": "47522",
+        "expected": "47522",
+        "latency_ms": 4019.458,
+        "output_tokens": 79,
+        "category": "needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0009",
+        "correct": true,
+        "predicted": "66991",
+        "expected": "66991",
+        "latency_ms": 4755.698,
+        "output_tokens": 97,
+        "category": "needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0010",
+        "correct": true,
+        "predicted": "12045",
+        "expected": "12045",
+        "latency_ms": 4165.657,
+        "output_tokens": 73,
+        "category": "needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0011",
+        "correct": true,
+        "predicted": "67899",
+        "expected": "67899",
+        "latency_ms": 3891.298,
+        "output_tokens": 78,
+        "category": "needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0012",
+        "correct": true,
+        "predicted": "57430",
+        "expected": "57430",
+        "latency_ms": 5934.973,
+        "output_tokens": 129,
+        "category": "needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0013",
+        "correct": true,
+        "predicted": "71893",
+        "expected": "71893",
+        "latency_ms": 3294.289,
+        "output_tokens": 64,
+        "category": "needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0014",
+        "correct": true,
+        "predicted": "35997",
+        "expected": "35997",
+        "latency_ms": 3153.28,
+        "output_tokens": 53,
+        "category": "needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0015",
+        "correct": true,
+        "predicted": "18130",
+        "expected": "18130",
+        "latency_ms": 4331.153,
+        "output_tokens": 87,
+        "category": "needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0016",
+        "correct": true,
+        "predicted": "17986",
+        "expected": "17986",
+        "latency_ms": 10999.356,
+        "output_tokens": 79,
+        "category": "needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0017",
+        "correct": true,
+        "predicted": "50488",
+        "expected": "50488",
+        "latency_ms": 6023.297,
+        "output_tokens": 87,
+        "category": "needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0018",
+        "correct": true,
+        "predicted": "11192",
+        "expected": "11192",
+        "latency_ms": 6969.357,
+        "output_tokens": 90,
+        "category": "needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0019",
+        "correct": true,
+        "predicted": "27490",
+        "expected": "27490",
+        "latency_ms": 5161.627,
+        "output_tokens": 71,
+        "category": "needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0020",
+        "correct": true,
+        "predicted": "14787",
+        "expected": "14787",
+        "latency_ms": 6179.815,
+        "output_tokens": 86,
+        "category": "needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0021",
+        "correct": true,
+        "predicted": "26744",
+        "expected": "26744",
+        "latency_ms": 6157.236,
+        "output_tokens": 81,
+        "category": "needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0022",
+        "correct": true,
+        "predicted": "24939",
+        "expected": "24939",
+        "latency_ms": 5570.246,
+        "output_tokens": 79,
+        "category": "needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0023",
+        "correct": true,
+        "predicted": "80585",
+        "expected": "80585",
+        "latency_ms": 7021.915,
+        "output_tokens": 109,
+        "category": "needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0024",
+        "correct": true,
+        "predicted": "75241",
+        "expected": "75241",
+        "latency_ms": 6152.026,
+        "output_tokens": 86,
+        "category": "needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0025",
+        "correct": true,
+        "predicted": "22884",
+        "expected": "22884",
+        "latency_ms": 5111.784,
+        "output_tokens": 68,
+        "category": "needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0026",
+        "correct": true,
+        "predicted": "51134",
+        "expected": "51134",
+        "latency_ms": 6594.202,
+        "output_tokens": 96,
+        "category": "needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0027",
+        "correct": true,
+        "predicted": "95893",
+        "expected": "95893",
+        "latency_ms": 5706.535,
+        "output_tokens": 79,
+        "category": "needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0028",
+        "correct": true,
+        "predicted": "54666",
+        "expected": "54666",
+        "latency_ms": 5861.332,
+        "output_tokens": 80,
+        "category": "needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0029",
+        "correct": true,
+        "predicted": "66873",
+        "expected": "66873",
+        "latency_ms": 4975.088,
+        "output_tokens": 66,
+        "category": "needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0030",
+        "correct": true,
+        "predicted": "45106",
+        "expected": "45106",
+        "latency_ms": 5125.842,
+        "output_tokens": 66,
+        "category": "needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0031",
+        "correct": true,
+        "predicted": "96112",
+        "expected": "96112",
+        "latency_ms": 16908.972,
+        "output_tokens": 98,
+        "category": "needle",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lctx-0032",
+        "correct": true,
+        "predicted": "41017",
+        "expected": "41017",
+        "latency_ms": 9391.389,
+        "output_tokens": 85,
+        "category": "needle",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lctx-0033",
+        "correct": true,
+        "predicted": "39372",
+        "expected": "39372",
+        "latency_ms": 9831.634,
+        "output_tokens": 92,
+        "category": "needle",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lctx-0034",
+        "correct": true,
+        "predicted": "80581",
+        "expected": "80581",
+        "latency_ms": 9204.614,
+        "output_tokens": 81,
+        "category": "needle",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lctx-0035",
+        "correct": true,
+        "predicted": "42352",
+        "expected": "42352",
+        "latency_ms": 10062.897,
+        "output_tokens": 96,
+        "category": "needle",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lctx-0036",
+        "correct": true,
+        "predicted": "26808",
+        "expected": "26808",
+        "latency_ms": 9718.75,
+        "output_tokens": 95,
+        "category": "needle",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lctx-0037",
+        "correct": true,
+        "predicted": "61323",
+        "expected": "61323",
+        "latency_ms": 9912.925,
+        "output_tokens": 95,
+        "category": "needle",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lctx-0038",
+        "correct": true,
+        "predicted": "30583",
+        "expected": "30583",
+        "latency_ms": 9539.931,
+        "output_tokens": 85,
+        "category": "needle",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lctx-0039",
+        "correct": true,
+        "predicted": "11484",
+        "expected": "11484",
+        "latency_ms": 9441.303,
+        "output_tokens": 86,
+        "category": "needle",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lctx-0040",
+        "correct": true,
+        "predicted": "62242",
+        "expected": "62242",
+        "latency_ms": 10285.347,
+        "output_tokens": 97,
+        "category": "needle",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lctx-0041",
+        "correct": true,
+        "predicted": "91112",
+        "expected": "91112",
+        "latency_ms": 9455.949,
+        "output_tokens": 84,
+        "category": "needle",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lctx-0042",
+        "correct": true,
+        "predicted": "16628",
+        "expected": "16628",
+        "latency_ms": 9507.711,
+        "output_tokens": 81,
+        "category": "needle",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lctx-0043",
+        "correct": true,
+        "predicted": "74147",
+        "expected": "74147",
+        "latency_ms": 33678.032,
+        "output_tokens": 100,
+        "category": "needle",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lctx-0044",
+        "correct": true,
+        "predicted": "46450",
+        "expected": "46450",
+        "latency_ms": 32972.606,
+        "output_tokens": 101,
+        "category": "needle",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lctx-0045",
+        "correct": true,
+        "predicted": "92824",
+        "expected": "92824",
+        "latency_ms": 32736.393,
+        "output_tokens": 99,
+        "category": "needle",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lctx-0046",
+        "correct": true,
+        "predicted": "39301",
+        "expected": "39301",
+        "latency_ms": 32644.975,
+        "output_tokens": 87,
+        "category": "needle",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lctx-0047",
+        "correct": true,
+        "predicted": "83709",
+        "expected": "83709",
+        "latency_ms": 32526.109,
+        "output_tokens": 86,
+        "category": "needle",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lctx-0048",
+        "correct": true,
+        "predicted": "31819",
+        "expected": "31819",
+        "latency_ms": 32324.328,
+        "output_tokens": 80,
+        "category": "needle",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lctx-0049",
+        "correct": true,
+        "predicted": "35215",
+        "expected": "35215",
+        "latency_ms": 202791.471,
+        "output_tokens": 115,
+        "category": "needle",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0050",
+        "correct": true,
+        "predicted": "27222",
+        "expected": "27222",
+        "latency_ms": 201092.214,
+        "output_tokens": 87,
+        "category": "needle",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0051",
+        "correct": true,
+        "predicted": "29829",
+        "expected": "29829",
+        "latency_ms": 201870.716,
+        "output_tokens": 109,
+        "category": "needle",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0052",
+        "correct": true,
+        "predicted": "64395",
+        "expected": "64395",
+        "latency_ms": 202627.744,
+        "output_tokens": 111,
+        "category": "needle",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0053",
+        "correct": true,
+        "predicted": "99701",
+        "expected": "99701",
+        "latency_ms": 201921.171,
+        "output_tokens": 108,
+        "category": "needle",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0054",
+        "correct": true,
+        "predicted": "50695",
+        "expected": "50695",
+        "latency_ms": 202050.857,
+        "output_tokens": 100,
+        "category": "needle",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0055",
+        "correct": true,
+        "predicted": "1562",
+        "expected": "1562",
+        "latency_ms": 5778.611,
+        "output_tokens": 120,
+        "category": "multi_needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0056",
+        "correct": true,
+        "predicted": "1772",
+        "expected": "1772",
+        "latency_ms": 6346.837,
+        "output_tokens": 137,
+        "category": "multi_needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0057",
+        "correct": true,
+        "predicted": "1625",
+        "expected": "1625",
+        "latency_ms": 6223.869,
+        "output_tokens": 138,
+        "category": "multi_needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0058",
+        "correct": true,
+        "predicted": "1319",
+        "expected": "1319",
+        "latency_ms": 6788.69,
+        "output_tokens": 149,
+        "category": "multi_needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0059",
+        "correct": true,
+        "predicted": "1873",
+        "expected": "1873",
+        "latency_ms": 8796.394,
+        "output_tokens": 158,
+        "category": "multi_needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0060",
+        "correct": true,
+        "predicted": "1308",
+        "expected": "1308",
+        "latency_ms": 8500.012,
+        "output_tokens": 158,
+        "category": "multi_needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0061",
+        "correct": true,
+        "predicted": "1096",
+        "expected": "1096",
+        "latency_ms": 9101.514,
+        "output_tokens": 155,
+        "category": "multi_needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0062",
+        "correct": true,
+        "predicted": "2128",
+        "expected": "2128",
+        "latency_ms": 8062.792,
+        "output_tokens": 134,
+        "category": "multi_needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0063",
+        "correct": true,
+        "predicted": "1850",
+        "expected": "1850",
+        "latency_ms": 10798.349,
+        "output_tokens": 118,
+        "category": "multi_needle",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lctx-0064",
+        "correct": true,
+        "predicted": "2473",
+        "expected": "2473",
+        "latency_ms": 11520.403,
+        "output_tokens": 134,
+        "category": "multi_needle",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lctx-0065",
+        "correct": true,
+        "predicted": "1181",
+        "expected": "1181",
+        "latency_ms": 14678.909,
+        "output_tokens": 206,
+        "category": "multi_needle",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lctx-0066",
+        "correct": true,
+        "predicted": "1244",
+        "expected": "1244",
+        "latency_ms": 35959.096,
+        "output_tokens": 158,
+        "category": "multi_needle",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0067",
+        "correct": true,
+        "predicted": "1216",
+        "expected": "1216",
+        "latency_ms": 34657.525,
+        "output_tokens": 144,
+        "category": "multi_needle",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0068",
+        "correct": true,
+        "predicted": "2455",
+        "expected": "2455",
+        "latency_ms": 206477.462,
+        "output_tokens": 196,
+        "category": "multi_needle",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0069",
+        "correct": true,
+        "predicted": "1694",
+        "expected": "1694",
+        "latency_ms": 201730.447,
+        "output_tokens": 102,
+        "category": "multi_needle",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0070",
+        "correct": false,
+        "predicted": "000021",
+        "expected": "21",
+        "latency_ms": 7087.805,
+        "output_tokens": 142,
+        "category": "line_lookup",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0071",
+        "correct": false,
+        "predicted": "000022",
+        "expected": "22",
+        "latency_ms": 10879.577,
+        "output_tokens": 223,
+        "category": "line_lookup",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0072",
+        "correct": false,
+        "predicted": "000022",
+        "expected": "22",
+        "latency_ms": 6225.953,
+        "output_tokens": 108,
+        "category": "line_lookup",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0073",
+        "correct": false,
+        "predicted": "000022",
+        "expected": "22",
+        "latency_ms": 6371.417,
+        "output_tokens": 120,
+        "category": "line_lookup",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0074",
+        "correct": false,
+        "predicted": "",
+        "expected": "83",
+        "latency_ms": 56724.429,
+        "output_tokens": 1024,
+        "category": "line_lookup",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0075",
+        "correct": true,
+        "predicted": "84",
+        "expected": "84",
+        "latency_ms": 53777.073,
+        "output_tokens": 989,
+        "category": "line_lookup",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0076",
+        "correct": false,
+        "predicted": "",
+        "expected": "84",
+        "latency_ms": 55097.824,
+        "output_tokens": 1024,
+        "category": "line_lookup",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0077",
+        "correct": false,
+        "predicted": "000166",
+        "expected": "166",
+        "latency_ms": 10752.246,
+        "output_tokens": 122,
+        "category": "line_lookup",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0078",
+        "correct": false,
+        "predicted": "000165",
+        "expected": "165",
+        "latency_ms": 28153.171,
+        "output_tokens": 454,
+        "category": "line_lookup",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0079",
+        "correct": false,
+        "predicted": "000167",
+        "expected": "167",
+        "latency_ms": 16440.988,
+        "output_tokens": 216,
+        "category": "line_lookup",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0080",
+        "correct": false,
+        "predicted": "000660",
+        "expected": "660",
+        "latency_ms": 41073.263,
+        "output_tokens": 248,
+        "category": "line_lookup",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0081",
+        "correct": false,
+        "predicted": "000662",
+        "expected": "662",
+        "latency_ms": 41056.339,
+        "output_tokens": 252,
+        "category": "line_lookup",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0082",
+        "correct": false,
+        "predicted": "002643",
+        "expected": "2643",
+        "latency_ms": 206779.117,
+        "output_tokens": 202,
+        "category": "line_lookup",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0083",
+        "correct": false,
+        "predicted": "The log does not mention a maintenance passphrase for the Redlow Point vault.",
+        "expected": "{'any': ['not mentioned', 'not in the log', 'no line', 'does not appear', 'not appear', 'not stated', 'not present', 'no mention', 'cannot find', \"can't find\", 'not there', 'nothing about', 'no such', 'not given', 'not found']}",
+        "latency_ms": 11917.372,
+        "output_tokens": 234,
+        "category": "absent",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0084",
+        "correct": false,
+        "predicted": "The log does not mention the maintenance passphrase for the Norhaven vault.",
+        "expected": "{'any': ['not mentioned', 'not in the log', 'no line', 'does not appear', 'not appear', 'not stated', 'not present', 'no mention', 'cannot find', \"can't find\", 'not there', 'nothing about', 'no such', 'not given', 'not found']}",
+        "latency_ms": 5915.796,
+        "output_tokens": 102,
+        "category": "absent",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0085",
+        "correct": false,
+        "predicted": "The log does not mention the maintenance passphrase for the Westcarr vault.",
+        "expected": "{'any': ['not mentioned', 'not in the log', 'no line', 'does not appear', 'not appear', 'not stated', 'not present', 'no mention', 'cannot find', \"can't find\", 'not there', 'nothing about', 'no such', 'not given', 'not found']}",
+        "latency_ms": 5921.572,
+        "output_tokens": 105,
+        "category": "absent",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0086",
+        "correct": false,
+        "predicted": "The log does not mention a maintenance passphrase for the Ilmouth vault.",
+        "expected": "{'any': ['not mentioned', 'not in the log', 'no line', 'does not appear', 'not appear', 'not stated', 'not present', 'no mention', 'cannot find', \"can't find\", 'not there', 'nothing about', 'no such', 'not given', 'not found']}",
+        "latency_ms": 5618.802,
+        "output_tokens": 110,
+        "category": "absent",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0087",
+        "correct": false,
+        "predicted": "The log does not mention the maintenance passphrase for the Garrowby vault.",
+        "expected": "{'any': ['not mentioned', 'not in the log', 'no line', 'does not appear', 'not appear', 'not stated', 'not present', 'no mention', 'cannot find', \"can't find\", 'not there', 'nothing about', 'no such', 'not given', 'not found']}",
+        "latency_ms": 8111.407,
+        "output_tokens": 160,
+        "category": "absent",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0088",
+        "correct": false,
+        "predicted": "The log does not mention a maintenance passphrase for the Redlow Point vault.",
+        "expected": "{'any': ['not mentioned', 'not in the log', 'no line', 'does not appear', 'not appear', 'not stated', 'not present', 'no mention', 'cannot find', \"can't find\", 'not there', 'nothing about', 'no such', 'not given', 'not found']}",
+        "latency_ms": 10898.705,
+        "output_tokens": 188,
+        "category": "absent",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0089",
+        "correct": false,
+        "predicted": "The log does not mention a maintenance passphrase for the Norhaven vault.",
+        "expected": "{'any': ['not mentioned', 'not in the log', 'no line', 'does not appear', 'not appear', 'not stated', 'not present', 'no mention', 'cannot find', \"can't find\", 'not there', 'nothing about', 'no such', 'not given', 'not found']}",
+        "latency_ms": 14208.848,
+        "output_tokens": 268,
+        "category": "absent",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0090",
+        "correct": false,
+        "predicted": "The log does not mention the maintenance passphrase for the Westcarr vault.",
+        "expected": "{'any': ['not mentioned', 'not in the log', 'no line', 'does not appear', 'not appear', 'not stated', 'not present', 'no mention', 'cannot find', \"can't find\", 'not there', 'nothing about', 'no such', 'not given', 'not found']}",
+        "latency_ms": 9950.401,
+        "output_tokens": 184,
+        "category": "absent",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0091",
+        "correct": false,
+        "predicted": "The log does not mention a maintenance passphrase for the Ilmouth vault.",
+        "expected": "{'any': ['not mentioned', 'not in the log', 'no line', 'does not appear', 'not appear', 'not stated', 'not present', 'no mention', 'cannot find', \"can't find\", 'not there', 'nothing about', 'no such', 'not given', 'not found']}",
+        "latency_ms": 10629.093,
+        "output_tokens": 194,
+        "category": "absent",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0092",
+        "correct": false,
+        "predicted": "The log does not mention a maintenance passphrase for the Garrowby vault.",
+        "expected": "{'any': ['not mentioned', 'not in the log', 'no line', 'does not appear', 'not appear', 'not stated', 'not present', 'no mention', 'cannot find', \"can't find\", 'not there', 'nothing about', 'no such', 'not given', 'not found']}",
+        "latency_ms": 11435.449,
+        "output_tokens": 208,
+        "category": "absent",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0093",
+        "correct": false,
+        "predicted": "The log does not mention a maintenance passphrase for the Redlow Point vault.",
+        "expected": "{'any': ['not mentioned', 'not in the log', 'no line', 'does not appear', 'not appear', 'not stated', 'not present', 'no mention', 'cannot find', \"can't find\", 'not there', 'nothing about', 'no such', 'not given', 'not found']}",
+        "latency_ms": 11226.928,
+        "output_tokens": 121,
+        "category": "absent",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0094",
+        "correct": false,
+        "predicted": "The log does not mention a maintenance passphrase for the Norhaven vault.",
+        "expected": "{'any': ['not mentioned', 'not in the log', 'no line', 'does not appear', 'not appear', 'not stated', 'not present', 'no mention', 'cannot find', \"can't find\", 'not there', 'nothing about', 'no such', 'not given', 'not found']}",
+        "latency_ms": 18291.17,
+        "output_tokens": 280,
+        "category": "absent",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0095",
+        "correct": false,
+        "predicted": "The log does not mention the maintenance passphrase for the Westcarr vault.",
+        "expected": "{'any': ['not mentioned', 'not in the log', 'no line', 'does not appear', 'not appear', 'not stated', 'not present', 'no mention', 'cannot find', \"can't find\", 'not there', 'nothing about', 'no such', 'not given', 'not found']}",
+        "latency_ms": 13277.722,
+        "output_tokens": 176,
+        "category": "absent",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0096",
+        "correct": false,
+        "predicted": "The log does not mention the maintenance passphrase for the Ilmouth vault.",
+        "expected": "{'any': ['not mentioned', 'not in the log', 'no line', 'does not appear', 'not appear', 'not stated', 'not present', 'no mention', 'cannot find', \"can't find\", 'not there', 'nothing about', 'no such', 'not given', 'not found']}",
+        "latency_ms": 12476.597,
+        "output_tokens": 147,
+        "category": "absent",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0097",
+        "correct": false,
+        "predicted": "The log does not mention the maintenance passphrase for the Redlow Point vault.",
+        "expected": "{'any': ['not mentioned', 'not in the log', 'no line', 'does not appear', 'not appear', 'not stated', 'not present', 'no mention', 'cannot find', \"can't find\", 'not there', 'nothing about', 'no such', 'not given', 'not found']}",
+        "latency_ms": 37157.562,
+        "output_tokens": 192,
+        "category": "absent",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0098",
+        "correct": false,
+        "predicted": "The log does not mention a maintenance passphrase for the Norhaven vault.",
+        "expected": "{'any': ['not mentioned', 'not in the log', 'no line', 'does not appear', 'not appear', 'not stated', 'not present', 'no mention', 'cannot find', \"can't find\", 'not there', 'nothing about', 'no such', 'not given', 'not found']}",
+        "latency_ms": 42390.577,
+        "output_tokens": 304,
+        "category": "absent",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0099",
+        "correct": false,
+        "predicted": "The log does not mention a maintenance passphrase for the Redlow Point vault.",
+        "expected": "{'any': ['not mentioned', 'not in the log', 'no line', 'does not appear', 'not appear', 'not stated', 'not present', 'no mention', 'cannot find', \"can't find\", 'not there', 'nothing about', 'no such', 'not given', 'not found']}",
+        "latency_ms": 216903.961,
+        "output_tokens": 352,
+        "category": "absent",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0100",
+        "correct": false,
+        "predicted": "The log does not mention a maintenance passphrase for the Norhaven vault.",
+        "expected": "{'any': ['not mentioned', 'not in the log', 'no line', 'does not appear', 'not appear', 'not stated', 'not present', 'no mention', 'cannot find', \"can't find\", 'not there', 'nothing about', 'no such', 'not given', 'not found']}",
+        "latency_ms": 212514.826,
+        "output_tokens": 293,
+        "category": "absent",
+        "difficulty": "hard"
+      }
+    ]
+  },
+  "failures": [],
+  "gotchas": [
+    {
+      "severity": "info",
+      "text": "EAGLE speculative decoding is enabled (3 steps, eagle-topk 1, 4 draft tokens). Decode numbers in this cell include the speculative speedup; compare only against another cell with the same speculative settings."
+    },
+    {
+      "severity": "info",
+      "text": "The image lmsysorg/sglang:qwen38-27b is a purpose-built branch reporting sglang 0.0.0.dev0+qwen38.27b.g561c8f3, not a release. Its 476 parameters were introspected out of the container rather than typed, because the recipe uses mamba cache flags that no released SGLang version file carries."
+    },
+    {
+      "severity": "info",
+      "text": "QUANT=nvfp4 in this recipe means RadixArk/Qwen3.8-27B-NVFP4-BF16-LMHead. RadixArk also publishes an FP4-lm_head variant under a similar name and the two are different quantizations; check which one a comparison is against."
+    }
+  ],
+  "derived": {
+    "cost_per_1m_output_tokens_usd": null,
+    "tokens_per_watt": null,
+    "tok_s_per_gb_bandwidth": null,
+    "bandwidth_efficiency": null,
+    "memory_headroom_gb": null
+  },
+  "raw": {
+    "harness": "atlas-bench",
+    "harness_version": "0.1.0",
+    "sha256": "7b908a678144bde01df719af29ce4eee80b7dda70a46235bf9cd5f646bd6cd01",
+    "payload_path": null,
+    "payload": {
+      "scorer": "needle",
+      "scorers_used": [
+        "contains",
+        "exact",
+        "needle"
+      ],
+      "engine_endpoint": {
+        "attached": true,
+        "base_url": "http://127.0.0.1:8888/v1",
+        "served_model_id": "qwen3.8-27b-sglang",
+        "advertised_models": [
+          "qwen3.8-27b-sglang"
+        ]
+      }
+    },
+    "truncated": false
+  },
+  "provenance": {
+    "github_login": "0xBakeer",
+    "github_user_id": 17404809,
+    "started_at": "2026-08-25T14:48:12Z",
+    "finished_at": "2026-08-25T15:45:55Z",
+    "submitted_at": null,
+    "commit": null,
+    "pr": null,
+    "method": "atlas-bench",
+    "agent": null,
+    "notes": "NVIDIA DGX Spark (ASUS Ascent GX10, GB10) on Ubuntu 24.04 / DGX OS, driver 580.173.02, CUDA 13.0. Served with the MiaAI-Lab SGLang recipe (https://github.com/MiaAI-Lab/Qwen3.8-27B-SGLang-DGX-Spark) at commit 751e29e, image lmsysorg/sglang:qwen38-27b (digest sha256:febfb971c7352570fc445c466ebd6ffc9d896024958e544a60f2137fd85856b1), which reports itself as sglang 0.0.0.dev0+qwen38.27b.g561c8f3. Recipe .env: QUANT=nvfp4, YARN=0, CONTEXT_LENGTH=262144, MAX_CONCURRENT_REQUESTS=16. QUANT=nvfp4 selects RadixArk/Qwen3.8-27B-NVFP4-BF16-LMHead, the BF16-lm_head variant, not the FP4-head one. EAGLE speculative decoding is on with 3 steps, topk 1 and 4 draft tokens, so decode throughput here includes the speculative win and is not comparable to a non-speculative cell. KV cache is fp8_e4m3 and the mamba state is bfloat16. Thinking is ON: the chat template reports enable_thinking default_enabled=True, and SGLang parses it with reasoning-parser qwen3. The DeepSeek-V4-Flash service normally resident on this machine was stopped for the duration of the run. CPU pinning per the recipe (cpuset 5-9,15-19)."
+  },
+  "verification": {
+    "level": "self-reported",
+    "reproduced_by": [],
+    "flags": []
+  }
+}
