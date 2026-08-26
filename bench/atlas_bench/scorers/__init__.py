@@ -62,10 +62,19 @@ class ScoreResult:
 
 
 def strip_think(text: str) -> str:
-    """Drop ``<think>…</think>`` blocks, including an unterminated leading one."""
+    """Drop ``<think>…</think>`` blocks, an unterminated leading one, and an unopened one.
+
+    A closing tag with no opening tag means the chat template opened the block in the prompt
+    and the model only had to close it — Granite 4.2 does this, and so do several reasoning
+    models. Everything up to that tag is thinking, and leaving it in front of the answer
+    corrupts every scorer: the extracted answer becomes a paragraph of deliberation.
+    """
     body = _THINK_RE.sub(" ", text or "")
-    if "<think>" in body.lower() and "</think>" not in body.lower():
+    lowered = body.lower()
+    if "<think>" in lowered and "</think>" not in lowered:
         body = _UNTERMINATED_THINK_RE.sub("", body)
+    elif "</think>" in lowered and "<think>" not in lowered:
+        body = body[lowered.rindex("</think>") + len("</think>") :]
     return body
 
 
