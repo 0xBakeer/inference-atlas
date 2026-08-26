@@ -44,6 +44,28 @@ def test_oom_beats_the_status_class() -> None:
     assert categorize_error(500, "torch.cuda.OutOfMemoryError", None) == "oom"
 
 
+@pytest.mark.parametrize(
+    ("raw", "expected"),
+    [
+        # Granite 4.2: the template opens the block, so the model only closes it.
+        ("Let me think about it. The value is 42.\n</think>\nThe answer is 42", "The answer is 42"),
+        ("<think>hidden working</think>The answer is 42", "The answer is 42"),
+        ("The answer is 42", "The answer is 42"),
+    ],
+)
+def test_a_closing_think_tag_without_an_opening_one_is_still_thinking(
+    raw: str, expected: str
+) -> None:
+    """Everything before an unopened `</think>` is deliberation, not the answer.
+
+    Leaving it in place does not merely add noise: the extracted answer becomes a paragraph
+    of reasoning, and every scorer then compares that paragraph against the expected value.
+    """
+    from atlas_bench.scorers import extract_answer
+
+    assert extract_answer(raw) == expected
+
+
 def test_refusal_detection() -> None:
     """Refusals are a distinct eval failure category."""
     assert is_refusal("I'm sorry, I can't help with that.")
