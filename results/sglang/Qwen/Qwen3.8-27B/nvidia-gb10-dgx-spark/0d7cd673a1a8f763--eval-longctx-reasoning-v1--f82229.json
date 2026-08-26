@@ -1,0 +1,1223 @@
+{
+  "schema_version": 1,
+  "run_id": "0d7cd673a1a8f763--eval-longctx-reasoning-v1--f82229",
+  "config_id": "0d7cd673a1a8f763",
+  "cell_id": "9b8e9d20cb36",
+  "workload_id": "eval-longctx-reasoning-v1",
+  "kind": "eval",
+  "engine": {
+    "id": "sglang",
+    "version": "0.0.0.dev0+qwen38.27b.g561c8f3",
+    "commit": null,
+    "container": "lmsysorg/sglang:v0.0.0.dev0+qwen38.27b.g561c8f3-cu126",
+    "install_method": "docker"
+  },
+  "model": {
+    "id": "Qwen/Qwen3.8-27B",
+    "quant_id": "nvfp4-bf16-lmhead",
+    "hf_id": "Qwen/Qwen3.8-27B",
+    "revision": null,
+    "dtype": "auto",
+    "local_path": null
+  },
+  "hardware": {
+    "id": "nvidia-gb10-dgx-spark",
+    "count": 1,
+    "driver": "580.173.02",
+    "cuda": "13.0",
+    "host": {
+      "cpu": "Cortex-A725",
+      "cpu_cores": 20,
+      "ram_gb": 121.6,
+      "os": "Ubuntu 24.04.4 LTS",
+      "kernel": "6.17.0-1029-nvidia",
+      "arch": "aarch64"
+    },
+    "fingerprint": "sha256:52ea2bdd513719724db88c162b6cc2c9fb4e5b67e02dbe41b9de00687acefb91",
+    "captured": {
+      "nvidia_smi": {
+        "driver": "580.173.02",
+        "cuda": "13.0",
+        "products": [
+          "NVIDIA GB10"
+        ],
+        "fb_memory_total_mib": 0
+      },
+      "lscpu": {
+        "architecture": "aarch64",
+        "cpus": "20",
+        "vendor_id": "ARM",
+        "model_name": "Cortex-A725",
+        "cores_per_socket": "10",
+        "sockets": "1",
+        "cpu_max_mhz": "2808.0000"
+      }
+    }
+  },
+  "args": {
+    "mem-fraction-static": 0.95,
+    "attention-backend": "flashinfer",
+    "chunked-prefill-size": 8192,
+    "disable-prefill-cuda-graph": true,
+    "kv-cache-dtype": "fp8_e4m3",
+    "mamba-ssm-dtype": "bfloat16",
+    "mamba-full-memory-ratio": 4.21,
+    "mamba-radix-cache-strategy": "extra_buffer_lazy",
+    "max-mamba-cache-size": 64,
+    "max-running-requests": 16,
+    "context-length": 262144,
+    "speculative-algorithm": "EAGLE",
+    "speculative-num-steps": 3,
+    "speculative-eagle-topk": 1,
+    "speculative-num-draft-tokens": 4,
+    "reasoning-parser": "qwen3",
+    "tool-call-parser": "qwen3_coder",
+    "trust-remote-code": true
+  },
+  "args_canonical": "@dtype=auto;@quant=nvfp4-bf16-lmhead;attention-backend=flashinfer;chunked-prefill-size=8192;context-length=262144;disable-prefill-cuda-graph=true;kv-cache-dtype=fp8_e4m3;mamba-full-memory-ratio=4.21;mamba-radix-cache-strategy=extra_buffer_lazy;mamba-ssm-dtype=bfloat16;max-mamba-cache-size=64;max-running-requests=16;mem-fraction-static=0.95;reasoning-parser=qwen3;speculative-algorithm=EAGLE;speculative-eagle-topk=1;speculative-num-draft-tokens=4;speculative-num-steps=3;tool-call-parser=qwen3_coder;trust-remote-code=true",
+  "serve_command": null,
+  "workload": {
+    "id": "eval-longctx-reasoning-v1",
+    "resolved_params": {
+      "dataset_id": "aa-lcr-v1",
+      "suite": "longctx-reasoning",
+      "scorer": "contains",
+      "items": 100,
+      "concurrency": 1,
+      "max_output_tokens": 1024,
+      "timeout_s": 1800,
+      "temperature": 0,
+      "reasoning": "default",
+      "dataset_categories": null,
+      "dataset_target_tokens": null,
+      "pass_threshold": null,
+      "seed": 42
+    }
+  },
+  "metrics": {
+    "requests_total": 100,
+    "requests_ok": 100,
+    "requests_failed": 0,
+    "success_rate": 1,
+    "duration_s": 7788.922,
+    "input_tokens_total": 10426548,
+    "output_tokens_total": 91922,
+    "e2e_ms": {
+      "mean": 77882.765,
+      "p50": 53275.232,
+      "p90": 158590.992,
+      "p95": 169841.295,
+      "p99": 176789.963,
+      "min": 17747.664,
+      "max": 178143.073
+    },
+    "vram_peak_gb": null,
+    "ram_peak_gb": 120.507,
+    "power_avg_w": 54.17,
+    "power_peak_w": 91.59,
+    "energy_wh": 116.7407,
+    "gpu_util_avg_pct": 95.34,
+    "temp_max_c": 83,
+    "thermal_throttle_detected": false
+  },
+  "scores": {
+    "suite": "longctx-reasoning",
+    "total": 98,
+    "correct": 17,
+    "accuracy": 0.173469,
+    "success_rate": 1,
+    "by_category": {
+      "Academia": {
+        "total": 5,
+        "correct": 2
+      },
+      "Company_Documents": {
+        "total": 63,
+        "correct": 8
+      },
+      "Government_Consultations": {
+        "total": 11,
+        "correct": 2
+      },
+      "Industry_Reports": {
+        "total": 8,
+        "correct": 1
+      },
+      "Legal": {
+        "total": 6,
+        "correct": 3
+      },
+      "Marketing": {
+        "total": 4,
+        "correct": 1
+      },
+      "Survey_Reports": {
+        "total": 1,
+        "correct": 0
+      }
+    },
+    "by_difficulty": {
+      "unrated": {
+        "total": 98,
+        "correct": 17
+      }
+    },
+    "avg_output_tokens": 919.22,
+    "avg_latency_ms": 77882.76,
+    "failures": 2,
+    "items": [
+      {
+        "id": "lcr-ac_markets-01",
+        "correct": false,
+        "predicted": "1. **Airline industry** — 12 infringement notices and enforceable undertakings over the past 30 years.  \n2. **Accommodation industry** — 4 infringements over the past 30 years.",
+        "expected": "1. Airline Industry (12)\\n2. Accommodation Industry (4)",
+        "latency_ms": 134155.382,
+        "output_tokens": 596,
+        "category": "Academia",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-ac_markets-02",
+        "correct": false,
+        "predicted": "",
+        "expected": "Apple v. Samsung, Crocs Inc. v. European Union Intellectual Property Office",
+        "latency_ms": 59770.929,
+        "output_tokens": 1024,
+        "category": "Academia",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-ac_markets-03",
+        "correct": true,
+        "predicted": "You are most likely a **medium-sized business** — in the report’s Australian context, that means **20 to 199 employees**.",
+        "expected": "Medium-sized business",
+        "latency_ms": 53863.931,
+        "output_tokens": 1024,
+        "category": "Academia",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-ac_hack-04",
+        "correct": true,
+        "predicted": "The paper where **Baum** is an author is *\"Soft Begging: Modular and Efficient Shielding of LLMs against Prompt Injection and Jailbreaking based on Prompt Tuning\"* (Ostermann, **Baum**, Endres, Masloh, Schramowski). In that paper, the two recurrently discussed LLM threats are **prompt injection** and **jailbreaking**.\n\nIn the paper by **Liu and Hu** (*\"Exploring Vulnerabilities and Protections in Large Language Models: A Survey\"*), these two threats are categorised under the umbrella term **\"Pro",
+        "expected": "Prompt Hacking",
+        "latency_ms": 154351.218,
+        "output_tokens": 527,
+        "category": "Academia",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-ac_hack-05",
+        "correct": false,
+        "predicted": "",
+        "expected": "Liu et al., 2023, Jailbreaking chatgpt via prompt engineering: An empirical study",
+        "latency_ms": 62746.131,
+        "output_tokens": 1024,
+        "category": "Academia",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_dc_2Q23-06",
+        "correct": false,
+        "predicted": "",
+        "expected": "5597456",
+        "latency_ms": 134523.742,
+        "output_tokens": 1024,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_dc_2Q23-07",
+        "correct": false,
+        "predicted": "",
+        "expected": "Nasdaq",
+        "latency_ms": 50341.166,
+        "output_tokens": 1024,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_dc_2Q23-08",
+        "correct": false,
+        "predicted": "",
+        "expected": "2537553",
+        "latency_ms": 52124.371,
+        "output_tokens": 1024,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_dc_2Q23-09",
+        "correct": false,
+        "predicted": "",
+        "expected": "91366",
+        "latency_ms": 49212.473,
+        "output_tokens": 1024,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_dc_3Q23-10",
+        "correct": false,
+        "predicted": "",
+        "expected": "0.0153",
+        "latency_ms": 140068.966,
+        "output_tokens": 1024,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_dc_3Q23-11",
+        "correct": false,
+        "predicted": "",
+        "expected": "In Q1 2023, when net income per diluted share was $0.19, total operating revenue was $1,338,724, an increase of $105,616, or 8.57%, from the previous quarter",
+        "latency_ms": 53786.82,
+        "output_tokens": 1024,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_dc_3Q23-12",
+        "correct": false,
+        "predicted": "For Digital Realty Trust, Inc. in the quarter with rental revenues of $886.96 million (three months ended September 30, 2023):\n\n- **Total net income:** **$745,941 thousand**\n- **Increase vs. previous quarter:** **545.02%**  \n  (from $115,647 thousand in the prior quarter)",
+        "expected": "In Q3 2023, total net income was $745,941, an increase of 545.02% from $115,647 in Q2 2023",
+        "latency_ms": 44571.694,
+        "output_tokens": 912,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_dc_3Q23-13",
+        "correct": false,
+        "predicted": "For Digital Realty Trust, Inc. in the quarter ended March 31, 2023 (total operating revenues of $1,338,724 thousand, or about $1.34 billion), the net income per diluted share was **$0.19**.",
+        "expected": "In Q1 2023, net income per diluted share was $0.19",
+        "latency_ms": 29109.556,
+        "output_tokens": 616,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_dc_4Q23-14",
+        "correct": true,
+        "predicted": "$7.1 billion",
+        "expected": "7.1 billion",
+        "latency_ms": 139658.802,
+        "output_tokens": 1013,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_dc_ann_sup_a-15",
+        "correct": true,
+        "predicted": "NEXTDC’s operating cash flow in 2H23 was **A$55.2 million**  \n(FY23 operating cash flow of A$126.5 million less 1H23 operating cash flow of A$",
+        "expected": "$55.2 million",
+        "latency_ms": 111416.865,
+        "output_tokens": 1024,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_dc_ann_sup_a-16",
+        "correct": false,
+        "predicted": "",
+        "expected": "1Q23: 41%,  2Q23: 32%",
+        "latency_ms": 55440.88,
+        "output_tokens": 1024,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_dc_ann_sup_a-17",
+        "correct": false,
+        "predicted": "",
+        "expected": "2Q23, Digital Realty",
+        "latency_ms": 54174.125,
+        "output_tokens": 1024,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_dc_ann_sup_b-18",
+        "correct": false,
+        "predicted": "",
+        "expected": "Melbourne - 2, Sydney - 4",
+        "latency_ms": 142973.498,
+        "output_tokens": 1024,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_dc_press_a-19",
+        "correct": false,
+        "predicted": "",
+        "expected": "-76%, -42%",
+        "latency_ms": 169682.44,
+        "output_tokens": 1024,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_dc_press_a-20",
+        "correct": false,
+        "predicted": "",
+        "expected": "10%, provision for impairment",
+        "latency_ms": 56413.986,
+        "output_tokens": 1024,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_dc_press_a-21",
+        "correct": false,
+        "predicted": "Equinix’s 4Q23 operating margin was approximately **16%** (income from operations of $346.4M ÷ revenues of $2,110.5M ≈ 16.4%).",
+        "expected": "0.16",
+        "latency_ms": 49589.28,
+        "output_tokens": 945,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_dc_press_b-22",
+        "correct": false,
+        "predicted": "",
+        "expected": "5000",
+        "latency_ms": 174749.002,
+        "output_tokens": 1024,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_dc_press_b-23",
+        "correct": false,
+        "predicted": "",
+        "expected": "Equinix, $901 million",
+        "latency_ms": 57482.086,
+        "output_tokens": 1024,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_dc_press_b-24",
+        "correct": false,
+        "predicted": "",
+        "expected": "$204 million",
+        "latency_ms": 50739.988,
+        "output_tokens": 1024,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_dc_press_b-25",
+        "correct": false,
+        "predicted": "",
+        "expected": "No",
+        "latency_ms": 46920.748,
+        "output_tokens": 1024,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_dc_press_b-26",
+        "correct": false,
+        "predicted": "",
+        "expected": "6.2",
+        "latency_ms": 48725.521,
+        "output_tokens": 1024,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_dc_dr_press-27",
+        "correct": false,
+        "predicted": "",
+        "expected": "60.8 acres",
+        "latency_ms": 172859.546,
+        "output_tokens": 1024,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_dc_dr_press-28",
+        "correct": false,
+        "predicted": "",
+        "expected": "0.658",
+        "latency_ms": 54505.833,
+        "output_tokens": 1024,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_dc_dr_press-29",
+        "correct": false,
+        "predicted": "",
+        "expected": "20.8",
+        "latency_ms": 53503.454,
+        "output_tokens": 1024,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_dc_dr_press-30",
+        "correct": false,
+        "predicted": "",
+        "expected": "28.1 million of shares were sold in the trailing twelve months ending 2Q24. The analyst alerted the manager accordingly",
+        "latency_ms": 50772.162,
+        "output_tokens": 1024,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_dc_dr_sup-31",
+        "correct": false,
+        "predicted": "",
+        "expected": "Adjusted Funds From Operations (AFFO) per share decreased by 7.1% ",
+        "latency_ms": 136048.842,
+        "output_tokens": 1024,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_dc_dr_sup-32",
+        "correct": false,
+        "predicted": "",
+        "expected": "GAAP net income per common share (diluted) decreased by 75.6%,",
+        "latency_ms": 54632.958,
+        "output_tokens": 1024,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_dc_eq_history-33",
+        "correct": true,
+        "predicted": "The **Singapore Dollar** remained consistent at **8%** of the global revenue currency breakdown in all four fiscal quarters of 2023.",
+        "expected": "Singapore Dollar",
+        "latency_ms": 164345.936,
+        "output_tokens": 782,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_dc_eq_history-34",
+        "correct": true,
+        "predicted": "The **British Pound** had the most unique values in the 2023 global revenue currency breakdown across the fiscal quarters.\n\nIts reported percentages were:\n\n- **Q1 2023:** 9%\n- **Q2 2023:** 10%\n- **Q3 2023:** 11%\n- **Q4 2023:** 10%\n\nThat gives **3 unique values** — 9%, 10%, and",
+        "expected": "British Pound",
+        "latency_ms": 56538.295,
+        "output_tokens": 1024,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_dc_eq_history-35",
+        "correct": false,
+        "predicted": "",
+        "expected": "Q4 of 2023",
+        "latency_ms": 51702.279,
+        "output_tokens": 1024,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_dc_nxt_history-36",
+        "correct": false,
+        "predicted": "",
+        "expected": "1948 (round up from 1947.4)",
+        "latency_ms": 136469.064,
+        "output_tokens": 1024,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_dc_nxt_history-37",
+        "correct": false,
+        "predicted": "1. Douglas Flynn — A$413,139  \n2. Jennifer Lambert — A$204,463  \n3. Stephen Smith — A$204,250  \n4. Stuart Davis — A$199,981  \n5. Dr Gregory J Clark AC — A$179,825  \n6. Dr Eileen Doyle — A$164,878",
+        "expected": "1. Douglas Flynn\\n2. Jennifer Lambert\\n3. Stephen Smith\\n4. Stuart Davis\\n5. Dr Gregory J Clark AC\\n6. Dr Eileen Doyle",
+        "latency_ms": 17747.664,
+        "output_tokens": 380,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_dc_nxt_history-38",
+        "correct": false,
+        "predicted": "",
+        "expected": "1. H1 2024, \\n2. H1 2022, \\n3. H1 2023",
+        "latency_ms": 50646.759,
+        "output_tokens": 1024,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_dc_nxt_history-39",
+        "correct": true,
+        "predicted": "Adelaide, Auckland, Darwin, Kuala Lumpur",
+        "expected": "Adelaide, Auckland, Darwin, Kuala Lumpur",
+        "latency_ms": 43371.937,
+        "output_tokens": 863,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_dc_nxt_history-40",
+        "correct": false,
+        "predicted": "",
+        "expected": "45444",
+        "latency_ms": 50618.472,
+        "output_tokens": 1024,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_pro_rel_ann-41",
+        "correct": false,
+        "predicted": "Atlassian recorded its second highest revenue in the **fourth quarter of fiscal year 2024** (the quarter ended June 30, 2024), with total revenue of **$1,131.6 million**.",
+        "expected": "Q4",
+        "latency_ms": 135624.479,
+        "output_tokens": 420,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_pro_rel_ann-42",
+        "correct": false,
+        "predicted": "",
+        "expected": "Q2, 6% increase",
+        "latency_ms": 52187.05,
+        "output_tokens": 1024,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_pro_transcripts_2023-43",
+        "correct": false,
+        "predicted": "",
+        "expected": "Annick Baumann, George Iwanyc, Ittai Kidron, Fred Lee, Sophie Lee,Shebly Seyrafi,Brent Thill,Allan Verkhovski, Patrick Walravens, Alex Zukin",
+        "latency_ms": 126529.524,
+        "output_tokens": 1024,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_pro_transcripts_2023-44",
+        "correct": false,
+        "predicted": "",
+        "expected": "6",
+        "latency_ms": 56364.642,
+        "output_tokens": 1024,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_pro_transcripts_2023-45",
+        "correct": false,
+        "predicted": "Brent Thill from Jefferies was not present for the **Asana, Inc. Q4 2023 Earnings Call** (08-Mar-2023). In that call, **Annick Baumann** from Jefferies International Ltd. asked the question on his behalf.",
+        "expected": "Q4 of 2023 (Asana)",
+        "latency_ms": 32284.123,
+        "output_tokens": 655,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_pro_transcripts_2023-46",
+        "correct": false,
+        "predicted": "",
+        "expected": "C: The operator states that the earnings call will be recorded",
+        "latency_ms": 49068.407,
+        "output_tokens": 1024,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_pro_transcripts_2023-47",
+        "correct": false,
+        "predicted": "",
+        "expected": "Berenberg Capital Markets, Piper Sandler & Co., MoffettNathanson LLC, KeyBanc Capital Markets, D. A. Davidson & Co., Robert W. Baird & Co. Inc., Citigroup Global Markets, Oppenheimer & Co. Inc., Wolfe Research LLC, Jefferies LLC",
+        "latency_ms": 47379.902,
+        "output_tokens": 1024,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_pro_transcripts_2023-48",
+        "correct": false,
+        "predicted": "",
+        "expected": "Brent John Thill, 3 times",
+        "latency_ms": 46854.439,
+        "output_tokens": 1024,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_pro_transcripts_2023-49",
+        "correct": false,
+        "predicted": "",
+        "expected": "Wolfe Research LLC, SVB Securities, Wells Fargo Securities, D.A. Davidson & Co., Oppenheimer & Co. Inc., MoffettNathanson LLC",
+        "latency_ms": 49174.921,
+        "output_tokens": 1024,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_pro_transcripts_2023-50",
+        "correct": false,
+        "predicted": "",
+        "expected": "Andrew DeGasperi, Brent A. Bracelin, Jackson E. Ader, Jason Celino, Robert Simmons, Rob Oliver, Steven Enders",
+        "latency_ms": 44842.679,
+        "output_tokens": 1024,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_pro_transcripts_2023-51",
+        "correct": false,
+        "predicted": "",
+        "expected": "9",
+        "latency_ms": 47131.122,
+        "output_tokens": 1024,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_pro_transcripts_2023-52",
+        "correct": false,
+        "predicted": "",
+        "expected": "6",
+        "latency_ms": 49646.66,
+        "output_tokens": 1024,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_pro_transcripts_2023-53",
+        "correct": false,
+        "predicted": "",
+        "expected": "Atlassian",
+        "latency_ms": 52778.736,
+        "output_tokens": 1024,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_pro_transcripts_2023-54",
+        "correct": false,
+        "predicted": "",
+        "expected": "Operator",
+        "latency_ms": 51847.717,
+        "output_tokens": 1024,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_pro_transcripts_2024-55",
+        "correct": false,
+        "predicted": "",
+        "expected": "1. Smartsheet\\n2. Asana",
+        "latency_ms": 159132.987,
+        "output_tokens": 1024,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_pro_transcripts_2024-56",
+        "correct": true,
+        "predicted": "There are **5** named customers that Smartsheet expanded with in FQ4 2024:\n\n1. Nutanix  \n2. University of Southern California  \n3. Genesis Motor America  \n4. The city of San Jose  \n5. Dairy Queen",
+        "expected": "5",
+        "latency_ms": 33298.712,
+        "output_tokens": 618,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_pro_transcripts_2024-57",
+        "correct": true,
+        "predicted": "Asana",
+        "expected": "Asana",
+        "latency_ms": 40004.209,
+        "output_tokens": 803,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_pro_transcripts_2024-58",
+        "correct": false,
+        "predicted": "",
+        "expected": "1. Q4 2024 - 10 analysts\\n2. Q2 2024 - 9 analysts\\n3. Q3 2024 - 8 analysts",
+        "latency_ms": 50511.362,
+        "output_tokens": 1024,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_pro_transcripts_2024-59",
+        "correct": false,
+        "predicted": "",
+        "expected": "Atlassian, Smartsheet",
+        "latency_ms": 50554.842,
+        "output_tokens": 1024,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_pro_asana_rel_tran-60",
+        "correct": false,
+        "predicted": "",
+        "expected": "0.09",
+        "latency_ms": 176776.296,
+        "output_tokens": 1024,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_pro_asana_rel_tran-61",
+        "correct": false,
+        "predicted": "",
+        "expected": "Q4 2023, 26%",
+        "latency_ms": 52712.337,
+        "output_tokens": 1024,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_pro_asana_rel_tran-62",
+        "correct": true,
+        "predicted": "Anne Raimondi answered Andrew DeGasperi’s first question in the Q4 FY2023 transcript (the quarter with $150.2 million in revenue).",
+        "expected": "Anne Raimondi",
+        "latency_ms": 35141.231,
+        "output_tokens": 668,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_pro_transcripts_2024-63",
+        "correct": false,
+        "predicted": "31%",
+        "expected": "31% year-over-year",
+        "latency_ms": 52548.872,
+        "output_tokens": 976,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_pro_transcripts_2024-64",
+        "correct": false,
+        "predicted": "Based on the Atlassian Q4 fiscal year 2024 earnings call (August 1, 2024), CFO Joseph Binz stated that Atlassian had over 500 customers spending more than $1 million, which was **up 48% year-over-year**. This corresponds to the **fourth quarter of fiscal year 2024**.",
+        "expected": "Q4 2024",
+        "latency_ms": 30336.618,
+        "output_tokens": 623,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_pro_ssheet_rel_tran-65",
+        "correct": false,
+        "predicted": "",
+        "expected": "In Q2 2024, customers spending $5,000 or more grew by 14% year-over-year. In Q3 2024, it grew by 11%",
+        "latency_ms": 144019.259,
+        "output_tokens": 1024,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_pro_ssheet_rel_tran-66",
+        "correct": false,
+        "predicted": "The **second quarter of fiscal year 2024 (Q2 FY2024)** had the highest GAAP operating loss as a percentage of total revenue.\n\nUsing the reported GAAP figures:\n\n| Quarter | GAAP operating loss | Total revenue | GAAP operating loss % of revenue |\n|---|---:|---:|---:|\n| Q1 FY2024 | $32.1 million | $219.9 million | ~14.6% |",
+        "expected": "Q2 2024",
+        "latency_ms": 72231.795,
+        "output_tokens": 1024,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_pro_ssheet_rel_tran-67",
+        "correct": false,
+        "predicted": "",
+        "expected": "GAAP net loss grew by 11.7% \\nNon-GAAP net income decreased by 12%",
+        "latency_ms": 52995.107,
+        "output_tokens": 1024,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-co_pro_ssheet_rel_tran-68",
+        "correct": false,
+        "predicted": "1. **Q1** — FY2024 FCF of **$31.3M** vs. FY2023 FCF of **$(9.1)M** → difference of **+$40.4M**  \n2. **Q2** — FY2024 FCF of **$45.5M** vs. FY2023 FCF of **$7.1M** → difference of **+$38.4M**  \n3. **Q3** — FY2024 FCF of **$11.4M** vs. FY2023 FCF of **$(4.6)M** → difference of **+$16.1M**\n\n**Ranking in descending order: Q1, Q2, Q3**",
+        "expected": "1. Q1 2024, \\n2. Q2 2024,  \\n3. Q3 2024",
+        "latency_ms": 45568.163,
+        "output_tokens": 959,
+        "category": "Company_Documents",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-gc_bnpl-69",
+        "correct": false,
+        "predicted": "",
+        "expected": "Afterpay, Zip",
+        "latency_ms": 172892.736,
+        "output_tokens": 1024,
+        "category": "Government_Consultations",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-gc_bnpl-70",
+        "correct": true,
+        "predicted": "Based on the documents provided, **Hamilton Locke** is the organisation that has contributed to FinTech Australia's paper and has also made its own submission to the Treasury.\n\nIn FinTech Australia's submission, under \"About this Submission,\" Hamilton Locke is listed as one of their **Policy Partners** who assist in the development of their submissions. Separately, Hamilton Locke (specifically their Funds and Financial Services team) made its own submission to the Treasury's Buy Now Pay Later re",
+        "expected": "Hamilton Locke",
+        "latency_ms": 29256.168,
+        "output_tokens": 417,
+        "category": "Government_Consultations",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-gc_bnpl-71",
+        "correct": false,
+        "predicted": "",
+        "expected": "Financial Counselling Victoria",
+        "latency_ms": 55862.379,
+        "output_tokens": 1024,
+        "category": "Government_Consultations",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-gc_bnpl-72",
+        "correct": false,
+        "predicted": "",
+        "expected": "Australian Financial Complaints Authority (AFCA), Australian Securities and Investments Commission, CHOICE, Economic Abuse Reference Group, Financial Brokers of Australasia Limited, Hamilton Locke, Law Council of Australia, Zip Co",
+        "latency_ms": 56503.681,
+        "output_tokens": 1024,
+        "category": "Government_Consultations",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-gc_screen-73",
+        "correct": false,
+        "predicted": "",
+        "expected": "Sameer ",
+        "latency_ms": 158115.483,
+        "output_tokens": 1024,
+        "category": "Government_Consultations",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-gc_screen-74",
+        "correct": false,
+        "predicted": "Based on the documents provided, the following financial institutions provide loans/advances of up to $2,000:\n\n1. **Beforepay** – \"We offer eligible consumers an advance of up to $2,000 (average $360) of their pay or tax refund, on-demand, for a 5% fixed transaction fee, with no interest or late fees.\"\n\n2. **Wagepay** – \"Our products offer eligible consumers a cheaper and fairer alternative to payday (SACC) loans by offering an advance of up to $2,000 on their wage for a low fee.\"\n\n3. **Wagetap*",
+        "expected": "Beforepay, Wagepay, Wagetap",
+        "latency_ms": 47310.198,
+        "output_tokens": 864,
+        "category": "Government_Consultations",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-gc_wnc-75",
+        "correct": false,
+        "predicted": "US (18.1%), Australia (22%), UK (26%), Netherlands (37%).",
+        "expected": "1. the US\\n2. Australia\\n3. the UK\\n4. the Netherlands",
+        "latency_ms": 158541.801,
+        "output_tokens": 604,
+        "category": "Government_Consultations",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-gc_wnc-76",
+        "correct": false,
+        "predicted": "The",
+        "expected": "16400000",
+        "latency_ms": 57522.1,
+        "output_tokens": 1024,
+        "category": "Government_Consultations",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-gc_wnc-77",
+        "correct": false,
+        "predicted": "",
+        "expected": "211",
+        "latency_ms": 53047.011,
+        "output_tokens": 1024,
+        "category": "Government_Consultations",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-gc_wnc-78",
+        "correct": false,
+        "predicted": "",
+        "expected": "Australian Chamber of Commerce and Industry, Joellen Riley Munton, Law Council of Australia",
+        "latency_ms": 48014.628,
+        "output_tokens": 1024,
+        "category": "Government_Consultations",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-gc_wnc-79",
+        "correct": true,
+        "predicted": "Approximately **25 judgments**.\n\nThe Issues Paper states that the study covered **145 judgments** from 1989 to 2012. Of those, **53.8% were unsuccessful** for the employer, and **32.1% of the unsuccessful cases** involved a restraint that was **valid but not enforced**.\n\nCalculation:  \n145 × 53.8% ≈ 78 unsuccessful cases  \n78 × 32.1% ≈ **25**",
+        "expected": "25",
+        "latency_ms": 51491.565,
+        "output_tokens": 1005,
+        "category": "Government_Consultations",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-legal_eu_ai-80",
+        "correct": false,
+        "predicted": "",
+        "expected": "No. The AI Act does not apply to public authorities in non-EU countries",
+        "latency_ms": 178143.073,
+        "output_tokens": 1024,
+        "category": "Legal",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-legal_eu_ai-81",
+        "correct": false,
+        "predicted": "",
+        "expected": "by August 2, 2026",
+        "latency_ms": 51835.334,
+        "output_tokens": 1024,
+        "category": "Legal",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-legal_sb1047-82",
+        "correct": true,
+        "predicted": "American Economic Liberties Project",
+        "expected": "American Economic Liberties Project",
+        "latency_ms": 131847.469,
+        "output_tokens": 330,
+        "category": "Legal",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-legal_sb1047-83",
+        "correct": true,
+        "predicted": "The bill was amended **10 times** after February 7, 2024:\n\n- **5 times in the Assembly**\n- **5 times in the Senate**",
+        "expected": "10",
+        "latency_ms": 51095.247,
+        "output_tokens": 836,
+        "category": "Legal",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-legal_sb1047-84",
+        "correct": false,
+        "predicted": "Based on the documents provided, the definition of \"positive safety determination\" appears in the **Senate Judiciary Committee** analysis, which corresponds to the version with a **hearing date of April 2, 2024** (Version: March 20, 2024).\n\nIn that analysis, under \"This bill: 2) Provides definitions for all relevant terms, including:\" item (c) states:\n\n> \"Positive safety determination\" means a determination with respect to a covered model that a developer can reasonably exclude the possibility t",
+        "expected": "April 2nd, 2024",
+        "latency_ms": 49753.436,
+        "output_tokens": 1013,
+        "category": "Legal",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-legal_sb1047-85",
+        "correct": true,
+        "predicted": "The **California Chamber of Commerce (CalChamber)** would disagree. In the June 18 Assembly Privacy and Consumer Protection analysis, CalChamber argued that liability should rest with the **user who intended to do harm**, not automatically with the developer.",
+        "expected": "CalChamber",
+        "latency_ms": 43921.789,
+        "output_tokens": 864,
+        "category": "Legal",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-ind_ai-86",
+        "correct": false,
+        "predicted": "",
+        "expected": "0.0016",
+        "latency_ms": 164408.956,
+        "output_tokens": 1024,
+        "category": "Industry_Reports",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-ind_ai-87",
+        "correct": false,
+        "predicted": "Based on the Ai Group survey data, in 2024, **30%** of Australian businesses said they needed artificial intelligence skills in their business, up from **20%** in 2022. This represents an increase of **10 percentage points** (a 50% relative increase from the 2022 figure).",
+        "expected": "0.1",
+        "latency_ms": 21678.726,
+        "output_tokens": 436,
+        "category": "Industry_Reports",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-ind_ai-88",
+        "correct": false,
+        "predicted": "",
+        "expected": "148 companies",
+        "latency_ms": 51773.376,
+        "output_tokens": 1024,
+        "category": "Industry_Reports",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-ind_ai-89",
+        "correct": false,
+        "predicted": "In 2022:",
+        "expected": "0.318",
+        "latency_ms": 53921.196,
+        "output_tokens": 1024,
+        "category": "Industry_Reports",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-ind_clean-90",
+        "correct": false,
+        "predicted": "",
+        "expected": "0.304",
+        "latency_ms": 142060.145,
+        "output_tokens": 1024,
+        "category": "Industry_Reports",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-ind_aus_retail-91",
+        "correct": true,
+        "predicted": "Based on the documents, **Erica Berchtold**, CEO of **The Iconic**, talks about the importance of efficient, fast delivery. In the 2023 Australian Retail Outlook's \"Reflections on the future of Australian retail\" section, she states:\n\n\"Secondly, we see delivery as a key opportunity for development. We pioneered fast delivery when we first launched in 2011. For us, topics such as last mile, time-frame delivery and automation as a customer value proposition will be focal points of our investment i",
+        "expected": "The Iconic",
+        "latency_ms": 140648.552,
+        "output_tokens": 434,
+        "category": "Industry_Reports",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-ind_aus_retail-92",
+        "correct": false,
+        "predicted": "",
+        "expected": "9",
+        "latency_ms": 55881.141,
+        "output_tokens": 1024,
+        "category": "Industry_Reports",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-ind_fow-93",
+        "correct": false,
+        "predicted": "",
+        "expected": "Baby Boomer",
+        "latency_ms": 159033.712,
+        "output_tokens": 1024,
+        "category": "Industry_Reports",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-mkt_mkt-94",
+        "correct": false,
+        "predicted": "Based on the Brandwatch 2023 Digital Marketing Trends report, in 2022, 35% of American consumers purchased a product or service promoted by virtual influencers, and **40%** of those purchasers were Gen-Z or millennials.",
+        "expected": "0.14",
+        "latency_ms": 139793.187,
+        "output_tokens": 302,
+        "category": "Marketing",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-mkt_mkt-95",
+        "correct": false,
+        "predicted": "",
+        "expected": "50%",
+        "latency_ms": 59257.366,
+        "output_tokens": 1024,
+        "category": "Marketing",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-mkt_mkt-96",
+        "correct": false,
+        "predicted": "The company recognized for marketing excellence in the E-commerce category of the 2024 CMO Survey Awards is **Amazon**.\n\nThe generative AI technology cited from Amazon in the document set is the **Amazon Titan Image Generator**, an AI image generator that enables content creators to produce studio-quality, lifelike images from simple English-language prompts.",
+        "expected": "The Amazon Titan Image Generator",
+        "latency_ms": 19912.128,
+        "output_tokens": 378,
+        "category": "Marketing",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-mkt_mkt-97",
+        "correct": true,
+        "predicted": "According to Brandwatch, influencers are a subset of **content creators** — “all influencers are content creators, not all content creators are influencers.”",
+        "expected": "Content Creators",
+        "latency_ms": 21273.98,
+        "output_tokens": 403,
+        "category": "Marketing",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "lcr-sur_con-100",
+        "correct": false,
+        "predicted": "",
+        "expected": "Deloitte: 2022 Engineering and Construction Industry Outlook, ACEC Research Institute: 2021-2025 Engineering Industry Forecast",
+        "latency_ms": 150403.005,
+        "output_tokens": 1024,
+        "category": "Survey_Reports",
+        "difficulty": "unrated"
+      }
+    ]
+  },
+  "failures": [
+    {
+      "at": "request",
+      "count": 2,
+      "category": "unscorable",
+      "message": "completed but could not be judged: 2 documents-unavailable",
+      "sample_request_id": "eval-00097"
+    }
+  ],
+  "gotchas": [
+    {
+      "severity": "warn",
+      "text": "2 of 100 eval items could not be scored and are excluded from both accuracy and scores.items."
+    },
+    {
+      "severity": "info",
+      "text": "EAGLE speculative decoding is enabled (3 steps, eagle-topk 1, 4 draft tokens). Decode numbers in this cell include the speculative speedup; compare only against another cell with the same speculative settings."
+    },
+    {
+      "severity": "info",
+      "text": "The image lmsysorg/sglang:qwen38-27b is a purpose-built branch reporting sglang 0.0.0.dev0+qwen38.27b.g561c8f3, not a release. Its 476 parameters were introspected out of the container rather than typed, because the recipe uses mamba cache flags that no released SGLang version file carries."
+    },
+    {
+      "severity": "info",
+      "text": "QUANT=nvfp4 in this recipe means RadixArk/Qwen3.8-27B-NVFP4-BF16-LMHead. RadixArk also publishes an FP4-lm_head variant under a similar name and the two are different quantizations; check which one a comparison is against."
+    }
+  ],
+  "derived": {
+    "cost_per_1m_output_tokens_usd": null,
+    "tokens_per_watt": null,
+    "tok_s_per_gb_bandwidth": null,
+    "bandwidth_efficiency": null,
+    "memory_headroom_gb": null
+  },
+  "raw": {
+    "harness": "atlas-bench",
+    "harness_version": "0.1.0",
+    "sha256": "4f7a4f4d5b28ac6953bf808be4b4bef5e893fdd02678774ce6ecc55b113d302a",
+    "payload_path": null,
+    "payload": {
+      "scorer": "contains",
+      "scorers_used": [
+        "contains"
+      ],
+      "engine_endpoint": {
+        "attached": true,
+        "base_url": "http://127.0.0.1:8888/v1",
+        "served_model_id": "qwen3.8-27b-sglang",
+        "advertised_models": [
+          "qwen3.8-27b-sglang"
+        ]
+      }
+    },
+    "truncated": false
+  },
+  "provenance": {
+    "github_login": "0xBakeer",
+    "github_user_id": 17404809,
+    "started_at": "2026-08-25T22:49:40Z",
+    "finished_at": "2026-08-26T00:59:29Z",
+    "submitted_at": null,
+    "commit": null,
+    "pr": null,
+    "method": "atlas-bench",
+    "agent": null,
+    "notes": "NVIDIA DGX Spark (ASUS Ascent GX10, GB10) on Ubuntu 24.04 / DGX OS, driver 580.173.02, CUDA 13.0. Served with the MiaAI-Lab SGLang recipe (https://github.com/MiaAI-Lab/Qwen3.8-27B-SGLang-DGX-Spark) at commit 751e29e, image lmsysorg/sglang:qwen38-27b (digest sha256:febfb971c7352570fc445c466ebd6ffc9d896024958e544a60f2137fd85856b1), which reports itself as sglang 0.0.0.dev0+qwen38.27b.g561c8f3. Recipe .env: QUANT=nvfp4, YARN=0, CONTEXT_LENGTH=262144, MAX_CONCURRENT_REQUESTS=16. QUANT=nvfp4 selects RadixArk/Qwen3.8-27B-NVFP4-BF16-LMHead, the BF16-lm_head variant, not the FP4-head one. EAGLE speculative decoding is on with 3 steps, topk 1 and 4 draft tokens, so decode throughput here includes the speculative win and is not comparable to a non-speculative cell. KV cache is fp8_e4m3 and the mamba state is bfloat16. Thinking is ON: the chat template reports enable_thinking default_enabled=True, and SGLang parses it with reasoning-parser qwen3. The DeepSeek-V4-Flash service normally resident on this machine was stopped for the duration of the run. CPU pinning per the recipe (cpuset 5-9,15-19)."
+  },
+  "verification": {
+    "level": "self-reported",
+    "reproduced_by": [],
+    "flags": []
+  }
+}
