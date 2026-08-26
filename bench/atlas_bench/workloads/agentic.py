@@ -174,6 +174,11 @@ async def run_agentic(ctx: RunContext) -> WorkloadOutcome:
     metrics["session_prompt_tokens_max"] = distribution(growth) if growth else None
 
     sessions.sort(key=lambda s: s["conversation_id"])
+    # Sessions are NOT sweep points. `sweep` is "one swept point with its own metric block",
+    # which is what the schema enforces and what the site's sweep chart draws; a session row
+    # has no metric block and a conversation id instead of an axis value. They live in the
+    # raw payload, where the per-session context growth is preserved without pretending to
+    # be an axis.
     gotchas = []
     if not honour_delays:
         gotchas.append(
@@ -205,7 +210,6 @@ async def run_agentic(ctx: RunContext) -> WorkloadOutcome:
             "temperature": float(ctx.param("temperature", ctx.spec.request.temperature)),
             "timeout_s": ctx.timeout_s,
         },
-        sweep=sessions,
         raw={"requests": raw_payload(results), "sessions": sessions},
         gotchas=gotchas,
         warnings=list(ctx.warnings),

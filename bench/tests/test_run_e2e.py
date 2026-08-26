@@ -492,6 +492,27 @@ async def test_documents_missing_leaves_the_item_unscored(atlas_repo: Path) -> N
     assert record["metrics"]["requests_ok"] == 1
 
 
+async def test_agentic_result_passes_schema_validation(atlas_repo: Path) -> None:
+    """The record an agentic run writes must validate, not merely be written.
+
+    The first real agentic result failed on two counts the unit tests could not see:
+    per-session rows were put in `sweep`, which the schema defines as a swept point WITH a
+    metric block, and the session-depth distribution was a metric name the closed block does
+    not allow. Both only surface against the real schema.
+    """
+    server = FakeOpenAIServer(responder=lambda m: "ack")
+    output = await run(atlas_repo, server, make_spec("agentic-test-v1"))
+    issues = drop_pre_migration_schema_errors(
+        validate_file(output.paths[0], Registry(atlas_repo))
+    )
+    errors = [i for i in issues if i.level == "error"]
+    assert not errors, f"agentic result does not validate: {[i.message for i in errors]}"
+
+    record = json.loads(output.paths[0].read_text())
+    assert record.get("sweep") in (None, []), "sessions are not swept points"
+    assert record["raw"]["payload"]["sessions"], "per-session detail must survive in raw"
+
+
 async def test_agentic_replays_the_recording_not_the_model(atlas_repo: Path) -> None:
     """Every assistant turn is measured, and the history that grows is the recording's.
 
@@ -506,7 +527,7 @@ async def test_agentic_replays_the_recording_not_the_model(atlas_repo: Path) -> 
     assert record["kind"] == "agentic"
     # Two assistant turns in the recording, so two measured requests.
     assert record["metrics"]["requests_ok"] == 2
-    sessions = record["sweep"]
+    sessions = record["raw"]["payload"]["sessions"]
     assert len(sessions) == 1
     assert sessions[0]["conversation_id"] == "sess-1"
     assert sessions[0]["turns_measured"] == 2
@@ -542,7 +563,7 @@ async def test_agentic_records_whether_tool_delays_were_honoured(atlas_repo: Pat
     # The fixture sets honour_tool_delays: False so the 30s pause is not slept through.
     assert record["workload"]["resolved_params"]["honour_tool_delays"] is False
     assert any("upper bound" in g["text"] for g in record["gotchas"])
-    assert record["sweep"][0]["tool_delay_s"] == 0.0
+    assert record["raw"]["payload"]["sessions"][0]["tool_delay_s"] == 0.0
 
 
 async def test_dry_run_touches_nothing(atlas_repo: Path, fake_server: FakeOpenAIServer) -> None:
