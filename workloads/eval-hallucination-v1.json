@@ -4,11 +4,11 @@
   "id": "eval-hallucination-v1",
   "kind": "eval",
   "dataset_id": "aa-omniscience-v1",
-  "description": "600 short factual questions across six domains, scored three ways: right, wrong, or declined. Distinct from eval-knowledge-v1, which asks what a model knows — this asks what it does when it does not know, and charges it for guessing. Reports omniscience_index = (correct - incorrect) / total alongside accuracy.",
+  "description": "600 short factual questions across six domains, scored three ways: right, wrong, or declined. Distinct from eval-knowledge-v1, which asks what a model knows \u2014 this asks what it does when it does not know, and charges it for guessing. Reports omniscience_index = (correct - incorrect) / total alongside accuracy.",
   "params": {
     "concurrency": 4,
     "num_requests": 600,
-    "output_tokens": 512,
+    "output_tokens": 2048,
     "temperature": 0,
     "seed": 42,
     "timeout_s": 300,
@@ -19,8 +19,12 @@
   "eval": {
     "suite": "hallucination",
     "scorer": "abstention",
-    "max_output_tokens": 512
+    "max_output_tokens": 2048
   },
-  "metrics_required": ["accuracy", "success_rate", "avg_latency_ms"],
-  "notes": "Accuracy alone rewards guessing: a fabrication and an honest \"I don't know\" both score zero, so a model that never declines looks no worse than one that declines honestly. omniscience_index charges a wrong answer exactly what a right one earns and leaves declining free, so the two separate. hallucination_rate is the share of committed answers that were wrong. Scoring is substring matching plus a narrow abstention regex, NOT the grader Artificial Analysis run, so a number from here is not comparable to a published AA figure and must not be quoted as one. Source: AA-Omniscience public subset, https://huggingface.co/datasets/ArtificialAnalysis/AA-Omniscience-Public (Apache-2.0), part of the Artificial Analysis Intelligence Index v4.1.1."
+  "metrics_required": [
+    "accuracy",
+    "success_rate",
+    "avg_latency_ms"
+  ],
+  "notes": "Accuracy alone rewards guessing: a fabrication and an honest \"I don't know\" both score zero, so a model that never declines looks no worse than one that declines honestly. omniscience_index charges a wrong answer exactly what a right one earns and leaves declining free, so the two separate. hallucination_rate is the share of committed answers that were wrong. Scoring is substring matching plus a narrow abstention regex, NOT the grader Artificial Analysis run, so a number from here is not comparable to a published AA figure and must not be quoted as one. Source: AA-Omniscience public subset, https://huggingface.co/datasets/ArtificialAnalysis/AA-Omniscience-Public (Apache-2.0), part of the Artificial Analysis Intelligence Index v4.1.1. Output budget raised from 512 to 2048 on 2026-08-26: 512 was an outlier in this suite and it was the binding constraint, not the model: at that cap Qwen3.8-27B averaged 501 output tokens \u2014 98% of the budget \u2014 and 554 of 600 items came back with empty content, while the same model on eval-knowledge-v1, the closest analogue in answer length, averages 53 tokens against a 2048 cap and never truncates. gemma-4-E2B lost 301 of 600 the same way. 2048 matches eval-knowledge, eval-reasoning and eval-multilingual, so a model that still truncates here is telling you something about itself rather than about the workload."
 }
