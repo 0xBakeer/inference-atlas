@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "id": "Qwen/Qwen3.8-Flash-Next",
+  "name": "Qwen3.8-Flash-Next",
+  "hf_id": "Qwen/Qwen3.8-Flash-Next",
+  "family": "qwen3.8",
+  "vendor": "alibaba",
+  "params_b": 176.9,
+  "active_params_b": 4.7,
+  "architecture": "qwen4exp",
+  "moe": true,
+  "experts": 512,
+  "experts_active": 10,
+  "attention": "hybrid",
+  "modalities": [
+    "text",
+    "image"
+  ],
+  "context_length": 262144,
+  "licence": "Apache-2.0",
+  "released": "2026-08-26",
+  "tags": [
+    "chat",
+    "reasoning",
+    "moe",
+    "vision"
+  ],
+  "links": {
+    "hf": "https://huggingface.co/Qwen/Qwen3.8-Flash-Next"
+  },
+  "notes": "All architecture numbers here were read out of the GGUF KV metadata of unsloth/Qwen3.8-Flash-Next-GGUF (general.architecture=qwen4exp, size_label 512x56B), not typed from a model card. block_count 48, embedding_length 2560, attention.head_count 24, head_count_kv 2, expert_count 512, expert_used_count 10, expert_feed_forward_length 640. This model is multimodal: the Hugging Face card carries pipeline_tag image-text-to-text, the GGUF KV carries qwen4exp.ple.image_token_id, and the bundled chat template handles image and video turns. The vision tower is NOT in these weight shards - all 1,224 tensors across the four shards are language-model tensors, with no vision/clip/patch tensor present - because llama.cpp ships multimodal as a separate projector file, and unsloth publishes it alongside as mmproj-BF16.gguf / mmproj-F16.gguf (~0.9 GB). A server started without --mmproj, as in the run recorded here, is text-only in practice even though the model is not. params_b 176.9 is the exact parameter count llama-server reports (176,943,899,520). Of that, 51.2B is a single n-gram/PLE embedding table (per_layer_token_embd.weight, [160, 320001536], ple.ngram_size 3, ple.heads_per_ngram 8, 16 head vocabs of ~20M rows) which is only ever gathered from, never multiplied - it can be served from storage rather than accelerator memory. active_params_b 4.7 is DERIVED, not captured: 10/512 experts (2.36B) + shared expert (0.24B) + attention (0.82B) + embed/output (1.27B). Treat it as approximate - only 12 of 48 layers use full attention, the rest are gated-delta-net, so the attention term is an upper bound. The bandwidth-bound decode ceiling computed from it will be far above what this model actually achieves, because a top-10-of-512 MoE scatters expert reads and does not stream weights contiguously."
+}

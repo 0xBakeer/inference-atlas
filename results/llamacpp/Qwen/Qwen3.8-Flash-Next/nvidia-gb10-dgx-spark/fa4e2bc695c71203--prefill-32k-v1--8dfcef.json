@@ -1,0 +1,356 @@
+{
+  "schema_version": 1,
+  "run_id": "fa4e2bc695c71203--prefill-32k-v1--8dfcef",
+  "config_id": "fa4e2bc695c71203",
+  "cell_id": "1ab063de12eb",
+  "workload_id": "prefill-32k-v1",
+  "kind": "prefill",
+  "engine": {
+    "id": "llamacpp",
+    "version": "b50-035e227",
+    "commit": null,
+    "container": null,
+    "install_method": "source"
+  },
+  "model": {
+    "id": "Qwen/Qwen3.8-Flash-Next",
+    "quant_id": "gguf-ud-q4-k-xl",
+    "hf_id": "Qwen/Qwen3.8-Flash-Next",
+    "revision": null,
+    "dtype": "auto",
+    "local_path": null
+  },
+  "hardware": {
+    "id": "nvidia-gb10-dgx-spark",
+    "count": 1,
+    "driver": "580.173.02",
+    "cuda": "13.0",
+    "host": {
+      "cpu": "Cortex-A725",
+      "cpu_cores": 20,
+      "ram_gb": 121.6,
+      "os": "Ubuntu 24.04.4 LTS",
+      "kernel": "6.17.0-1029-nvidia",
+      "arch": "aarch64"
+    },
+    "fingerprint": "sha256:52ea2bdd513719724db88c162b6cc2c9fb4e5b67e02dbe41b9de00687acefb91",
+    "captured": {
+      "nvidia_smi": {
+        "driver": "580.173.02",
+        "cuda": "13.0",
+        "products": [
+          "NVIDIA GB10"
+        ],
+        "fb_memory_total_mib": 0.0
+      },
+      "lscpu": {
+        "architecture": "aarch64",
+        "cpus": "20",
+        "vendor_id": "ARM",
+        "model_name": "Cortex-A725",
+        "cores_per_socket": "10",
+        "sockets": "1",
+        "cpu_max_mhz": "2808.0000"
+      }
+    }
+  },
+  "args": {
+    "ctx-size": 262144,
+    "n-gpu-layers": 999,
+    "parallel": 1,
+    "override-tensor": "per_layer_token_embd=CPU",
+    "load-mode": "mmap",
+    "spec-type": "ngram-mod",
+    "temp": 1.0,
+    "top-p": 0.95,
+    "top-k": 20
+  },
+  "args_canonical": "@dtype=auto;@quant=gguf-ud-q4-k-xl;ctx-size=262144;load-mode=mmap;n-gpu-layers=999;override-tensor=per_layer_token_embd=CPU;parallel=1;spec-type=ngram-mod;temp=1;top-k=20",
+  "serve_command": "$HOME/llamacpp-qwen4exp/build/bin/llama-server -m $HOME/qwen38fn-q4kxl/UD-Q4_K_XL/Qwen3.8-Flash-Next-UD-Q4_K_XL-00001-of-00004.gguf --alias qwen3.8-flash-next -lm mmap -ot per_layer_token_embd=CPU --n-gpu-layers 999 --ctx-size 262144 --parallel 1 --spec-type ngram-mod --temp 1.0 --top-p 0.95 --top-k 20 --host 127.0.0.1 --port 8000",
+  "workload": {
+    "id": "prefill-32k-v1",
+    "resolved_params": {
+      "concurrency": 1,
+      "num_requests": 10,
+      "input_tokens": 32768,
+      "output_tokens": 16,
+      "warmup_requests": 1,
+      "prompts_padded": false,
+      "needle_check": false,
+      "timeout_s": 900.0,
+      "seed": 42
+    }
+  },
+  "metrics": {
+    "requests_total": 10,
+    "requests_ok": 10,
+    "requests_failed": 0,
+    "success_rate": 1.0,
+    "duration_s": 281.146,
+    "input_tokens_total": 403331,
+    "output_tokens_total": 160,
+    "output_tok_s": 0.569,
+    "total_tok_s": 1435.163,
+    "req_s": 0.036,
+    "prefill_tok_s": 1480.965,
+    "ttft_ms": {
+      "mean": 27234.329,
+      "p50": 902.392,
+      "p90": 88784.15,
+      "p95": 89401.288,
+      "p99": 89894.998,
+      "min": 203.688,
+      "max": 90018.425
+    },
+    "tpot_ms": {
+      "mean": 58.685,
+      "p50": 58.686,
+      "p90": 59.727,
+      "p95": 59.913,
+      "p99": 60.061,
+      "min": 57.171,
+      "max": 60.099
+    },
+    "itl_ms": {
+      "mean": 58.643,
+      "p50": 57.179,
+      "p90": 62.449,
+      "p95": 70.26,
+      "p99": 75.272,
+      "min": 54.833,
+      "max": 81.757
+    },
+    "e2e_ms": {
+      "mean": 28114.604,
+      "p50": 1787.816,
+      "p90": 89661.627,
+      "p95": 90276.52,
+      "p99": 90768.434,
+      "min": 1088.625,
+      "max": 90891.412
+    },
+    "decode_tok_s_per_request": {
+      "mean": 17.044,
+      "p50": 17.04,
+      "p90": 17.329,
+      "p95": 17.41,
+      "p99": 17.475,
+      "min": 16.639,
+      "max": 17.491
+    },
+    "vram_peak_gb": null,
+    "ram_peak_gb": 102.936,
+    "kv_cache_tokens": null,
+    "power_avg_w": 65.97,
+    "power_peak_w": 74.76,
+    "energy_wh": 6.8212,
+    "gpu_util_avg_pct": 87.87,
+    "temp_max_c": 79.0,
+    "thermal_throttle_detected": false
+  },
+  "failures": [],
+  "gotchas": [
+    {
+      "severity": "info",
+      "text": "--parallel 1 is not a tuning choice, it is forced. llama-server gives this build ONE server slot, so every workload here with concurrency above 1 measures a QUEUE, not parallelism: requests are admitted one at a time and the rest wait. This was verified before the run - 8 simultaneous requests all returned 200 and completed in near-perfect 3 second succession, and the server survived. Read the concurrent cells as what N clients experience against a single-slot server: aggregate throughput stays near the single-stream number and per-request latency grows linearly with N. Do NOT compare them to a genuinely batched engine, and note that at high N, against the workloads 300 second timeout, tail requests can exceed the timeout and depress success_rate. The recipe README reports that raising --parallel above 1 aborts with a GGML_ASSERT in qwen4exp.cpp:284, which is why 1 is used."
+    },
+    {
+      "severity": "info",
+      "text": "--spec-type ngram-mod is ON. It drafts spans from repetition already present in the context, so it needs no draft model and no extra memory, and it is exact - the target model verifies every token, so output is byte-identical to running without it. But throughput varies up to 3x by how much of the output already appears in the prompt: the recipe measures 52.6 to 74.6 tok/s on reproduce-this-file-with-one-change, 46 to 51.6 on a targeted bug fix, and 22.2 to 23.3 on free-form prose. A free-form decode number and a copy-heavy decode number from this same config are both true and are not comparable to each other. Never compare any decode figure here against a cell run with a different --spec-type."
+    },
+    {
+      "severity": "info",
+      "text": "A quarter of this model lives on NVMe, so page-cache state is a hidden independent variable. The 51.2B n-gram table is 26.8 GiB of the file and is gathered about 16 rows at a time out of 320,001,536, so a short workload almost never touches a row twice and the table does not warm on its own. This run started at a measured 73.0% residency after an explicit warm. The recipe measures cold versus warm at +6% with speculation off but up to +42% with ngram-mod on, because verifying a 50-60 token draft span touches many n-gram rows at once. Any result from this configuration that does not state its table residency is not reproducible."
+    },
+    {
+      "severity": "info",
+      "text": "Model facts in the registry entries added with this run were read out of the GGUF KV metadata of the actual files benchmarked, not from a model card: general.architecture=qwen4exp, size_label 512x56B, block_count 48, embedding_length 2560, attention.head_count 24 and head_count_kv 2, expert_count 512, expert_used_count 10, ple.ngram_size 3, ple.heads_per_ngram 8. The one exception is active_params_b 4.7, which is DERIVED (10 of 512 experts, plus shared expert, attention, and embed/output) and approximate, because only 12 of 48 layers use full attention. The bandwidth-bound decode ceiling computed from it will sit far above what this model actually reaches: a top-10-of-512 MoE scatters expert reads rather than streaming weights contiguously, so this configuration is not simply bandwidth-bound."
+    }
+  ],
+  "derived": {
+    "cost_per_1m_output_tokens_usd": null,
+    "tokens_per_watt": 0.0086,
+    "tok_s_per_gb_bandwidth": 0.062432,
+    "bandwidth_efficiency": 0.184618,
+    "memory_headroom_gb": null
+  },
+  "raw": {
+    "harness": "atlas-bench",
+    "harness_version": "0.1.0",
+    "sha256": "13af9ca0e44b8b496268e8d5d6006f40a5e75199776930a6bca7632df18ab484",
+    "payload_path": null,
+    "payload": {
+      "requests": [
+        {
+          "id": "prefill-w00000",
+          "prompt_id": "hay-32k-d10",
+          "warmup": true,
+          "status": "ok",
+          "ttft_ms": 89644.316,
+          "e2e_ms": 90536.388,
+          "prompt_tokens": 40226,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00000",
+          "prompt_id": "hay-32k-d10",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 203.688,
+          "e2e_ms": 1088.625,
+          "prompt_tokens": 40226,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00001",
+          "prompt_id": "hay-32k-multi",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 88051.53,
+          "e2e_ms": 88946.811,
+          "prompt_tokens": 40465,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00002",
+          "prompt_id": "hay-32k-d50",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 88647.009,
+          "e2e_ms": 89524.984,
+          "prompt_tokens": 40273,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00003",
+          "prompt_id": "hay-32k-d90",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 90018.425,
+          "e2e_ms": 90891.412,
+          "prompt_tokens": 40356,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00004",
+          "prompt_id": "hay-32k-d10",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 1059.634,
+          "e2e_ms": 1917.202,
+          "prompt_tokens": 40226,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00005",
+          "prompt_id": "hay-32k-multi",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 877.214,
+          "e2e_ms": 1778.693,
+          "prompt_tokens": 40465,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00006",
+          "prompt_id": "hay-32k-d50",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 901.43,
+          "e2e_ms": 1789.682,
+          "prompt_tokens": 40273,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00007",
+          "prompt_id": "hay-32k-d90",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 903.354,
+          "e2e_ms": 1785.95,
+          "prompt_tokens": 40356,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00008",
+          "prompt_id": "hay-32k-d10",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 873.508,
+          "e2e_ms": 1740.027,
+          "prompt_tokens": 40226,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00009",
+          "prompt_id": "hay-32k-multi",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 807.496,
+          "e2e_ms": 1682.657,
+          "prompt_tokens": 40465,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        }
+      ],
+      "engine_endpoint": {
+        "attached": true,
+        "base_url": "http://127.0.0.1:8000/v1",
+        "served_model_id": "qwen3.8-flash-next",
+        "advertised_models": [
+          "qwen3.8-flash-next"
+        ]
+      }
+    },
+    "truncated": false
+  },
+  "provenance": {
+    "github_login": "0xBakeer",
+    "github_user_id": null,
+    "started_at": "2026-08-27T08:37:38Z",
+    "finished_at": "2026-08-27T08:43:50Z",
+    "submitted_at": null,
+    "commit": null,
+    "pr": null,
+    "method": "atlas-bench",
+    "agent": null,
+    "notes": "NVIDIA DGX Spark (ASUS Ascent GX10, GB10 / SM121, 128 GB unified memory, ~121 GiB usable) on Ubuntu 24.04.4 LTS, kernel 6.17.0-1029-nvidia aarch64, driver 580.173.02, CUDA 13.0. Swap is off. Engine is llama.cpp built from the UNMERGED PR #27742 (qwen4exp architecture support) at commit 035e227; the binary self-reports version 0.3.0-dev, build 50, commit 035e227, which is a placeholder rather than an upstream release, so it is recorded as its own engine square rather than folded into any bNNNN build. On top of that commit the canreuse-qwen4exp patch from github.com/0xBakeer/qwen38-flash-next-spark (commit 2ab233f) is applied: it implements can_reuse() for the qwen4exp QSA and PLE graph inputs so CUDA graph capture engages at all (graphs reused goes 0 to non-zero; the recipe measures decode +2.8%). Applied state was verified two ways before this run: two can_reuse overrides present in src/models/qwen4exp.cpp, and the patch refusing to re-apply. Model is unsloth/Qwen3.8-Flash-Next-GGUF UD-Q4_K_XL, four shards, 111,323,630,080 bytes on disk (103.7 GiB) for 176,943,899,520 parameters = 5.03 bits/parameter. Server flags: -lm mmap -ot per_layer_token_embd=CPU --n-gpu-layers 999 --ctx-size 262144 --parallel 1 --spec-type ngram-mod --temp 1.0 --top-p 0.95 --top-k 20. The defining choice is -ot per_layer_token_embd=CPU together with -lm mmap: the 51.2B-parameter n-gram/PLE embedding table (one tensor, shape 160 by 320001536) is pinned to the CPU backend and served from NVMe through the OS page cache instead of being made resident, which is the only reason a 180B model runs in 128 GB with the full 262,144-token context. KV cache is f16 (quantized KV aborts on this architecture) and costs only about 24 KB/token because 12 of 48 layers use full attention with 2 KV heads. Immediately before this run the n-gram table was deliberately warmed with tools/warm_table.py to a measured 73.0% page-cache residency of its 26.8 GiB region (mincore-verified, up from 67.7%); table residency changes decode throughput materially, so it is a run condition, not an incidental detail. The machine was fully isolated for the duration: this host normally also serves an OpenAI-compatible endpoint to other clients, and that path was shut off before the run so nothing external could contend for the single server slot. llama-server binds loopback only and the harness connected to it directly, so no reverse proxy sat in the measured path."
+  },
+  "verification": {
+    "level": "self-reported",
+    "reproduced_by": [],
+    "flags": []
+  }
+}
