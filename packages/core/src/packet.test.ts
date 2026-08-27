@@ -94,7 +94,7 @@ describe('the cell packet', () => {
   });
 
   it('clones the repository from the site config', () => {
-    expect(md).toContain('git clone https://github.com/Inference-Atlas/inference-atlas.git');
+    expect(md).toContain('git clone https://github.com/0xBakeer/inference-atlas.git');
     expect(md).toContain('cd inference-atlas');
     expect(md).toContain('AGENTS.md');
   });
@@ -175,7 +175,7 @@ describe('the cell packet', () => {
 
   it('offers a pre-filled issue url', () => {
     expect(cellPacket.issueUrl).toContain(
-      'https://github.com/Inference-Atlas/inference-atlas/issues/new?',
+      'https://github.com/0xBakeer/inference-atlas/issues/new?',
     );
     expect(cellPacket.issueUrl).toContain('labels=wanted');
     expect(decodeURIComponent(cellPacket.issueUrl)).toContain('nvidia-gb10-dgx-spark');

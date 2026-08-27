@@ -24,7 +24,7 @@ the pull request with the result files — that pull request is the contribution
 Or from a clone:
 
 ```bash
-git clone https://github.com/Inference-Atlas/inference-atlas.git && cd inference-atlas
+git clone https://github.com/0xBakeer/inference-atlas.git && cd inference-atlas
 pnpm install
 uv run atlas-bench hwinfo --json            # what am I?
 pnpm packet -- '{"engine_id":"vllm","engine_version":"0.27.1","model_id":"Qwen/Qwen3-8B","quant_id":"fp8","hardware_id":"nvidia-rtx-4090","workload_ids":["serve-single-i256-o256-v1"]}'

@@ -83,7 +83,7 @@ describe('other renderings', () => {
       'git clone',
     );
     expect(renderPacket({ root: repo.root, spec: cellSpec, format: 'issue' }).text).toContain(
-      'https://github.com/Inference-Atlas/inference-atlas/issues/new',
+      'https://github.com/0xBakeer/inference-atlas/issues/new',
     );
   });
 });

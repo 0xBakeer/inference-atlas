@@ -59,7 +59,7 @@ exists on your disk.
 
 ```bash
 # 1. get the repository and read this file
-git clone https://github.com/Inference-Atlas/inference-atlas.git
+git clone https://github.com/0xBakeer/inference-atlas.git
 cd inference-atlas
 
 # 2. capture the hardware truthfully

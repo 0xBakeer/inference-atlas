@@ -54,7 +54,7 @@ Find a grey square, press **Add**, and take one of the four tabs: an agent promp
 script, a JSON packet for the harness, or a pre-filled issue. Then:
 
 ```bash
-git clone https://github.com/Inference-Atlas/inference-atlas.git && cd inference-atlas
+git clone https://github.com/0xBakeer/inference-atlas.git && cd inference-atlas
 pnpm install
 uv run atlas-bench hwinfo --json          # identify the machine — captured, never typed
 uv run atlas-bench run --spec task.json   # run the workloads on *your* machine
