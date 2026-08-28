@@ -25,6 +25,20 @@ const MAX_RAW_PAYLOAD_BYTES = 100 * 1024;
 
 export interface CheckResultOptions {
   /**
+   * Whether the caller is actually working on this file, i.e. it was named by `--changed`.
+   *
+   * The CI-owned-field checks below are gated on this, because CI *writes* those fields: the
+   * stamp-user-ids job resolves provenance.github_user_id and commits it. Warning whenever
+   * the field is set therefore fires on every result that has ever been merged - 151 of them
+   * at the time this was added, growing by one per contribution - and buries the findings a
+   * contributor actually needs under a wall of noise about files they never touched.
+   *
+   * A full-repository sweep names no files and so says nothing about them. CI always passes
+   * --changed, and so does the local pre-flight in CONTRIBUTING, which is exactly where a
+   * hand-typed value should still be caught.
+   */
+  underReview?: boolean;
+  /**
    * When the workload registry is empty the repository is mid-landing (wave 2 order:
    * results seeded before `workloads/`), and every result would fail on an id that is
    * simply not there yet. An empty registry downgrades the check to a warning; a
@@ -169,7 +183,7 @@ export function checkResult(
 
   /* ------------------------------------------------------------ CI-owned fields */
 
-  if (result.provenance.github_user_id != null) {
+  if (options.underReview && result.provenance.github_user_id != null) {
     reporter.warn(
       file,
       'ci-owned-field',
@@ -177,7 +191,7 @@ export function checkResult(
       { path: 'provenance.github_user_id' },
     );
   }
-  if (result.provenance.commit != null || result.provenance.pr != null) {
+  if (options.underReview && (result.provenance.commit != null || result.provenance.pr != null)) {
     reporter.warn(
       file,
       'ci-owned-field',

@@ -74,6 +74,10 @@ function median(values: number[]): number {
 export function validateRepo(options: ValidateOptions): ValidateOutcome {
   const root = options.root;
   const reporter = new Reporter();
+  // The files this invocation is actually about. CI and the local pre-flight both name them
+  // with --changed; a full-repository sweep names none, and checks that only make sense for
+  // a contribution in progress stay quiet accordingly.
+  const underReview = new Set((options.changed ?? []).map(normalize));
   const repo = loadRepo(root, reporter);
 
   /* ------------------------------------------------------------------- site */
@@ -136,7 +140,10 @@ export function validateRepo(options: ValidateOptions): ValidateOutcome {
     } else {
       seenRunIds.set(data.run_id, path);
     }
-    checkResult(repo, path, data, reporter, { allowMissingWorkloads: true });
+    checkResult(repo, path, data, reporter, {
+      allowMissingWorkloads: true,
+      underReview: underReview.has(normalize(path)),
+    });
   }
 
   crossCheck(repo, reporter);
