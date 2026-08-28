@@ -4,6 +4,7 @@ import { renderServeCommand } from '@atlas/core';
 import type { EngineVersion, ResultRecord, SweepAxis, SweepPoint } from '@atlas/core';
 import { addButton } from '../components/add-modal.js';
 import '../components/chart.js';
+import { chartCard, barChartBuild, groupedBarChartBuild } from '../components/page-charts.js';
 import '../components/request-strip.js';
 import '../components/run-picker.js';
 import type { StripMetric } from '../components/request-strip.js';
@@ -218,6 +219,7 @@ export class AtlasRunView extends ViewElement {
                   <div class="metric-grid">
                     ${cards.map((c, i) => metricCard(c, { hero: i === 0 }))}
                   </div>
+                  ${this.metricCharts(rec)}
                 </section>`
               : rec.kind !== 'eval'
                 ? html`<section>
@@ -355,6 +357,67 @@ export class AtlasRunView extends ViewElement {
           </section>
         </aside>
       </div>
+    </div>`;
+  }
+
+  /**
+   * Serving runs without a sweep still need a chart: latency percentiles share a unit,
+   * throughput figures share another. Mixed-unit snapshot bars would lie.
+   */
+  private metricCharts(rec: ResultRecord): TemplateResult | typeof nothing {
+    const m = rec.metrics;
+    if (!m) return nothing;
+    const latGroups: string[] = [];
+    const p50: Array<number | null> = [];
+    const p95: Array<number | null> = [];
+    for (const [label, d] of [
+      ['TTFT', m.ttft_ms],
+      ['TPOT', m.tpot_ms],
+      ['ITL', m.itl_ms],
+      ['E2E', m.e2e_ms],
+    ] as const) {
+      if (!d || (d.p50 == null && d.mean == null && d.p95 == null)) continue;
+      latGroups.push(label);
+      p50.push(d.p50 ?? d.mean ?? null);
+      p95.push(d.p95 ?? d.p90 ?? null);
+    }
+    const thru: Array<{ label: string; value: number }> = [];
+    if (typeof m.decode_tok_s_per_request?.mean === 'number')
+      thru.push({ label: 'decode / req', value: m.decode_tok_s_per_request.mean });
+    else if (typeof m.decode_tok_s_per_request?.p50 === 'number')
+      thru.push({ label: 'decode / req', value: m.decode_tok_s_per_request.p50 });
+    if (typeof m.output_tok_s === 'number') thru.push({ label: 'output', value: m.output_tok_s });
+    if (typeof m.total_tok_s === 'number') thru.push({ label: 'total', value: m.total_tok_s });
+    if (typeof m.prefill_tok_s === 'number')
+      thru.push({ label: 'prefill', value: m.prefill_tok_s });
+    if (!latGroups.length && thru.length < 2) return nothing;
+    return html`<div class="chart-grid mt-3">
+      ${
+        latGroups.length
+          ? chartCard(
+              'Latency',
+              groupedBarChartBuild(
+                latGroups,
+                [
+                  { label: 'p50', color: cssVar('--chart-2'), values: p50 },
+                  { label: 'p95', color: cssVar('--chart-1'), values: p95 },
+                ],
+                'ms',
+                fmtMs,
+              ),
+              { meta: 'milliseconds', height: 220, key: `lat${rec.run_id}` },
+            )
+          : nothing
+      }
+      ${
+        thru.length >= 2
+          ? chartCard('Throughput', barChartBuild(thru, 'tok/s', fmtTokS), {
+              meta: 'tokens per second',
+              height: 220,
+              key: `thr${rec.run_id}`,
+            })
+          : nothing
+      }
     </div>`;
   }
 
@@ -723,7 +786,7 @@ export class AtlasRunView extends ViewElement {
       ${
         cats.length || diffs.length
           ? html`<div class="split mt-3">
-              ${
+                ${
                 cats.length
                   ? html`<div class="card tight">
                       <div class="eyebrow plain mb-2">By category</div>
@@ -731,7 +794,7 @@ export class AtlasRunView extends ViewElement {
                     </div>`
                   : nothing
               }
-              ${
+                ${
                 diffs.length
                   ? html`<div class="card tight">
                       <div class="eyebrow plain mb-2">By difficulty</div>
@@ -739,7 +802,25 @@ export class AtlasRunView extends ViewElement {
                     </div>`
                   : nothing
               }
-            </div>`
+              </div>
+              ${
+              cats.length
+                ? html`<div class="mt-3">
+                    ${chartCard(
+                      'Accuracy by category',
+                      barChartBuild(
+                        cats.map(([k, v]) => ({
+                          label: k,
+                          value: v.total ? (v.correct / v.total) * 100 : 0,
+                        })),
+                        '%',
+                        (v) => `${v.toFixed(0)}`,
+                      ),
+                      { meta: 'percent correct', height: 200, key: `cat${cats.length}` },
+                    )}
+                  </div>`
+                : nothing
+            }`
           : nothing
       }
       ${

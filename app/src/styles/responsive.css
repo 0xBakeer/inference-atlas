@@ -1,0 +1,315 @@
+/* ------------------------------------------------------------------ responsive layout
+ * Phone, tablet and wide desktop. Tokens and components stay as they are; this file
+ * only tightens overflow, stacking, touch targets and chart chrome at each breakpoint.
+ */
+
+html {
+  overflow-x: clip;
+}
+.shell {
+  overflow-x: clip;
+}
+main {
+  min-width: 0;
+}
+.page {
+  padding-left: max(var(--sp-5), env(safe-area-inset-left, 0px));
+  padding-right: max(var(--sp-5), env(safe-area-inset-right, 0px));
+  padding-bottom: max(var(--sp-8), env(safe-area-inset-bottom, 0px));
+}
+.topnav-inner {
+  min-width: 0;
+  padding-left: max(var(--sp-5), env(safe-area-inset-left, 0px));
+  padding-right: max(var(--sp-5), env(safe-area-inset-right, 0px));
+}
+.footer-inner {
+  padding-left: max(var(--sp-5), env(safe-area-inset-left, 0px));
+  padding-right: max(var(--sp-5), env(safe-area-inset-right, 0px));
+  padding-bottom: max(var(--sp-5), env(safe-area-inset-bottom, 0px));
+}
+
+.chart-box {
+  min-width: 0;
+  overflow: hidden;
+  width: 100%;
+}
+.chart-card .card-head {
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+.chart-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--sp-4);
+  min-width: 0;
+}
+.chart-grid .card,
+.chart-grid .chart-card {
+  min-width: 0;
+}
+
+.page-head h1 {
+  font-size: clamp(22px, 4vw, var(--fs-3xl));
+  overflow-wrap: anywhere;
+}
+.run-head .title {
+  font-size: clamp(18px, 3.4vw, var(--fs-2xl));
+  overflow-wrap: anywhere;
+}
+
+.filters .search-input {
+  flex: 1 1 200px;
+  min-width: 0;
+}
+.filters .field {
+  flex: 1 1 140px;
+}
+
+.hbar {
+  grid-template-columns: minmax(0, 140px) 1fr 56px;
+}
+.hbar .name,
+.hbar > :first-child {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.table-scroll-hint {
+  display: none;
+}
+
+/* three-up blocks (home latest / gaps / featured) stack before they leave an orphan */
+@media (max-width: 1100px) {
+  .split-3 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .stats-strip {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .stats-strip .stat {
+    margin-right: 10px;
+    padding-right: 10px;
+  }
+  .stats-strip .stat:nth-child(4n) {
+    border-right: 0;
+    margin-right: 0;
+  }
+}
+
+@media (max-width: 800px) {
+  .chart-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .paths {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 720px) {
+  .page {
+    padding-left: max(var(--sp-3), env(safe-area-inset-left, 0px));
+    padding-right: max(var(--sp-3), env(safe-area-inset-right, 0px));
+  }
+  .topnav-inner {
+    padding-left: max(var(--sp-3), env(safe-area-inset-left, 0px));
+    padding-right: max(var(--sp-3), env(safe-area-inset-right, 0px));
+    gap: var(--sp-2);
+  }
+  .page-head > .row-wrap {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .page-head .head-actions {
+    width: 100%;
+  }
+  .page-head .head-actions .btn {
+    flex: 1 1 auto;
+  }
+  .hero .display {
+    font-size: clamp(26px, 8.4vw, 40px);
+  }
+  .stats-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .stats-strip .stat {
+    margin-right: 8px;
+    padding: 10px 8px 10px 0;
+  }
+  .stats-strip .stat:nth-child(2n) {
+    border-right: 0;
+    margin-right: 0;
+  }
+  .stats-strip .stat:nth-child(3n) {
+    border-right: 1px dashed var(--line);
+  }
+  .filters {
+    gap: var(--sp-2);
+  }
+  .filters .field,
+  .filters .search-input {
+    flex: 1 1 calc(50% - 8px);
+    min-width: 0;
+  }
+  .filters .select,
+  .filters .input {
+    max-width: none;
+    width: 100%;
+  }
+  .gap-row,
+  .latest-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+  }
+  .gap-row .rank {
+    display: none;
+  }
+  .param-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .param-row .ctrl {
+    justify-content: flex-start;
+  }
+  .hm,
+  .hm.compact {
+    --hm-label-w: 88px;
+    --hm-cov-w: 32px;
+    --hm-cell: 22px;
+    --hm-head-h: 108px;
+  }
+  .hm-colhead .t {
+    font-size: 10px;
+  }
+  .col-chooser .menu {
+    left: auto;
+    right: 0;
+    min-width: 0;
+    width: min(280px, calc(100vw - 24px));
+    grid-template-columns: 1fr;
+    max-height: 60vh;
+    overflow: auto;
+  }
+  .run-chip {
+    max-width: 100%;
+  }
+  .run-chip a {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .cmp-table th.col-run {
+    min-width: 120px;
+  }
+  .table-scroll-hint {
+    display: block;
+    margin-bottom: var(--sp-2);
+  }
+  .table-wrap {
+    -webkit-overflow-scrolling: touch;
+  }
+  .metric-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  }
+  .reg-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .featured-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .kv {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2px 0;
+  }
+  .kv dt {
+    padding-top: 8px;
+  }
+  .failure {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .gotcha {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+  .spec-card {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .nav-drawer {
+    padding-top: max(var(--sp-4), env(safe-area-inset-top, 0px));
+    padding-bottom: max(var(--sp-4), env(safe-area-inset-bottom, 0px));
+  }
+  .search-trigger {
+    min-width: 32px;
+    width: 32px;
+    padding: 0;
+    justify-content: center;
+  }
+  .btn,
+  .chip,
+  .tab {
+    min-height: 32px;
+  }
+  .hbar {
+    grid-template-columns: minmax(0, 1fr) 48px;
+    grid-template-rows: auto auto;
+  }
+  .hbar .track {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 520px) {
+  .brand .word em {
+    display: none;
+  }
+  .hero-actions .btn {
+    flex: 1 1 calc(50% - 4px);
+  }
+  .run-head .meta {
+    gap: 6px 10px;
+  }
+  .add-prompt-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .palette {
+    padding: 8vh var(--sp-2) var(--sp-2);
+  }
+  .toasts {
+    left: var(--sp-3);
+    right: var(--sp-3);
+    transform: none;
+    max-width: none;
+  }
+  .toast {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 400px) {
+  .brand .word {
+    font-size: 13px;
+  }
+  .stats-strip .stat .v {
+    font-size: var(--fs-lg);
+  }
+  .spec-card {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* wide desktop: give the map more breathing room, keep charts from stretching into a ribbon */
+@media (min-width: 1480px) {
+  .chart-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .chart-box {
+    max-width: 100%;
+  }
+}
+
+.uplot .u-legend {
+  flex-wrap: wrap;
+}
+.legend-inline {
+  min-width: 0;
+}

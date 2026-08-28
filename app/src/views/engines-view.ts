@@ -19,6 +19,7 @@ import { href, qget, setQuery } from '../router.js';
 import { store } from '../store.js';
 import { versionDiff } from '../util/diff.js';
 import { fmtInt } from '../util/format.js';
+import { countsChart } from '../components/page-charts.js';
 import { ViewElement } from './view-base.js';
 
 @customElement('atlas-engines-view')
@@ -78,6 +79,18 @@ export class AtlasEnginesView extends ViewElement {
           the same command line can be two different configurations on two versions.
         </p>
       </div>
+      ${html`<div class="chart-grid mb-4">
+        ${countsChart(
+          'Runs by engine',
+          reg.engines.map((e) => ({ label: e.meta.name, value: runCount(e.meta.id) })),
+          { yLabel: 'runs', height: 200 },
+        )}
+        ${countsChart(
+          'Registered versions',
+          reg.engines.map((e) => ({ label: e.meta.name, value: e.versions.length })),
+          { yLabel: 'versions', height: 200 },
+        )}
+      </div>`}
       <div class="reg-list">
         ${reg.engines.map((e) => {
           const { p, c } = this.covOf(e.meta.id);
@@ -306,6 +319,14 @@ export class AtlasEnginesView extends ViewElement {
               </tbody>
             </table>
           </div>
+          ${countsChart(
+            'Runs by version',
+            versions.map((v) => ({
+              label: v,
+              value: runs.filter((r) => r.engine.version === v).length,
+            })),
+            { yLabel: 'runs', height: 200, meta: meta.name },
+          )}
           ${
             versions.length > 1
               ? html`<div class="card mt-4 version-diff">

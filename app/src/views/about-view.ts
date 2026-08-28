@@ -1,9 +1,11 @@
-import { html } from 'lit';
+import { html, nothing } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import { icon } from '../components/icons.js';
 import { store } from '../store.js';
 import { fmtInt } from '../util/format.js';
 import { ViewElement } from './view-base.js';
+import { countsChart } from '../components/page-charts.js';
+import { cssVar } from '../util/colors.js';
 
 @customElement('atlas-about-view')
 export class AtlasAboutView extends ViewElement {
@@ -17,6 +19,33 @@ export class AtlasAboutView extends ViewElement {
         <h1>${site.site.title}</h1>
         <p class="lede">${site.site.tagline}</p>
       </div>
+      ${
+        stats
+          ? html`<div class="chart-grid mb-5">
+              ${countsChart(
+                'The map right now',
+                [
+                  { label: 'runs', value: stats.runs, color: cssVar('--chart-1') },
+                  {
+                    label: 'cells measured',
+                    value: stats.cells_covered,
+                    color: cssVar('--ev-single'),
+                  },
+                  {
+                    label: 'cells possible',
+                    value: stats.cells_possible,
+                    color: cssVar('--muted'),
+                  },
+                  { label: 'contributors', value: stats.contributors, color: cssVar('--accent') },
+                  { label: 'engines', value: stats.engines },
+                  { label: 'models', value: stats.models },
+                  { label: 'devices', value: stats.hardware },
+                ],
+                { yLabel: 'count', height: 220 },
+              )}
+            </div>`
+          : nothing
+      }
       <div class="md">
         <h2>What this is</h2>
         <p>

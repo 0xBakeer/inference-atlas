@@ -12,6 +12,7 @@ import '../components/cell-picker.js';
 import '../components/packet-preview.js';
 import { icon } from '../components/icons.js';
 import { codeBlock, kindTag, skeletonLines } from '../components/ui.js';
+import { countsChart } from '../components/page-charts.js';
 import { qget, qlist, setQuery } from '../router.js';
 import { store } from '../store.js';
 import { ViewElement } from './view-base.js';
@@ -98,6 +99,24 @@ export class AtlasContributeView extends ViewElement {
           that the login in the file is yours, and sanity-checks the physics.
         </p>
       </div>
+
+      ${countsChart(
+        'What the map still needs',
+        [
+          { label: 'cells measured', value: store.stats.value?.cells_covered ?? 0 },
+          {
+            label: 'cells open',
+            value: Math.max(
+              0,
+              (store.stats.value?.cells_possible ?? 0) - (store.stats.value?.cells_covered ?? 0),
+            ),
+          },
+          { label: 'engines', value: reg.engines.length },
+          { label: 'models', value: reg.models.length },
+          { label: 'devices', value: reg.hardware.length },
+        ],
+        { yLabel: 'count', height: 200, meta: 'fill a grey square' },
+      )}
 
       <section class="paths mb-6">
         ${this.path('1', 'Run the harness yourself', 'You have the machine and a terminal. The harness captures the hardware, starts the engine, runs the workloads, writes the result file with computed ids, and validates it.', html`${codeBlock(`git clone ${repo}.git && cd ${site.repo.name}\n${harness} hwinfo --json\n${harness} run --spec task.json\npnpm validate`, { lang: 'bash', maxHeight: 'none' })}`)}

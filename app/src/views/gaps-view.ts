@@ -4,6 +4,7 @@ import type { Gap } from '@atlas/core';
 import { addButton } from '../components/add-modal.js';
 import { icon } from '../components/icons.js';
 import { emptyState, selectField, skeletonLines, vendorDot } from '../components/ui.js';
+import { countsChart } from '../components/page-charts.js';
 import { href, modelHref, qget, setQuery } from '../router.js';
 import { store } from '../store.js';
 import { matchesQuery, uniqueSorted } from '../util/filters.js';
@@ -105,6 +106,19 @@ export class AtlasGapsView extends ViewElement {
         )}
       </div>
 
+      ${countsChart(
+        'Wanted score',
+        shown.map((g) => ({
+          label: `${g.model_id.split('/').pop()}/${g.quant_id}`,
+          value: g.score,
+        })),
+        {
+          yLabel: 'score',
+          height: 200,
+          meta: 'higher means the map learns more',
+          fmt: (v) => v.toFixed(0),
+        },
+      )}
       ${
         gaps.length === 0
           ? emptyState({

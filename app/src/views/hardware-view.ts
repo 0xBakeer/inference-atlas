@@ -20,6 +20,8 @@ import { store } from '../store.js';
 import { matchesQuery, parseSort, serializeSort, sortRows, toggleSort } from '../util/filters.js';
 import { fmtInt, fmtNum, fmtTokS, fmtUsd } from '../util/format.js';
 import { ViewElement } from './view-base.js';
+import { barChartBuild, chartCard, countBy, countsChart } from '../components/page-charts.js';
+import { vendorColor } from '../util/colors.js';
 
 @customElement('atlas-hardware-view')
 export class AtlasHardwareView extends ViewElement {
@@ -121,6 +123,32 @@ export class AtlasHardwareView extends ViewElement {
           </select></label
         >
       </div>
+      ${
+        rows.length
+          ? html`<div class="chart-grid mb-4">
+              ${chartCard(
+                'Memory bandwidth',
+                barChartBuild(
+                  rows
+                    .filter((h) => h.memory_bandwidth_gbs != null)
+                    .map((h) => ({
+                      label: h.name,
+                      value: h.memory_bandwidth_gbs!,
+                      color: vendorColor(h.vendor),
+                    })),
+                  'GB/s',
+                  (v) => fmtNum(v, 0),
+                ),
+                { meta: 'vendor-published', height: 200, key: `bw${rows.length}` },
+              )}
+              ${countsChart(
+                'Runs by device',
+                rows.map((h) => ({ label: h.name, value: runCount(h.id) })),
+                { yLabel: 'runs', height: 200 },
+              )}
+            </div>`
+          : nothing
+      }
       <div class="table-wrap">
         <table class="table cards">
           <thead>
@@ -294,6 +322,12 @@ export class AtlasHardwareView extends ViewElement {
               </div>`,
           )}
       </div>
+
+      ${countsChart(
+        'Runs by model',
+        countBy(runs, (r) => r.model.id),
+        { yLabel: 'runs', height: 200, meta: h.name },
+      )}
 
       <div class="split facts-wide">
         <section class="card">

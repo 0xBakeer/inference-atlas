@@ -8,6 +8,7 @@ import { href, modelHref, navigate, qget, setQuery } from '../router.js';
 import { store } from '../store.js';
 import { seqStep } from '../util/colors.js';
 import { fmtPct } from '../util/format.js';
+import { barChartBuild, chartCard } from '../components/page-charts.js';
 import { ViewElement } from './view-base.js';
 
 @customElement('atlas-evals-view')
@@ -114,7 +115,23 @@ export class AtlasEvalsView extends ViewElement {
                   Show every registered model/quant
                 </button>`,
               })
-            : html`<div class="table-wrap">
+            : html`<div class="chart-grid mb-4">
+                  ${chartCard(
+                    'Mean accuracy',
+                    barChartBuild(
+                      rows
+                        .map((p) => ({
+                          label: `${p.model.split('/').pop()}/${p.quant}`,
+                          value: score(p) * 100,
+                        }))
+                        .filter((d) => d.value >= 0),
+                      '%',
+                      (v) => `${v.toFixed(0)}`,
+                    ),
+                    { meta: 'best score across suites', height: 220, key: `eval${rows.length}` },
+                  )}
+                </div>
+                <div class="table-wrap">
                   <table class="table">
                     <thead>
                       <tr>

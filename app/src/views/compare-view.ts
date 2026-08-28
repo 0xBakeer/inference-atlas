@@ -3,6 +3,7 @@ import { customElement, state } from 'lit/decorators.js';
 import type { ResultRecord } from '@atlas/core';
 import '../components/chart.js';
 import '../components/run-picker.js';
+import { chartCard, barChartBuild, groupedBarChartBuild } from '../components/page-charts.js';
 import { icon } from '../components/icons.js';
 import {
   sweepAxisOf,
@@ -25,7 +26,7 @@ import { store } from '../store.js';
 import { copyText } from '../util/clipboard.js';
 import { seriesColor } from '../util/colors.js';
 import { argsDiff, metricDelta } from '../util/diff.js';
-import { fmtPct } from '../util/format.js';
+import { fmtMs, fmtPct, fmtTokS } from '../util/format.js';
 import { blockCards, type MetricCardData } from '../util/metrics.js';
 import { ViewElement } from './view-base.js';
 
@@ -127,6 +128,7 @@ export class AtlasCompareView extends ViewElement {
             : html`${missing.length ? html`<div class="callout warn mb-3">${missing.length} run id${missing.length === 1 ? '' : 's'} could not be loaded: ${missing.join(', ')}</div>` : nothing}
               ${recs.length ? this.table(recs) : nothing}
               ${recs.length ? this.metrics(recs) : nothing}
+              ${recs.length ? this.metricCharts(recs) : nothing}
               ${recs.some((r) => r.sweep?.length) ? this.sweeps(recs) : nothing}
               ${recs.some((r) => r.scores) ? this.evals(recs) : nothing}`
       }
@@ -154,6 +156,7 @@ export class AtlasCompareView extends ViewElement {
           show identical flags</label
         >
       </div>
+      <p class="xs muted table-scroll-hint">Swipe sideways to see every run.</p>
       <div class="table-wrap">
         <table class="table cmp-table">
           <thead>
@@ -278,6 +281,69 @@ export class AtlasCompareView extends ViewElement {
             })}
           </tbody>
         </table>
+      </div>
+    </section>`;
+  }
+
+  private metricCharts(recs: ResultRecord[]): TemplateResult | typeof nothing {
+    const decode = recs.map(
+      (r) =>
+        r.metrics?.decode_tok_s_per_request?.mean ??
+        r.metrics?.decode_tok_s_per_request?.p50 ??
+        null,
+    );
+    const ttft = recs.map((r) => r.metrics?.ttft_ms?.p50 ?? null);
+    const labels = recs.map((r, i) => `${i + 1} ${r.engine.id}`);
+    const colors = recs.map((_, i) => seriesColor(i));
+    const tokItems = recs
+      .map((r, i) =>
+        typeof r.metrics?.output_tok_s === 'number'
+          ? { label: labels[i]!, value: r.metrics.output_tok_s, color: colors[i] }
+          : null,
+      )
+      .filter((x): x is { label: string; value: number; color: string } => !!x);
+    const hasTtft = ttft.some((v) => v != null);
+    const hasDecode = decode.some((v) => v != null);
+    if (tokItems.length < 2 && !hasTtft && !hasDecode) return nothing;
+    return html`<section class="mb-5">
+      <div class="section-title">
+        <h2>Metric charts</h2>
+        <span class="meta">same numbers as the table, one bar per run</span>
+      </div>
+      <div class="chart-grid">
+        ${
+          tokItems.length >= 2
+            ? chartCard('Output tok/s', barChartBuild(tokItems, 'tok/s', fmtTokS), {
+                height: 220,
+                key: `cmp-tok${recs.length}`,
+              })
+            : hasDecode
+              ? chartCard(
+                  'Decode tok/s',
+                  groupedBarChartBuild(
+                    labels,
+                    [{ label: 'decode / req', color: seriesColor(0), values: decode }],
+                    'tok/s',
+                    fmtTokS,
+                  ),
+                  { height: 220, key: `cmp-dec${recs.length}` },
+                )
+              : nothing
+        }
+        ${
+          hasTtft
+            ? chartCard(
+                'TTFT p50',
+                groupedBarChartBuild(
+                  labels,
+                  [{ label: 'TTFT p50', color: seriesColor(1), values: ttft }],
+                  'ms',
+                  fmtMs,
+                ),
+                { height: 220, key: `cmp-ttft${recs.length}` },
+              )
+            : nothing
+        }
       </div>
     </section>`;
   }

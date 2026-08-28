@@ -135,6 +135,7 @@ export class AtlasChart extends AtlasElement {
   private plot: uPlot | null = null;
   private ro: ResizeObserver | null = null;
   private lastWidth = 0;
+  private lastHeight = 0;
 
   constructor() {
     super();
@@ -160,14 +161,25 @@ export class AtlasChart extends AtlasElement {
     this.rebuild();
   }
 
+  /** Phone and tablet plots shrink so axis ticks and the legend still fit. */
+  private fitHeight(): number {
+    const w = this.clientWidth || 800;
+    if (w < 480) return Math.max(152, Math.round(this.height * 0.7));
+    if (w < 720) return Math.max(176, Math.round(this.height * 0.84));
+    return this.height;
+  }
+
   private resize(): void {
     const w = this.clientWidth;
-    if (!this.plot || w === this.lastWidth || w === 0) {
+    const h = this.fitHeight();
+    if (!this.plot || w === 0) {
       if (!this.plot && w > 0) this.rebuild();
       return;
     }
+    if (w === this.lastWidth && h === this.lastHeight) return;
     this.lastWidth = w;
-    this.plot.setSize({ width: w, height: this.height });
+    this.lastHeight = h;
+    this.plot.setSize({ width: w, height: h });
   }
 
   private rebuild(): void {
@@ -178,12 +190,15 @@ export class AtlasChart extends AtlasElement {
     const host = this.querySelector('.chart-box') as HTMLElement | null;
     if (!host) return;
     host.innerHTML = '';
+    const h = this.fitHeight();
     const { opts, data } = this.build(w, themeSignal.value, chartPalette());
     this.lastWidth = w;
-    this.plot = new uPlot({ ...opts, width: w, height: this.height }, data, host);
+    this.lastHeight = h;
+    this.plot = new uPlot({ ...opts, width: w, height: h }, data, host);
   }
 
   override render() {
-    return html`<div class="chart-box" style="min-height:${this.height}px"></div>`;
+    const h = this.clientWidth ? this.fitHeight() : this.height;
+    return html`<div class="chart-box" style="min-height:${h}px"></div>`;
   }
 }

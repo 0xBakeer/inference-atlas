@@ -5,6 +5,7 @@ import { addButton } from '../components/add-modal.js';
 import { icon } from '../components/icons.js';
 import { runsTable } from '../components/runs-table.js';
 import { codeBlock, emptyState, kindTag, kv, skeletonLines } from '../components/ui.js';
+import { countBy, countsChart } from '../components/page-charts.js';
 import { href, navigate, qget, setQuery } from '../router.js';
 import { store } from '../store.js';
 import { fmtInt } from '../util/format.js';
@@ -68,6 +69,21 @@ export class AtlasWorkloadsView extends ViewElement {
         </button>
         ${KINDS.map((k) => html`<button class="chip" aria-pressed=${kind === k} @click=${() => setQuery({ kind: k })}>${k} <span class="count">${reg.workloads.filter((w) => w.kind === k).length}</span></button>`)}
       </div>
+      ${html`<div class="chart-grid mb-4">
+        ${countsChart(
+          'Runs by kind',
+          countBy(
+            store.index.value.filter((r) => !kind || r.kind === kind),
+            (r) => r.kind,
+          ),
+          { yLabel: 'runs', height: 200 },
+        )}
+        ${countsChart(
+          'Runs by workload',
+          rows.map((w) => ({ label: w.id, value: runsWith(w.id) })),
+          { yLabel: 'runs', height: 200 },
+        )}
+      </div>`}
       ${grouped.map(
         (g) =>
           html`<section class="mb-5">
@@ -218,6 +234,11 @@ export class AtlasWorkloadsView extends ViewElement {
         </div>
         ${runs.length ? runsTable(runs, { limit: 40 }) : emptyState({ compact: true, title: 'Nobody has run this workload yet', text: 'Pick a cell on the atlas and add it, or use the button above for a featured cell.' })}
       </section>
+      ${countsChart(
+        'Runs by engine',
+        countBy(runs, (r) => r.engine.id),
+        { yLabel: 'runs', height: 200, meta: w.id },
+      )}
     </div>`;
   }
 }

@@ -5,6 +5,7 @@ import { icon } from '../components/icons.js';
 import '../components/mini-coverage.js';
 import { runsTable } from '../components/runs-table.js';
 import { emptyState, extLink, kv, skeletonLines } from '../components/ui.js';
+import { countsChart } from '../components/page-charts.js';
 import { engineMinors, engineRunsOn, quantRunsOn } from '../data/derive.js';
 import type { RegistryModel } from '../data/types.js';
 import { href, modelHref, qget, qlist, setQuery } from '../router.js';
@@ -105,6 +106,25 @@ export class AtlasModelsView extends ViewElement {
         ${chips('modality', 'modality', uniqueSorted(reg.models.flatMap((m) => m.model.modalities ?? ['text'])), mods)}
         ${chips('licence', 'licence', uniqueSorted(reg.models.map((m) => m.model.licence ?? 'unknown')), lic)}
       </div>
+      ${
+        rows.length
+          ? html`<div class="chart-grid mb-4">
+              ${countsChart(
+                'Cells measured',
+                rows.map((m) => ({
+                  label: m.model.name,
+                  value: this.coverageOf((x) => x.model_id === m.model.id).c,
+                })),
+                { yLabel: 'cells', height: 200 },
+              )}
+              ${countsChart(
+                'Runs by model',
+                rows.map((m) => ({ label: m.model.name, value: runCount(m.model.id) })),
+                { yLabel: 'runs', height: 200 },
+              )}
+            </div>`
+          : nothing
+      }
       ${
         rows.length === 0
           ? emptyState({
@@ -304,6 +324,14 @@ export class AtlasModelsView extends ViewElement {
             </table>
           </div>
           ${entry.quants.some((qq) => qq.notes) ? html`<div class="col mt-2" style="gap:4px">${entry.quants.filter((qq) => qq.notes).map((qq) => html`<p class="xs muted"><span class="mono">${qq.id}</span> — ${qq.notes}</p>`)}</div>` : nothing}
+          ${countsChart(
+            'Runs by quantization',
+            entry.quants.map((qq) => ({
+              label: qq.id,
+              value: runs.filter((r) => r.model.quant_id === qq.id).length,
+            })),
+            { yLabel: 'runs', height: 200, meta: m.id },
+          )}
         </section>
       </div>
 

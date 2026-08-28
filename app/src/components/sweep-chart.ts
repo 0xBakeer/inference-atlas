@@ -117,6 +117,7 @@ export function sweepChartBuild(
     ];
     const yLabel = METRIC_LABEL[metric];
     const fmtY = metric === 'throughput' || metric === 'prefill' ? fmtTokS : fmtMs;
+    const compact = _width < 560;
     const logX =
       opts.logX ??
       (axis === 'concurrency' && xs.length > 3 && xs[xs.length - 1]! / Math.max(1, xs[0]!) >= 16);
@@ -138,7 +139,8 @@ export function sweepChartBuild(
       ...(band ? { bands: [{ series: [2, 1], fill: withAlpha(series[0]!.color, 0.14) }] } : {}),
       axes: [
         {
-          ...axisDefaults(p, AXIS_LABEL[axis]),
+          ...axisDefaults(p, compact ? undefined : AXIS_LABEL[axis]),
+          size: compact ? 32 : 40,
           // Sweeps are run at a handful of exact levels (1, 2, 4 … 64): tick every one of
           // them. The filter must pass them all through — uPlot's log-scale default keeps
           // only decades and would blank most of the measured levels.
@@ -150,9 +152,15 @@ export function sweepChartBuild(
             ),
         },
         {
-          ...axisDefaults(p, yLabel),
+          ...axisDefaults(p, compact ? undefined : yLabel),
           // ms values reach six digits (a 100 s TTFT) — give the tick text room.
-          size: metric === 'ttft' || metric === 'tpot' ? 54 : 44,
+          size: compact
+            ? metric === 'ttft' || metric === 'tpot'
+              ? 42
+              : 34
+            : metric === 'ttft' || metric === 'tpot'
+              ? 54
+              : 44,
           values: (_u, vals) => vals.map((v) => fmtY(v)),
         },
       ],
@@ -232,6 +240,7 @@ export function ordinalLinesBuild(
     const xs = labels.map((_, i) => i);
     const data: uPlot.AlignedData = [xs, ...series.map((s) => s.values)];
     const fillAlpha = series.length <= 2 ? (theme === 'dark' ? 0.2 : 0.12) : 0;
+    const compact = _w < 560;
     const uopts: uPlot.Options = {
       width: 600,
       height: 240,
@@ -244,10 +253,15 @@ export function ordinalLinesBuild(
       axes: [
         {
           ...axisDefaults(p),
+          size: compact ? 36 : 44,
           splits: () => xs,
           values: () => labels.map((l) => (flagged?.has(l) ? `${l} !` : l)),
         },
-        { ...axisDefaults(p, yLabel), values: (_u, vals) => vals.map((v) => fmtY(v)) },
+        {
+          ...axisDefaults(p, compact ? undefined : yLabel),
+          size: compact ? 36 : 44,
+          values: (_u, vals) => vals.map((v) => fmtY(v)),
+        },
       ],
       series: [
         { label: 'version' },

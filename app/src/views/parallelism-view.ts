@@ -7,6 +7,7 @@ import '../components/cell-picker.js';
 import '../components/chart.js';
 import { icon } from '../components/icons.js';
 import {
+  ordinalLinesBuild,
   scalingEfficiency,
   sweepChartBuild,
   sweepHasMetric,
@@ -132,6 +133,7 @@ export class AtlasParallelismView extends ViewElement {
                     .key=${`${metric}${recs.length}`}
                   ></atlas-chart>
                 </div>
+                ${this.efficiencyChart(recs)}
                 <section class="mt-4">
                   <div class="section-title">
                     <h2>Scaling efficiency</h2>
@@ -190,6 +192,33 @@ export class AtlasParallelismView extends ViewElement {
                   </p>
                 </section>`
       }
+    </div>`;
+  }
+
+  private efficiencyChart(recs: ResultRecord[]) {
+    const levels = [1, 2, 4, 8, 16, 32, 64];
+    const series = recs.map((r, i) => {
+      const eff = scalingEfficiency(r.sweep!);
+      return {
+        label: `${r.engine.id} ${r.model.quant_id} · ${r.hardware.id}`,
+        color: seriesColor(i),
+        values: levels.map((c) => {
+          const e = eff.find((x) => x.x === c);
+          return e?.eff ?? null;
+        }),
+      };
+    });
+    if (!series.some((s) => s.values.some((v) => v != null))) return nothing;
+    return html`<div class="card mt-4">
+      <div class="card-head">
+        <h3>Scaling efficiency</h3>
+        <span class="muted small">1.0 is perfect linear scaling</span>
+      </div>
+      <atlas-chart
+        .build=${ordinalLinesBuild(levels.map(String), series, 'efficiency', (v) => fmtPct(v, 0))}
+        .height=${240}
+        .key=${`eff${recs.length}`}
+      ></atlas-chart>
     </div>`;
   }
 }

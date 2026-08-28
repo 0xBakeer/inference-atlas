@@ -31,6 +31,7 @@ import { shortSha } from '../util/format.js';
 import { blockCards, headlineMetric } from '../util/metrics.js';
 import { nearestNeighbours } from '../util/neighbours.js';
 import { ViewElement } from './view-base.js';
+import { barChartBuild, chartCard } from '../components/page-charts.js';
 
 /** Mirrors core's model-ref resolution (not exported there) for the Copy-serve-command button. */
 export function modelRefFor(
@@ -337,6 +338,21 @@ export class AtlasExploreView extends ViewElement {
     const tab = workloads.includes(this.tab) ? this.tab : workloads[0]!;
     const rows = matching.filter((r) => r.workload_id === tab);
     const keyMetrics = store.site.coverage.key_metrics;
+    const hlItems = matching.flatMap((r) => {
+      const hl = headlineMetric(r, keyMetrics);
+      return hl
+        ? [
+            {
+              label: `${r.workload_id.slice(0, 18)} · ${r.provenance.login}`,
+              value: hl.value,
+              unit: hl.def.unit,
+              fmt: hl.def.fmt,
+            },
+          ]
+        : [];
+    });
+    const unit = hlItems[0]?.unit ?? '';
+    const fmt = hlItems[0]?.fmt ?? ((v: number) => String(v));
     return html`<div class="card flush">
       <div class="card-head" style="border-bottom:0;padding-bottom:0">
         <div class="tested-banner yes grow">
@@ -347,6 +363,21 @@ export class AtlasExploreView extends ViewElement {
       <div class="tabs" style="padding:0 var(--sp-4)">
         ${workloads.map((w) => html`<button class="tab" role="tab" aria-selected=${w === tab} @click=${() => (this.tab = w)}>${w} <span class="count">${matching.filter((r) => r.workload_id === w).length}</span></button>`)}
       </div>
+      ${
+        hlItems.length >= 2
+          ? html`<div style="padding:var(--sp-3) var(--sp-4) 0">
+              ${chartCard(
+                'Headline metric',
+                barChartBuild(
+                  hlItems.map((i) => ({ label: i.label, value: i.value })),
+                  unit || 'value',
+                  fmt,
+                ),
+                { meta: unit, height: 200, key: `ex${matching.length}` },
+              )}
+            </div>`
+          : nothing
+      }
       <div style="padding:var(--sp-4)" class="col" style="gap:var(--sp-4)">
         ${rows.map((r) => {
           const rec = this.cellRuns.get(r.run_id);

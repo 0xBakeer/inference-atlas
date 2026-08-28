@@ -18,6 +18,7 @@ import { store } from '../store.js';
 import { absDate } from '../util/dates.js';
 import { fmtInt, fmtNum } from '../util/format.js';
 import { headlineMetric } from '../util/metrics.js';
+import { countsChart } from '../components/page-charts.js';
 import { ViewElement } from './view-base.js';
 
 interface Badge {
@@ -131,22 +132,34 @@ export class AtlasContributorsView extends ViewElement {
                 <a class="btn" href="#/contribute">How contributing works</a>
               </div>`,
             })
-          : html`<div class="table-wrap">
-              <table class="table cards">
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>contributor</th>
-                    <th class="num">points</th>
-                    <th class="num">runs</th>
-                    <th class="num">cells filled</th>
-                    <th class="num">reproductions</th>
-                    <th>hardware</th>
-                    <th>first · last</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${rows.map(
+          : html`<div class="chart-grid mb-4">
+                ${countsChart(
+                  'Points',
+                  rows.map((c) => ({ label: c.login, value: c.points })),
+                  { yLabel: 'points', height: 220, fmt: (v) => fmtNum(v, v % 1 ? 1 : 0) },
+                )}
+                ${countsChart(
+                  'Runs contributed',
+                  rows.map((c) => ({ label: c.login, value: c.runs })),
+                  { yLabel: 'runs', height: 220 },
+                )}
+              </div>
+              <div class="table-wrap">
+                <table class="table cards">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>contributor</th>
+                      <th class="num">points</th>
+                      <th class="num">runs</th>
+                      <th class="num">cells filled</th>
+                      <th class="num">reproductions</th>
+                      <th>hardware</th>
+                      <th>first · last</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${rows.map(
                     (c, i) =>
                       html`<tr
                         class="lb-row clickable"
@@ -176,9 +189,9 @@ export class AtlasContributorsView extends ViewElement {
                         </td>
                       </tr>`,
                   )}
-                </tbody>
-              </table>
-            </div>`
+                  </tbody>
+                </table>
+              </div>`
       }
     </div>`;
   }
@@ -244,6 +257,17 @@ export class AtlasContributorsView extends ViewElement {
         </div>
         ${earned.length ? html`<div class="badge-row mt-2">${earned.map((b) => html`<span class="badge" title=${b.desc}>${icon(b.ic)} ${b.label}</span>`)}</div>` : nothing}
       </div>
+
+      ${countsChart(
+        'Headline numbers',
+        [
+          { label: 'points', value: cc.points },
+          { label: 'runs', value: cc.runs },
+          { label: 'cells', value: cc.cells_filled },
+          { label: 'reproductions', value: cc.reproductions },
+        ],
+        { yLabel: 'count', height: 200, meta: login },
+      )}
 
       <div class="split facts-quants">
         <div class="stack">

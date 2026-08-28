@@ -6,6 +6,7 @@ import type { HeatCellSelect } from '../components/heatmap.js';
 import '../components/heatmap.js';
 import '../components/cell-drawer.js';
 import { icon } from '../components/icons.js';
+import { countBy, countsChart, type BarItem } from '../components/page-charts.js';
 import {
   avatar,
   emptyState,
@@ -28,6 +29,7 @@ import {
 } from '../data/derive.js';
 import { href, modelHref, qget, setQuery } from '../router.js';
 import { store } from '../store.js';
+import { cssVar, vendorColor } from '../util/colors.js';
 import { fmtInt, fmtPct } from '../util/format.js';
 import { headlineMetric } from '../util/metrics.js';
 import { ViewElement } from './view-base.js';
@@ -398,6 +400,54 @@ export class AtlasView extends ViewElement {
     </section>`;
   }
 
+  private overviewCharts(): TemplateResult | typeof nothing {
+    const cov = store.coverage.value;
+    const evidence: BarItem[] = [
+      {
+        label: 'unmeasured',
+        value: store.possible.filter((pc) => !cov[pc.cell_id] || cov[pc.cell_id]?.level === 'none')
+          .length,
+        color: cssVar('--muted'),
+      },
+      {
+        label: 'one contributor',
+        value: Object.values(cov).filter((c) => c.level === 'single').length,
+        color: cssVar('--ev-single'),
+      },
+      {
+        label: 'reproduced',
+        value: Object.values(cov).filter((c) => c.level === 'reproduced').length,
+        color: cssVar('--ev-reproduced'),
+      },
+      {
+        label: 'disputed',
+        value: Object.values(cov).filter((c) => c.level === 'disputed').length,
+        color: cssVar('--ev-disputed'),
+      },
+      {
+        label: 'stale',
+        value: Object.values(cov).filter((c) => c.level === 'stale').length,
+        color: cssVar('--ev-stale'),
+      },
+    ];
+    const byEngine = countBy(store.index.value, (r) => r.engine.id);
+    const byHardware = countBy(
+      store.index.value,
+      (r) => r.hardware.id,
+      (id) => vendorColor(store.lookups.hardware.get(id)?.vendor),
+    );
+    if (evidence.every((e) => e.value === 0) && byEngine.length === 0) return nothing;
+    return html`<section class="chart-grid mt-6">
+      ${countsChart('Evidence on the map', evidence, {
+        yLabel: 'cells',
+        meta: 'colour is evidence, not speed',
+        height: 220,
+      })}
+      ${countsChart('Runs by engine', byEngine, { yLabel: 'runs', height: 220 })}
+      ${countsChart('Runs by device', byHardware, { yLabel: 'runs', height: 220 })}
+    </section>`;
+  }
+
   private featuredSection(): TemplateResult {
     const reg = store.registry.value!;
     const f = reg.site.featured ?? {};
@@ -515,6 +565,8 @@ export class AtlasView extends ViewElement {
         }
         ${this.legend()}
       </section>
+
+      ${this.overviewCharts()}
 
       <section class="split-3 mt-6">
         ${this.gapsSection()} ${this.latestSection()} ${this.featuredSection()}

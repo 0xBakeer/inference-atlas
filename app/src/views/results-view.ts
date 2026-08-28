@@ -26,8 +26,9 @@ import {
   uniqueSorted,
   type SortSpec,
 } from '../util/filters.js';
-import { fmtInt } from '../util/format.js';
-import { METRICS, type MetricDef } from '../util/metrics.js';
+import { fmtInt, fmtMs, fmtTokS } from '../util/format.js';
+import { METRIC_BY_KEY, METRICS, type MetricDef } from '../util/metrics.js';
+import { countBy, countsChart, histogramChartBuild, chartCard } from '../components/page-charts.js';
 import { ViewElement } from './view-base.js';
 
 interface Col {
@@ -350,6 +351,7 @@ export class AtlasResultsView extends ViewElement {
         ${active.length ? html`<button class="btn btn-ghost btn-sm" @click=${() => setQuery(Object.fromEntries(active.map((k) => [k, null])))}>${icon('x')} Clear ${active.length}</button>` : nothing}
       </div>
 
+      ${this.overview(rows)}
       ${
         rows.length === 0
           ? emptyState({
@@ -401,6 +403,50 @@ export class AtlasResultsView extends ViewElement {
                 Sort by any column; metric columns sort descending first. Click a row for the full
                 record. ${rows.length >= 60 ? 'The table is virtualised.' : ''}
               </p>`
+      }
+    </div>`;
+  }
+
+  private overview(rows: IndexRow[]): TemplateResult | typeof nothing {
+    if (rows.length === 0) return nothing;
+    const tok = METRIC_BY_KEY.output_tok_s!;
+    const ttft = METRIC_BY_KEY.ttft_p50!;
+    const tokVals = rows.map((r) => tok.fromRow(r)).filter((v): v is number => v !== null);
+    const ttftVals = rows.map((r) => ttft.fromRow(r)).filter((v): v is number => v !== null);
+    return html`<div class="chart-grid mb-4">
+      ${countsChart(
+        'Runs by engine',
+        countBy(rows, (r) => r.engine.id),
+        {
+          yLabel: 'runs',
+          height: 200,
+        },
+      )}
+      ${countsChart(
+        'Runs by device',
+        countBy(rows, (r) => r.hardware.id),
+        {
+          yLabel: 'runs',
+          height: 200,
+        },
+      )}
+      ${
+        tokVals.length >= 3
+          ? chartCard('Output tok/s', histogramChartBuild(tokVals, 'runs', fmtTokS), {
+              meta: 'distribution of the filtered set',
+              height: 200,
+              key: `tok${tokVals.length}${tokVals[0]}`,
+            })
+          : nothing
+      }
+      ${
+        ttftVals.length >= 3
+          ? chartCard('TTFT p50', histogramChartBuild(ttftVals, 'runs', fmtMs), {
+              meta: 'milliseconds',
+              height: 200,
+              key: `ttft${ttftVals.length}${ttftVals[0]}`,
+            })
+          : nothing
       }
     </div>`;
   }
