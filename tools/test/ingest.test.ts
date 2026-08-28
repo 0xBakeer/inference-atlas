@@ -189,6 +189,13 @@ describe('writing a version file', () => {
   });
 
   it('writes a schema-valid file and registers the version', () => {
+    // Read the baseline first. The fixture copies the real engine registry, and adding an
+    // engine version is a pull request that adds a file — so a hardcoded expectation here
+    // would fail on the next version anybody contributes, which is not a regression.
+    const before = repo.read<{ versions_available: string[] }>(
+      'engines/vllm/meta.json',
+    ).versions_available;
+
     const outcome = ingestEngine({
       root: repo.root,
       engineId: 'vllm',
@@ -207,7 +214,9 @@ describe('writing a version file', () => {
     expect(byName(written.params, 'tensor-parallel-size')!.impact).toBe('high');
 
     const meta = repo.read<{ versions_available: string[] }>('engines/vllm/meta.json');
-    expect(meta.versions_available).toEqual(['0.26.1', '0.27.1', '0.28.0']);
+    // The new version is registered, every version already there survives, and the list
+    // stays sorted.
+    expect(meta.versions_available).toEqual([...before, '0.28.0'].sort());
   });
 
   it('refuses an engine that is not registered', () => {
