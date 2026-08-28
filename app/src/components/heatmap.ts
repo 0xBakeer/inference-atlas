@@ -52,7 +52,7 @@ export class AtlasHeatmap extends AtlasElement {
     );
   }
 
-  private tip(e: MouseEvent, cell: HeatCell): void {
+  private tip(e: Pick<MouseEvent, 'clientX' | 'clientY'>, cell: HeatCell): void {
     const best = cell.best && cell.bestMetric ? METRIC_BY_KEY[cell.bestMetric] : null;
     showTip(
       e.clientX,
@@ -92,6 +92,9 @@ export class AtlasHeatmap extends AtlasElement {
       @click=${() => this.select(cell)}
       @mouseenter=${(e: MouseEvent) => this.tip(e, cell)}
       @mousemove=${(e: MouseEvent) => this.tip(e, cell)}
+      @pointerdown=${(e: PointerEvent) => {
+        if (e.pointerType !== 'mouse') this.tip(e, cell);
+      }}
       @mouseleave=${hideTip}
       @focus=${(e: FocusEvent) => {
         const r = (e.target as HTMLElement).getBoundingClientRect();

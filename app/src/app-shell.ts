@@ -16,6 +16,7 @@ import { shortSha } from './util/format.js';
 
 import './components/add-modal.js';
 import './components/command-palette.js';
+import './components/data-pulse.js';
 import './views/atlas-view.js';
 import './views/explore-view.js';
 import './views/results-view.js';
@@ -325,6 +326,7 @@ export class AtlasApp extends AtlasElement {
         }
       </main>
 
+      ${status === 'ready' ? html`<atlas-data-pulse></atlas-data-pulse>` : nothing}
       <footer class="footer">
         <div class="footer-inner">
           <span class="mark-line"

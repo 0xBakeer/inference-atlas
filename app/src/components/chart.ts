@@ -136,6 +136,10 @@ export class AtlasChart extends AtlasElement {
   private ro: ResizeObserver | null = null;
   private lastWidth = 0;
 
+  private effectiveHeight(): number {
+    return matchMedia('(max-width: 720px)').matches ? Math.min(this.height, 210) : this.height;
+  }
+
   constructor() {
     super();
     watch(this, themeSignal);
@@ -167,7 +171,7 @@ export class AtlasChart extends AtlasElement {
       return;
     }
     this.lastWidth = w;
-    this.plot.setSize({ width: w, height: this.height });
+    this.plot.setSize({ width: w, height: this.effectiveHeight() });
   }
 
   private rebuild(): void {
@@ -180,10 +184,10 @@ export class AtlasChart extends AtlasElement {
     host.innerHTML = '';
     const { opts, data } = this.build(w, themeSignal.value, chartPalette());
     this.lastWidth = w;
-    this.plot = new uPlot({ ...opts, width: w, height: this.height }, data, host);
+    this.plot = new uPlot({ ...opts, width: w, height: this.effectiveHeight() }, data, host);
   }
 
   override render() {
-    return html`<div class="chart-box" style="min-height:${this.height}px"></div>`;
+    return html`<div class="chart-box" style="min-height:${this.effectiveHeight()}px"></div>`;
   }
 }

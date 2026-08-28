@@ -2,6 +2,7 @@ import { html, nothing, type TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import '@lit-labs/virtualizer';
 import { icon } from '../components/icons.js';
+import '../components/result-distribution.js';
 import {
   avatar,
   emptyState,
@@ -141,9 +142,14 @@ const DEFAULT_COLS = [
 @customElement('atlas-results-view')
 export class AtlasResultsView extends ViewElement {
   @state() private chooser = false;
+  @state() private filtersOpen = false;
+  @state() private chartMetric = 'output_tok_s';
   @state() private narrow = matchMedia('(max-width: 720px)').matches;
   private mq = matchMedia('(max-width: 720px)');
-  private onMq = () => (this.narrow = this.mq.matches);
+  private onMq = () => {
+    this.narrow = this.mq.matches;
+    if (!this.narrow) this.filtersOpen = false;
+  };
 
   override connectedCallback(): void {
     super.connectedCallback();
@@ -322,6 +328,17 @@ export class AtlasResultsView extends ViewElement {
             @input=${(e: Event) => setQuery({ q: (e.target as HTMLInputElement).value || null })}
           />
         </div>
+        <button
+          class="btn btn-sm filters-toggle"
+          type="button"
+          aria-expanded=${!this.narrow || this.filtersOpen}
+          @click=${() => (this.filtersOpen = !this.filtersOpen)}
+        >
+          ${icon('filter')} Filters${active.length ? ` (${active.length})` : ''}
+        </button>
+        ${
+          !this.narrow || this.filtersOpen
+            ? html`<div class="filters-controls">
         ${selectField('Engine', f('engine'), opts(filterRows.map((r) => r.engine.id)), (v) => setQuery({ engine: v, version: null }))}
         ${selectField('Version', f('version'), opts(filterRows.filter((r) => !f('engine') || r.engine.id === f('engine')).map((r) => r.engine.version)), (v) => setQuery({ version: v }))}
         ${selectField('Model', f('model'), opts(filterRows.map((r) => r.model.id)), (v) => setQuery({ model: v, quant: null }))}
@@ -348,6 +365,9 @@ export class AtlasResultsView extends ViewElement {
             @change=${(e: Event) => setQuery({ to: (e.target as HTMLInputElement).value || null })}
         /></label>
         ${active.length ? html`<button class="btn btn-ghost btn-sm" @click=${() => setQuery(Object.fromEntries(active.map((k) => [k, null])))}>${icon('x')} Clear ${active.length}</button>` : nothing}
+            </div>`
+            : nothing
+        }
       </div>
 
       ${
@@ -362,7 +382,25 @@ export class AtlasResultsView extends ViewElement {
                 >${icon('flag')} Find a gap to fill</a
               >`,
             })
-          : html`<div class="rgrid">
+          : html`<section class="result-summary card tight mb-3">
+                <div class="row-wrap result-summary-head">
+                  <div>
+                    <div class="eyebrow plain">Result distribution</div>
+                    <p class="xs muted mt-1">See the spread before comparing individual records.</p>
+                  </div>
+                  ${selectField(
+                    'Metric',
+                    this.chartMetric,
+                    METRICS.map((metric) => ({
+                      value: metric.key,
+                      label: `${metric.short}${metric.unit ? ` (${metric.unit})` : ''}`,
+                    })),
+                    (value) => (this.chartMetric = value),
+                  )}
+                </div>
+                <atlas-result-distribution .rows=${rows} .metric=${this.chartMetric}></atlas-result-distribution>
+              </section>
+              <div class="rgrid">
                 <div class="rg-scroll">
                   <div class="rg-inner">
                     ${

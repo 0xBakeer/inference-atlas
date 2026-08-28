@@ -5,6 +5,7 @@ import type { EngineVersion, ResultRecord, SweepAxis, SweepPoint } from '@atlas/
 import { addButton } from '../components/add-modal.js';
 import '../components/chart.js';
 import '../components/request-strip.js';
+import '../components/result-distribution.js';
 import '../components/run-picker.js';
 import type { StripMetric } from '../components/request-strip.js';
 import { icon } from '../components/icons.js';
@@ -228,6 +229,7 @@ export class AtlasRunView extends ViewElement {
                   </section>`
                 : nothing
           }
+          ${this.positionChart(rec)}
           ${rec.sweep?.length ? this.sweep(rec) : nothing}
           ${rec.kind === 'prefill' ? this.prefillCurve(rec) : nothing} ${this.arms(rec)}
           ${rec.scores ? this.scores(rec) : nothing}
@@ -356,6 +358,32 @@ export class AtlasRunView extends ViewElement {
         </aside>
       </div>
     </div>`;
+  }
+
+  /** Give every individual result a visual context, even when it did not include a sweep. */
+  private positionChart(rec: ResultRecord): TemplateResult | typeof nothing {
+    const rows = store.index.value.filter(
+      (row) =>
+        row.kind === rec.kind &&
+        row.model.id === rec.model.id &&
+        row.model.quant_id === rec.model.quant_id,
+    );
+    const metric = ['output_tok_s', 'decode_tok_s_per_request', 'ttft_p50'].find((key) =>
+      rows.some((row) => {
+        const value = row.metrics[key as keyof typeof row.metrics];
+        return typeof value === 'number';
+      }),
+    );
+    if (!metric) return nothing;
+    return html`<section>
+      <div class="section-title">
+        <h2>Position in measured results</h2>
+        <span class="meta">same model, quant and run kind</span>
+      </div>
+      <div class="card tight">
+        <atlas-result-distribution .rows=${rows} .metric=${metric}></atlas-result-distribution>
+      </div>
+    </section>`;
   }
 
   /**
