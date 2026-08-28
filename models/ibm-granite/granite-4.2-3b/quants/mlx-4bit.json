@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "id": "mlx-4bit",
+  "model_id": "ibm-granite/granite-4.2-3b",
+  "format": "mlx",
+  "bits": 4.5,
+  "hf_id": "lmstudio-community/granite-4.2-3b-MLX-4bit",
+  "revision": null,
+  "size_gb": 2.06,
+  "engines": [
+    "lmstudio",
+    "mlx-lm"
+  ],
+  "source": "community",
+  "notes": "config.json records a uniform affine quantization at bits 4, group_size 64, with no per-layer overrides. bits is therefore 4.5, not 4: each group of 64 weights carries an fp16 scale and an fp16 bias, which is 32 extra bits per group, so 4 + 32/64 = 4.5 bits per weight. That arithmetic is confirmed by the payload — 2,059,005,430 bytes over the 3,659,737,600 parameters of the source checkpoint is 4.501 bits per weight. size_gb is the safetensors payload of the repository (2,059,005,430 bytes); LM Studio reports 2.07 GB because it counts the tokenizer as well. Unlike the gemma-4-E2B-it MLX ladder, nothing here is left wider — the flat 4.5 is pure group-scale overhead rather than a mix of widths.",
+  "links": {
+    "hf": "https://huggingface.co/lmstudio-community/granite-4.2-3b-MLX-4bit"
+  }
+}
