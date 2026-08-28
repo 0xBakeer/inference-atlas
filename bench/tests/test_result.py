@@ -1,4 +1,4 @@
-"""Result assembly: payload bounding, derived metrics, gotchas, provenance and paths."""
+"""Result assembly: payload bounding, derived metrics, gotchas, conditions, provenance, paths."""
 
 from __future__ import annotations
 
@@ -18,6 +18,7 @@ from atlas_bench.result import (
     output_path,
     resolve_login,
 )
+from atlas_bench.spec import RunConditions
 from atlas_bench.workloads.base import WorkloadOutcome
 from tests.test_run_e2e import host, make_spec
 
@@ -207,3 +208,38 @@ def test_derived_metrics_scales_registered_figures_by_hardware_count() -> None:
         derived_metrics(metrics, hardware, model, quant)["bandwidth_efficiency"]
         == (one["bandwidth_efficiency"])
     )
+
+
+def test_conditions_from_inputs(atlas_repo: Path) -> None:
+    """Structured run conditions land in the record, asserted and measured kept distinct."""
+    record = build_result(
+        inputs(
+            atlas_repo,
+            WorkloadOutcome(kind="serving"),
+            conditions=RunConditions(
+                dedicated=False,
+                detail="shared LM Studio endpoint reachable by other services",
+                isolation_check="resident-model set sampled before and after every workload",
+            ),
+        )
+    )
+    assert record["conditions"] == {
+        "dedicated": False,
+        "detail": "shared LM Studio endpoint reachable by other services",
+        "isolation_check": "resident-model set sampled before and after every workload",
+    }
+
+
+def test_conditions_fall_back_to_the_packet(atlas_repo: Path) -> None:
+    """A packet can carry conditions, like it carries notes."""
+    made = inputs(atlas_repo, WorkloadOutcome(kind="serving"))
+    made.spec = make_spec(conditions={"dedicated": True, "extra_key": "kept in the packet"})
+    record = build_result(made)
+    # Exactly the three schema fields: packet extras never leak into the CC-BY record.
+    assert record["conditions"] == {"dedicated": True, "detail": None, "isolation_check": None}
+
+
+def test_conditions_absent_stays_null(atlas_repo: Path) -> None:
+    """No conditions given: the field is null, never invented."""
+    record = build_result(inputs(atlas_repo, WorkloadOutcome(kind="serving")))
+    assert record["conditions"] is None

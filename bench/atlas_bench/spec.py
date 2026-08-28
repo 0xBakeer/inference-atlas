@@ -21,6 +21,7 @@ __all__ = [
     "InstallSpec",
     "ModelRef",
     "RequestOptions",
+    "RunConditions",
     "TaskSpec",
     "WorkloadRef",
     "load_spec",
@@ -131,6 +132,23 @@ class RequestOptions(_Base):
     api_key: str | None = None
 
 
+class RunConditions(_Base):
+    """Run conditions (result schema ``conditions``): what else could have contended for the
+    box. ``dedicated`` + ``detail`` are asserted; ``isolation_check`` is what was MEASURED."""
+
+    dedicated: bool
+    detail: str | None = None
+    isolation_check: str | None = None
+
+    def record_dict(self) -> dict[str, bool | str | None]:
+        """Exactly the three schema fields — never any extra packet keys."""
+        return {
+            "dedicated": self.dedicated,
+            "detail": self.detail,
+            "isolation_check": self.isolation_check,
+        }
+
+
 class TaskSpec(_Base):
     """A full task packet."""
 
@@ -149,6 +167,7 @@ class TaskSpec(_Base):
     pr_title: str | None = None
     agent_rules: list[str] = Field(default_factory=list)
     notes: str | None = None
+    conditions: RunConditions | None = None
     github_login: str | None = None
     tokenizer: str | None = None
 
@@ -187,6 +206,7 @@ class TaskSpec(_Base):
             "pr_title",
             "agent_rules",
             "notes",
+            "conditions",
         ]
         ordered = {k: data[k] for k in order if k in data}
         ordered.update({k: v for k, v in data.items() if k not in ordered})

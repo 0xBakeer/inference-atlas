@@ -2,7 +2,13 @@
 import { html, nothing, render, svg, type TemplateResult } from 'lit';
 import { classMap } from 'lit/directives/class-map.js';
 import { styleMap } from 'lit/directives/style-map.js';
-import type { CoverageLevel, Distribution, VerificationLevel, WorkloadKind } from '@atlas/core';
+import type {
+  CoverageLevel,
+  Distribution,
+  ResolvedConditions,
+  VerificationLevel,
+  WorkloadKind,
+} from '@atlas/core';
 import { href, modelHref } from '../router.js';
 import { store } from '../store.js';
 import { copyText } from '../util/clipboard.js';
@@ -53,6 +59,52 @@ export function evBadge(level: CoverageLevel, label?: string): TemplateResult {
 
 export function verifBadge(level: VerificationLevel | string): TemplateResult {
   return html`<span class="verif ${level}">${level}</span>`;
+}
+
+/**
+ * Run-conditions tag. Deliberately neutral: in this app colour means evidence, and a shared
+ * box is a fact about a run, not a defect. The asserted detail rides in the title; what was
+ * MEASURED (vs asserted) is rendered separately by `condMeasured`.
+ */
+export function condTag(c: ResolvedConditions): TemplateResult {
+  if (c.dedicated === null)
+    return html`<span
+      class="tag"
+      title="This run did not record conditions in a machine-readable form. The run's notes are the only record."
+      >conditions not recorded</span
+    >`;
+  return c.dedicated
+    ? html`<span
+        class="tag"
+        title=${c.detail ? `Box was dedicated: ${c.detail}` : 'Box was dedicated'}
+        >${icon('box')} dedicated box</span
+      >`
+    : html`<span
+        class="tag"
+        title=${c.detail ? `Box was not dedicated: ${c.detail}` : 'Box was not dedicated'}
+        >${icon('users')} shared box</span
+      >`;
+}
+
+/** Whether isolation was measured or only asserted — the distinction the vocabulary draws. */
+export function condMeasured(c: ResolvedConditions): TemplateResult | typeof nothing {
+  if (c.isolationCheck)
+    return html`<div
+      class="xs muted"
+      style="margin-top:2px"
+      title=${`Isolation check: ${c.isolationCheck}`}
+    >
+      isolation measured
+    </div>`;
+  if (c.dedicated !== null)
+    return html`<div
+      class="xs muted"
+      style="margin-top:2px"
+      title="The contributor stated the conditions; no isolation check was recorded as measured."
+    >
+      asserted, not measured
+    </div>`;
+  return nothing;
 }
 
 export function kindTag(kind: WorkloadKind | string): TemplateResult {

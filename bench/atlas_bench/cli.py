@@ -32,7 +32,7 @@ from .registry import Registry
 from .repo import find_repo_root, write_json
 from .result import ResultInputs, build_result, output_path, resolve_login
 from .runner import run_spec_sync
-from .spec import load_spec
+from .spec import RunConditions, load_spec
 from .submit import submit as do_submit
 from .validate import check_model_registry, validate_file
 from .workloads import resolve_workload
@@ -50,6 +50,23 @@ error_console = Console(stderr=True)
 def _registry(repo: Path | None) -> Registry:
     """Registry rooted at ``--repo``/``--registry-dir`` or the discovered checkout."""
     return Registry(repo)
+
+
+def _conditions_option(
+    dedicated: bool | None, detail: str | None, isolation_check: str | None
+) -> RunConditions | None:
+    """Build the ``conditions`` record from CLI flags.
+
+    ``--dedicated``/``--not-dedicated`` is the anchor: detail and the isolation check only
+    mean something relative to it, so passing them alone is an error rather than a guess.
+    """
+    if dedicated is None:
+        if detail or isolation_check:
+            raise typer.BadParameter(
+                "--conditions-detail/--isolation-check need --dedicated or --not-dedicated"
+            )
+        return None
+    return RunConditions(dedicated=dedicated, detail=detail, isolation_check=isolation_check)
 
 
 def _parse_kv(pairs: list[str]) -> dict[str, Any]:
@@ -201,6 +218,18 @@ def run(
     registry_dir: Path | None = typer.Option(None, "--registry-dir", "--repo"),
     login: str | None = typer.Option(None, "--login", help="GitHub login for provenance."),
     notes: str | None = typer.Option(None, "--notes", help="provenance.notes for this run."),
+    dedicated: bool | None = typer.Option(
+        None,
+        "--dedicated/--not-dedicated",
+        help="Run conditions: was the box dedicated to this run? Falls back to the packet's "
+        "`conditions`; omitted entirely when neither is given.",
+    ),
+    conditions_detail: str | None = typer.Option(
+        None, "--conditions-detail", help="What else was resident or reachable (asserted)."
+    ),
+    isolation_check: str | None = typer.Option(
+        None, "--isolation-check", help="What was MEASURED about isolation, not just asserted."
+    ),
     gotcha: list[str] = typer.Option([], "--gotcha", help="Add a gotcha (repeatable)."),
     telemetry: bool = typer.Option(True, "--telemetry/--no-telemetry"),
     tokenizer: str | None = typer.Option(
@@ -211,6 +240,7 @@ def run(
     spec = load_spec(spec_path)
     if tokenizer:
         spec.tokenizer = tokenizer
+    conditions = _conditions_option(dedicated, conditions_detail, isolation_check)
     registry = _registry(registry_dir)
     resolved_login = resolve_login(login or spec.github_login)
     if not resolved_login and not dry_run:
@@ -230,6 +260,7 @@ def run(
         telemetry=telemetry,
         gotchas=list(gotcha),
         notes=notes,
+        conditions=conditions,
     )
 
     if dry_run:
@@ -453,6 +484,9 @@ def wrap(
     registry_dir: Path | None = typer.Option(None, "--registry-dir", "--repo"),
     login: str | None = typer.Option(None, "--login"),
     notes: str | None = typer.Option(None, "--notes"),
+    dedicated: bool | None = typer.Option(None, "--dedicated/--not-dedicated"),
+    conditions_detail: str | None = typer.Option(None, "--conditions-detail"),
+    isolation_check: str | None = typer.Option(None, "--isolation-check"),
 ) -> None:
     """Wrap ``vllm bench serve`` / SGLang ``bench_serving`` output into a result file."""
     spec = load_spec(spec_path)
@@ -508,6 +542,7 @@ def wrap(
             finished_at=utc_now(),
             serve_command=adapter.serve_command(),
             notes=notes,
+            conditions=_conditions_option(dedicated, conditions_detail, isolation_check),
         )
     )
     path = output_path(record, out)

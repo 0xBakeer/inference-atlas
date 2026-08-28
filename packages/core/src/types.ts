@@ -407,6 +407,17 @@ export interface Gotcha {
   link?: string | null;
 }
 
+/**
+ * Run conditions: what else could have contended for the box while this was measured.
+ * `dedicated` + `detail` record what the contributor ASSERTS about the box; `isolation_check`
+ * records what was MEASURED about isolation. The two are deliberately separate.
+ */
+export interface RunConditions {
+  dedicated: boolean;
+  detail?: string | null;
+  isolation_check?: string | null;
+}
+
 export interface Provenance {
   github_login: string;
   github_user_id?: number | null;
@@ -472,6 +483,7 @@ export interface ResultRecord {
   sweep?: SweepPoint[] | null;
   scores?: Scores | null;
   failures?: Failure[];
+  conditions?: RunConditions | null;
   gotchas?: Gotcha[];
   derived?: {
     cost_per_1m_output_tokens_usd?: number | null;

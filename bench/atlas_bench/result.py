@@ -23,7 +23,7 @@ from .hwinfo import HostInfo, fingerprint
 from .ids import cell_id, config_id_from_canonical, result_path, run_id
 from .plausibility import active_weight_gb
 from .registry import Registry
-from .spec import TaskSpec
+from .spec import RunConditions, TaskSpec
 from .workloads.base import WorkloadOutcome
 
 __all__ = [
@@ -64,6 +64,8 @@ class ResultInputs:
     attached: bool = False
     extra_gotchas: list[str] = field(default_factory=list)
     notes: str | None = None
+    #: Run conditions: dedicated-or-not is asserted, ``isolation_check`` is measured.
+    conditions: RunConditions | None = None
     warnings: list[str] = field(default_factory=list)
 
 
@@ -357,6 +359,8 @@ def build_result(inputs: ResultInputs) -> dict[str, Any]:
     if outcome.scores is not None:
         record["scores"] = outcome.scores
     record["failures"] = outcome.failures
+    conditions = inputs.conditions or spec.conditions
+    record["conditions"] = conditions.record_dict() if conditions else None
     record["gotchas"] = auto_gotchas(inputs, metrics)
     record["derived"] = derived_metrics(
         metrics, hardware_record, model_record, quant, spec.hardware.count

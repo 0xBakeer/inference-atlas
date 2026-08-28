@@ -360,6 +360,11 @@ Eval rows: `{ "id", "category", "difficulty", "prompt"|"messages", "answer", "sc
   },
   "failures": [ { "at": "request", "count": 3, "category": "timeout|oom|context-overflow|http-5xx|http-4xx|malformed-output|refusal|other",
                   "message": "…", "sample_request_id": "…" } ],
+  "conditions": {                                             // optional; null/absent on results recorded before it existed
+    "dedicated": false,                                        // ASSERTED: nothing else was using the box's compute
+    "detail": "shared LM Studio endpoint reachable by other services; idle Chrome; agent session driving the harness",
+    "isolation_check": "resident-model set sampled before and after every workload; contaminated runs discarded"  // what was MEASURED, as opposed to asserted; null = nothing measured
+  },
   "gotchas": [ { "severity": "info|warn|blocker", "text": "Prefix caching defaults OFF for hybrid models; pass --enable-prefix-caching explicitly." } ],
   "derived": { "cost_per_1m_output_tokens_usd": null, "tokens_per_watt": 25.8, "tok_s_per_gb_bandwidth": 0.32 },
   "raw": { "harness": "atlas-bench", "harness_version": "0.1.0", "sha256": "…", "payload_path": null, "payload": { /* bounded <=100KB */ } },
@@ -377,6 +382,14 @@ Eval rows: `{ "id", "category", "difficulty", "prompt"|"messages", "answer", "sc
 
 Bounded: any `raw.payload` above 100 KB must be truncated with `raw.truncated: true` (keep the
 aggregates). Per-item eval results keep at most `predicted` truncated to 500 chars.
+
+`conditions` records run conditions — a property of the run, like ambient temperature, never
+an identifier for the machine. Two honestly-recorded results can differ in nothing but their
+conditions, and the compare view uses this field to say so; it never ranks runs by it.
+Results from before the field existed carry `null`; for those, the canonical prose in
+`provenance.notes` (`Box WAS dedicated: ...` / `Box was NOT dedicated: ...` /
+`Isolation check: ...`) is parsed as a fallback, and anything older resolves to
+"not recorded" rather than a guess.
 
 ## 5. Ownership & provenance enforcement (validate.yml + `tools/validate`)
 

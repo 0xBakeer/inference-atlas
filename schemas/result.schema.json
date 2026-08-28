@@ -259,6 +259,31 @@
         }
       }
     },
+    "conditions": {
+      "description": "Run conditions: what else could have contended for the box while this was measured. A property of the run, like ambient temperature — never an identifier for the machine. Absent (or null) on results recorded before this field existed; for those, the canonical prose in provenance.notes (\"Box WAS dedicated: ...\" / \"Box was NOT dedicated: ...\" / \"Isolation check: ...\") is the only record.",
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["dedicated"],
+          "properties": {
+            "dedicated": {
+              "type": "boolean",
+              "description": "Asserted by the contributor: nothing else was using the box's compute for the duration of this run."
+            },
+            "detail": {
+              "$ref": "#/$defs/nstr",
+              "description": "The rest of the assertion: what else was resident, reachable, or shut off — the prose after \"Box WAS/was NOT dedicated:\"."
+            },
+            "isolation_check": {
+              "$ref": "#/$defs/nstr",
+              "description": "What was MEASURED about isolation, as opposed to asserted: the check that ran and what it compared (e.g. GPU compute-app list sampled before each workload; resident-model set compared before/after). Null when nothing was measured."
+            }
+          }
+        },
+        { "type": "null" }
+      ]
+    },
     "gotchas": {
       "type": "array",
       "description": "The knowledge that usually evaporates: what you had to know to make this work.",
