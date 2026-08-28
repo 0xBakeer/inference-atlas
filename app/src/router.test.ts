@@ -1,5 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { buildHash, href, modelHref, modelIdFromSegments, parseHash, qlist, qnum } from './router.js';
+import {
+  buildHash,
+  href,
+  modelHref,
+  modelIdFromSegments,
+  parseHash,
+  qlist,
+  qnum,
+} from './router.js';
 
 describe('router', () => {
   it('parses paths and queries', () => {
@@ -33,7 +41,9 @@ describe('router', () => {
     expect(modelHref('google/gemma-4-E2B-it')).toBe('#/models/google/gemma-4-E2B-it');
     expect(modelHref('Qwen/Qwen3.8-27B')).toBe('#/models/Qwen/Qwen3.8-27B');
     expect(
-      modelIdFromSegments(parseHash(modelHref('nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16')).segments),
+      modelIdFromSegments(
+        parseHash(modelHref('nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16')).segments,
+      ),
     ).toBe('nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16');
   });
   it('builds hashes and hrefs', () => {

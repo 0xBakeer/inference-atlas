@@ -29,31 +29,31 @@ uv run datasets/_gen/check.py
 
 ## Which script owns which directory
 
-| script | produces | notes |
-|---|---|---|
-| `gen_prompts_mixed.py` | `prompts-mixed-v1/` | 600 prompts, 11 topics × 6 length buckets |
-| `gen_prompts_shared_prefix.py` | `prompts-shared-prefix-v1/` | 100 prompts over 4 long system prompts |
-| `gen_prompts_code.py` | `prompts-code-v1/` | 150 coding prompts in 5 languages |
-| `gen_haystack.py` | `haystack-v1/` | 32 recipes + static files ≤ 32k tokens |
-| `gen_eval_math.py` | `eval-math-v1/` | answers computed, never typed |
-| `gen_eval_reasoning.py` | `eval-reasoning-v1/` | puzzles brute-forced for a unique solution |
-| `gen_eval_code.py` | `eval-code-v1/` | reference solutions run against their own tests |
-| `gen_eval_knowledge.py` | `eval-knowledge-v1/` | MC, correct letter balanced over A–D |
-| `gen_eval_instruction.py` | `eval-instruction-v1/` | rule DSL, each item verified against a compliant example |
-| `gen_eval_json.py` | `eval-json-v1/` | expected objects computed from the same data as the prompt |
-| `gen_eval_tools.py` | `eval-tools-v1/` | expected arguments validated against the tool schema |
-| `gen_eval_vision.py` | `eval-vision-v1/` | draws every PNG; needs Pillow |
-| `gen_eval_multilingual.py` | `eval-multilingual-v1/` | native text lives in `_multilingual.py` |
-| `gen_eval_longctx.py` | `eval-longctx-v1/` | recipes verified against `haystack-v1/build.py` |
-| `gen_eval_format.py` | `eval-format-v1/` | hand-written, 30 items |
+| script                         | produces                    | notes                                                      |
+| ------------------------------ | --------------------------- | ---------------------------------------------------------- |
+| `gen_prompts_mixed.py`         | `prompts-mixed-v1/`         | 600 prompts, 11 topics × 6 length buckets                  |
+| `gen_prompts_shared_prefix.py` | `prompts-shared-prefix-v1/` | 100 prompts over 4 long system prompts                     |
+| `gen_prompts_code.py`          | `prompts-code-v1/`          | 150 coding prompts in 5 languages                          |
+| `gen_haystack.py`              | `haystack-v1/`              | 32 recipes + static files ≤ 32k tokens                     |
+| `gen_eval_math.py`             | `eval-math-v1/`             | answers computed, never typed                              |
+| `gen_eval_reasoning.py`        | `eval-reasoning-v1/`        | puzzles brute-forced for a unique solution                 |
+| `gen_eval_code.py`             | `eval-code-v1/`             | reference solutions run against their own tests            |
+| `gen_eval_knowledge.py`        | `eval-knowledge-v1/`        | MC, correct letter balanced over A–D                       |
+| `gen_eval_instruction.py`      | `eval-instruction-v1/`      | rule DSL, each item verified against a compliant example   |
+| `gen_eval_json.py`             | `eval-json-v1/`             | expected objects computed from the same data as the prompt |
+| `gen_eval_tools.py`            | `eval-tools-v1/`            | expected arguments validated against the tool schema       |
+| `gen_eval_vision.py`           | `eval-vision-v1/`           | draws every PNG; needs Pillow                              |
+| `gen_eval_multilingual.py`     | `eval-multilingual-v1/`     | native text lives in `_multilingual.py`                    |
+| `gen_eval_longctx.py`          | `eval-longctx-v1/`          | recipes verified against `haystack-v1/build.py`            |
+| `gen_eval_format.py`           | `eval-format-v1/`           | hand-written, 30 items                                     |
 
 Shared, not a generator:
 
-| file | role |
-|---|---|
-| `_lib.py` | seeded text machinery: topic banks, template filler, document/code/transcript composers, dataset.json helpers, the scorer vocabulary |
-| `_multilingual.py` | natively written German, French, Spanish, Italian, Portuguese, Arabic, Chinese, Japanese and Turkish text |
-| `check.py` | validates every dataset; exit code 1 on any problem |
+| file               | role                                                                                                                                 |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `_lib.py`          | seeded text machinery: topic banks, template filler, document/code/transcript composers, dataset.json helpers, the scorer vocabulary |
+| `_multilingual.py` | natively written German, French, Spanish, Italian, Portuguese, Arabic, Chinese, Japanese and Turkish text                            |
+| `check.py`         | validates every dataset; exit code 1 on any problem                                                                                  |
 
 Two reference implementations live **with their data**, not here, because the
 Python harness in `bench/` has to import them:

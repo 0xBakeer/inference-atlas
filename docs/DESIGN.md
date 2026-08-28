@@ -2,7 +2,7 @@
 
 **A community owned map of LLM inference engine configurations, hosted entirely on GitHub Pages.**
 
-Working title. Alternatives: *ServeBench*, *ConfigAtlas*, *The Serving Grid*, *tok/s.dev*.
+Working title. Alternatives: _ServeBench_, _ConfigAtlas_, _The Serving Grid_, _tok/s.dev_.
 
 Status: original design document (vision). The binding implementation contract is `docs/SPEC.md`.
 
@@ -10,13 +10,13 @@ Status: original design document (vision). The binding implementation contract i
 
 ## 1. One paragraph summary
 
-Inference Atlas is a static web app that renders the *configuration space* of LLM serving engines (vLLM, SGLang, llama.cpp, TensorRT-LLM, MLX, TGI) as a browsable, searchable map. Every cell in that map is a combination of model, hardware, engine version, engine flags and workload. Cells that somebody has already benchmarked show real numbers, attributed to the GitHub user who ran them and the commit that added them. Cells nobody has tested show up as gaps, and the app hands you everything you need to fill the gap yourself: the exact shell command, a machine readable task packet for a coding agent, the output schema, and a one click path to a pull request. All data lives as JSON files in the same repository that serves the site. There is no backend, no database and no server cost.
+Inference Atlas is a static web app that renders the _configuration space_ of LLM serving engines (vLLM, SGLang, llama.cpp, TensorRT-LLM, MLX, TGI) as a browsable, searchable map. Every cell in that map is a combination of model, hardware, engine version, engine flags and workload. Cells that somebody has already benchmarked show real numbers, attributed to the GitHub user who ran them and the commit that added them. Cells nobody has tested show up as gaps, and the app hands you everything you need to fill the gap yourself: the exact shell command, a machine readable task packet for a coding agent, the output schema, and a one click path to a pull request. All data lives as JSON files in the same repository that serves the site. There is no backend, no database and no server cost.
 
 ---
 
 ## 2. The problem
 
-Benchmark numbers for local inference are scattered across blog posts, Reddit threads, GitHub issues and Discord screenshots. They are almost never reproducible, because the thing that determines the result is not the model and not the GPU, it is the *combination*:
+Benchmark numbers for local inference are scattered across blog posts, Reddit threads, GitHub issues and Discord screenshots. They are almost never reproducible, because the thing that determines the result is not the model and not the GPU, it is the _combination_:
 
 - engine and exact engine version (vLLM 0.26.1 vs 0.27.1 can differ by double digit percentages)
 - quantization format and whether the hardware has a native kernel path for it
@@ -41,7 +41,7 @@ Every benchmark run is reduced to a deterministic hash of its normalized configu
 
 ### 3.2 Coverage as the primary view
 
-The landing view is not a top ten list. It is a heatmap of the space, where colour means *evidence*, not speed. Grey means nobody has tried this. That inverts the usual incentive: contributors are pulled towards gaps rather than towards re-benchmarking whatever is trending.
+The landing view is not a top ten list. It is a heatmap of the space, where colour means _evidence_, not speed. Grey means nobody has tried this. That inverts the usual incentive: contributors are pulled towards gaps rather than towards re-benchmarking whatever is trending.
 
 ### 3.3 The agent task packet
 

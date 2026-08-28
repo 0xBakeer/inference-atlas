@@ -336,13 +336,13 @@ export class AtlasCompareView extends ViewElement {
                     html`<div class="mb-2">
                       <div class="xs muted">${c}</div>
                       ${withScores.map((x) => {
-                      const v = x.r.scores!.by_category?.[c];
-                      return hbar(
-                        x.r.run_id.slice(0, 8),
-                        v && v.total ? v.correct / v.total : null,
-                        v ? `${v.correct}/${v.total}` : '–',
-                      );
-                    })}
+                        const v = x.r.scores!.by_category?.[c];
+                        return hbar(
+                          x.r.run_id.slice(0, 8),
+                          v && v.total ? v.correct / v.total : null,
+                          v ? `${v.correct}/${v.total}` : '–',
+                        );
+                      })}
                     </div>`,
                 )}
               </div>`

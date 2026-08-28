@@ -46,7 +46,7 @@ uv run atlas-bench submit --dir ../results/vllm/Qwen/Qwen3.8-27B/nvidia-gb10-dgx
 
 ## Attaching to a server with its own model names
 
-`model.id` is an identity; the name a *server* answers to is a separate string. LM Studio
+`model.id` is an identity; the name a _server_ answers to is a separate string. LM Studio
 serves the repo `google/gemma-4-E2B-it` under the key `google/gemma-4-e2b`; vLLM answers to
 whatever `--served-model-name` said. Put that key in **`model.served_model_id`** (the older
 spelling `served_name` is still accepted):
@@ -54,17 +54,23 @@ spelling `served_name` is still accepted):
 ```jsonc
 {
   "packet_version": 1,
-  "engine": { "id": "lmstudio", "version": "0.4.21", "install": { "method": "app" },
-              "base_url": "http://localhost:1234/v1" },
-  "model":  { "id": "google/gemma-4-E2B-it",      // identity: hashed, pathed, validated
-              "quant_id": "mlx-4bit",
-              "hf_id": "google/gemma-4-E2B-it",
-              "served_model_id": "google/gemma-4-e2b",   // transport: the OpenAI `model` field
-              "dtype": "auto" },
+  "engine": {
+    "id": "lmstudio",
+    "version": "0.4.21",
+    "install": { "method": "app" },
+    "base_url": "http://localhost:1234/v1",
+  },
+  "model": {
+    "id": "google/gemma-4-E2B-it", // identity: hashed, pathed, validated
+    "quant_id": "mlx-4bit",
+    "hf_id": "google/gemma-4-E2B-it",
+    "served_model_id": "google/gemma-4-e2b", // transport: the OpenAI `model` field
+    "dtype": "auto",
+  },
   "hardware": { "id": "apple-m2-max-32gb", "count": 1 },
   "args": {},
   "workloads": ["eval-format-v1"],
-  "request": { "temperature": 0, "seed": 42 }
+  "request": { "temperature": 0, "seed": 42 },
 }
 ```
 
@@ -74,16 +80,16 @@ uv run atlas-bench run --spec task.json --base-url http://localhost:1234/v1 --ou
 
 What the harness does with it:
 
-* sends `served_model_id` verbatim as the `model` field, and warns
+- sends `served_model_id` verbatim as the `model` field, and warns
   (`served-model-not-advertised`) if `/v1/models` does not list it — it still sends it, since
   some servers load on demand;
-* without one, it looks for `model.id` in `/v1/models` **case-insensitively**, and only then
+- without one, it looks for `model.id` in `/v1/models` **case-insensitively**, and only then
   falls back to the first advertised model — saying so (`served-model-guessed`) when more
   than one is loaded;
-* records the resolved key, everything `/v1/models` advertised, the base URL and whether the
+- records the resolved key, everything `/v1/models` advertised, the base URL and whether the
   server was already running in `raw.payload.engine_endpoint`, so a run against the wrong
   model can be spotted after the fact;
-* records `serve_command: null` in attach mode. The harness did not start that server and
+- records `serve_command: null` in attach mode. The harness did not start that server and
   does not claim to know how it was started. (`atlas-bench serve` still prints and runs a
   real command, and with the `lms` CLI present the LM Studio adapter can `lms load` the key.)
 
@@ -107,15 +113,15 @@ without an adapter falls back to attach mode.
 
 ## Commands
 
-| command | what it does |
-|---|---|
-| `hwinfo [--json] [--registry-dir DIR]` | captures GPU/CPU/RAM/OS from `nvidia-smi` / `rocm-smi` / `system_profiler` / `lscpu`, computes the sanitized fingerprint, prints the matched `hardware_id` **or `null` plus a ready-to-fill `hardware/<id>.json` draft** |
-| `serve --spec task.json [--engine-adapter-only]` | starts the engine via its adapter and waits for health |
-| `run --spec task.json [--base-url URL] [--out DIR] [--dry-run]` | runs every workload in the packet, writes result files, prints a summary table |
-| `validate FILE...` | local pre-flight: schema, recomputed ids, filename/path, referential integrity, plausibility (a port of `packages/core/src/plausibility.ts`, so passing here means passing `pnpm validate`) |
-| `submit --dir DIR [--draft]` | branch `result/<engine>-<model>-<hardware>-<short>`, commits **only** result files, `gh pr create --label results` |
-| `packet --cell ...` | prints the agent task packet (SPEC §7) for a cell |
-| `wrap raw.json --spec task.json` | wraps `vllm bench serve` / SGLang `bench_serving` JSON into a result file |
+| command                                                         | what it does                                                                                                                                                                                                             |
+| --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `hwinfo [--json] [--registry-dir DIR]`                          | captures GPU/CPU/RAM/OS from `nvidia-smi` / `rocm-smi` / `system_profiler` / `lscpu`, computes the sanitized fingerprint, prints the matched `hardware_id` **or `null` plus a ready-to-fill `hardware/<id>.json` draft** |
+| `serve --spec task.json [--engine-adapter-only]`                | starts the engine via its adapter and waits for health                                                                                                                                                                   |
+| `run --spec task.json [--base-url URL] [--out DIR] [--dry-run]` | runs every workload in the packet, writes result files, prints a summary table                                                                                                                                           |
+| `validate FILE...`                                              | local pre-flight: schema, recomputed ids, filename/path, referential integrity, plausibility (a port of `packages/core/src/plausibility.ts`, so passing here means passing `pnpm validate`)                              |
+| `submit --dir DIR [--draft]`                                    | branch `result/<engine>-<model>-<hardware>-<short>`, commits **only** result files, `gh pr create --label results`                                                                                                       |
+| `packet --cell ...`                                             | prints the agent task packet (SPEC §7) for a cell                                                                                                                                                                        |
+| `wrap raw.json --spec task.json`                                | wraps `vllm bench serve` / SGLang `bench_serving` JSON into a result file                                                                                                                                                |
 
 Useful `run` flags: `--gotcha "text"` (repeatable), `--notes "ambient 22C, box idle"`,
 `--no-telemetry`, `--tokenizer <hf-id>`, `--login <github-login>`.
@@ -130,19 +136,19 @@ directory is, and what the result path is built from.
 
 Consequences you will notice:
 
-* registries nest one level deeper: `models/<owner>/<name>/{model.json,quants/<q>.json}`;
-* result paths do too: `results/<engine>/<owner>/<name>/<hardware>/<run_id>.json`;
-* `model.json.hf_id` must equal `id`, and so must a result's `model.hf_id`. The **weights**
+- registries nest one level deeper: `models/<owner>/<name>/{model.json,quants/<q>.json}`;
+- result paths do too: `results/<engine>/<owner>/<name>/<hardware>/<run_id>.json`;
+- `model.json.hf_id` must equal `id`, and so must a result's `model.hf_id`. The **weights**
   repo is a different thing and lives in the quant record — usually somebody else's account,
   `lmstudio-community/gemma-4-E2B-it-MLX-4bit`. That is what an engine is handed to serve
   (a packet may carry it as `model.quant_hf_id`); serving the base repo when the packet says
   `mlx-4bit` would benchmark different weights than the result claims;
-* two model directories that differ only by case are a validation error — on macOS and
+- two model directories that differ only by case are a validation error — on macOS and
   Windows they are one directory and one of them silently wins;
-* git branches cannot hold a slash, so `submit` uses a **slug** — lowercased, every character
+- git branches cannot hold a slash, so `submit` uses a **slug** — lowercased, every character
   outside `[a-z0-9.-]` replaced by `-` (`Qwen/Qwen3.8-27B` → `qwen-qwen3.8-27b`). The slug is
   used for branch names and nothing else; it is never written into a result file.
-* `--cell` takes the model id as two segments:
+- `--cell` takes the model id as two segments:
   `lmstudio@0.4.21/google/gemma-4-E2B-it/mlx-4bit/apple-m2-max-32gb`.
 
 ## How results are named
@@ -151,11 +157,11 @@ Consequences you will notice:
 results/<engine_id>/<owner>/<name>/<hardware_id>/<run_id>.json
 ```
 
-* `config_id` = `sha256(canonical)[:16]` where *canonical* is the normalized non-default
+- `config_id` = `sha256(canonical)[:16]` where _canonical_ is the normalized non-default
   engine configuration (SPEC §3)
-* `cell_id` = `sha256("model|quant|hardware|count|engine|engine_minor")[:12]`
-* `run_id` = `<config_id>--<workload_id>--<sha256("<login>|<started_at>")[:6]>`
-* the filename is exactly `<run_id>.json` — the validator recomputes all of it
+- `cell_id` = `sha256("model|quant|hardware|count|engine|engine_minor")[:12]`
+- `run_id` = `<config_id>--<workload_id>--<sha256("<login>|<started_at>")[:6]>`
+- the filename is exactly `<run_id>.json` — the validator recomputes all of it
 
 The canonical string is built by `atlas_bench/canonical.py`, a byte-for-byte port of
 `packages/core/src/canonical.ts`: aliases resolved, defaults dropped, values normalized
@@ -173,15 +179,15 @@ tokenizer is never assumed for an arbitrary model.
 
 Metric definitions (also in `atlas_bench/metrics.py`):
 
-| metric | formula |
-|---|---|
-| `output_tok_s` | Σ completion tokens (ok) / wall-clock duration |
-| `total_tok_s` | Σ (prompt + completion) tokens / duration |
-| `req_s` | successful requests / duration |
-| `prefill_tok_s` | Σ input tokens / (Σ TTFT / concurrency) |
-| `ttft_ms` | first content delta − request start |
-| `tpot_ms` | (e2e − ttft) / (completion tokens − 1), per request |
-| `itl_ms` | gaps between consecutive content deltas, pooled |
+| metric                     | formula                                             |
+| -------------------------- | --------------------------------------------------- |
+| `output_tok_s`             | Σ completion tokens (ok) / wall-clock duration      |
+| `total_tok_s`              | Σ (prompt + completion) tokens / duration           |
+| `req_s`                    | successful requests / duration                      |
+| `prefill_tok_s`            | Σ input tokens / (Σ TTFT / concurrency)             |
+| `ttft_ms`                  | first content delta − request start                 |
+| `tpot_ms`                  | (e2e − ttft) / (completion tokens − 1), per request |
+| `itl_ms`                   | gaps between consecutive content deltas, pooled     |
 | `decode_tok_s_per_request` | (completion tokens − 1) / (e2e − ttft), per request |
 
 A request whose whole completion arrived in a single delta reports no `tpot_ms` and no
@@ -200,13 +206,13 @@ host RAM. On macOS `powermetrics` needs root, so unless the harness already runs
 
 ## Workloads
 
-| kind | what it does |
-|---|---|
-| `serving` | fixed concurrency, fixed input/output lengths; `dataset_buckets` filters the prompt lengths |
-| `sweep` | repeats the serving measurement along `concurrency` (or `input_tokens`) and **stops escalating** when `success_rate` drops below the threshold, recording the failure |
-| `prefill` | large input, one output token → `prefill_tok_s` and TTFT; haystack-backed workloads send real documents, not filler |
-| `longctx` | needle-in-a-haystack per (context length, depth); headline metrics = longest fully successful context |
-| `eval` | dataset accuracy → `scores` with `by_category` / `by_difficulty` / `items` |
+| kind      | what it does                                                                                                                                                          |
+| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `serving` | fixed concurrency, fixed input/output lengths; `dataset_buckets` filters the prompt lengths                                                                           |
+| `sweep`   | repeats the serving measurement along `concurrency` (or `input_tokens`) and **stops escalating** when `success_rate` drops below the threshold, recording the failure |
+| `prefill` | large input, one output token → `prefill_tok_s` and TTFT; haystack-backed workloads send real documents, not filler                                                   |
+| `longctx` | needle-in-a-haystack per (context length, depth); headline metrics = longest fully successful context                                                                 |
+| `eval`    | dataset accuracy → `scores` with `by_category` / `by_difficulty` / `items`                                                                                            |
 
 Workload parameters the runners read, beyond the obvious ones:
 `dataset_buckets`, `dataset_categories`, `dataset_target_tokens`, `timeout_s`, `reasoning`
@@ -221,7 +227,7 @@ An eval's output cap is `eval.max_output_tokens`.
 - **`shared_prefix` is sent as a leading system message.** Dropping it turns a prefix-caching
   measurement into a different workload.
 - **Long-context rows carry the question only.** `haystack-v1` and `eval-longctx-v1` store
-  *recipes*; the document is rebuilt with the dataset's own `build.py` and the rebuild is
+  _recipes_; the document is rebuilt with the dataset's own `build.py` and the rebuild is
   checked against the recorded `sha256`. Sending the question alone is not a smaller
   measurement, it is a wrong one.
 - **The row's own `scorer` wins** over the workload's `eval.scorer`, which is only a default —
@@ -235,7 +241,7 @@ An eval's output cap is `eval.max_output_tokens`.
   numbers are still reported.
 - For `kind: eval`, all three names an eval workload's `metrics_required` lists —
   `accuracy`, `avg_latency_ms` and `success_rate` — live in `scores`. `success_rate` is the
-  share of requests that *completed at all*, independent of whether the answers were right,
+  share of requests that _completed at all_, independent of whether the answers were right,
   and it is mirrored in the reduced request-layer `metrics` block. A malformed answer, a
   refusal or a preamble where one word was asked for is a wrong answer (it lowers
   `accuracy`); a timeout, a 5xx or a context overflow is a failed request (it lowers
@@ -276,7 +282,7 @@ agent block filled in. `github_user_id`, `commit` and `pr` are left `null` — C
 
 Rules that the harness enforces rather than trusts:
 
-- it refuses to submit when a *tracked* file outside `results/` has been modified (untracked
+- it refuses to submit when a _tracked_ file outside `results/` has been modified (untracked
   scratch files such as your `task.json`, or a brand-new `hardware/<id>.json`, are fine — the
   commit only ever contains the files passed to `git add`)
 - it refuses to run without a resolvable GitHub login (`run_id` depends on it)
@@ -285,12 +291,12 @@ Rules that the harness enforces rather than trusts:
 
 ## Environment
 
-| variable | effect |
-|---|---|
-| `ATLAS_REPO` | checkout to read registries from and write results into (otherwise discovered by walking up from the cwd, or `--registry-dir`) |
-| `ATLAS_GITHUB_LOGIN` | provenance login when `gh` is not authenticated |
-| `ATLAS_AGENT_NAME`, `ATLAS_AGENT_MODEL` | set `provenance.method` to `agent` and fill the agent block |
-| `HF_HOME` | host path mounted into the vLLM / SGLang / TGI containers |
+| variable                                | effect                                                                                                                         |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `ATLAS_REPO`                            | checkout to read registries from and write results into (otherwise discovered by walking up from the cwd, or `--registry-dir`) |
+| `ATLAS_GITHUB_LOGIN`                    | provenance login when `gh` is not authenticated                                                                                |
+| `ATLAS_AGENT_NAME`, `ATLAS_AGENT_MODEL` | set `provenance.method` to `agent` and fill the agent block                                                                    |
+| `HF_HOME`                               | host path mounted into the vLLM / SGLang / TGI containers                                                                      |
 
 ## Development
 

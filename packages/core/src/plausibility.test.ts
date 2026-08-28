@@ -96,9 +96,9 @@ describe('speculative decoding raises the bound', () => {
   });
 
   it('prefers a measured acceptance rate over the configured draft length', () => {
-    expect(tokensPerForwardPass({ 'dspark-tokens': 5 }, { accepted_tokens_per_step: 2.4 } as never)).toBe(
-      2.4,
-    );
+    expect(
+      tokensPerForwardPass({ 'dspark-tokens': 5 }, { accepted_tokens_per_step: 2.4 } as never),
+    ).toBe(2.4);
   });
 });
 

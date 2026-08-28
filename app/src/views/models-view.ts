@@ -203,7 +203,9 @@ export class AtlasModelsView extends ViewElement {
             <p class="lede mt-2">${m.notes ?? ''}</p>
           </div>
           <div class="head-actions">
-            <a class="btn btn-sm" href=${`#/?rows=quant&cols=hardware&model=${encodeURIComponent(m.id)}`}
+            <a
+              class="btn btn-sm"
+              href=${`#/?rows=quant&cols=hardware&model=${encodeURIComponent(m.id)}`}
               >${icon('grid')} On the atlas</a
             >
             <a class="btn btn-sm" href=${`#/results?model=${encodeURIComponent(m.id)}`}

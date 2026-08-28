@@ -282,15 +282,17 @@ export class AtlasResultsView extends ViewElement {
                               type="checkbox"
                               .checked=${cols.includes(c)}
                               @change=${(e: Event) => {
-                              const on = (e.target as HTMLInputElement).checked;
-                              const keys = COLS.filter((x) =>
-                                x === c ? on : cols.includes(x),
-                              ).map((x) => x.key);
-                              setQuery({
-                                cols:
-                                  keys.join(',') === DEFAULT_COLS.join(',') ? null : keys.join(','),
-                              });
-                            }}
+                                const on = (e.target as HTMLInputElement).checked;
+                                const keys = COLS.filter((x) =>
+                                  x === c ? on : cols.includes(x),
+                                ).map((x) => x.key);
+                                setQuery({
+                                  cols:
+                                    keys.join(',') === DEFAULT_COLS.join(',')
+                                      ? null
+                                      : keys.join(','),
+                                });
+                              }}
                             />
                             ${c.label}</label
                           >`,
@@ -368,19 +370,19 @@ export class AtlasResultsView extends ViewElement {
                         ? nothing
                         : html`<div class="rg-head" style="grid-template-columns:${template}">
                             ${cols.map(
-                          (c) =>
-                            html`<button
-                              type="button"
-                              class="c ${c.num ? 'num' : ''} ${sort.key === c.key ? 'active' : ''}"
-                              style="border:0;background:none"
-                              aria-sort=${sort.key === c.key ? (sort.dir === 'asc' ? 'ascending' : 'descending') : nothing}
-                              title=${c.metric ? `${c.metric.label}${c.metric.unit ? ` (${c.metric.unit})` : ''}` : c.label}
-                              @click=${() => setQuery({ sort: serializeSort(toggleSort(sort, c.key, c.num ? 'desc' : 'asc')) })}
-                            >
-                              ${c.label}${c.metric?.unit ? html`<span class="unit">${c.metric.unit}</span>` : nothing}
-                              ${sortIcon(sort.key === c.key, sort.dir)}
-                            </button>`,
-                        )}
+                              (c) =>
+                                html`<button
+                                  type="button"
+                                  class="c ${c.num ? 'num' : ''} ${sort.key === c.key ? 'active' : ''}"
+                                  style="border:0;background:none"
+                                  aria-sort=${sort.key === c.key ? (sort.dir === 'asc' ? 'ascending' : 'descending') : nothing}
+                                  title=${c.metric ? `${c.metric.label}${c.metric.unit ? ` (${c.metric.unit})` : ''}` : c.label}
+                                  @click=${() => setQuery({ sort: serializeSort(toggleSort(sort, c.key, c.num ? 'desc' : 'asc')) })}
+                                >
+                                  ${c.label}${c.metric?.unit ? html`<span class="unit">${c.metric.unit}</span>` : nothing}
+                                  ${sortIcon(sort.key === c.key, sort.dir)}
+                                </button>`,
+                            )}
                           </div>`
                     }
                     ${

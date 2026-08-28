@@ -107,7 +107,10 @@ export class AtlasEvalsView extends ViewElement {
                   store.index.value.length === 0
                     ? 'The suites are pinned and waiting. Show every registered model/quant — each empty cell opens a ready-made packet.'
                     : 'Loosen the filters or show every registered model/quant.',
-                action: html`<button class="btn btn-primary" @click=${() => setQuery({ all: true })}>
+                action: html`<button
+                  class="btn btn-primary"
+                  @click=${() => setQuery({ all: true })}
+                >
                   Show every registered model/quant
                 </button>`,
               })
@@ -132,45 +135,45 @@ export class AtlasEvalsView extends ViewElement {
                             ><span class="muted">/${p.quant}</span>
                           </td>
                           ${suites.map((s) => {
-                        const b = best(p.model, p.quant, s.id);
-                        if (!b) {
-                          const sel = resolveSelection(
-                            { engine, model: p.model, quant: p.quant, hardware },
-                            { requireAll: true },
-                          );
-                          return html`<td class="center" style="padding:2px 6px">
-                            ${
-                              sel.engine && sel.hardware
-                                ? addButton(
-                                    {
-                                      engine_id: sel.engine,
-                                      engine_version: sel.version,
-                                      model_id: p.model,
-                                      quant_id: p.quant,
-                                      hardware_id: sel.hardware,
-                                      workload_ids: [s.id],
-                                    },
-                                    {
-                                      label: '',
-                                      size: 'xs',
-                                      title: `Add ${s.id} for ${p.model}/${p.quant}`,
-                                    },
-                                  )
-                                : html`<span class="faint">–</span>`
+                            const b = best(p.model, p.quant, s.id);
+                            if (!b) {
+                              const sel = resolveSelection(
+                                { engine, model: p.model, quant: p.quant, hardware },
+                                { requireAll: true },
+                              );
+                              return html`<td class="center" style="padding:2px 6px">
+                                ${
+                                  sel.engine && sel.hardware
+                                    ? addButton(
+                                        {
+                                          engine_id: sel.engine,
+                                          engine_version: sel.version,
+                                          model_id: p.model,
+                                          quant_id: p.quant,
+                                          hardware_id: sel.hardware,
+                                          workload_ids: [s.id],
+                                        },
+                                        {
+                                          label: '',
+                                          size: 'xs',
+                                          title: `Add ${s.id} for ${p.model}/${p.quant}`,
+                                        },
+                                      )
+                                    : html`<span class="faint">–</span>`
+                                }
+                              </td>`;
                             }
-                          </td>`;
-                        }
-                        const step = seqStep(b.metrics.accuracy);
-                        const dark = step !== null && step >= 4;
-                        return html`<td
-                          class="center num clickable"
-                          style="background:var(--seq-${step});color:${dark ? 'var(--surface)' : 'var(--ink)'};cursor:pointer"
-                          title=${`${b.engine.id} ${b.engine.version} on ${b.hardware.id} — click to open`}
-                          @click=${() => navigate(href('run', b.run_id))}
-                        >
-                          ${fmtPct(b.metrics.accuracy, 1)}
-                        </td>`;
-                      })}
+                            const step = seqStep(b.metrics.accuracy);
+                            const dark = step !== null && step >= 4;
+                            return html`<td
+                              class="center num clickable"
+                              style="background:var(--seq-${step});color:${dark ? 'var(--surface)' : 'var(--ink)'};cursor:pointer"
+                              title=${`${b.engine.id} ${b.engine.version} on ${b.hardware.id} — click to open`}
+                              @click=${() => navigate(href('run', b.run_id))}
+                            >
+                              ${fmtPct(b.metrics.accuracy, 1)}
+                            </td>`;
+                          })}
                           <td class="num">
                             ${sc < 0 ? html`<span class="null">–</span>` : fmtPct(sc, 1)}
                           </td>

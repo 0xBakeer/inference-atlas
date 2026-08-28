@@ -122,7 +122,9 @@ export class AtlasApp extends AtlasElement {
       case 'parallelism':
         return html`<atlas-parallelism-view></atlas-parallelism-view>`;
       case 'models':
-        return html`<atlas-models-view .itemId=${modelIdFromSegments(r.segments)}></atlas-models-view>`;
+        return html`<atlas-models-view
+          .itemId=${modelIdFromSegments(r.segments)}
+        ></atlas-models-view>`;
       case 'hardware':
         return html`<atlas-hardware-view .itemId=${b ?? null}></atlas-hardware-view>`;
       case 'engines':
