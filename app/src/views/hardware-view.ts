@@ -352,14 +352,14 @@ export class AtlasHardwareView extends ViewElement {
             ${
               bw
                 ? html`At ${bw} GB/s, a single stream cannot decode faster than its weights can be
-                  read once per token. <b>Read / token</b> is what a token actually costs, which is
-                  below the checkpoint size whenever a model activates only part of itself — an MoE
-                  routing to a few experts, or a dense model like gemma-4-E2B whose Per-Layer
-                  Embeddings are looked up rather than multiplied. The ceiling is bandwidth over
-                  that figure. A measurement above it is marked: decoding more than one token per
-                  pass (speculative decoding) is the legitimate way past, and the other explanation
-                  is that the model's active-parameter figure is wrong. Measured numbers are the
-                  best single-stream decode recorded on this device.`
+                    read once per token. <b>Read / token</b> is what a token actually costs, which
+                    is below the checkpoint size whenever a model activates only part of itself — an
+                    MoE routing to a few experts, or a dense model like gemma-4-E2B whose Per-Layer
+                    Embeddings are looked up rather than multiplied. The ceiling is bandwidth over
+                    that figure. A measurement above it is marked: decoding more than one token per
+                    pass (speculative decoding) is the legitimate way past, and the other
+                    explanation is that the model's active-parameter figure is wrong. Measured
+                    numbers are the best single-stream decode recorded on this device.`
                 : 'No bandwidth figure is registered for this device, so no ceiling can be computed — a pull request with the vendor figure would fix that.'
             }
           </p>
@@ -388,7 +388,8 @@ export class AtlasHardwareView extends ViewElement {
                             </td>
                             <td class="num">${fmtNum(x.checkpoint, 1)} GB</td>
                             <td class="num">
-                              ${fmtNum(x.weight, 1)} GB${
+                              ${fmtNum(x.weight, 1)}
+                              GB${
                                 x.weight < x.checkpoint * 0.995
                                   ? html`<span class="muted small"> active</span>`
                                   : nothing

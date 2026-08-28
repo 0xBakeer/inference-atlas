@@ -15,7 +15,7 @@ disagree, this file wins.
    someone else fails validation. This is what makes merge conflicts structurally
    impossible and makes every contributor the owner of their own numbers.
 3. **Provenance is mandatory and verifiable.** Each result records the GitHub login
-   (numeric user id resolved in CI), and the build step derives the *adding commit hash*
+   (numeric user id resolved in CI), and the build step derives the _adding commit hash_
    and PR number from `git log` so they cannot be faked.
 4. **Everything is configurable through data.** Hardware, engines, engine versions and
    flags, models, quantizations, workloads, datasets, eval suites, scoring weights, site
@@ -73,14 +73,14 @@ TypeScript strict, Vitest, ESLint flat config (light), Prettier. Python side use
 
 Top-level scripts (root `package.json`):
 
-| script | does |
-|---|---|
-| `pnpm validate` | validates every JSON file in the registries + results against schemas, recomputes ids, runs plausibility + ownership checks (same code CI runs) |
-| `pnpm build:data` | compiles registries + results into `app/public/data/*` (index, shards, contributors, coverage, manifest) |
-| `pnpm dev` | `build:data` then Vite dev server for `app/` |
-| `pnpm build` | `build:data` + Vite production build into `app/dist` |
-| `pnpm test` | vitest across packages + tools + app unit tests |
-| `pnpm packet -- <spec>` | prints an agent packet for a cell (same generator the app uses) |
+| script                  | does                                                                                                                                            |
+| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm validate`         | validates every JSON file in the registries + results against schemas, recomputes ids, runs plausibility + ownership checks (same code CI runs) |
+| `pnpm build:data`       | compiles registries + results into `app/public/data/*` (index, shards, contributors, coverage, manifest)                                        |
+| `pnpm dev`              | `build:data` then Vite dev server for `app/`                                                                                                    |
+| `pnpm build`            | `build:data` + Vite production build into `app/dist`                                                                                            |
+| `pnpm test`             | vitest across packages + tools + app unit tests                                                                                                 |
+| `pnpm packet -- <spec>` | prints an agent packet for a cell (same generator the app uses)                                                                                 |
 
 ## 2. Identifiers
 
@@ -88,17 +88,17 @@ All ids except `model_id` are lowercase kebab-case `[a-z0-9][a-z0-9.-]*`. `model
 Hugging Face repo id verbatim (see below). Registry ids are chosen by humans and stable forever
 (renaming = new id + `aliases`).
 
-| id | where | rule |
-|---|---|---|
-| `hardware_id` | `hardware/<id>.json` | e.g. `nvidia-rtx-4090`, `nvidia-gb10-dgx-spark`, `apple-m2-max-32gb`, `apple-m3-ultra-96gb` (Apple SoC ids include memory because it is the binding constraint) |
-| `engine_id` | `engines/<id>/` | `vllm`, `sglang`, `llamacpp`, `ollama`, `mlx-lm`, `tensorrt-llm`, `tgi`, `lmstudio`, `exllamav3` |
-| `model_id` | `models/<owner>/<name>/` | **The Hugging Face repo id, verbatim and case-preserved**: `Qwen/Qwen3.8-27B`, `google/gemma-4-E2B-it`, `nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16`. Pattern `^[A-Za-z0-9][A-Za-z0-9._-]*/[A-Za-z0-9][A-Za-z0-9._-]*$` (exactly one `/`). A fine-tune or re-upload by somebody else is a different HF repo and therefore a different model. `model.json.hf_id` must equal `id`. Directory path = id (two levels). The validator rejects two model dirs that differ only by case. |
-| `quant_id` | `models/<model-id>/quants/<quant-id>.json` | `bf16`, `fp8`, `nvfp4`, `awq-int4`, `gptq-int4`, `gguf-q4-k-m`, `gguf-q5-k-m`, `gguf-q8-0`, `mlx-4bit`, `mlx-8bit`, `exl3-4.0bpw`. Unique within the model; the quant record's `hf_id` is the full HF repo that holds the weights (official or community, e.g. `lmstudio-community/gemma-4-E2B-it-MLX-4bit`). Full ref = `<model-id>/<quant-id>`. |
-| `workload_id` | `workloads/<id>.json` | versioned suffix mandatory: `serve-chat-c8-i1k-o256-v1`, `sweep-parallel-1-32-v1`, `eval-math-v1`, `eval-code-v1`, `eval-vision-v1`, `longctx-needle-32k-v1`, `prefill-32k-v1`. Immutable once published. |
-| `cell_id` | computed | `sha256("model_id|quant_id|hardware_id|hw_count|engine_id|engine_minor")[:12]` where `engine_minor` = first two semver components (`0.27`). One square on the coverage map. |
-| `config_id` | computed | canonical non-default engine args (see §3) → `sha256(canonical)[:16]` |
-| `run_id` | computed | `<config_id>--<workload_id>--<sha256(github_login + "|" + started_at)[:6]>` |
-| result filename | `results/<engine>/<owner>/<name>/<hardware>/<run_id>.json` | exactly `run_id + ".json"`; `<owner>/<name>` is the model_id |
+| id              | where                                                      | rule                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| --------------- | ---------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `hardware_id`   | `hardware/<id>.json`                                       | e.g. `nvidia-rtx-4090`, `nvidia-gb10-dgx-spark`, `apple-m2-max-32gb`, `apple-m3-ultra-96gb` (Apple SoC ids include memory because it is the binding constraint)                                                                                                                                                                                                                                                                                                                          |
+| `engine_id`     | `engines/<id>/`                                            | `vllm`, `sglang`, `llamacpp`, `ollama`, `mlx-lm`, `tensorrt-llm`, `tgi`, `lmstudio`, `exllamav3`                                                                                                                                                                                                                                                                                                                                                                                         |
+| `model_id`      | `models/<owner>/<name>/`                                   | **The Hugging Face repo id, verbatim and case-preserved**: `Qwen/Qwen3.8-27B`, `google/gemma-4-E2B-it`, `nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16`. Pattern `^[A-Za-z0-9][A-Za-z0-9._-]*/[A-Za-z0-9][A-Za-z0-9._-]*$` (exactly one `/`). A fine-tune or re-upload by somebody else is a different HF repo and therefore a different model. `model.json.hf_id` must equal `id`. Directory path = id (two levels). The validator rejects two model dirs that differ only by case. |
+| `quant_id`      | `models/<model-id>/quants/<quant-id>.json`                 | `bf16`, `fp8`, `nvfp4`, `awq-int4`, `gptq-int4`, `gguf-q4-k-m`, `gguf-q5-k-m`, `gguf-q8-0`, `mlx-4bit`, `mlx-8bit`, `exl3-4.0bpw`. Unique within the model; the quant record's `hf_id` is the full HF repo that holds the weights (official or community, e.g. `lmstudio-community/gemma-4-E2B-it-MLX-4bit`). Full ref = `<model-id>/<quant-id>`.                                                                                                                                        |
+| `workload_id`   | `workloads/<id>.json`                                      | versioned suffix mandatory: `serve-chat-c8-i1k-o256-v1`, `sweep-parallel-1-32-v1`, `eval-math-v1`, `eval-code-v1`, `eval-vision-v1`, `longctx-needle-32k-v1`, `prefill-32k-v1`. Immutable once published.                                                                                                                                                                                                                                                                                |
+| `cell_id`       | computed                                                   | `sha256("model_id                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | quant_id              | hardware_id | hw_count | engine_id | engine_minor")[:12]`where`engine_minor` = first two semver components (`0.27`). One square on the coverage map. |
+| `config_id`     | computed                                                   | canonical non-default engine args (see §3) → `sha256(canonical)[:16]`                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| `run_id`        | computed                                                   | `<config_id>--<workload_id>--<sha256(github_login + "                                                                                                                                                                                                                                                                                                                                                                                                                                    | " + started_at)[:6]>` |
+| result filename | `results/<engine>/<owner>/<name>/<hardware>/<run_id>.json` | exactly `run_id + ".json"`; `<owner>/<name>` is the model_id                                                                                                                                                                                                                                                                                                                                                                                                                             |
 
 `hw_count` = number of devices (1 for single GPU / one Mac). Multi-node is out of scope v1.
 
@@ -129,54 +129,100 @@ recomputes it and fails on mismatch.
 ## 4. Data shapes (summaries — schemas are authoritative)
 
 ### hardware/<id>.json
+
 ```jsonc
 {
   "schema_version": 1,
   "id": "nvidia-gb10-dgx-spark",
   "name": "NVIDIA DGX Spark (GB10)",
   "vendor": "nvidia",
-  "kind": "soc",                       // gpu | soc | cpu | accelerator
+  "kind": "soc", // gpu | soc | cpu | accelerator
   "aliases": ["asus-ascent-gx10", "gb10"],
-  "memory_gb": 128, "memory_type": "LPDDR5x", "memory_bandwidth_gbs": 273,
-  "compute": { "arch": "blackwell", "sm": "12.1", "fp16_tflops": 250, "fp8_tflops": 500, "fp4_tflops": 1000 },
-  "tdp_w": 140, "release_year": 2025, "msrp_usd": 3999, "typical_cloud_usd_per_h": null,
-  "form_factor": "desktop", "notes": "...",
-  "detect": {                          // how the harness maps a machine to this id, no guessing
-    "nvidia_smi_name": ["NVIDIA GB10"],
-    "apple_chip": [], "cpu_model": [], "lspci": []
+  "memory_gb": 128,
+  "memory_type": "LPDDR5x",
+  "memory_bandwidth_gbs": 273,
+  "compute": {
+    "arch": "blackwell",
+    "sm": "12.1",
+    "fp16_tflops": 250,
+    "fp8_tflops": 500,
+    "fp4_tflops": 1000,
   },
-  "links": { "vendor": "...", "wiki": "..." }
+  "tdp_w": 140,
+  "release_year": 2025,
+  "msrp_usd": 3999,
+  "typical_cloud_usd_per_h": null,
+  "form_factor": "desktop",
+  "notes": "...",
+  "detect": {
+    // how the harness maps a machine to this id, no guessing
+    "nvidia_smi_name": ["NVIDIA GB10"],
+    "apple_chip": [],
+    "cpu_model": [],
+    "lspci": [],
+  },
+  "links": { "vendor": "...", "wiki": "..." },
 }
 ```
 
 ### engines/<id>/meta.json
+
 ```jsonc
 {
   "schema_version": 1,
-  "id": "vllm", "name": "vLLM", "repo": "https://github.com/vllm-project/vllm", "docs": "...",
-  "api": "openai",                     // openai | ollama | custom — what the harness talks to
+  "id": "vllm",
+  "name": "vLLM",
+  "repo": "https://github.com/vllm-project/vllm",
+  "docs": "...",
+  "api": "openai", // openai | ollama | custom — what the harness talks to
   "default_port": 8000,
-  "platforms": ["linux-cuda", "linux-rocm"],       // + macos-metal, linux-cpu
-  "quant_formats": ["bf16","fp8","nvfp4","awq-int4","gptq-int4","compressed-tensors","bitsandbytes","gguf"],
-  "install": [ { "method": "docker", "image": "vllm/vllm-openai:v{version}", "arch": ["x86_64","aarch64"] },
-               { "method": "pip", "package": "vllm=={version}" } ],
-  "serve": { "command_template": "vllm serve {model_ref} {flags}", "model_ref": "hf_id",
-             "flag_style": "--{name} {value}", "bool_style": "--{name}" },
+  "platforms": ["linux-cuda", "linux-rocm"], // + macos-metal, linux-cpu
+  "quant_formats": [
+    "bf16",
+    "fp8",
+    "nvfp4",
+    "awq-int4",
+    "gptq-int4",
+    "compressed-tensors",
+    "bitsandbytes",
+    "gguf",
+  ],
+  "install": [
+    { "method": "docker", "image": "vllm/vllm-openai:v{version}", "arch": ["x86_64", "aarch64"] },
+    { "method": "pip", "package": "vllm=={version}" },
+  ],
+  "serve": {
+    "command_template": "vllm serve {model_ref} {flags}",
+    "model_ref": "hf_id",
+    "flag_style": "--{name} {value}",
+    "bool_style": "--{name}",
+  },
   "health": { "path": "/health", "models_path": "/v1/models" },
-  "bench_harness": "atlas-bench",      // we always use our harness; engine-native harness optional
-  "drop_params": ["model","host","port","api-key","served-model-name","download-dir","revision","hf-token"],
+  "bench_harness": "atlas-bench", // we always use our harness; engine-native harness optional
+  "drop_params": [
+    "model",
+    "host",
+    "port",
+    "api-key",
+    "served-model-name",
+    "download-dir",
+    "revision",
+    "hf-token",
+  ],
   "param_aliases": { "tp": "tensor-parallel-size", "pp": "pipeline-parallel-size" },
   "version_source": { "kind": "github-releases", "tag_prefix": "v" },
-  "versions_available": ["0.26.1", "0.27.1"]        // must match files in versions/
+  "versions_available": ["0.26.1", "0.27.1"], // must match files in versions/
 }
 ```
 
 ### engines/<id>/versions/<version>.json
+
 Same as DESIGN §6.1 (`params[]` with name, type, default, choices, range, help, aliases,
 group, impact). `overlay.json` = `{ "params": { "<name>": { "group": "...", "impact": "high|medium|low" } } }`
 merged at build time.
 
 ### models/<owner>/<name>/model.json
+
 ```jsonc
 { "schema_version": 1, "id": "Qwen/Qwen3.8-27B", "name": "Qwen3.8-27B", "hf_id": "Qwen/Qwen3.8-27B",
   "family": "qwen3.8", "vendor": "alibaba", "params_b": 27, "active_params_b": 27, "architecture": "Qwen3_5ForConditionalGeneration",
@@ -185,38 +231,96 @@ merged at build time.
 ```
 
 ### models/<owner>/<name>/quants/<quant-id>.json
+
 ```jsonc
-{ "schema_version": 1, "id": "fp8", "model_id": "Qwen/Qwen3.8-27B", "format": "fp8", "bits": 8,
-  "hf_id": "Qwen/Qwen3.8-27B-FP8", "revision": null, "files": [], "size_gb": 28.5,
-  "engines": ["vllm","sglang"], "source": "official", "notes": "" }
+{
+  "schema_version": 1,
+  "id": "fp8",
+  "model_id": "Qwen/Qwen3.8-27B",
+  "format": "fp8",
+  "bits": 8,
+  "hf_id": "Qwen/Qwen3.8-27B-FP8",
+  "revision": null,
+  "files": [],
+  "size_gb": 28.5,
+  "engines": ["vllm", "sglang"],
+  "source": "official",
+  "notes": "",
+}
 ```
+
 GGUF quants: `"files": ["Qwen3.8-27B-Q5_K_M.gguf"]`, `"engines": ["llamacpp","ollama","lmstudio"]`,
 `"ollama_tag": "qwen3.8:27b-q5_K_M"`.
 
 ### workloads/<id>.json
+
 ```jsonc
-{ "schema_version": 1, "id": "serve-chat-c8-i1k-o256-v1", "name": "...", "kind": "serving",
+{
+  "schema_version": 1,
+  "id": "serve-chat-c8-i1k-o256-v1",
+  "name": "...",
+  "kind": "serving",
   // serving | sweep | prefill | longctx | eval
-  "description": "...", "dataset_id": "prompts-mixed-v1",
-  "params": { "concurrency": 8, "num_requests": 200, "input_tokens": 1024, "output_tokens": 256,
-              "seed": 42, "warmup_requests": 10, "temperature": 0, "repeat": 3 },
-  "sweep": null,                                    // sweep kind: { "concurrency": [1,2,4,8,16,32] }
-  "eval": null,                                     // eval kind: { "suite": "math", "scorer": "exact|mc|code-exec|json|judge|contains|needle", "pass_threshold": ... }
-  "metrics_required": ["ttft_ms","tpot_ms","output_tok_s","prefill_tok_s","success_rate"],
-  "immutable": true, "created": "2026-08-23", "supersedes": null }
+  "description": "...",
+  "dataset_id": "prompts-mixed-v1",
+  "params": {
+    "concurrency": 8,
+    "num_requests": 200,
+    "input_tokens": 1024,
+    "output_tokens": 256,
+    "seed": 42,
+    "warmup_requests": 10,
+    "temperature": 0,
+    "repeat": 3,
+  },
+  "sweep": null, // sweep kind: { "concurrency": [1,2,4,8,16,32] }
+  "eval": null, // eval kind: { "suite": "math", "scorer": "exact|mc|code-exec|json|judge|contains|needle", "pass_threshold": ... }
+  "metrics_required": ["ttft_ms", "tpot_ms", "output_tok_s", "prefill_tok_s", "success_rate"],
+  "immutable": true,
+  "created": "2026-08-23",
+  "supersedes": null,
+}
 ```
 
 ### datasets/<id>/dataset.json
+
 ```jsonc
-{ "schema_version": 1, "id": "prompts-mixed-v1", "name": "...", "kind": "prompts",  // prompts | eval | images | haystack
-  "licence": "MIT", "files": ["prompts.jsonl"], "count": 600,
-  "topics": ["code","math","science","history","law","medicine","creative","business","multilingual","everyday"],
-  "length_buckets": { "xs": [16,64], "s": [65,256], "m": [257,1024], "l": [1025,4096], "xl": [4097,16384], "xxl": [16385,65536] },
-  "schema": { "fields": ["id","topic","bucket","approx_tokens","messages"] } }
+{
+  "schema_version": 1,
+  "id": "prompts-mixed-v1",
+  "name": "...",
+  "kind": "prompts", // prompts | eval | images | haystack
+  "licence": "MIT",
+  "files": ["prompts.jsonl"],
+  "count": 600,
+  "topics": [
+    "code",
+    "math",
+    "science",
+    "history",
+    "law",
+    "medicine",
+    "creative",
+    "business",
+    "multilingual",
+    "everyday",
+  ],
+  "length_buckets": {
+    "xs": [16, 64],
+    "s": [65, 256],
+    "m": [257, 1024],
+    "l": [1025, 4096],
+    "xl": [4097, 16384],
+    "xxl": [16385, 65536],
+  },
+  "schema": { "fields": ["id", "topic", "bucket", "approx_tokens", "messages"] },
+}
 ```
+
 Eval rows: `{ "id", "category", "difficulty", "prompt"|"messages", "answer", "scorer", "choices"?, "tests"?, "image"? }`.
 
 ### results/…/<run_id>.json (one run = one config × one workload)
+
 ```jsonc
 {
   "schema_version": 1,
@@ -277,9 +381,10 @@ aggregates). Per-item eval results keep at most `predicted` truncated to 500 cha
 ## 5. Ownership & provenance enforcement (validate.yml + `tools/validate`)
 
 On every PR:
+
 1. Schema-validate every changed JSON file (ajv 2020-12).
 2. Recompute `config_id`, `cell_id`, `run_id`, `args_canonical`; filename must equal `run_id.json`; path must match `results/<engine>/<owner>/<name>/<hardware>/` where `<owner>/<name>` is the model_id verbatim.
-3. **Ownership:** for each changed file under `results/`: `provenance.github_login` must equal the PR author login (`github.event.pull_request.user.login`), both for added and modified files, and for a modified file the *previous* version's login must also equal the author. Deleting another person's file is rejected. (Maintainers can bypass with label `maintainer-override`.)
+3. **Ownership:** for each changed file under `results/`: `provenance.github_login` must equal the PR author login (`github.event.pull_request.user.login`), both for added and modified files, and for a modified file the _previous_ version's login must also equal the author. Deleting another person's file is rejected. (Maintainers can bypass with label `maintainer-override`.)
 4. Referential integrity: engine/model/quant/hardware/workload ids must exist; `quant.engines` must include the engine; engine version file exists (warning otherwise).
 5. Plausibility: `output_tok_s_per_request <= memory_bandwidth_gbs / weight_gb * 1.5` (MoE uses active weights), `vram_peak_gb <= memory_gb`, non-negative latencies, `success_rate ∈ [0,1]`, `requests_ok + requests_failed == requests_total`.
 6. Duplicate `run_id` → fail. Same `cell_id+config_id+workload_id` with metric deviation > 25 % from the median of existing → warning + `needs-review` label comment.
@@ -303,13 +408,14 @@ engines/<id>/<version>.json     param schemas with overlay merged
 runs/<engine>/<owner>/<name>/<hardware>/<run_id>.json   full result files (copied, with stamped provenance)
 gaps.json            ranked list of untested/wanted cells (registry × workload cross product scored by site.config wanted weights + requests)
 ```
+
 The app fetches `manifest.json` first, then `registry.json` + `index.json` + `coverage.json`;
 full runs are fetched lazily per run. Base path = Vite `base` from env `VITE_BASE` (default `/`).
 
 ## 7. The "Add measurement" packet (app + `tools/packet`)
 
 Every gap (cell × workload, or "new hardware"/"new model"/"new engine") has an **Add** button →
-modal with tabs: *Agent prompt (Markdown)*, *Packet (JSON)*, *Shell*, *Issue*. The Markdown
+modal with tabs: _Agent prompt (Markdown)_, _Packet (JSON)_, _Shell_, _Issue_. The Markdown
 prompt is self-contained and instructs the agent to:
 
 1. Clone `https://github.com/<owner>/<repo>` (from `site/config.json.repo`), `cd`, read `AGENTS.md`.
@@ -373,7 +479,7 @@ or where reality disagreed with it. Each one is binding until superseded here.
 
 2. **`additionalProperties: false` everywhere except `dataset.schema.json`.** Typos should
    fail, so every top-level record and every `metrics` / `provenance` / `verification` block
-   is closed. Dataset records are the exception: each dataset *kind* carries its own metadata
+   is closed. Dataset records are the exception: each dataset _kind_ carries its own metadata
    (haystack depths and target token counts, prefix-group structure, per-topic counts,
    generator seeds) and enumerating them would mean a schema change per dataset. The dataset
    contract is its required fields; the rest is documentation. `dataset.notes` additionally
@@ -382,7 +488,7 @@ or where reality disagreed with it. Each one is binding until superseded here.
 3. **Fingerprint steps 2 and 3 are fused.** §3 lists "drop defaults" before "normalize
    values". Comparing raw values would make `"0.90"` differ from a default of `0.9` and
    `"True"` differ from a default of `true`. So the value and the default are both normalized
-   with the same rules and the resulting *strings* are compared. This can only merge
+   with the same rules and the resulting _strings_ are compared. This can only merge
    configurations that really are identical.
 
 4. **Value normalization is typed by the version file.** `"1"` folds to `true` only when the
@@ -396,7 +502,7 @@ or where reality disagreed with it. Each one is binding until superseded here.
    `mem-fraction-static`, `block-size`) carry `default: null` in the version files. A null
    default never matches, so an explicitly passed value always survives into the fingerprint.
    That can split two configurations that were in fact identical; it can never merge two that
-   were not, which is the safe direction. A `null` *value* in `args`, by contrast, means the
+   were not, which is the safe direction. A `null` _value_ in `args`, by contrast, means the
    flag was not passed and is dropped.
 
 6. **`resolved` includes the pseudo-params.** `canonicalizeArgs` returns exactly the pairs
@@ -420,7 +526,7 @@ or where reality disagreed with it. Each one is binding until superseded here.
    one pass over the weights. The bound is therefore multiplied by the tokens per forward
    pass — the measured `metrics.accepted_tokens_per_step` if present, otherwise the
    configured draft length + 1, otherwise a generous 4 when a speculative method is
-   configured without a count. The separate low-efficiency *warning* is measured against the
+   configured without a count. The separate low-efficiency _warning_ is measured against the
    plain bound, because speculative decoding changes what is possible, not what "leaving
    bandwidth on the table" means.
 
@@ -434,7 +540,7 @@ or where reality disagreed with it. Each one is binding until superseded here.
 11. **Coverage level precedence: disputed > stale > reproduced > single.** A wrong number is
     worse than an old one, and a cell reproduced on an engine three minors ago tells you
     nothing about today. Disputes are only computed within one `config_id` + `workload_id`
-    group and only across two or more distinct logins — different flags are *supposed* to give
+    group and only across two or more distinct logins — different flags are _supposed_ to give
     different numbers, and one person running something twice is not a dispute. Thresholds
     come from `site.coverage` (`stale_minors_behind` 2, `disputed_deviation_pct` 25,
     `reproduced_min_logins` 2). `computeCoverage` returns only cells that have runs; a cell id
@@ -473,7 +579,7 @@ or where reality disagreed with it. Each one is binding until superseded here.
 16. **Golden vector file shape.** `schemas/fixtures/fingerprint-vectors.json` and
     `id-vectors.json` are objects, not bare arrays: `{ "$comment", "spec", "vectors": [...] }`
     for fingerprints and `{ "$comment", "spec", "cell_id": [...], "run_id": [...],
-    "engine_minor": [...], "result_path": [...] }` for ids. Each fingerprint vector is
+"engine_minor": [...], "result_path": [...] }` for ids. Each fingerprint vector is
     `{ name, description?, equivalence_group?, input, expected }`, where `input` is exactly
     the argument object `canonicalizeArgs` takes (snake_case, so TypeScript and Python can eat
     the fixture unchanged) and vectors sharing an `equivalence_group` must produce the same

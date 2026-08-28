@@ -206,24 +206,24 @@ export class AtlasTimelineView extends ViewElement {
                             ${series.map((s) => html`<td class="num" data-label=${s.label}>${s.values[i] === null ? html`<span class="null">–</span>` : metric.fmt(s.values[i])}</td>`)}
                             <td class="right" data-label="">
                               ${
-                              rows.some((r) => r.engine.version === v)
-                                ? html`<a
-                                    class="btn btn-xs"
-                                    href=${`#/results?engine=${sel.engine}&version=${v}&model=${encodeURIComponent(sel.model ?? '')}&quant=${sel.quant}&hardware=${sel.hardware}`}
-                                    >runs ${icon('arrowRight')}</a
-                                  >`
-                                : addButton(
-                                    {
-                                      engine_id: sel.engine,
-                                      engine_version: v,
-                                      model_id: sel.model,
-                                      quant_id: sel.quant,
-                                      hardware_id: sel.hardware,
-                                      workload_ids: workloads,
-                                    },
-                                    { label: 'Add', size: 'xs' },
-                                  )
-                            }
+                                rows.some((r) => r.engine.version === v)
+                                  ? html`<a
+                                      class="btn btn-xs"
+                                      href=${`#/results?engine=${sel.engine}&version=${v}&model=${encodeURIComponent(sel.model ?? '')}&quant=${sel.quant}&hardware=${sel.hardware}`}
+                                      >runs ${icon('arrowRight')}</a
+                                    >`
+                                  : addButton(
+                                      {
+                                        engine_id: sel.engine,
+                                        engine_version: v,
+                                        model_id: sel.model,
+                                        quant_id: sel.quant,
+                                        hardware_id: sel.hardware,
+                                        workload_ids: workloads,
+                                      },
+                                      { label: 'Add', size: 'xs' },
+                                    )
+                              }
                             </td>
                           </tr>`,
                       )}

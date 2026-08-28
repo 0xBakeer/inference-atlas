@@ -7,7 +7,7 @@ shape summarised in SPEC §4.
 A result is only comparable to another result when both name the same
 `workload_id`. That is the whole reason this directory exists: the model, the
 quantization, the engine and the flags are recorded in the result, and the
-*question that was asked of them* is recorded here.
+_question that was asked of them_ is recorded here.
 
 ## Immutability
 
@@ -37,13 +37,13 @@ tokens).
 
 ## Kinds
 
-| kind | what it measures | runner | required shape |
-|---|---|---|---|
-| `serving` | steady-state throughput and latency at a fixed concurrency | `serving` | `sweep` and `eval` are null |
-| `sweep` | one axis walked, a metric block per point | `sweep` | `sweep` has exactly one axis |
-| `prefill` | time to first token on a long input, almost no decode | `prefill` | tiny `output_tokens` |
-| `longctx` | behaviour as the prompt grows, with a retrieval check | `longctx` | may carry a `sweep` and/or an `eval` block |
-| `eval` | capability, scored per item | `eval` | `eval` and `dataset_id` required |
+| kind      | what it measures                                           | runner    | required shape                             |
+| --------- | ---------------------------------------------------------- | --------- | ------------------------------------------ |
+| `serving` | steady-state throughput and latency at a fixed concurrency | `serving` | `sweep` and `eval` are null                |
+| `sweep`   | one axis walked, a metric block per point                  | `sweep`   | `sweep` has exactly one axis               |
+| `prefill` | time to first token on a long input, almost no decode      | `prefill` | tiny `output_tokens`                       |
+| `longctx` | behaviour as the prompt grows, with a retrieval check      | `longctx` | may carry a `sweep` and/or an `eval` block |
+| `eval`    | capability, scored per item                                | `eval`    | `eval` and `dataset_id` required           |
 
 `metrics_required` lists the metric paths a result must carry non-null. Dotted
 paths address into a distribution (`ttft_ms.p50`). For `kind: eval` the three
@@ -54,35 +54,35 @@ were right.
 
 ## All workloads
 
-| id | kind | dataset | shape |
-|---|---|---|---|
-| `serve-single-i256-o256-v1` | serving | `prompts-mixed-v1` | c1, n=50, in≈256, out=256 |
-| `serve-short-c16-i128-o128-v1` | serving | `prompts-mixed-v1` | c16, n=320, in≈128, out=128 |
-| `serve-chat-c8-i1k-o256-v1` | serving | `prompts-mixed-v1` | c8, n=200, in≈1k, out=256 |
-| `serve-chat-c32-i1k-o256-v1` | serving | `prompts-mixed-v1` | c32, n=400, in≈1k, out=256 |
-| `serve-chat-c64-i1k-o256-v1` | serving | `prompts-mixed-v1` | c64, n=640, in≈1k, out=256 |
-| `serve-long-c4-i8k-o512-v1` | serving | `prompts-mixed-v1` | c4, n=40, in≈8k, out=512 |
-| `serve-code-c8-i2k-o1k-v1` | serving | `prompts-code-v1` | c8, n=160, in≈2k, out=1k |
-| `serve-prefix-c16-v1` | serving | `prompts-shared-prefix-v1` | c16, n=200, grouped by prefix |
-| `sweep-parallel-1-32-i512-o256-v1` | sweep | `prompts-mixed-v1` | concurrency 1,2,4,8,16,32 |
-| `sweep-parallel-1-64-i1k-o256-v1` | sweep | `prompts-mixed-v1` | concurrency 1,2,4,8,16,32,64 |
-| `prefill-8k-v1` | prefill | `haystack-v1` | c1, n=10, in=8k, out=16 |
-| `prefill-32k-v1` | prefill | `haystack-v1` | c1, n=10, in=32k, out=16 |
-| `prefill-128k-v1` | prefill | `haystack-v1` | c1, n=10, in=128k, out=16 |
-| `longctx-depth-sweep-v1` | longctx | `haystack-v1` | input_tokens 1k…256k, out=256, needle checked |
-| `longctx-needle-32k-v1` | longctx | `eval-longctx-v1` | c1, n=6, in=32k, needle scored |
-| `longctx-needle-128k-v1` | longctx | `eval-longctx-v1` | c1, n=6, in=128k, needle scored |
-| `eval-math-v1` | eval | `eval-math-v1` | `numeric`, max_out 4096 |
-| `eval-reasoning-v1` | eval | `eval-reasoning-v1` | `exact` (rows may be `mc`), max_out 2048 |
-| `eval-code-v1` | eval | `eval-code-v1` | `code-exec`, max_out 4096 |
-| `eval-knowledge-v1` | eval | `eval-knowledge-v1` | `mc`, max_out 2048 |
-| `eval-instruction-v1` | eval | `eval-instruction-v1` | `instruction`, max_out 2048 |
-| `eval-json-v1` | eval | `eval-json-v1` | `json`, max_out 2048 |
-| `eval-tools-v1` | eval | `eval-tools-v1` | `json` on `tool_calls[0]`, max_out 2048 |
-| `eval-vision-v1` | eval | `eval-vision-v1` | `vision`, max_out 2048 |
-| `eval-multilingual-v1` | eval | `eval-multilingual-v1` | `contains`, max_out 2048 |
-| `eval-longctx-v1` | eval | `eval-longctx-v1` | `needle`, max_out 1024, c1 |
-| `eval-format-v1` | eval | `eval-format-v1` | `exact`, max_out 256 |
+| id                                 | kind    | dataset                    | shape                                         |
+| ---------------------------------- | ------- | -------------------------- | --------------------------------------------- |
+| `serve-single-i256-o256-v1`        | serving | `prompts-mixed-v1`         | c1, n=50, in≈256, out=256                     |
+| `serve-short-c16-i128-o128-v1`     | serving | `prompts-mixed-v1`         | c16, n=320, in≈128, out=128                   |
+| `serve-chat-c8-i1k-o256-v1`        | serving | `prompts-mixed-v1`         | c8, n=200, in≈1k, out=256                     |
+| `serve-chat-c32-i1k-o256-v1`       | serving | `prompts-mixed-v1`         | c32, n=400, in≈1k, out=256                    |
+| `serve-chat-c64-i1k-o256-v1`       | serving | `prompts-mixed-v1`         | c64, n=640, in≈1k, out=256                    |
+| `serve-long-c4-i8k-o512-v1`        | serving | `prompts-mixed-v1`         | c4, n=40, in≈8k, out=512                      |
+| `serve-code-c8-i2k-o1k-v1`         | serving | `prompts-code-v1`          | c8, n=160, in≈2k, out=1k                      |
+| `serve-prefix-c16-v1`              | serving | `prompts-shared-prefix-v1` | c16, n=200, grouped by prefix                 |
+| `sweep-parallel-1-32-i512-o256-v1` | sweep   | `prompts-mixed-v1`         | concurrency 1,2,4,8,16,32                     |
+| `sweep-parallel-1-64-i1k-o256-v1`  | sweep   | `prompts-mixed-v1`         | concurrency 1,2,4,8,16,32,64                  |
+| `prefill-8k-v1`                    | prefill | `haystack-v1`              | c1, n=10, in=8k, out=16                       |
+| `prefill-32k-v1`                   | prefill | `haystack-v1`              | c1, n=10, in=32k, out=16                      |
+| `prefill-128k-v1`                  | prefill | `haystack-v1`              | c1, n=10, in=128k, out=16                     |
+| `longctx-depth-sweep-v1`           | longctx | `haystack-v1`              | input_tokens 1k…256k, out=256, needle checked |
+| `longctx-needle-32k-v1`            | longctx | `eval-longctx-v1`          | c1, n=6, in=32k, needle scored                |
+| `longctx-needle-128k-v1`           | longctx | `eval-longctx-v1`          | c1, n=6, in=128k, needle scored               |
+| `eval-math-v1`                     | eval    | `eval-math-v1`             | `numeric`, max_out 4096                       |
+| `eval-reasoning-v1`                | eval    | `eval-reasoning-v1`        | `exact` (rows may be `mc`), max_out 2048      |
+| `eval-code-v1`                     | eval    | `eval-code-v1`             | `code-exec`, max_out 4096                     |
+| `eval-knowledge-v1`                | eval    | `eval-knowledge-v1`        | `mc`, max_out 2048                            |
+| `eval-instruction-v1`              | eval    | `eval-instruction-v1`      | `instruction`, max_out 2048                   |
+| `eval-json-v1`                     | eval    | `eval-json-v1`             | `json`, max_out 2048                          |
+| `eval-tools-v1`                    | eval    | `eval-tools-v1`            | `json` on `tool_calls[0]`, max_out 2048       |
+| `eval-vision-v1`                   | eval    | `eval-vision-v1`           | `vision`, max_out 2048                        |
+| `eval-multilingual-v1`             | eval    | `eval-multilingual-v1`     | `contains`, max_out 2048                      |
+| `eval-longctx-v1`                  | eval    | `eval-longctx-v1`          | `needle`, max_out 1024, c1                    |
+| `eval-format-v1`                   | eval    | `eval-format-v1`           | `exact`, max_out 256                          |
 
 ## Conventions a runner must honour
 

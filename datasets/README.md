@@ -12,23 +12,23 @@ comparable when they saw the same bytes.
 
 ## Index
 
-| id | kind | rows | size | generator | default scorer |
-|---|---|---:|---:|---|---|
-| `prompts-mixed-v1` | prompts | 600 | 3.14 MB | `gen_prompts_mixed.py` | – |
-| `prompts-shared-prefix-v1` | prompts | 100 | 2.88 MB | `gen_prompts_shared_prefix.py` | – |
-| `prompts-code-v1` | prompts | 150 | 449 KB | `gen_prompts_code.py` | – |
-| `haystack-v1` | haystack | 32 | 1007 KB | `gen_haystack.py` | – |
-| `eval-math-v1` | eval | 130 | 40 KB | `gen_eval_math.py` | `numeric` |
-| `eval-reasoning-v1` | eval | 120 | 56 KB | `gen_eval_reasoning.py` | `exact` |
-| `eval-code-v1` | eval | 140 | 164 KB | `gen_eval_code.py` | `code_exec` |
-| `eval-knowledge-v1` | eval | 130 | 49 KB | `gen_eval_knowledge.py` | `mc` |
-| `eval-instruction-v1` | eval | 104 | 65 KB | `gen_eval_instruction.py` | `instruction` |
-| `eval-json-v1` | eval | 110 | 62 KB | `gen_eval_json.py` | `json` |
-| `eval-tools-v1` | eval | 80 | 149 KB | `gen_eval_tools.py` | `json` |
-| `eval-vision-v1` | eval | 60 | 141 KB | `gen_eval_vision.py` | `exact` (+ images) |
-| `eval-multilingual-v1` | eval | 80 | 39 KB | `gen_eval_multilingual.py` | `contains` |
-| `eval-longctx-v1` | eval | 100 | 100 KB | `gen_eval_longctx.py` | `needle` |
-| `eval-format-v1` | eval | 30 | 8 KB | `gen_eval_format.py` | `exact` |
+| id                         | kind     | rows |    size | generator                      | default scorer     |
+| -------------------------- | -------- | ---: | ------: | ------------------------------ | ------------------ |
+| `prompts-mixed-v1`         | prompts  |  600 | 3.14 MB | `gen_prompts_mixed.py`         | –                  |
+| `prompts-shared-prefix-v1` | prompts  |  100 | 2.88 MB | `gen_prompts_shared_prefix.py` | –                  |
+| `prompts-code-v1`          | prompts  |  150 |  449 KB | `gen_prompts_code.py`          | –                  |
+| `haystack-v1`              | haystack |   32 | 1007 KB | `gen_haystack.py`              | –                  |
+| `eval-math-v1`             | eval     |  130 |   40 KB | `gen_eval_math.py`             | `numeric`          |
+| `eval-reasoning-v1`        | eval     |  120 |   56 KB | `gen_eval_reasoning.py`        | `exact`            |
+| `eval-code-v1`             | eval     |  140 |  164 KB | `gen_eval_code.py`             | `code_exec`        |
+| `eval-knowledge-v1`        | eval     |  130 |   49 KB | `gen_eval_knowledge.py`        | `mc`               |
+| `eval-instruction-v1`      | eval     |  104 |   65 KB | `gen_eval_instruction.py`      | `instruction`      |
+| `eval-json-v1`             | eval     |  110 |   62 KB | `gen_eval_json.py`             | `json`             |
+| `eval-tools-v1`            | eval     |   80 |  149 KB | `gen_eval_tools.py`            | `json`             |
+| `eval-vision-v1`           | eval     |   60 |  141 KB | `gen_eval_vision.py`           | `exact` (+ images) |
+| `eval-multilingual-v1`     | eval     |   80 |   39 KB | `gen_eval_multilingual.py`     | `contains`         |
+| `eval-longctx-v1`          | eval     |  100 |  100 KB | `gen_eval_longctx.py`          | `needle`           |
+| `eval-format-v1`           | eval     |   30 |    8 KB | `gen_eval_format.py`           | `exact`            |
 
 Licence for all of the above: **MIT**. Total, including the generator scripts:
 about 8.7 MB against a 25 MB budget, which `_gen/check.py` prints and enforces.
@@ -61,25 +61,25 @@ and Japanese the real count runs roughly 2–4× higher. Workloads name a nomina
 ```jsonc
 {
   "id": "mix-0001",
-  "topic": "science",            // one of the dataset's topics
-  "bucket": "m",                 // xs | s | m | l | xl | xxl, see below
-  "lang": "en",                  // natural language of the prompt
-  "approx_tokens": 597,          // chars/4, includes shared_prefix when set
+  "topic": "science", // one of the dataset's topics
+  "bucket": "m", // xs | s | m | l | xl | xxl, see below
+  "lang": "en", // natural language of the prompt
+  "approx_tokens": 597, // chars/4, includes shared_prefix when set
   "messages": [{ "role": "user", "content": "..." }],
-  "shared_prefix": null          // string | null
+  "shared_prefix": null, // string | null
 }
 ```
 
 Length buckets are inclusive ranges on `approx_tokens`:
 
-| bucket | tokens | typical content |
-|---|---|---|
-| `xs` | 16–64 | a single question |
-| `s` | 65–256 | a short context plus a task |
-| `m` | 257–1024 | a page of a document plus a task |
-| `l` | 1025–4096 | a long report, source file or transcript |
-| `xl` | 4097–16384 | a big document |
-| `xxl` | 16385–65536 | a very big document |
+| bucket | tokens      | typical content                          |
+| ------ | ----------- | ---------------------------------------- |
+| `xs`   | 16–64       | a single question                        |
+| `s`    | 65–256      | a short context plus a task              |
+| `m`    | 257–1024    | a page of a document plus a task         |
+| `l`    | 1025–4096   | a long report, source file or transcript |
+| `xl`   | 4097–16384  | a big document                           |
+| `xxl`  | 16385–65536 | a very big document                      |
 
 **`shared_prefix` is a contract**: when it is non-null the harness must send it as
 a leading system message, `[{role: "system", content: shared_prefix}, *messages]`.
@@ -95,14 +95,14 @@ system message naming the language.
 {
   "id": "math-0001",
   "category": "arithmetic",
-  "difficulty": "easy",          // easy | medium | hard
-  "prompt": "...",               // or "messages": [...] when a system turn matters
-  "answer": "42",                // string | number | object, per scorer
+  "difficulty": "easy", // easy | medium | hard
+  "prompt": "...", // or "messages": [...] when a system turn matters
+  "answer": "42", // string | number | object, per scorer
   "scorer": "numeric",
-  "choices": ["...", "..."],     // mc rows only; answer is the letter label
-  "tests": "assert f(1) == 2",   // code_exec rows only
-  "image": "images/vis-0001.png",// vision rows only, relative to the dataset dir
-  "meta": { }                    // per-scorer extras, see below
+  "choices": ["...", "..."], // mc rows only; answer is the letter label
+  "tests": "assert f(1) == 2", // code_exec rows only
+  "image": "images/vis-0001.png", // vision rows only, relative to the dataset dir
+  "meta": {}, // per-scorer extras, see below
 }
 ```
 
@@ -115,16 +115,18 @@ dataset default; `eval-reasoning-v1` mixes `mc` and `exact`, and
 ```jsonc
 {
   "id": "hay-8k-d50",
-  "kind": "single",              // single | multi
+  "kind": "single", // single | multi
   "target_tokens": 8192,
   "seed": 7008292,
   "algorithm": "haystack-v1",
   "needles": [{ "depth": 0.5, "text": "...", "answer": "48213", "line_number": 143 }],
   "question": "...",
   "answer": "48213",
-  "chars": 32771, "lines": 331, "approx_tokens": 8193,
-  "sha256": "…",                 // digest of the materialised document
-  "static_file": "static/hay-8k-d50.txt"   // null above 32k tokens
+  "chars": 32771,
+  "lines": 331,
+  "approx_tokens": 8193,
+  "sha256": "…", // digest of the materialised document
+  "static_file": "static/hay-8k-d50.txt", // null above 32k tokens
 }
 ```
 
@@ -140,17 +142,17 @@ Applied in this order to the raw model output, before any scorer except
    capture of the **last** such line and use only that;
 4. strip surrounding whitespace, matching quotes, and a single trailing `.` or `!`.
 
-| scorer | `answer` | rule |
-|---|---|---|
-| `exact` | string | case-insensitive after collapsing whitespace; `meta.answer_aliases` also accepted |
-| `numeric` | numeric string | parse the last number in the output (thousands separators, leading currency symbol and trailing `%` stripped); correct within `max(meta.tolerance or 1e-6, 1e-9·|expected|)` |
-| `mc` | `"A"`…`"D"` | accept the bare letter, `A)`, `(A)`, `A.` or the full text of the correct choice |
-| `contains` | `{all: [...], any: [...]}` | casefolded substring match, no diacritic folding. An entry may be a **list of alternatives** that passes when any one is found |
-| `json` | expected value | parse the output as JSON; `meta.match` is `subset` (default) or `exact`; arrays compare elementwise in order; numbers compare numerically |
-| `code_exec` | reference solution (unused) | run `extracted_code + "\n\n" + tests` in a subprocess, no network, throwaway cwd, `meta.timeout_s` (default 10) |
-| `needle` | string | casefolded substring test after removing spaces, commas and hyphens from both sides |
-| `instruction` | rule set | evaluate the DSL below against the **raw** output |
-| `vision` | – | attach `row.image` as a base64 data URL image part next to the prompt, then apply the row's own scorer |
+| scorer        | `answer`                    | rule                                                                                                                                                             |
+| ------------- | --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `exact`       | string                      | case-insensitive after collapsing whitespace; `meta.answer_aliases` also accepted                                                                                |
+| `numeric`     | numeric string              | parse the last number in the output (thousands separators, leading currency symbol and trailing `%` stripped); correct within `max(meta.tolerance or 1e-6, 1e-9· | expected | )`  |
+| `mc`          | `"A"`…`"D"`                 | accept the bare letter, `A)`, `(A)`, `A.` or the full text of the correct choice                                                                                 |
+| `contains`    | `{all: [...], any: [...]}`  | casefolded substring match, no diacritic folding. An entry may be a **list of alternatives** that passes when any one is found                                   |
+| `json`        | expected value              | parse the output as JSON; `meta.match` is `subset` (default) or `exact`; arrays compare elementwise in order; numbers compare numerically                        |
+| `code_exec`   | reference solution (unused) | run `extracted_code + "\n\n" + tests` in a subprocess, no network, throwaway cwd, `meta.timeout_s` (default 10)                                                  |
+| `needle`      | string                      | casefolded substring test after removing spaces, commas and hyphens from both sides                                                                              |
+| `instruction` | rule set                    | evaluate the DSL below against the **raw** output                                                                                                                |
+| `vision`      | –                           | attach `row.image` as a base64 data URL image part next to the prompt, then apply the row's own scorer                                                           |
 
 One item is correct or it is not; there is no partial credit.
 `accuracy = correct / total`. A request that failed (timeout, 5xx,
@@ -196,32 +198,32 @@ Shared definitions, all normative:
 - **sentences** — split on `[.!?]+` followed by whitespace or end of text
 - **bullets** — lines whose `lstrip()` starts with a marker followed by a space
 
-| rule | parameters | passes when |
-|---|---|---|
-| `word_count` | `min?`, `max?` | the word count is in range |
-| `char_count` | `min?`, `max?` | `len(text.strip())` is in range |
-| `sentence_count` | `min?`, `max?` | the sentence count is in range |
-| `line_count` | `min?`, `max?` | the non-empty line count is in range |
-| `paragraph_count` | `min?`, `max?` | the paragraph count is in range |
-| `bullet_count` | `min?`, `max?`, `markers?`, `only_bullets?` | the bullet count is in range; with `only_bullets` every line must be a bullet |
-| `numbered_list` | `count` | line-leading numbers are exactly `1..count` in order |
-| `contains_all` | `values[]`, `case_sensitive?` | every value occurs (an entry may be a list of alternatives) |
-| `contains_none` | `values[]`, `case_sensitive?` | no value occurs |
-| `contains_any` | `values[]`, `min_matches?`, `case_sensitive?` | at least `min_matches` values occur |
-| `starts_with` | `value`, `case_sensitive?` | `text.strip()` starts with it |
-| `ends_with` | `value`, `case_sensitive?` | `text.strip()` ends with it |
-| `all_caps` | – | at least one letter, every cased letter upper case |
-| `all_lower` | – | at least one letter, every cased letter lower case |
-| `no_commas` | – | no `,` anywhere |
-| `regex` | `pattern`, `flags?` (`ims`), `mode?` | `search`, or `fullmatch` against `text.strip()` |
-| `not_regex` | `pattern`, `flags?` | the pattern is not found |
-| `json_only` | – | the whole output parses as JSON once a surrounding fence is removed |
-| `json_path_equals` | `path`, `value` | the dotted path (numeric segments index arrays) equals the value |
-| `is_number` | – | `text.strip()` with `,` removed parses as a float |
-| `word_repeat` | `value`, `min?`, `max?`, `case_sensitive?` | the word occurs that many times |
-| `max_words_per_line` | `max` | no line exceeds it |
-| `every_line_starts_with` | `value` | every non-empty line starts with it after `lstrip()` |
-| `unique_lines` | – | no two non-empty lines are identical |
+| rule                     | parameters                                    | passes when                                                                   |
+| ------------------------ | --------------------------------------------- | ----------------------------------------------------------------------------- |
+| `word_count`             | `min?`, `max?`                                | the word count is in range                                                    |
+| `char_count`             | `min?`, `max?`                                | `len(text.strip())` is in range                                               |
+| `sentence_count`         | `min?`, `max?`                                | the sentence count is in range                                                |
+| `line_count`             | `min?`, `max?`                                | the non-empty line count is in range                                          |
+| `paragraph_count`        | `min?`, `max?`                                | the paragraph count is in range                                               |
+| `bullet_count`           | `min?`, `max?`, `markers?`, `only_bullets?`   | the bullet count is in range; with `only_bullets` every line must be a bullet |
+| `numbered_list`          | `count`                                       | line-leading numbers are exactly `1..count` in order                          |
+| `contains_all`           | `values[]`, `case_sensitive?`                 | every value occurs (an entry may be a list of alternatives)                   |
+| `contains_none`          | `values[]`, `case_sensitive?`                 | no value occurs                                                               |
+| `contains_any`           | `values[]`, `min_matches?`, `case_sensitive?` | at least `min_matches` values occur                                           |
+| `starts_with`            | `value`, `case_sensitive?`                    | `text.strip()` starts with it                                                 |
+| `ends_with`              | `value`, `case_sensitive?`                    | `text.strip()` ends with it                                                   |
+| `all_caps`               | –                                             | at least one letter, every cased letter upper case                            |
+| `all_lower`              | –                                             | at least one letter, every cased letter lower case                            |
+| `no_commas`              | –                                             | no `,` anywhere                                                               |
+| `regex`                  | `pattern`, `flags?` (`ims`), `mode?`          | `search`, or `fullmatch` against `text.strip()`                               |
+| `not_regex`              | `pattern`, `flags?`                           | the pattern is not found                                                      |
+| `json_only`              | –                                             | the whole output parses as JSON once a surrounding fence is removed           |
+| `json_path_equals`       | `path`, `value`                               | the dotted path (numeric segments index arrays) equals the value              |
+| `is_number`              | –                                             | `text.strip()` with `,` removed parses as a float                             |
+| `word_repeat`            | `value`, `min?`, `max?`, `case_sensitive?`    | the word occurs that many times                                               |
+| `max_words_per_line`     | `max`                                         | no line exceeds it                                                            |
+| `every_line_starts_with` | `value`                                       | every non-empty line starts with it after `lstrip()`                          |
+| `unique_lines`           | –                                             | no two non-empty lines are identical                                          |
 
 Each row also carries `meta.example_pass`, a compliant answer written by the
 generator and verified against the rules — proof that the rule set is satisfiable.

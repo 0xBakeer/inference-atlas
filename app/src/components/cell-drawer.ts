@@ -137,30 +137,30 @@ export class AtlasCellDrawer extends AtlasElement {
                         </div>
                         ${runs.map((r) => this.runRow(r))}
                         ${
-                        missingW.length
-                          ? html`<div class="row-wrap" style="gap:4px">
-                              <span class="xs muted">Missing:</span>
-                              ${missingW.slice(0, 6).map((w) =>
-                                addButton(this.specFor(pc, [w.id]), {
-                                  label: w.id,
-                                  size: 'xs',
-                                  title: `Add ${w.name}`,
-                                }),
-                              )}
-                              ${
-                                missingW.length > 6
-                                  ? addButton(
-                                      this.specFor(
-                                        pc,
-                                        missingW.map((w) => w.id),
-                                      ),
-                                      { label: `all ${missingW.length}`, size: 'xs' },
-                                    )
-                                  : nothing
-                              }
-                            </div>`
-                          : nothing
-                      }
+                          missingW.length
+                            ? html`<div class="row-wrap" style="gap:4px">
+                                <span class="xs muted">Missing:</span>
+                                ${missingW.slice(0, 6).map((w) =>
+                                  addButton(this.specFor(pc, [w.id]), {
+                                    label: w.id,
+                                    size: 'xs',
+                                    title: `Add ${w.name}`,
+                                  }),
+                                )}
+                                ${
+                                  missingW.length > 6
+                                    ? addButton(
+                                        this.specFor(
+                                          pc,
+                                          missingW.map((w) => w.id),
+                                        ),
+                                        { label: `all ${missingW.length}`, size: 'xs' },
+                                      )
+                                    : nothing
+                                }
+                              </div>`
+                            : nothing
+                        }
                       </div>`;
                     })}
                   </div>

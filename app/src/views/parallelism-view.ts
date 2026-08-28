@@ -169,11 +169,11 @@ export class AtlasParallelismView extends ViewElement {
                               ${who(r.provenance.github_login, { userId: r.provenance.github_user_id, size: 'sm' })}
                             </td>
                             ${[1, 2, 4, 8, 16, 32, 64].map((c) => {
-                            const e = at(c);
-                            return html`<td class="num" data-label=${`c=${c}`}>
-                              ${e && e.y !== null ? html`${fmtTokS(e.y)}<br /><span class="xs muted">${e.eff === null ? '' : fmtPct(e.eff, 0)}</span>` : html`<span class="null">–</span>`}
-                            </td>`;
-                          })}
+                              const e = at(c);
+                              return html`<td class="num" data-label=${`c=${c}`}>
+                                ${e && e.y !== null ? html`${fmtTokS(e.y)}<br /><span class="xs muted">${e.eff === null ? '' : fmtPct(e.eff, 0)}</span>` : html`<span class="null">–</span>`}
+                              </td>`;
+                            })}
                             <td class="num" data-label="eff">
                               ${last?.eff == null ? '–' : fmtPct(last.eff, 0)}
                             </td>

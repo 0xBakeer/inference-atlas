@@ -352,17 +352,17 @@ export class AtlasEnginesView extends ViewElement {
                                 <span class="count">${diff.defaultChanged.length}</span>
                               </div>
                               ${
-                              diff.defaultChanged.length
-                                ? diff.defaultChanged.map(
-                                    (d) =>
-                                      html`<div class="mono xs">
-                                        ${d.name}:
-                                        <span class="muted">${JSON.stringify(d.from)}</span> →
-                                        <b>${JSON.stringify(d.to)}</b>
-                                      </div>`,
-                                  )
-                                : html`<span class="xs muted">none</span>`
-                            }
+                                diff.defaultChanged.length
+                                  ? diff.defaultChanged.map(
+                                      (d) =>
+                                        html`<div class="mono xs">
+                                          ${d.name}:
+                                          <span class="muted">${JSON.stringify(d.from)}</span> →
+                                          <b>${JSON.stringify(d.to)}</b>
+                                        </div>`,
+                                    )
+                                  : html`<span class="xs muted">none</span>`
+                              }
                               ${diff.typeChanged.map((d) => html`<div class="mono xs">${d.name}: type ${d.from} → ${d.to}</div>`)}
                             </div>
                           </div>
