@@ -1,4 +1,5 @@
 import { computeCoverage } from '@atlas/core';
+import { render } from 'lit';
 import { describe, expect, it, beforeAll } from 'vitest';
 import { buildHeatMatrix, buildLookups, possibleCells } from '../data/derive.js';
 import { fixtureRegistry, fixtureRow } from '../data/fixture.js';
@@ -8,6 +9,7 @@ import './heatmap.js';
 import './param-form.js';
 import './add-modal.js';
 import './packet-preview.js';
+import { sparkline } from './ui.js';
 import {
   addSpec,
   closeAdd,
@@ -198,5 +200,23 @@ describe('add modal', () => {
     const pr = packetRegistry();
     expect(pr.engines.map((e) => e.meta.id)).toEqual(['vllm', 'mlx-lm']);
     expect(pr.models[0]!.quants.length).toBe(3);
+  });
+});
+
+describe('sparkline', () => {
+  it('draws one path, restarting after gaps so a missing sensor reading stays a gap', () => {
+    const host = document.createElement('div');
+    render(sparkline([1, 2, null, 4]), host);
+    const d = host.querySelector('path')!.getAttribute('d')!;
+    expect(d.startsWith('M')).toBe(true);
+    expect(d.match(/M/g)).toHaveLength(2);
+    // the latest reading gets the emphasis dot
+    expect(host.querySelector('circle')).not.toBeNull();
+  });
+
+  it('renders nothing when no value was measured', () => {
+    const host = document.createElement('div');
+    render(sparkline([null, null]), host);
+    expect(host.querySelector('svg')).toBeNull();
   });
 });

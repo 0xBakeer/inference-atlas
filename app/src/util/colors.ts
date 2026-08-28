@@ -19,16 +19,17 @@ export function vendorColor(vendor: string | null | undefined): string {
   return cssVar(`--${vendorClass(vendor)}`, cssVar('--vendor-other'));
 }
 
-/** Fixed categorical order for chart series: assigned by entity, never cycled. */
+/** Fixed categorical order for chart series: assigned by entity, never cycled. Leads with the
+ * two validated chart accents; status colours (--warn etc.) are never series colours. */
 const SERIES_VARS = [
-  '--seq-4',
-  '--vendor-amd',
-  '--vendor-nvidia',
-  '--warn',
+  '--chart-1',
+  '--chart-2',
   '--vendor-apple',
+  '--vendor-nvidia',
   '--accent',
   '--vendor-cpu',
   '--vendor-intel',
+  '--vendor-amd',
 ];
 export function seriesColor(i: number): string {
   return cssVar(SERIES_VARS[i % SERIES_VARS.length]!);

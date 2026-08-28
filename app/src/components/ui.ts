@@ -1,5 +1,5 @@
 /** Stateless template helpers shared by every view. */
-import { html, nothing, render, type TemplateResult } from 'lit';
+import { html, nothing, render, svg, type TemplateResult } from 'lit';
 import { classMap } from 'lit/directives/class-map.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import type { CoverageLevel, Distribution, VerificationLevel, WorkloadKind } from '@atlas/core';
@@ -274,6 +274,48 @@ export function hbar(
     </div>
     <span class="val">${text}</span>
   </div>`;
+}
+
+/**
+ * Inline sparkline for telemetry tiles: value against an implicit ordinal x, scaled to its
+ * own min–max so shape (rising power, flat utilisation) survives at 100×26. Gaps stay gaps.
+ */
+export function sparkline(
+  values: Array<number | null>,
+  opts: { width?: number; height?: number; colorVar?: string } = {},
+): TemplateResult {
+  const w = opts.width ?? 100;
+  const h = opts.height ?? 26;
+  const colorVar = opts.colorVar ?? '--chart-1';
+  const nums = values.filter(isNum);
+  if (nums.length === 0) return html`${nothing}`;
+  const min = Math.min(...nums);
+  const max = Math.max(...nums);
+  const pad = 3;
+  const span = max - min || 1;
+  const x = (i: number) => (values.length === 1 ? w / 2 : (i / (values.length - 1)) * (w - 2) + 1);
+  const y = (v: number) => h - pad - ((v - min) / span) * (h - pad * 2);
+  const segs: string[] = [];
+  values.forEach((v, i) => {
+    segs.push(isNum(v) ? `${segs.length && isNum(values[i - 1]) ? 'L' : 'M'}${x(i)} ${y(v)}` : '');
+  });
+  const path = segs.join(' ').trim();
+  const last = [...values].reverse().find(isNum);
+  const lastIdx = values.length - 1 - [...values].reverse().findIndex(isNum);
+  return html`<svg
+    class="sparkline"
+    width=${w}
+    height=${h}
+    viewBox=${`0 0 ${w} ${h}`}
+    aria-hidden="true"
+  >
+    ${
+      path
+        ? svg`<path d=${path} fill="none" stroke=${`var(${colorVar})`} stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>`
+        : nothing
+    }
+    ${isNum(last) ? svg`<circle cx=${x(lastIdx)} cy=${y(last)} r="2.5" fill=${`var(${colorVar})`}></circle>` : nothing}
+  </svg>`;
 }
 
 export function deltaTag(
