@@ -154,7 +154,7 @@ export class AtlasCompareView extends ViewElement {
           show identical flags</label
         >
       </div>
-      <div class="table-wrap">
+      <div class="table-wrap compare-table-wrap" tabindex="0" aria-label="Configuration comparison">
         <table class="table cmp-table">
           <thead>
             <tr>
@@ -251,7 +251,7 @@ export class AtlasCompareView extends ViewElement {
         <h2>Metrics</h2>
         <span class="meta">deltas relative to the first run</span>
       </div>
-      <div class="table-wrap">
+      <div class="table-wrap compare-table-wrap" tabindex="0" aria-label="Metrics comparison">
         <table class="table cmp-table">
           <thead>
             <tr>

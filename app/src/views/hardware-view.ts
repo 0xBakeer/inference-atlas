@@ -367,7 +367,7 @@ export class AtlasHardwareView extends ViewElement {
           ${
             ceilings.length
               ? html`<div class="ceiling table-wrap" style="max-height:360px">
-                  <table>
+                  <table class="table cards">
                     <thead>
                       <tr>
                         <th>model / quant</th>
@@ -382,13 +382,15 @@ export class AtlasHardwareView extends ViewElement {
                       ${ceilings.slice(0, 40).map(
                         (x) =>
                           html`<tr>
-                            <td>
+                            <td class="primary" data-label="model / quant">
                               <a href=${modelHref(x.m.model.id)} style="color:inherit"
                                 >${x.m.model.id}</a
                               ><span class="muted">/${x.qq.id}</span>
                             </td>
-                            <td class="num">${fmtNum(x.checkpoint, 1)} GB</td>
-                            <td class="num">
+                            <td class="num" data-label="checkpoint">
+                              ${fmtNum(x.checkpoint, 1)} GB
+                            </td>
+                            <td class="num" data-label="read / token">
                               ${fmtNum(x.weight, 1)}
                               GB${
                                 x.weight < x.checkpoint * 0.995
@@ -396,13 +398,13 @@ export class AtlasHardwareView extends ViewElement {
                                   : nothing
                               }
                             </td>
-                            <td class="num">
+                            <td class="num" data-label="ceiling">
                               ${x.ceiling === null ? '–' : `${fmtTokS(x.ceiling)}`}
                             </td>
-                            <td class="num">
+                            <td class="num" data-label="measured">
                               ${x.best === null ? html`<span class="faint">–</span>` : html`<b>${fmtTokS(x.best)}</b>`}
                             </td>
-                            <td class="num">
+                            <td class="num" data-label="of ceiling">
                               ${
                                 x.best !== null && x.ceiling
                                   ? x.best > x.ceiling

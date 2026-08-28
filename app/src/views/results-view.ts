@@ -323,6 +323,26 @@ export class AtlasResultsView extends ViewElement {
             @input=${(e: Event) => setQuery({ q: (e.target as HTMLInputElement).value || null })}
           />
         </div>
+        <label class="field mobile-only">
+          <span class="label">Sort results</span>
+          <select
+            class="select"
+            .value=${serializeSort(sort)}
+            @change=${(e: Event) =>
+              setQuery({ sort: (e.target as HTMLSelectElement).value || null })}
+          >
+            ${COLS.map(
+              (c) => html`
+                <option value=${serializeSort({ key: c.key, dir: c.num ? 'desc' : 'asc' })}>
+                  ${c.label} ${c.num ? '↓' : '↑'}
+                </option>
+                <option value=${serializeSort({ key: c.key, dir: c.num ? 'asc' : 'desc' })}>
+                  ${c.label} ${c.num ? '↑' : '↓'}
+                </option>
+              `,
+            )}
+          </select>
+        </label>
         ${selectField('Engine', f('engine'), opts(filterRows.map((r) => r.engine.id)), (v) => setQuery({ engine: v, version: null }))}
         ${selectField('Version', f('version'), opts(filterRows.filter((r) => !f('engine') || r.engine.id === f('engine')).map((r) => r.engine.version)), (v) => setQuery({ version: v }))}
         ${selectField('Model', f('model'), opts(filterRows.map((r) => r.model.id)), (v) => setQuery({ model: v, quant: null }))}

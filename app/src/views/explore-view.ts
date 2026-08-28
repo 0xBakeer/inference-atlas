@@ -347,7 +347,7 @@ export class AtlasExploreView extends ViewElement {
       <div class="tabs" style="padding:0 var(--sp-4)">
         ${workloads.map((w) => html`<button class="tab" role="tab" aria-selected=${w === tab} @click=${() => (this.tab = w)}>${w} <span class="count">${matching.filter((r) => r.workload_id === w).length}</span></button>`)}
       </div>
-      <div style="padding:var(--sp-4)" class="col" style="gap:var(--sp-4)">
+      <div class="col" style="padding:var(--sp-4);gap:var(--sp-4)">
         ${rows.map((r) => {
           const rec = this.cellRuns.get(r.run_id);
           const cards = rec ? blockCards(rec.metrics) : [];

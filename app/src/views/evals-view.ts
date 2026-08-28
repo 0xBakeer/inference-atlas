@@ -120,7 +120,41 @@ export class AtlasEvalsView extends ViewElement {
                   Show every registered model/quant
                 </button>`,
               })
-            : html`<div class="table-wrap">
+            : html`<div class="eval-mobile-list mobile-only">
+                  ${rows.map(
+                    (p) =>
+                      html`<article class="eval-mobile-card">
+                        <div class="eval-mobile-head">
+                          <a href=${modelHref(p.model)} class="mono">${p.model}</a>
+                          <span class="tag mono">${p.quant}</span>
+                          <span class="spacer"></span>
+                          <b class="mono">${score(p) < 0 ? '–' : fmtPct(score(p), 1)} mean</b>
+                        </div>
+                        <div class="eval-mobile-scores">
+                          ${suites.map((s) => {
+                          const result = best(p.model, p.quant, s.id);
+                          const step = result ? seqStep(result.metrics.accuracy) : null;
+                          return html`<div class="eval-mobile-score">
+                            <a href=${href('workloads', s.id)}>${s.name}</a>
+                            ${
+                              result
+                                ? html`<button
+                                    class="eval-score"
+                                    style=${`background:var(--seq-${step});color:${step !== null && step >= 4 ? 'var(--surface)' : 'var(--ink)'}`}
+                                    @click=${() => navigate(href('run', result.run_id))}
+                                    title="Open result"
+                                  >
+                                    ${fmtPct(result.metrics.accuracy, 1)}
+                                  </button>`
+                                : html`<span class="faint">not measured</span>`
+                            }
+                          </div>`;
+                        })}
+                        </div>
+                      </article>`,
+                  )}
+                </div>
+                <div class="table-wrap eval-matrix-desktop">
                   <table class="table">
                     <thead>
                       <tr>

@@ -754,7 +754,7 @@ export class AtlasRunView extends ViewElement {
                 </div>
               </div>
               <div class="table-wrap" style="max-height:480px">
-                <table class="table eval-item-table">
+                <table class="table cards eval-item-table">
                   <thead>
                     <tr>
                       <th></th>
@@ -771,14 +771,23 @@ export class AtlasRunView extends ViewElement {
                     ${shown.map(
                       (it) =>
                         html`<tr>
-                          <td><i class="ok-dot ${it.correct ? '' : 'bad'}"></i></td>
-                          <td class="mono xs">${it.id}</td>
-                          <td class="xs">${it.category ?? ''}</td>
-                          <td class="xs">${it.difficulty ?? ''}</td>
-                          <td class="pred" title=${it.predicted ?? ''}>${it.predicted ?? ''}</td>
-                          <td class="exp" title=${it.expected ?? ''}>${it.expected ?? ''}</td>
-                          <td class="num">${it.latency_ms == null ? '–' : fmtMs(it.latency_ms)}</td>
-                          <td class="num">${it.output_tokens ?? '–'}</td>
+                          <td data-label="result">
+                            <i class="ok-dot ${it.correct ? '' : 'bad'}"></i>
+                            <span class="mobile-only">${it.correct ? 'correct' : 'incorrect'}</span>
+                          </td>
+                          <td class="mono xs primary" data-label="id">${it.id}</td>
+                          <td class="xs" data-label="category">${it.category ?? ''}</td>
+                          <td class="xs" data-label="difficulty">${it.difficulty ?? ''}</td>
+                          <td class="pred" data-label="predicted" title=${it.predicted ?? ''}>
+                            ${it.predicted ?? ''}
+                          </td>
+                          <td class="exp" data-label="expected" title=${it.expected ?? ''}>
+                            ${it.expected ?? ''}
+                          </td>
+                          <td class="num" data-label="latency">
+                            ${it.latency_ms == null ? '–' : fmtMs(it.latency_ms)}
+                          </td>
+                          <td class="num" data-label="tokens">${it.output_tokens ?? '–'}</td>
                         </tr>`,
                     )}
                   </tbody>

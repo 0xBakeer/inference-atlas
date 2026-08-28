@@ -60,15 +60,23 @@ export class AtlasApp extends AtlasElement {
     applyEvidenceColors(siteFallback);
     void store.boot().then(() => applyEvidenceColors(store.site));
     document.addEventListener('click', this.onDocClick);
+    document.addEventListener('keydown', this.onKeyDown);
   }
 
   override disconnectedCallback(): void {
     super.disconnectedCallback();
     document.removeEventListener('click', this.onDocClick);
+    document.removeEventListener('keydown', this.onKeyDown);
   }
 
   private onDocClick = (e: Event) => {
     if (this.openGroup && !(e.target as Element).closest('.nav-group')) this.openGroup = null;
+  };
+
+  private onKeyDown = (e: KeyboardEvent) => {
+    if (e.key !== 'Escape') return;
+    this.drawer = false;
+    this.openGroup = null;
   };
 
   protected override willUpdate(_changed: PropertyValues): void {
@@ -205,7 +213,7 @@ export class AtlasApp extends AtlasElement {
       groups.set(g, list);
     }
     return html`<div class="backdrop" @click=${() => (this.drawer = false)}></div>
-      <div class="nav-drawer" role="dialog" aria-label="Navigation">
+      <div class="nav-drawer" role="dialog" aria-modal="true" aria-label="Navigation">
         <div class="row" style="justify-content:space-between">
           <span class="brand"
             ><span class="mark"
