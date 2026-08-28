@@ -3,6 +3,7 @@ import { customElement, property } from 'lit/decorators.js';
 import { addButton } from '../components/add-modal.js';
 import { icon } from '../components/icons.js';
 import '../components/mini-coverage.js';
+import '../components/results-overview.js';
 import { runsTable } from '../components/runs-table.js';
 import { emptyState, extLink, kv, skeletonLines } from '../components/ui.js';
 import { engineMinors, engineRunsOn, quantRunsOn } from '../data/derive.js';
@@ -318,6 +319,13 @@ export class AtlasModelsView extends ViewElement {
           .filters=${{ model: m.id }}
         ></atlas-mini-coverage>
       </section>
+
+      <atlas-results-overview
+        class="mt-5"
+        .rows=${runs}
+        group="hardware"
+        heading="Model results"
+      ></atlas-results-overview>
 
       <section class="mt-5">
         <div class="section-title">

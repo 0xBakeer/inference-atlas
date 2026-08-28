@@ -282,6 +282,23 @@ td.num,
   .page {
     padding: var(--sp-4) var(--sp-3) var(--sp-7);
   }
+  .page-head {
+    margin-bottom: var(--sp-4);
+  }
+  .page-head h1 {
+    font-size: clamp(26px, 8vw, var(--fs-3xl));
+    overflow-wrap: anywhere;
+  }
+  .page-head > .row-wrap,
+  .run-head > .row-wrap {
+    align-items: flex-start !important;
+  }
+  .page-head .head-actions {
+    width: 100%;
+  }
+  .page-head .head-actions .btn {
+    flex: 1 1 auto;
+  }
 }
 .page-head {
   display: flex;
@@ -596,6 +613,32 @@ hr.rule {
 .filters .select {
   width: auto;
   max-width: 220px;
+}
+@media (max-width: 720px) {
+  .filters {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: end;
+  }
+  .filters > .search-input,
+  .filters > .row-wrap,
+  .filters > .spacer {
+    grid-column: 1 / -1;
+    min-width: 0 !important;
+    max-width: none !important;
+  }
+  .filters .field,
+  .filters .select,
+  .filters .input {
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+  }
+}
+@media (max-width: 430px) {
+  .filters {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 .search-input {
   position: relative;
@@ -1250,6 +1293,18 @@ table.table {
     border-right: 0;
   }
 }
+@media (max-width: 430px) {
+  .stats-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .stats-strip .stat:nth-child(3n) {
+    border-right: 1px dashed var(--line);
+  }
+  .stats-strip .stat:nth-child(2n) {
+    margin-right: 0;
+    border-right: 0;
+  }
+}
 
 /* ------------------------------------------------------------------ tabs */
 .tabs {
@@ -1587,6 +1642,17 @@ table.table {
     max-height: 94vh;
     border-radius: var(--r-lg) var(--r-lg) 0 0;
   }
+  .modal .dialog-head,
+  .modal .dialog-body {
+    padding: var(--sp-3);
+  }
+  .modal .dialog-foot {
+    padding: var(--sp-3);
+    flex-wrap: wrap;
+  }
+  .modal .dialog-foot .btn {
+    flex: 1 1 auto;
+  }
 }
 .drawer {
   position: fixed;
@@ -1669,6 +1735,18 @@ table.table {
   opacity: 0.9;
 }
 
+@media (pointer: coarse) {
+  .btn:not(.btn-xs),
+  .search-trigger,
+  .nav-link {
+    min-height: 40px;
+  }
+  .chip,
+  .tab {
+    min-height: 36px;
+  }
+}
+
 /* ------------------------------------------------------------------ uPlot restyle */
 .uplot {
   font-family: var(--font-sans) !important;
@@ -1730,6 +1808,36 @@ table.table {
   border-radius: 2px;
   margin-right: 5px;
   vertical-align: -1px;
+}
+@media (max-width: 720px) {
+  .section-title {
+    align-items: flex-start;
+    gap: var(--sp-1) var(--sp-2);
+    flex-wrap: wrap;
+  }
+  .section-title .spacer {
+    display: none;
+  }
+  .section-title > .seg,
+  .section-title > .checkbox {
+    margin-left: auto;
+  }
+  .kv {
+    grid-template-columns: minmax(86px, auto) minmax(0, 1fr);
+    gap: 7px 10px;
+  }
+  .hbar {
+    grid-template-columns: minmax(76px, 110px) minmax(40px, 1fr) 48px;
+    gap: 7px;
+  }
+  .u-tooltip {
+    max-width: min(260px, calc(100vw - 32px));
+    overflow-wrap: anywhere;
+    white-space: normal;
+  }
+  .chart-box {
+    min-height: 180px;
+  }
 }
 
 /* ------------------------------------------------------- operating map (run detail sweeps) */

@@ -4,6 +4,7 @@ import type { EngineVersion } from '@atlas/core';
 import { addButton } from '../components/add-modal.js';
 import { icon } from '../components/icons.js';
 import '../components/mini-coverage.js';
+import '../components/results-overview.js';
 import { fmtDefault } from '../components/param-form.js';
 import { runsTable } from '../components/runs-table.js';
 import {
@@ -385,6 +386,13 @@ export class AtlasEnginesView extends ViewElement {
           .filters=${{ engine: meta.id }}
         ></atlas-mini-coverage>
       </section>
+
+      <atlas-results-overview
+        class="mt-5"
+        .rows=${runs}
+        group="hardware"
+        heading="Engine results"
+      ></atlas-results-overview>
 
       <section class="mt-5">
         <div class="section-title">

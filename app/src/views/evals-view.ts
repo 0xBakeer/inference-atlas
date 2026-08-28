@@ -2,6 +2,7 @@ import { html } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import { addButton } from '../components/add-modal.js';
 import { icon } from '../components/icons.js';
+import '../components/results-overview.js';
 import { emptyState, selectField, skeletonLines } from '../components/ui.js';
 import { resolveSelection } from '../components/cell-picker.js';
 import { href, modelHref, navigate, qget, setQuery } from '../router.js';
@@ -94,6 +95,11 @@ export class AtlasEvalsView extends ViewElement {
           <span class="xs muted">0 → 100%</span>
         </span>
       </div>
+      <atlas-results-overview
+        .rows=${evalRows}
+        group="workload"
+        heading="Eval activity"
+      ></atlas-results-overview>
       ${
         suites.length === 0
           ? emptyState({

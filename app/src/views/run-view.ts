@@ -5,6 +5,7 @@ import type { EngineVersion, ResultRecord, SweepAxis, SweepPoint } from '@atlas/
 import { addButton } from '../components/add-modal.js';
 import '../components/chart.js';
 import '../components/request-strip.js';
+import '../components/run-metric-chart.js';
 import '../components/run-picker.js';
 import type { StripMetric } from '../components/request-strip.js';
 import { icon } from '../components/icons.js';
@@ -218,6 +219,7 @@ export class AtlasRunView extends ViewElement {
                   <div class="metric-grid">
                     ${cards.map((c, i) => metricCard(c, { hero: i === 0 }))}
                   </div>
+                  <atlas-run-metric-chart .metrics=${rec.metrics}></atlas-run-metric-chart>
                 </section>`
               : rec.kind !== 'eval'
                 ? html`<section>

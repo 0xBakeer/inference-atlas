@@ -4,6 +4,7 @@ import { activeWeightGb, type Hardware } from '@atlas/core';
 import { addButton } from '../components/add-modal.js';
 import { icon } from '../components/icons.js';
 import '../components/mini-coverage.js';
+import '../components/results-overview.js';
 import { runsTable } from '../components/runs-table.js';
 import {
   emptyState,
@@ -434,6 +435,13 @@ export class AtlasHardwareView extends ViewElement {
           .filters=${{ hardware: h.id }}
         ></atlas-mini-coverage>
       </section>
+
+      <atlas-results-overview
+        class="mt-5"
+        .rows=${runs}
+        group="model"
+        heading="Device results"
+      ></atlas-results-overview>
 
       <section class="mt-5">
         <div class="section-title">

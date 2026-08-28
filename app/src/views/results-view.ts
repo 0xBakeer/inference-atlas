@@ -2,6 +2,7 @@ import { html, nothing, type TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import '@lit-labs/virtualizer';
 import { icon } from '../components/icons.js';
+import '../components/results-overview.js';
 import {
   avatar,
   emptyState,
@@ -349,6 +350,12 @@ export class AtlasResultsView extends ViewElement {
         /></label>
         ${active.length ? html`<button class="btn btn-ghost btn-sm" @click=${() => setQuery(Object.fromEntries(active.map((k) => [k, null])))}>${icon('x')} Clear ${active.length}</button>` : nothing}
       </div>
+
+      <atlas-results-overview
+        .rows=${rows}
+        group="kind"
+        heading="Filtered results"
+      ></atlas-results-overview>
 
       ${
         rows.length === 0

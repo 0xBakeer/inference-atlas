@@ -2,6 +2,7 @@ import { html, nothing, type TemplateResult } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { icon } from '../components/icons.js';
 import { runsTable } from '../components/runs-table.js';
+import '../components/results-overview.js';
 import {
   avatar,
   emptyState,
@@ -244,6 +245,13 @@ export class AtlasContributorsView extends ViewElement {
         </div>
         ${earned.length ? html`<div class="badge-row mt-2">${earned.map((b) => html`<span class="badge" title=${b.desc}>${icon(b.ic)} ${b.label}</span>`)}</div>` : nothing}
       </div>
+
+      <atlas-results-overview
+        class="mt-5"
+        .rows=${runs}
+        group="hardware"
+        heading="Contribution activity"
+      ></atlas-results-overview>
 
       <div class="split facts-quants">
         <div class="stack">

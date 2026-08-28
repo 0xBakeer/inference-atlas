@@ -4,6 +4,7 @@ import type { Workload } from '@atlas/core';
 import { addButton } from '../components/add-modal.js';
 import { icon } from '../components/icons.js';
 import { runsTable } from '../components/runs-table.js';
+import '../components/results-overview.js';
 import { codeBlock, emptyState, kindTag, kv, skeletonLines } from '../components/ui.js';
 import { href, navigate, qget, setQuery } from '../router.js';
 import { store } from '../store.js';
@@ -211,6 +212,12 @@ export class AtlasWorkloadsView extends ViewElement {
           ${codeBlock(JSON.stringify(w, null, 2), { lang: 'json', maxHeight: 520 })}
         </section>
       </div>
+      <atlas-results-overview
+        class="mt-5"
+        .rows=${runs}
+        group="hardware"
+        heading="Workload results"
+      ></atlas-results-overview>
       <section class="mt-5">
         <div class="section-title">
           <h2>Runs</h2>
