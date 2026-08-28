@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "id": "nvfp4",
+  "model_id": "Qwen/Qwen3.8-Flash-Next",
+  "format": "nvfp4",
+  "bits": 6.11,
+  "hf_id": "RadixArk/Qwen3.8-Flash-Next-NVFP4",
+  "revision": "7b719225242aacd3dbd3f9407468c2ee9a9d2594",
+  "size_gb": 135.16,
+  "engines": [
+    "vllm"
+  ],
+  "source": "community",
+  "calibration": "Produced with NVIDIA Model Optimizer (ModelOpt) 0.46.0, quant_algo NVFP4, group_size 16. The calibration set is not stated on the card. Read from hf_quant_config.json in the snapshot benchmarked.",
+  "links": {
+    "hf": "https://huggingface.co/RadixArk/Qwen3.8-Flash-Next-NVFP4"
+  },
+  "notes": "Every figure here was read out of the 206 safetensors shards of the snapshot actually served (revision 7b71922), not from the model card. 296,475 tensors, 135,156,121,594 bytes of tensor data: 60,397,977,600 U8 (the packed NVFP4 payload, so 120.8B four-bit values), 58,749,992,960 F8_E4M3 (51.23B of that is the n-gram/PLE table, whose config declares ple_embedding_dtype float8_e4m3fn, plus ~7.55B NVFP4 group scales at one per 16 values), 8,003,780,465 BF16 and 147,456 F32. bits 6.11 is those bytes over the model's 176.94B parameters; it is far above the nominal 4 because the 51.2B table is stored at FP8 and is excluded from quantization, along with attention, linear attention, the MoE gates, the shared expert, the hyper-connections, lm_head and embed_tokens. Two things this checkpoint has that the GGUF quantization of the same model does not, both verified by tensor name: the trained MTP draft head (31 tensors, present here, zero in the GGUF, whose converter drops it) and the vision tower (333 tensors, 448,931,056 parameters, unquantized), so this one is multimodal without a separate projector file. Only vllm is listed: reading this architecture needs the Qwen3.8-Flash-Next support added by the blazux/qwen3.8-Flash-DGX fork, and no released engine can load these files."
+}

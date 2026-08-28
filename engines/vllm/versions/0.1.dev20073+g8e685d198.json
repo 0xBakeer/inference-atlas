@@ -1,0 +1,1883 @@
+{
+  "schema_version": 1,
+  "engine_id": "vllm",
+  "version": "0.1.dev20073+g8e685d198",
+  "released": null,
+  "extraction_method": "argparse",
+  "extracted_at": "2026-08-28T05:35:00Z",
+  "source": "make_arg_parser() of the running build, captured inside the recipe container (image built from blazux/qwen3.8-Flash-DGX at 82ed48d).",
+  "notes": "Not an upstream vLLM release. This is the build produced by https://github.com/blazux/qwen3.8-Flash-DGX (Apache-2.0) at commit 82ed48d, which adds Qwen3.8-Flash-Next support and an mmap path for the model's 51.2B n-gram table; pip reports it as 0.1.dev20073+g8e685d198, i.e. upstream vLLM commit 8e685d198 plus the fork's patches. It is recorded as its own engine version rather than folded into any released vLLM, because its flags and its behaviour are not those of any published version. The four VLLM_PLE_* / VLLM_USE_* entries at the end are environment variables rather than CLI flags; they carry an env field and a null default, and they are recorded because VLLM_PLE_MMAP decides whether the model runs at all on this hardware.",
+  "params": [
+    {
+      "name": "headless",
+      "type": "bool",
+      "default": false,
+      "help": "Run in headless mode. See multi-node data parallel documentation for more details."
+    },
+    {
+      "name": "api-server-count",
+      "type": "int",
+      "default": null,
+      "help": "How many API server processes to run. Defaults to data_parallel_size if not specified.",
+      "aliases": [
+        "-asc"
+      ]
+    },
+    {
+      "name": "config",
+      "type": "str",
+      "default": null,
+      "help": "Read CLI options from a config file. Must be a YAML with the following options: https://docs.vllm.ai/en/latest/configuration/serve_args.html"
+    },
+    {
+      "name": "grpc",
+      "type": "bool",
+      "default": false,
+      "help": "Launch a gRPC server instead of the HTTP OpenAI-compatible server. Requires: pip install vllm[grpc]."
+    },
+    {
+      "name": "lora-modules",
+      "type": "json",
+      "default": null
+    },
+    {
+      "name": "chat-template",
+      "type": "str",
+      "default": null
+    },
+    {
+      "name": "chat-template-content-format",
+      "type": "enum",
+      "default": "auto",
+      "choices": [
+        "auto",
+        "openai",
+        "string"
+      ]
+    },
+    {
+      "name": "trust-request-chat-template",
+      "type": "bool",
+      "default": false
+    },
+    {
+      "name": "default-chat-template-kwargs",
+      "type": "json",
+      "default": null,
+      "help": "Should either be a valid JSON string or JSON keys passed individually."
+    },
+    {
+      "name": "response-role",
+      "type": "str",
+      "default": "assistant"
+    },
+    {
+      "name": "return-tokens-as-token-ids",
+      "type": "bool",
+      "default": false
+    },
+    {
+      "name": "enable-auto-tool-choice",
+      "type": "bool",
+      "default": false
+    },
+    {
+      "name": "exclude-tools-when-tool-choice-none",
+      "type": "bool",
+      "default": false
+    },
+    {
+      "name": "tool-call-parser",
+      "type": "str",
+      "default": null
+    },
+    {
+      "name": "tool-parser-plugin",
+      "type": "str",
+      "default": ""
+    },
+    {
+      "name": "tool-server",
+      "type": "str",
+      "default": null
+    },
+    {
+      "name": "log-config-file",
+      "type": "str",
+      "default": null
+    },
+    {
+      "name": "max-log-len",
+      "type": "str",
+      "default": null
+    },
+    {
+      "name": "enable-prompt-tokens-details",
+      "type": "bool",
+      "default": false
+    },
+    {
+      "name": "enable-per-request-metrics",
+      "type": "bool",
+      "default": false
+    },
+    {
+      "name": "enable-server-load-tracking",
+      "type": "bool",
+      "default": false
+    },
+    {
+      "name": "enable-force-include-usage",
+      "type": "bool",
+      "default": false
+    },
+    {
+      "name": "enable-tokenizer-info-endpoint",
+      "type": "bool",
+      "default": false
+    },
+    {
+      "name": "enable-log-outputs",
+      "type": "bool",
+      "default": false
+    },
+    {
+      "name": "enable-log-deltas",
+      "type": "bool",
+      "default": true
+    },
+    {
+      "name": "cohere-is-reasoning-model",
+      "type": "bool",
+      "default": true
+    },
+    {
+      "name": "cohere-format",
+      "type": "str",
+      "default": "cmd4"
+    },
+    {
+      "name": "log-error-stack",
+      "type": "bool",
+      "default": false
+    },
+    {
+      "name": "tokens-only",
+      "type": "bool",
+      "default": false
+    },
+    {
+      "name": "fingerprint-mode",
+      "type": "enum",
+      "default": "full",
+      "choices": [
+        "custom",
+        "full",
+        "hash",
+        "none"
+      ]
+    },
+    {
+      "name": "fingerprint-value",
+      "type": "str",
+      "default": null
+    },
+    {
+      "name": "host",
+      "type": "str",
+      "default": null
+    },
+    {
+      "name": "port",
+      "type": "int",
+      "default": 8000
+    },
+    {
+      "name": "data-parallel-supervisor-port",
+      "type": "int",
+      "default": 9256
+    },
+    {
+      "name": "dp-supervisor-probe-interval-s",
+      "type": "float",
+      "default": 5.0
+    },
+    {
+      "name": "dp-supervisor-probe-timeout-s",
+      "type": "float",
+      "default": 5.0
+    },
+    {
+      "name": "dp-supervisor-probe-failure-threshold",
+      "type": "int",
+      "default": 3
+    },
+    {
+      "name": "uds",
+      "type": "str",
+      "default": null
+    },
+    {
+      "name": "uvicorn-log-level",
+      "type": "enum",
+      "default": "info",
+      "choices": [
+        "critical",
+        "debug",
+        "error",
+        "info",
+        "trace",
+        "warning"
+      ]
+    },
+    {
+      "name": "disable-uvicorn-access-log",
+      "type": "bool",
+      "default": false
+    },
+    {
+      "name": "disable-access-log-for-endpoints",
+      "type": "str",
+      "default": null
+    },
+    {
+      "name": "allow-credentials",
+      "type": "bool",
+      "default": false
+    },
+    {
+      "name": "allowed-origins",
+      "type": "str",
+      "default": [
+        "*"
+      ]
+    },
+    {
+      "name": "allowed-methods",
+      "type": "str",
+      "default": [
+        "*"
+      ]
+    },
+    {
+      "name": "allowed-headers",
+      "type": "str",
+      "default": [
+        "*"
+      ]
+    },
+    {
+      "name": "api-key",
+      "type": "list",
+      "default": null
+    },
+    {
+      "name": "ssl-keyfile",
+      "type": "str",
+      "default": null
+    },
+    {
+      "name": "ssl-certfile",
+      "type": "str",
+      "default": null
+    },
+    {
+      "name": "ssl-ca-certs",
+      "type": "str",
+      "default": null
+    },
+    {
+      "name": "enable-ssl-refresh",
+      "type": "bool",
+      "default": false
+    },
+    {
+      "name": "ssl-cert-reqs",
+      "type": "int",
+      "default": 0
+    },
+    {
+      "name": "ssl-ciphers",
+      "type": "str",
+      "default": null
+    },
+    {
+      "name": "root-path",
+      "type": "str",
+      "default": null
+    },
+    {
+      "name": "middleware",
+      "type": "str",
+      "default": []
+    },
+    {
+      "name": "enable-request-id-headers",
+      "type": "bool",
+      "default": false
+    },
+    {
+      "name": "disable-fastapi-docs",
+      "type": "bool",
+      "default": false
+    },
+    {
+      "name": "h11-max-incomplete-event-size",
+      "type": "int",
+      "default": 4194304
+    },
+    {
+      "name": "h11-max-header-count",
+      "type": "int",
+      "default": 256
+    },
+    {
+      "name": "enable-offline-docs",
+      "type": "bool",
+      "default": false
+    },
+    {
+      "name": "enable-flash-late-interaction",
+      "type": "bool",
+      "default": true
+    },
+    {
+      "name": "model",
+      "type": "str",
+      "default": "Qwen/Qwen3-0.6B"
+    },
+    {
+      "name": "runner",
+      "type": "enum",
+      "default": "auto",
+      "choices": [
+        "auto",
+        "draft",
+        "generate",
+        "pooling"
+      ]
+    },
+    {
+      "name": "convert",
+      "type": "enum",
+      "default": "auto",
+      "choices": [
+        "auto",
+        "classify",
+        "embed",
+        "none"
+      ]
+    },
+    {
+      "name": "tokenizer",
+      "type": "str",
+      "default": null
+    },
+    {
+      "name": "tokenizer-mode",
+      "type": "str",
+      "default": "auto"
+    },
+    {
+      "name": "trust-remote-code",
+      "type": "bool",
+      "default": false
+    },
+    {
+      "name": "dtype",
+      "type": "enum",
+      "default": "auto",
+      "choices": [
+        "auto",
+        "bfloat16",
+        "float",
+        "float16",
+        "float32",
+        "half"
+      ]
+    },
+    {
+      "name": "seed",
+      "type": "int",
+      "default": 0
+    },
+    {
+      "name": "hf-config-path",
+      "type": "str",
+      "default": null
+    },
+    {
+      "name": "allowed-local-media-path",
+      "type": "str",
+      "default": ""
+    },
+    {
+      "name": "allowed-media-domains",
+      "type": "list",
+      "default": null
+    },
+    {
+      "name": "revision",
+      "type": "str",
+      "default": null
+    },
+    {
+      "name": "code-revision",
+      "type": "str",
+      "default": null
+    },
+    {
+      "name": "tokenizer-revision",
+      "type": "str",
+      "default": null
+    },
+    {
+      "name": "max-model-len",
+      "type": "int",
+      "default": null,
+      "help": "Parse human-readable integers like '1k', '2M', etc. Including decimal values with decimal multipliers. Also accepts -1 or 'auto' as a special value for auto-detection. Examples: - '1k' -> 1,000 - '1K' -> 1,024 - '25.6k' -> 25,600 - '-1' or 'auto' -> -1 (special value for auto-detection)"
+    },
+    {
+      "name": "quantization",
+      "type": "str",
+      "default": null,
+      "aliases": [
+        "-q"
+      ]
+    },
+    {
+      "name": "quantization-config",
+      "type": "json",
+      "default": null,
+      "help": "Should either be a valid JSON string or JSON keys passed individually."
+    },
+    {
+      "name": "allow-deprecated-quantization",
+      "type": "bool",
+      "default": false
+    },
+    {
+      "name": "enforce-eager",
+      "type": "bool",
+      "default": false
+    },
+    {
+      "name": "enable-return-routed-experts",
+      "type": "bool",
+      "default": false
+    },
+    {
+      "name": "return-sampling-mask",
+      "type": "bool",
+      "default": false
+    },
+    {
+      "name": "max-logprobs",
+      "type": "int",
+      "default": 20
+    },
+    {
+      "name": "logprobs-mode",
+      "type": "enum",
+      "default": "raw_logprobs",
+      "choices": [
+        "processed_logits",
+        "processed_logprobs",
+        "raw_logits",
+        "raw_logprobs"
+      ]
+    },
+    {
+      "name": "use-fp64-gumbel",
+      "type": "bool",
+      "default": false
+    },
+    {
+      "name": "disable-sliding-window",
+      "type": "bool",
+      "default": false
+    },
+    {
+      "name": "disable-cascade-attn",
+      "type": "bool",
+      "default": true
+    },
+    {
+      "name": "skip-tokenizer-init",
+      "type": "bool",
+      "default": false
+    },
+    {
+      "name": "enable-prompt-embeds",
+      "type": "bool",
+      "default": false
+    },
+    {
+      "name": "served-model-name",
+      "type": "list",
+      "default": null
+    },
+    {
+      "name": "config-format",
+      "type": "str",
+      "default": "auto"
+    },
+    {
+      "name": "hf-token",
+      "type": "str",
+      "default": null
+    },
+    {
+      "name": "hf-overrides",
+      "type": "str",
+      "default": {}
+    },
+    {
+      "name": "model-class-overrides",
+      "type": "str",
+      "default": {},
+      "help": "Should either be a valid JSON string or JSON keys passed individually."
+    },
+    {
+      "name": "pooler-config",
+      "type": "json",
+      "default": null,
+      "help": "API docs: https://docs.vllm.ai/en/latest/api/vllm/config/#vllm.config.PoolerConfig Should either be a valid JSON string or JSON keys passed individually."
+    },
+    {
+      "name": "generation-config",
+      "type": "json",
+      "default": "auto"
+    },
+    {
+      "name": "override-generation-config",
+      "type": "json",
+      "default": {},
+      "help": "Should either be a valid JSON string or JSON keys passed individually."
+    },
+    {
+      "name": "enable-sleep-mode",
+      "type": "bool",
+      "default": false
+    },
+    {
+      "name": "enable-cumem-allocator",
+      "type": "bool",
+      "default": false
+    },
+    {
+      "name": "model-impl",
+      "type": "str",
+      "default": "auto"
+    },
+    {
+      "name": "logits-processors",
+      "type": "list",
+      "default": null
+    },
+    {
+      "name": "io-processor-plugin",
+      "type": "str",
+      "default": null
+    },
+    {
+      "name": "renderer-num-workers",
+      "type": "int",
+      "default": 1
+    },
+    {
+      "name": "load-format",
+      "type": "str",
+      "default": "auto"
+    },
+    {
+      "name": "download-dir",
+      "type": "str",
+      "default": null
+    },
+    {
+      "name": "safetensors-load-strategy",
+      "type": "enum",
+      "default": null,
+      "choices": [
+        "eager",
+        "lazy",
+        "prefetch",
+        "torchao",
+        "None"
+      ]
+    },
+    {
+      "name": "safetensors-prefetch-num-threads",
+      "type": "int",
+      "default": 8
+    },
+    {
+      "name": "safetensors-prefetch-block-size",
+      "type": "int",
+      "default": 16777216,
+      "help": "Parse human-readable integers like '1k', '2M', etc. Including decimal values with decimal multipliers. Examples: - '1k' -> 1,000 - '1K' -> 1,024 - '25.6k' -> 25,600"
+    },
+    {
+      "name": "model-loader-extra-config",
+      "type": "json",
+      "default": {}
+    },
+    {
+      "name": "ignore-patterns",
+      "type": "list",
+      "default": [
+        "original/**/*"
+      ]
+    },
+    {
+      "name": "use-tqdm-on-load",
+      "type": "bool",
+      "default": true
+    },
+    {
+      "name": "pt-load-map-location",
+      "type": "str",
+      "default": "cpu"
+    },
+    {
+      "name": "attention-backend",
+      "type": "str",
+      "default": null
+    },
+    {
+      "name": "mamba-backend",
+      "type": "str",
+      "default": "MambaBackendEnum.TRITON"
+    },
+    {
+      "name": "mamba-ssu-algorithm",
+      "type": "enum",
+      "default": null,
+      "choices": [
+        "auto",
+        "horizontal",
+        "simple",
+        "vertical",
+        "None"
+      ]
+    },
+    {
+      "name": "enable-mamba-cache-stochastic-rounding",
+      "type": "bool",
+      "default": false
+    },
+    {
+      "name": "mamba-cache-philox-rounds",
+      "type": "int",
+      "default": 0
+    },
+    {
+      "name": "reasoning-parser",
+      "type": "str",
+      "default": ""
+    },
+    {
+      "name": "reasoning-parser-plugin",
+      "type": "str",
+      "default": ""
+    },
+    {
+      "name": "distributed-executor-backend",
+      "type": "str",
+      "default": null
+    },
+    {
+      "name": "pipeline-parallel-size",
+      "type": "int",
+      "default": 1,
+      "aliases": [
+        "-pp"
+      ]
+    },
+    {
+      "name": "master-addr",
+      "type": "str",
+      "default": "127.0.0.1"
+    },
+    {
+      "name": "master-port",
+      "type": "int",
+      "default": 29501
+    },
+    {
+      "name": "nnodes",
+      "type": "int",
+      "default": 1,
+      "aliases": [
+        "-n"
+      ]
+    },
+    {
+      "name": "node-rank",
+      "type": "int",
+      "default": 0,
+      "aliases": [
+        "-r"
+      ]
+    },
+    {
+      "name": "distributed-timeout-seconds",
+      "type": "str",
+      "default": null
+    },
+    {
+      "name": "cpu-distributed-timeout-seconds",
+      "type": "str",
+      "default": null
+    },
+    {
+      "name": "numa-bind",
+      "type": "bool",
+      "default": false
+    },
+    {
+      "name": "numa-bind-nodes",
+      "type": "list",
+      "default": null
+    },
+    {
+      "name": "numa-bind-cpus",
+      "type": "list",
+      "default": null
+    },
+    {
+      "name": "device-ids",
+      "type": "str",
+      "default": null,
+      "help": "Comma-separated physical GPU device IDs or UUIDs to use (e.g. --device-ids \"2,3,5,7\"). Avoids setting CUDA_VISIBLE_DEVICES, preserving full GPU topology visibility for GPU-NIC affinity and DeepGEMM. Note: has no effect with Ray executors; use Ray placement groups for GPU selection instead."
+    },
+    {
+      "name": "tensor-parallel-size",
+      "type": "int",
+      "default": 1,
+      "aliases": [
+        "-tp"
+      ]
+    },
+    {
+      "name": "decode-context-parallel-size",
+      "type": "int",
+      "default": 1,
+      "aliases": [
+        "-dcp"
+      ]
+    },
+    {
+      "name": "dcp-comm-backend",
+      "type": "enum",
+      "default": "ag_rs",
+      "choices": [
+        "a2a",
+        "ag_rs"
+      ]
+    },
+    {
+      "name": "dcp-kv-cache-interleave-size",
+      "type": "int",
+      "default": 1
+    },
+    {
+      "name": "cp-kv-cache-interleave-size",
+      "type": "int",
+      "default": 1
+    },
+    {
+      "name": "prefill-context-parallel-size",
+      "type": "int",
+      "default": 1,
+      "aliases": [
+        "-pcp"
+      ]
+    },
+    {
+      "name": "data-parallel-size",
+      "type": "int",
+      "default": 1,
+      "aliases": [
+        "-dp"
+      ]
+    },
+    {
+      "name": "data-parallel-rank",
+      "type": "int",
+      "default": null,
+      "help": "Data parallel rank of this instance. When set, enables external load balancer mode for MoE data-parallel deployments. Unsupported for non-MoE models; launch independent vLLM instances instead.",
+      "aliases": [
+        "-dpn"
+      ]
+    },
+    {
+      "name": "data-parallel-start-rank",
+      "type": "int",
+      "default": null,
+      "help": "Starting data parallel rank for secondary nodes.",
+      "aliases": [
+        "-dpr"
+      ]
+    },
+    {
+      "name": "data-parallel-size-local",
+      "type": "int",
+      "default": null,
+      "help": "Number of data parallel replicas to run on this node.",
+      "aliases": [
+        "-dpl"
+      ]
+    },
+    {
+      "name": "data-parallel-address",
+      "type": "str",
+      "default": null,
+      "help": "Address of data parallel cluster head-node.",
+      "aliases": [
+        "-dpa"
+      ]
+    },
+    {
+      "name": "data-parallel-rpc-port",
+      "type": "int",
+      "default": null,
+      "help": "Fixed port for data parallel RPC communication. All nodes must use the same port.",
+      "aliases": [
+        "-dpp"
+      ]
+    },
+    {
+      "name": "data-parallel-backend",
+      "type": "str",
+      "default": "mp",
+      "help": "Backend for data parallel, either \"mp\" or \"ray\".",
+      "aliases": [
+        "-dpb"
+      ]
+    },
+    {
+      "name": "data-parallel-hybrid-lb",
+      "type": "bool",
+      "default": false,
+      "aliases": [
+        "-dph"
+      ]
+    },
+    {
+      "name": "data-parallel-external-lb",
+      "type": "bool",
+      "default": false,
+      "aliases": [
+        "-dpe"
+      ]
+    },
+    {
+      "name": "data-parallel-multi-port-external-lb",
+      "type": "bool",
+      "default": false,
+      "help": "Run a node-local supervisor that launches one external-LB API server per local data parallel rank and exposes aggregated health on a supervisor port.",
+      "aliases": [
+        "-dpm"
+      ]
+    },
+    {
+      "name": "enable-expert-parallel",
+      "type": "bool",
+      "default": false,
+      "aliases": [
+        "-ep"
+      ]
+    },
+    {
+      "name": "enable-ep-weight-filter",
+      "type": "bool",
+      "default": false
+    },
+    {
+      "name": "all2all-backend",
+      "type": "enum",
+      "default": "allgather_reducescatter",
+      "choices": [
+        "allgather_reducescatter",
+        "deepep_high_throughput",
+        "deepep_low_latency",
+        "deepep_v2",
+        "flashinfer_all2allv",
+        "flashinfer_nvlink_one_sided",
+        "flashinfer_nvlink_two_sided",
+        "mori_high_throughput",
+        "mori_low_latency",
+        "naive",
+        "nixl_ep",
+        "pplx"
+      ]
+    },
+    {
+      "name": "enable-dbo",
+      "type": "bool",
+      "default": false
+    },
+    {
+      "name": "ubatch-size",
+      "type": "int",
+      "default": 0
+    },
+    {
+      "name": "enable-elastic-ep",
+      "type": "bool",
+      "default": false
+    },
+    {
+      "name": "dbo-decode-token-threshold",
+      "type": "int",
+      "default": 32
+    },
+    {
+      "name": "dbo-prefill-token-threshold",
+      "type": "int",
+      "default": 512
+    },
+    {
+      "name": "disable-nccl-for-dp-synchronization",
+      "type": "bool",
+      "default": null
+    },
+    {
+      "name": "enable-eplb",
+      "type": "bool",
+      "default": false
+    },
+    {
+      "name": "eplb-config",
+      "type": "json",
+      "default": "EPLBConfig(window_size=1000, step_interval=3000, num_redundant_experts=0, log_balancedness=False, log_balancedness_interval=1, use_async=True, policy='default', communicator=None)",
+      "help": "API docs: https://docs.vllm.ai/en/latest/api/vllm/config/#vllm.config.EPLBConfig Should either be a valid JSON string or JSON keys passed individually."
+    },
+    {
+      "name": "expert-placement-strategy",
+      "type": "enum",
+      "default": "linear",
+      "choices": [
+        "linear",
+        "round_robin"
+      ]
+    },
+    {
+      "name": "max-parallel-loading-workers",
+      "type": "str",
+      "default": null
+    },
+    {
+      "name": "ray-workers-use-nsight",
+      "type": "bool",
+      "default": false
+    },
+    {
+      "name": "disable-custom-all-reduce",
+      "type": "bool",
+      "default": false
+    },
+    {
+      "name": "worker-cls",
+      "type": "str",
+      "default": "auto"
+    },
+    {
+      "name": "worker-extension-cls",
+      "type": "str",
+      "default": ""
+    },
+    {
+      "name": "enable-fault-tolerance",
+      "type": "bool",
+      "default": false
+    },
+    {
+      "name": "fault-tolerance-config",
+      "type": "json",
+      "default": "FaultToleranceConfig(engine_recovery_timeout_sec=120)",
+      "help": "API docs: https://docs.vllm.ai/en/latest/api/vllm/config/#vllm.config.FaultToleranceConfig Should either be a valid JSON string or JSON keys passed individually."
+    },
+    {
+      "name": "block-size",
+      "type": "int",
+      "default": null
+    },
+    {
+      "name": "gpu-memory-utilization",
+      "type": "float",
+      "default": 0.92
+    },
+    {
+      "name": "kv-cache-memory-bytes",
+      "type": "int",
+      "default": null,
+      "help": "Parse human-readable integers like '1k', '2M', etc. Including decimal values with decimal multipliers. Examples: - '1k' -> 1,000 - '1K' -> 1,024 - '25.6k' -> 25,600"
+    },
+    {
+      "name": "kv-cache-dtype",
+      "type": "enum",
+      "default": "auto",
+      "choices": [
+        "auto",
+        "bfloat16",
+        "float16",
+        "fp8",
+        "fp8_ds_mla",
+        "fp8_e4m3",
+        "fp8_e5m2",
+        "fp8_inc",
+        "fp8_per_token_head",
+        "int4_per_token_head",
+        "int8_per_token_head",
+        "nvfp4",
+        "nvfp4_4over6",
+        "turboquant_3bit_nc",
+        "turboquant_4bit_nc",
+        "turboquant_k3v4_nc",
+        "turboquant_k8v4"
+      ]
+    },
+    {
+      "name": "num-gpu-blocks-override",
+      "type": "str",
+      "default": null
+    },
+    {
+      "name": "enable-prefix-caching",
+      "type": "bool",
+      "default": null
+    },
+    {
+      "name": "prefix-caching-hash-algo",
+      "type": "enum",
+      "default": "sha256",
+      "choices": [
+        "sha256",
+        "sha256_cbor",
+        "xxhash",
+        "xxhash_cbor"
+      ]
+    },
+    {
+      "name": "kv-cache-dtype-skip-layers",
+      "type": "list",
+      "default": []
+    },
+    {
+      "name": "kv-sharing-fast-prefill",
+      "type": "bool",
+      "default": false
+    },
+    {
+      "name": "mamba-cache-dtype",
+      "type": "enum",
+      "default": "auto",
+      "choices": [
+        "auto",
+        "bfloat16",
+        "float16",
+        "float32"
+      ]
+    },
+    {
+      "name": "mamba-ssm-cache-dtype",
+      "type": "enum",
+      "default": "auto",
+      "choices": [
+        "auto",
+        "bfloat16",
+        "float16",
+        "float32"
+      ]
+    },
+    {
+      "name": "mamba-block-size",
+      "type": "str",
+      "default": null
+    },
+    {
+      "name": "prefix-match-unit",
+      "type": "str",
+      "default": null
+    },
+    {
+      "name": "mamba-cache-mode",
+      "type": "enum",
+      "default": "none",
+      "choices": [
+        "align",
+        "all",
+        "none"
+      ]
+    },
+    {
+      "name": "replayssm-buffer-len",
+      "type": "int",
+      "default": 16
+    },
+    {
+      "name": "use-replayssm",
+      "type": "bool",
+      "default": false
+    },
+    {
+      "name": "kv-offloading-size",
+      "type": "str",
+      "default": null
+    },
+    {
+      "name": "kv-offloading-backend",
+      "type": "enum",
+      "default": "native",
+      "choices": [
+        "lmcache",
+        "native"
+      ]
+    },
+    {
+      "name": "offload-backend",
+      "type": "enum",
+      "default": "auto",
+      "choices": [
+        "auto",
+        "prefetch",
+        "uva"
+      ]
+    },
+    {
+      "name": "cpu-offload-gb",
+      "type": "float",
+      "default": 0
+    },
+    {
+      "name": "cpu-offload-params",
+      "type": "list",
+      "default": "set()"
+    },
+    {
+      "name": "offload-group-size",
+      "type": "int",
+      "default": 0
+    },
+    {
+      "name": "offload-num-in-group",
+      "type": "int",
+      "default": 1
+    },
+    {
+      "name": "offload-prefetch-step",
+      "type": "int",
+      "default": 1
+    },
+    {
+      "name": "offload-params",
+      "type": "list",
+      "default": "set()"
+    },
+    {
+      "name": "language-model-only",
+      "type": "bool",
+      "default": false
+    },
+    {
+      "name": "limit-mm-per-prompt",
+      "type": "str",
+      "default": {},
+      "help": "Should either be a valid JSON string or JSON keys passed individually."
+    },
+    {
+      "name": "enable-mm-embeds",
+      "type": "bool",
+      "default": false
+    },
+    {
+      "name": "media-io-kwargs",
+      "type": "json",
+      "default": {},
+      "help": "Should either be a valid JSON string or JSON keys passed individually."
+    },
+    {
+      "name": "mm-processor-kwargs",
+      "type": "json",
+      "default": null,
+      "help": "Should either be a valid JSON string or JSON keys passed individually."
+    },
+    {
+      "name": "mm-processor-cache-gb",
+      "type": "float",
+      "default": 4
+    },
+    {
+      "name": "mm-processor-cache-type",
+      "type": "enum",
+      "default": "lru",
+      "choices": [
+        "lru",
+        "shm"
+      ]
+    },
+    {
+      "name": "mm-hasher-algorithm",
+      "type": "enum",
+      "default": "blake3",
+      "choices": [
+        "blake3",
+        "sha256",
+        "sha512"
+      ]
+    },
+    {
+      "name": "mm-shm-cache-max-object-size-mb",
+      "type": "int",
+      "default": 128
+    },
+    {
+      "name": "mm-encoder-only",
+      "type": "bool",
+      "default": false
+    },
+    {
+      "name": "mm-encoder-tp-mode",
+      "type": "enum",
+      "default": "weights",
+      "choices": [
+        "data",
+        "weights"
+      ]
+    },
+    {
+      "name": "mm-encoder-attn-backend",
+      "type": "str",
+      "default": null
+    },
+    {
+      "name": "mm-encoder-attn-dtype",
+      "type": "enum",
+      "default": null,
+      "choices": [
+        "fp8",
+        "None"
+      ]
+    },
+    {
+      "name": "mm-encoder-fp8-scale-path",
+      "type": "str",
+      "default": null
+    },
+    {
+      "name": "mm-encoder-fp8-scale-save-path",
+      "type": "str",
+      "default": null
+    },
+    {
+      "name": "mm-encoder-fp8-scale-save-margin",
+      "type": "float",
+      "default": 1.5
+    },
+    {
+      "name": "interleave-mm-strings",
+      "type": "bool",
+      "default": false
+    },
+    {
+      "name": "skip-mm-profiling",
+      "type": "bool",
+      "default": false
+    },
+    {
+      "name": "video-pruning-rate",
+      "type": "str",
+      "default": null
+    },
+    {
+      "name": "video-pruning-method",
+      "type": "enum",
+      "default": "evs",
+      "choices": [
+        "evs",
+        "vidcom2"
+      ]
+    },
+    {
+      "name": "mm-tensor-ipc",
+      "type": "enum",
+      "default": "direct_rpc",
+      "choices": [
+        "direct_rpc",
+        "torch_shm"
+      ]
+    },
+    {
+      "name": "mm-processor-device",
+      "type": "enum",
+      "default": "auto",
+      "choices": [
+        "auto",
+        "cpu",
+        "cuda"
+      ],
+      "help": "Device the HF multi-modal processor runs the image/video transform on. Convenience for `--mm-processor-kwargs '{\"device\": ...}'`: the value is resolved here and stored there, it is not kept as separate state. Only takes effect for HF \"fast\" (torchvision-backed) processors, which accept a `device` argument; the others ignore it and stay on CPU. \"auto\" uses the accelerator on encoder instances of an encode/prefill/decode deployment -- an EC producer that is not also a consumer allocates no KV cache, so its accelerator is not contended by the language model -- and then only when `--mm-tensor-ipc=torch_shm` can carry device tensors, since every other transport would copy the result back to the host and that copy costs more than it saves. \"auto\" resolves to \"cpu\" everywhere else."
+    },
+    {
+      "name": "mm-ipc-gpu-memory-gb",
+      "type": "float",
+      "default": 0
+    },
+    {
+      "name": "mm-device-do-normalize",
+      "type": "bool",
+      "default": null
+    },
+    {
+      "name": "enable-lora",
+      "type": "bool",
+      "default": null,
+      "help": "If True, enable handling of LoRA adapters."
+    },
+    {
+      "name": "max-loras",
+      "type": "int",
+      "default": 1
+    },
+    {
+      "name": "max-lora-rank",
+      "type": "enum",
+      "default": 16,
+      "choices": [
+        1,
+        8,
+        16,
+        32,
+        64,
+        128,
+        256,
+        320,
+        512
+      ]
+    },
+    {
+      "name": "lora-dtype",
+      "type": "enum",
+      "default": "auto",
+      "choices": [
+        "auto",
+        "bfloat16",
+        "float16"
+      ]
+    },
+    {
+      "name": "enable-tower-connector-lora",
+      "type": "bool",
+      "default": false
+    },
+    {
+      "name": "max-cpu-loras",
+      "type": "str",
+      "default": null
+    },
+    {
+      "name": "fully-sharded-loras",
+      "type": "bool",
+      "default": false
+    },
+    {
+      "name": "lora-target-modules",
+      "type": "list",
+      "default": null
+    },
+    {
+      "name": "default-mm-loras",
+      "type": "str",
+      "default": null,
+      "help": "Should either be a valid JSON string or JSON keys passed individually."
+    },
+    {
+      "name": "specialize-active-lora",
+      "type": "bool",
+      "default": false
+    },
+    {
+      "name": "enable-mixed-moe-lora-format",
+      "type": "bool",
+      "default": false
+    },
+    {
+      "name": "enable-moe-shared-loras",
+      "type": "bool",
+      "default": false
+    },
+    {
+      "name": "show-hidden-metrics-for-version",
+      "type": "str",
+      "default": null
+    },
+    {
+      "name": "otlp-traces-endpoint",
+      "type": "str",
+      "default": null
+    },
+    {
+      "name": "collect-detailed-traces",
+      "type": "list",
+      "default": null,
+      "choices": [
+        "all",
+        "model",
+        "worker",
+        "None",
+        "model,worker",
+        "model,all",
+        "worker,model",
+        "worker,all",
+        "all,model",
+        "all,worker"
+      ]
+    },
+    {
+      "name": "kv-cache-metrics",
+      "type": "bool",
+      "default": false
+    },
+    {
+      "name": "kv-cache-metrics-sample",
+      "type": "float",
+      "default": 0.01
+    },
+    {
+      "name": "cudagraph-metrics",
+      "type": "bool",
+      "default": false
+    },
+    {
+      "name": "enable-layerwise-nvtx-tracing",
+      "type": "bool",
+      "default": false
+    },
+    {
+      "name": "enable-mfu-metrics",
+      "type": "bool",
+      "default": false
+    },
+    {
+      "name": "enable-logging-iteration-details",
+      "type": "bool",
+      "default": false
+    },
+    {
+      "name": "jit-monitor-mode",
+      "type": "enum",
+      "default": "warn",
+      "choices": [
+        "error",
+        "warn"
+      ]
+    },
+    {
+      "name": "jit-monitor-verbose",
+      "type": "bool",
+      "default": false
+    },
+    {
+      "name": "max-num-batched-tokens",
+      "type": "int",
+      "default": null,
+      "help": "Parse human-readable integers like '1k', '2M', etc. Including decimal values with decimal multipliers. Examples: - '1k' -> 1,000 - '1K' -> 1,024 - '25.6k' -> 25,600"
+    },
+    {
+      "name": "max-num-scheduled-tokens",
+      "type": "int",
+      "default": null,
+      "help": "Parse human-readable integers like '1k', '2M', etc. Including decimal values with decimal multipliers. Examples: - '1k' -> 1,000 - '1K' -> 1,024 - '25.6k' -> 25,600"
+    },
+    {
+      "name": "max-num-seqs",
+      "type": "int",
+      "default": null
+    },
+    {
+      "name": "long-prefill-token-threshold",
+      "type": "int",
+      "default": 0
+    },
+    {
+      "name": "scheduling-policy",
+      "type": "enum",
+      "default": "fcfs",
+      "choices": [
+        "fcfs",
+        "priority"
+      ]
+    },
+    {
+      "name": "enable-chunked-prefill",
+      "type": "bool",
+      "default": null
+    },
+    {
+      "name": "disable-chunked-mm-input",
+      "type": "bool",
+      "default": false
+    },
+    {
+      "name": "scheduler-cls",
+      "type": "str",
+      "default": null
+    },
+    {
+      "name": "scheduler-reserve-full-isl",
+      "type": "bool",
+      "default": true
+    },
+    {
+      "name": "watermark",
+      "type": "float",
+      "default": 0.0
+    },
+    {
+      "name": "prefill-schedule-interval",
+      "type": "int",
+      "default": 1
+    },
+    {
+      "name": "disable-hybrid-kv-cache-manager",
+      "type": "bool",
+      "default": null
+    },
+    {
+      "name": "async-scheduling",
+      "type": "bool",
+      "default": null
+    },
+    {
+      "name": "stream-interval",
+      "type": "int",
+      "default": 1
+    },
+    {
+      "name": "cudagraph-capture-sizes",
+      "type": "list",
+      "default": null
+    },
+    {
+      "name": "max-cudagraph-capture-size",
+      "type": "int",
+      "default": null
+    },
+    {
+      "name": "ir-op-priority",
+      "type": "str",
+      "default": "IrOpPriorityConfig(rms_norm=[], fused_add_rms_norm=[])",
+      "help": "Should either be a valid JSON string or JSON keys passed individually."
+    },
+    {
+      "name": "enable-flashinfer-autotune",
+      "type": "bool",
+      "default": null
+    },
+    {
+      "name": "enable-bf16x3-router-gemm",
+      "type": "bool",
+      "default": false
+    },
+    {
+      "name": "moe-backend",
+      "type": "enum",
+      "default": "auto",
+      "choices": [
+        "aiter",
+        "auto",
+        "batched_triton",
+        "cutlass",
+        "deep_gemm",
+        "deep_gemm_mega_moe",
+        "emulation",
+        "flashinfer_b12x",
+        "flashinfer_cutedsl",
+        "flashinfer_cutlass",
+        "flashinfer_trtllm",
+        "flydsl",
+        "hpc",
+        "humming",
+        "marlin",
+        "triton",
+        "triton_unfused"
+      ]
+    },
+    {
+      "name": "linear-backend",
+      "type": "enum",
+      "default": "auto",
+      "choices": [
+        "aiter",
+        "auto",
+        "b12x",
+        "conch",
+        "cutlass",
+        "deep_gemm",
+        "emulation",
+        "exllama",
+        "fbgemm",
+        "flashinfer_b12x",
+        "flashinfer_cudnn",
+        "flashinfer_cutedsl",
+        "flashinfer_cutlass",
+        "flashinfer_trtllm",
+        "humming",
+        "machete",
+        "marlin",
+        "torch",
+        "triton",
+        "xpu",
+        "xpu_woq"
+      ]
+    },
+    {
+      "name": "speculative-config",
+      "type": "json",
+      "default": null,
+      "help": "API docs: https://docs.vllm.ai/en/latest/api/vllm/config/#vllm.config.SpeculativeConfig Should either be a valid JSON string or JSON keys passed individually.",
+      "aliases": [
+        "-sc"
+      ]
+    },
+    {
+      "name": "spec-method",
+      "type": "enum",
+      "default": null,
+      "choices": [
+        "bailing_hybrid_mtp",
+        "bailing_hybrid_v3_mtp",
+        "custom_class",
+        "deepseek_mtp",
+        "dflash",
+        "dots3_note_mtp",
+        "draft_model",
+        "dspark",
+        "eagle",
+        "eagle3",
+        "ernie_mtp",
+        "exaone4_5_mtp",
+        "exaone_moe_mtp",
+        "extract_hidden_states",
+        "gemma4_mtp",
+        "glm4_moe_lite_mtp",
+        "glm4_moe_mtp",
+        "glm_ocr_mtp",
+        "hy_v3_mtp",
+        "inkling_mtp",
+        "kimi_k3_mtp",
+        "longcat_flash_mtp",
+        "medusa",
+        "mimo_mtp",
+        "mimo_v2_mtp",
+        "minimax_m3_mtp",
+        "mlp_speculator",
+        "mtp",
+        "nemotron_h_mtp",
+        "ngram",
+        "ngram_gpu",
+        "pangu_ultra_moe_mtp",
+        "qwen3_5_mtp",
+        "qwen3_8_flash_next_mtp",
+        "qwen3_next_mtp",
+        "step3p5_mtp",
+        "suffix",
+        "None"
+      ]
+    },
+    {
+      "name": "spec-model",
+      "type": "str",
+      "default": null
+    },
+    {
+      "name": "spec-tokens",
+      "type": "int",
+      "default": null
+    },
+    {
+      "name": "diffusion-config",
+      "type": "json",
+      "default": null,
+      "help": "API docs: https://docs.vllm.ai/en/latest/api/vllm/config/#vllm.config.DiffusionConfig Should either be a valid JSON string or JSON keys passed individually.",
+      "aliases": [
+        "-dc"
+      ]
+    },
+    {
+      "name": "kv-transfer-config",
+      "type": "json",
+      "default": null,
+      "help": "API docs: https://docs.vllm.ai/en/latest/api/vllm/config/#vllm.config.KVTransferConfig Should either be a valid JSON string or JSON keys passed individually."
+    },
+    {
+      "name": "kv-events-config",
+      "type": "json",
+      "default": null,
+      "help": "API docs: https://docs.vllm.ai/en/latest/api/vllm/config/#vllm.config.KVEventsConfig Should either be a valid JSON string or JSON keys passed individually."
+    },
+    {
+      "name": "ec-transfer-config",
+      "type": "json",
+      "default": null,
+      "help": "API docs: https://docs.vllm.ai/en/latest/api/vllm/config/#vllm.config.ECTransferConfig Should either be a valid JSON string or JSON keys passed individually."
+    },
+    {
+      "name": "ec-manager-config",
+      "type": "json",
+      "default": "EncoderCacheManagerConfig(encoder_cache_manager_cls=None, manager_config={})",
+      "help": "API docs: https://docs.vllm.ai/en/latest/api/vllm/config/#vllm.config.EncoderCacheManagerConfig Should either be a valid JSON string or JSON keys passed individually."
+    },
+    {
+      "name": "compilation-config",
+      "type": "json",
+      "default": null,
+      "help": "API docs: https://docs.vllm.ai/en/latest/api/vllm/config/#vllm.config.CompilationConfig Should either be a valid JSON string or JSON keys passed individually. Default recorded as null: the build prints a Python repr of the full config object, which is not a value anyone can pass back.",
+      "aliases": [
+        "-cc"
+      ]
+    },
+    {
+      "name": "attention-config",
+      "type": "json",
+      "default": "AttentionConfig(backend=None, minimax_m3_msa_decode_backend='triton', backend_per_kind={}, flash_attn_version=None, use_prefill_decode_attention=False, flash_attn_max_num_splits_for_cuda_graph=32, tq_max_kv_splits_for_cuda_graph=32, use_trtllm_attention=None, disable_flashinfer_q_quantization=False, mla_prefill_backend=None, use_prefill_query_quantization=False, use_fp4_indexer_cache=None, indexer_kv_dtype='auto', use_non_causal=False, sparse_mla_force_mqa=False, flex_attn_block_m=None, flex_attn_block_n=None, flex_attn_q_block_size=None, flex_attn_kv_block_size=None)",
+      "help": "API docs: https://docs.vllm.ai/en/latest/api/vllm/config/#vllm.config.AttentionConfig Should either be a valid JSON string or JSON keys passed individually.",
+      "aliases": [
+        "-ac"
+      ]
+    },
+    {
+      "name": "reasoning-config",
+      "type": "json",
+      "default": null,
+      "help": "API docs: https://docs.vllm.ai/en/latest/api/vllm/config/#vllm.config.ReasoningConfig Should either be a valid JSON string or JSON keys passed individually."
+    },
+    {
+      "name": "kernel-config",
+      "type": "json",
+      "default": "KernelConfig(ir_op_priority=IrOpPriorityConfig(rms_norm=[], fused_add_rms_norm=[]), enable_flashinfer_autotune=None, enable_cutedsl_warmup=True, enable_jit_warmup=True, enable_bf16x3_router_gemm=False, moe_backend='auto', linear_backend='auto')",
+      "help": "API docs: https://docs.vllm.ai/en/latest/api/vllm/config/#vllm.config.KernelConfig Should either be a valid JSON string or JSON keys passed individually."
+    },
+    {
+      "name": "additional-config",
+      "type": "json",
+      "default": {}
+    },
+    {
+      "name": "structured-outputs-config",
+      "type": "json",
+      "default": "StructuredOutputsConfig(backend='auto', disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False)",
+      "help": "API docs: https://docs.vllm.ai/en/latest/api/vllm/config/#vllm.config.StructuredOutputsConfig Should either be a valid JSON string or JSON keys passed individually."
+    },
+    {
+      "name": "profiler-config",
+      "type": "json",
+      "default": "ProfilerConfig(profiler=None, torch_profiler_dir='', proton_profiler_dir='', proton_context='shadow', proton_data='tree', proton_backend=None, proton_mode=None, proton_hook=None, proton_output_format=None, torch_profiler_with_stack=True, torch_profiler_with_flops=False, torch_profiler_use_gzip=True, torch_profiler_dump_cuda_time_total=True, torch_profiler_record_shapes=False, torch_profiler_with_memory=False, capture_torch_profiler=False, detailed_trace_annotation=False, ignore_frontend=False, delay_iterations=0, max_iterations=0, warmup_iterations=0, active_iterations=5, wait_iterations=0)",
+      "help": "API docs: https://docs.vllm.ai/en/latest/api/vllm/config/#vllm.config.ProfilerConfig Should either be a valid JSON string or JSON keys passed individually."
+    },
+    {
+      "name": "optimization-level",
+      "type": "str",
+      "default": 2
+    },
+    {
+      "name": "performance-mode",
+      "type": "enum",
+      "default": "balanced",
+      "choices": [
+        "balanced",
+        "interactivity",
+        "throughput"
+      ]
+    },
+    {
+      "name": "weight-transfer-config",
+      "type": "json",
+      "default": null,
+      "help": "API docs: https://docs.vllm.ai/en/latest/api/vllm/config/#vllm.config.WeightTransferConfig Should either be a valid JSON string or JSON keys passed individually."
+    },
+    {
+      "name": "disable-log-stats",
+      "type": "bool",
+      "default": false,
+      "help": "Disable logging statistics."
+    },
+    {
+      "name": "aggregate-engine-logging",
+      "type": "bool",
+      "default": false,
+      "help": "Log aggregate rather than per-engine statistics when using data parallelism."
+    },
+    {
+      "name": "fail-on-environ-validation",
+      "type": "bool",
+      "default": false,
+      "help": "If set, the engine will raise an error if environment validation fails."
+    },
+    {
+      "name": "shutdown-timeout",
+      "type": "int",
+      "default": 0,
+      "help": "Shutdown timeout in seconds. 0 = abort, >0 = wait."
+    },
+    {
+      "name": "gdn-prefill-backend",
+      "type": "enum",
+      "default": null,
+      "choices": [
+        "flashinfer",
+        "triton",
+        "cutedsl"
+      ],
+      "help": "Select GDN prefill backend."
+    },
+    {
+      "name": "kda-prefill-backend",
+      "type": "enum",
+      "default": null,
+      "choices": [
+        "auto",
+        "triton",
+        "flashkda"
+      ],
+      "help": "Select KDA prefill backend."
+    },
+    {
+      "name": "enable-log-requests",
+      "type": "bool",
+      "default": false,
+      "help": "Enable logging request information, dependent on log level: - INFO: Request ID, parameters and LoRA request. - DEBUG: Prompt inputs (e.g: text, token IDs). You can set the minimum log level via `VLLM_LOGGING_LEVEL`."
+    },
+    {
+      "name": "vllm-ple-mmap",
+      "type": "int",
+      "default": null,
+      "help": "Serve the per-layer n-gram embedding table from the checkpoint on disk via mmap instead of making it resident. Added by the blazux/qwen3.8-Flash-DGX fork; it is the reason a 122 GiB checkpoint fits next to a usable KV cache on one 128 GB box. Not a CLI flag \u2014 set it in the environment.",
+      "env": "VLLM_PLE_MMAP"
+    },
+    {
+      "name": "vllm-ple-mmap-workers",
+      "type": "int",
+      "default": null,
+      "help": "Threads used for the mmap gather of the n-gram table.",
+      "env": "VLLM_PLE_MMAP_WORKERS"
+    },
+    {
+      "name": "vllm-ple-mmap-prewarm",
+      "type": "int",
+      "default": null,
+      "help": "Stream the table once at startup so the first request does not fault it in.",
+      "env": "VLLM_PLE_MMAP_PREWARM"
+    },
+    {
+      "name": "vllm-use-flashinfer-sampler",
+      "type": "int",
+      "default": null,
+      "help": "Use the FlashInfer sampling kernels.",
+      "env": "VLLM_USE_FLASHINFER_SAMPLER"
+    }
+  ]
+}
