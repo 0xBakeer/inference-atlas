@@ -65,6 +65,8 @@ repository — official or community — actually holds those weights.
 pnpm install
 pnpm test          # vitest across the workspace
 pnpm typecheck
+pnpm lint          # eslint
+pnpm format:check  # prettier; `pnpm format` writes
 pnpm validate      # every JSON file against its schema, ids recomputed, physics checked
 pnpm dev           # compile the data, then the app on localhost
 ```

@@ -45,6 +45,16 @@ jobs:
       - name: Unit tests
         run: pnpm test
 
+      - name: Types
+        run: pnpm typecheck
+
+      # Only possible since the data directories were taken out of prettier's scope: it used
+      # to fail on 348 machine-written JSON files, so nobody could run it as a gate.
+      - name: Lint and format
+        run: |
+          pnpm lint
+          pnpm format:check
+
       - name: Collect the changed files
         id: changed
         run: |
