@@ -350,9 +350,11 @@ describe('reporting', () => {
   it('fails on warnings under --strict', () => {
     const result = makeResult(repo);
     result.provenance.github_user_id = 12345;
-    repo.writeResult(result);
-    expect(validateRepo({ root: repo.root }).ok).toBe(true);
-    expect(validateRepo({ root: repo.root, strict: true }).ok).toBe(false);
+    // Named with --changed, because the CI-owned-field warning belongs to the file under
+    // review: a repository-wide sweep says nothing about results CI has already stamped.
+    const path = repo.writeResult(result);
+    expect(validateRepo({ root: repo.root, changed: [path] }).ok).toBe(true);
+    expect(validateRepo({ root: repo.root, changed: [path], strict: true }).ok).toBe(false);
   });
 });
 
@@ -403,5 +405,36 @@ describe('--json-out', () => {
     };
     expect(report.ok).toBe(false);
     expect(report.errors.map((e) => e.code)).toContain('ownership-added');
+  });
+});
+
+describe('CI-owned fields', () => {
+  /**
+   * CI *writes* these: the stamp-user-ids job resolves provenance.github_user_id and commits
+   * it. Warning whenever the field is set therefore fired on every result ever merged — 151
+   * of them when this was written — and buried the findings a contributor needed under noise
+   * about files they had never touched. The check belongs to the file under review.
+   */
+  it('warns about a hand-set github_user_id only on a file the caller named', () => {
+    const result = makeResult(repo);
+    result.provenance.github_user_id = 12345;
+    const path = repo.writeResult(result);
+
+    const sweep = validateRepo({ root: repo.root });
+    expect(codes(sweep, 'warn')).not.toContain('ci-owned-field');
+
+    const reviewed = validateRepo({ root: repo.root, changed: [path] });
+    expect(codes(reviewed, 'warn')).toContain('ci-owned-field');
+  });
+
+  it('does the same for commit and pr', () => {
+    const result = makeResult(repo);
+    result.provenance.commit = 'a'.repeat(40);
+    const path = repo.writeResult(result);
+
+    expect(codes(validateRepo({ root: repo.root }), 'warn')).not.toContain('ci-owned-field');
+    expect(codes(validateRepo({ root: repo.root, changed: [path] }), 'warn')).toContain(
+      'ci-owned-field',
+    );
   });
 });
