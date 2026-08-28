@@ -398,6 +398,7 @@ hr.rule {
   align-items: center;
   gap: var(--sp-2);
   margin-bottom: var(--sp-3);
+  flex-wrap: wrap;
 }
 .card-head h3 {
   font-size: var(--fs-md);
@@ -602,6 +603,33 @@ hr.rule {
 .filters .select {
   width: auto;
   max-width: 220px;
+}
+/* mobile: a two-column grid instead of a tall single-file stack of controls */
+@media (max-width: 640px) {
+  .filters {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: end;
+  }
+  .filters .search-input,
+  .filters > .btn,
+  .filters > .switch,
+  .filters > .legend-inline,
+  .filters > .spacer {
+    grid-column: 1 / -1;
+  }
+  .filters .search-input {
+    min-width: 0 !important;
+  }
+  .filters .field {
+    min-width: 0;
+  }
+  .filters .select,
+  .filters .input {
+    width: 100%;
+    max-width: none;
+    height: 32px;
+  }
 }
 .search-input {
   position: relative;
