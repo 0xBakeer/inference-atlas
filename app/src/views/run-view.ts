@@ -1,6 +1,6 @@
 import { html, nothing, type PropertyValues, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import { renderServeCommand } from '@atlas/core';
+import { renderServeCommand, resolveConditions } from '@atlas/core';
 import type { EngineVersion, ResultRecord, SweepAxis, SweepPoint } from '@atlas/core';
 import { addButton } from '../components/add-modal.js';
 import '../components/chart.js';
@@ -19,6 +19,8 @@ import {
 } from '../components/sweep-chart.js';
 import {
   codeBlock,
+  condMeasured,
+  condTag,
   copyBtn,
   deltaTag,
   emptyState,
@@ -274,6 +276,13 @@ export class AtlasRunView extends ViewElement {
                     'user id',
                     prov.github_user_id ?? html`<span class="faint">resolved by CI</span>`,
                   ],
+                  (() => {
+                    const c = resolveConditions(rec);
+                    return ['conditions', html`${condTag(c)}${condMeasured(c)}`] as [
+                      string,
+                      unknown,
+                    ];
+                  })(),
                 ])}
               </div>
             </div>

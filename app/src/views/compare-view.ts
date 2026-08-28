@@ -1,6 +1,6 @@
 import { html, nothing, type PropertyValues, type TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
-import type { ResultRecord } from '@atlas/core';
+import { conditionsComparability, resolveConditions, type ResultRecord } from '@atlas/core';
 import '../components/chart.js';
 import '../components/run-picker.js';
 import { icon } from '../components/icons.js';
@@ -11,6 +11,8 @@ import {
   type SweepMetric,
 } from '../components/sweep-chart.js';
 import {
+  condMeasured,
+  condTag,
   deltaTag,
   emptyState,
   hbar,
@@ -125,11 +127,45 @@ export class AtlasCompareView extends ViewElement {
           : loading
             ? skeletonLines(6)
             : html`${missing.length ? html`<div class="callout warn mb-3">${missing.length} run id${missing.length === 1 ? '' : 's'} could not be loaded: ${missing.join(', ')}</div>` : nothing}
+              ${recs.length > 1 ? this.conditionsNote(recs) : nothing}
               ${recs.length ? this.table(recs) : nothing}
               ${recs.length ? this.metrics(recs) : nothing}
               ${recs.some((r) => r.sweep?.length) ? this.sweeps(recs) : nothing}
               ${recs.some((r) => r.scores) ? this.evals(recs) : nothing}`
       }
+    </div>`;
+  }
+
+  /**
+   * Two cells can both be honestly recorded and still not be comparable. This note is the
+   * atlas saying so — it states what is known about each run's conditions and stops there.
+   * It never ranks the runs and never declares one invalid.
+   */
+  private conditionsNote(recs: ResultRecord[]): TemplateResult | typeof nothing {
+    const resolved = recs.map((r) => resolveConditions(r));
+    const verdict = conditionsComparability(resolved);
+    if (verdict === 'uniform') return nothing;
+    const known = resolved.filter((c) => c.dedicated !== null).length;
+    if (verdict === 'mixed') {
+      const ded = resolved.filter((c) => c.dedicated === true).length;
+      const shared = resolved.filter((c) => c.dedicated === false).length;
+      return html`<div class="callout mb-3">
+        <strong>These runs were measured under different conditions.</strong> ${ded} ran on a
+        dedicated box, ${shared} on a box that was not. A gap between their numbers can reflect
+        conditions as much as configuration — the conditions row below shows what each run recorded,
+        and whether its isolation was measured or only asserted.
+      </div>`;
+    }
+    if (verdict === 'partial') {
+      return html`<div class="callout mb-3">
+        <strong>Run conditions are recorded for ${known} of ${recs.length} runs.</strong> For the
+        others, the run's notes are the only record of what else was on the box — read them before
+        reading the deltas.
+      </div>`;
+    }
+    return html`<div class="callout mb-3">
+      <strong>None of these runs recorded machine-readable conditions.</strong> Whether each box was
+      dedicated lives only in the runs' notes — open a run to read them before reading the deltas.
     </div>`;
   }
 
@@ -199,6 +235,13 @@ export class AtlasCompareView extends ViewElement {
             <tr>
               <td class="muted xs">verification</td>
               ${recs.map((r) => html`<td>${verifBadge(r.verification.level)}</td>`)}
+            </tr>
+            <tr>
+              <td class="muted xs">conditions</td>
+              ${recs.map((r) => {
+                const c = resolveConditions(r);
+                return html`<td>${condTag(c)}${condMeasured(c)}</td>`;
+              })}
             </tr>
             <tr>
               <td class="muted xs">config_id</td>

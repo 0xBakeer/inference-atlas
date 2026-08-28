@@ -36,6 +36,8 @@ export {
   tokensPerForwardPass,
 } from './plausibility.js';
 export type { PlausibilityIssue, PlausibilityInput } from './plausibility.js';
+export { resolveConditions, conditionsComparability } from './conditions.js';
+export type { ResolvedConditions, ConditionsSource, Comparability } from './conditions.js';
 export { computeScores } from './scoring.js';
 export type { ScoringInput, ScoringOutput, ScoredRun, RegistryCredits } from './scoring.js';
 export { computeCoverage, emptyCell, minorsBehind } from './coverage.js';

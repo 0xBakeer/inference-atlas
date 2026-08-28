@@ -21,7 +21,7 @@ from .engines.base import AttachAdapter, EngineAdapter, get_adapter
 from .registry import Registry
 from .repo import write_json
 from .result import ResultInputs, build_result, output_path
-from .spec import TaskSpec
+from .spec import RunConditions, TaskSpec
 from .telemetry import TelemetrySampler
 from .workloads import RunContext, get_runner, resolve_workload
 
@@ -140,6 +140,7 @@ async def run_spec(
     telemetry: bool = True,
     gotchas: list[str] | None = None,
     notes: str | None = None,
+    conditions: RunConditions | None = None,
     transport: httpx.AsyncBaseTransport | None = None,
     adapter: EngineAdapter | None = None,
     host: hwinfo.HostInfo | None = None,
@@ -208,6 +209,7 @@ async def run_spec(
                     attached=attached,
                     extra_gotchas=list(gotchas or []),
                     notes=notes,
+                    conditions=conditions,
                     warnings=list(output.warnings),
                 )
             )
