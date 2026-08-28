@@ -142,6 +142,7 @@ def derived_metrics(
     hardware: dict[str, Any] | None,
     model: dict[str, Any] | None = None,
     quant: dict[str, Any] | None = None,
+    hw_count: int = 1,
 ) -> dict[str, Any]:
     """Compute ``result.derived`` (SPEC §4).
 
@@ -152,6 +153,14 @@ def derived_metrics(
       hardware's peak bandwidth; 1.0 means the run saturated memory
     * ``memory_headroom_gb`` — registered memory minus measured peak VRAM
     * ``cost_per_1m_output_tokens_usd`` — only when the hardware has a cloud price
+
+    ``hw_count`` scales the *registered* figures, because bandwidth and memory are per
+    device and a tensor-parallel run has all of them. Without it a two-device result reports
+    twice the bandwidth efficiency it achieved, which is how the repository's first
+    multi-device contribution came out. ``packages/core/src/plausibility.ts`` already scales
+    the same way (``bandwidthCeiling``, the VRAM limit and the TDP check all take
+    ``hwCount``); this is the Python side catching up. Measured figures — power, VRAM — are
+    never scaled: they are what the meter said.
     """
     out: dict[str, Any] = {
         "cost_per_1m_output_tokens_usd": None,
@@ -166,7 +175,9 @@ def derived_metrics(
     power = metrics.get("power_avg_w")
     if output_tok_s and power:
         out["tokens_per_watt"] = round(output_tok_s / power, 4)
-    bandwidth = (hardware or {}).get("memory_bandwidth_gbs")
+    devices = max(1, int(hw_count or 1))
+    per_device_bandwidth = (hardware or {}).get("memory_bandwidth_gbs")
+    bandwidth = per_device_bandwidth * devices if per_device_bandwidth else None
     decode = (metrics.get("decode_tok_s_per_request") or {}).get("mean")
     reference = decode if decode else output_tok_s
     if bandwidth and reference:
@@ -177,7 +188,7 @@ def derived_metrics(
     memory_gb = (hardware or {}).get("memory_gb")
     vram_peak = metrics.get("vram_peak_gb")
     if memory_gb and vram_peak:
-        out["memory_headroom_gb"] = round(float(memory_gb) - float(vram_peak), 3)
+        out["memory_headroom_gb"] = round(float(memory_gb) * devices - float(vram_peak), 3)
     price = (hardware or {}).get("typical_cloud_usd_per_h")
     if price and output_tok_s:
         tokens_per_hour = output_tok_s * 3600
@@ -347,7 +358,9 @@ def build_result(inputs: ResultInputs) -> dict[str, Any]:
         record["scores"] = outcome.scores
     record["failures"] = outcome.failures
     record["gotchas"] = auto_gotchas(inputs, metrics)
-    record["derived"] = derived_metrics(metrics, hardware_record, model_record, quant)
+    record["derived"] = derived_metrics(
+        metrics, hardware_record, model_record, quant, spec.hardware.count
+    )
     record["raw"] = {
         "harness": HARNESS_NAME,
         "harness_version": __version__,

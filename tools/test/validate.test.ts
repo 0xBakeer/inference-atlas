@@ -6,9 +6,11 @@
  * to know the check is looking at what it claims to be looking at — a test that asserts
  * "some error happened" passes when the file fails to parse for an unrelated reason.
  */
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import type { ResultRecord } from '@atlas/core';
-import { validateRepo } from '../src/validate.js';
+import { main, validateRepo } from '../src/validate.js';
 import {
   CASE_SENSITIVE_FS,
   SOURCE_ROOT,
@@ -351,5 +353,55 @@ describe('reporting', () => {
     repo.writeResult(result);
     expect(validateRepo({ root: repo.root }).ok).toBe(true);
     expect(validateRepo({ root: repo.root, strict: true }).ok).toBe(false);
+  });
+});
+
+describe('--json-out', () => {
+  /**
+   * The report has to reach the file even when the run fails, because a failing run is the
+   * only time anybody reads it. Piping `--json` into a file does not survive that: pnpm
+   * appends its own failure block to the same stdout, the file becomes JSON followed by
+   * trailing text, and CI threw a SyntaxError instead of posting the findings — on the first
+   * external contribution, which is exactly the case the comment step exists for.
+   */
+  it('writes a parseable report on a FAILING validation, independently of stdout', () => {
+    repo.writeResult(makeResult(repo, { login: 'alice' }));
+    repo.initGit();
+    repo.git('checkout', '-q', '-b', 'contribution');
+    repo.writeResult(makeResult(repo, { login: 'carol', startedAt: '2026-08-03T09:00:00Z' }));
+    repo.commit('results: a run attributed to carol');
+
+    const out = join(repo.root, 'report.json');
+    const written: string[] = [];
+    const realWrite = process.stdout.write.bind(process.stdout);
+    process.stdout.write = ((chunk: string) => {
+      written.push(String(chunk));
+      return true;
+    }) as typeof process.stdout.write;
+
+    let status: number;
+    try {
+      status = main([
+        '--root',
+        repo.root,
+        '--pr-author',
+        'bob',
+        '--base',
+        'main',
+        '--json-out',
+        out,
+      ]);
+    } finally {
+      process.stdout.write = realWrite;
+    }
+
+    expect(status).toBe(1);
+    // Nothing the process printed can reach the file, which is the whole point.
+    const report = JSON.parse(readFileSync(out, 'utf8')) as {
+      ok: boolean;
+      errors: Array<{ code: string }>;
+    };
+    expect(report.ok).toBe(false);
+    expect(report.errors.map((e) => e.code)).toContain('ownership-added');
   });
 });
