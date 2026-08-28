@@ -20,8 +20,11 @@ export function vendorColor(vendor: string | null | undefined): string {
 }
 
 /** Fixed categorical order for chart series: assigned by entity, never cycled. Leads with the
- * two validated chart accents; status colours (--warn etc.) are never series colours. */
-const SERIES_VARS = [
+ * two validated chart accents; status colours (--warn etc.) are never series colours.
+ * This order is the CVD-safety mechanism: every ADJACENT pair clears deutan/protan
+ * ΔE >= 8 in both themes (see colors.test.ts, which re-validates it from tokens.css).
+ * Exported for the palette test — do not reorder without re-running the validation. */
+export const SERIES_VARS = [
   '--chart-1',
   '--chart-2',
   '--vendor-apple',
