@@ -5,6 +5,7 @@
  *   pnpm validate                                   # everything, locally
  *   pnpm validate --changed a.json b.json           # report only these files
  *   pnpm validate --pr-author octocat --base origin/main --json
+ *   pnpm validate --json-out report.json              # report to a file, not stdout
  *
  * What it does, in order: schema-check every JSON file against the schema its *path*
  * implies, recompute every derived id, check referential integrity and physics, look for
@@ -18,7 +19,7 @@
  *
  * Exit code 1 on any error, or on any warning with `--strict`.
  */
-import { realpathSync } from 'node:fs';
+import { realpathSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { resolve } from 'node:path';
 import type { SiteConfig } from '@atlas/core';
@@ -253,11 +254,12 @@ function crossCheck(repo: ReturnType<typeof loadRepo>, reporter: Reporter): void
 
 /* ----------------------------------------------------------------------- CLI */
 
-function main(argv: string[]): number {
+export function main(argv: string[]): number {
   const args = parseArgv(argv, {
     variadic: ['changed'],
     boolean: ['json', 'strict', 'allow-override', 'markdown', 'no-color'],
   });
+  const jsonOut = args.str('json-out');
 
   const root = resolve(args.str('root', REPO_ROOT));
   const outcome = validateRepo({
@@ -269,22 +271,34 @@ function main(argv: string[]): number {
     strict: args.bool('strict'),
   });
 
+  const report = () =>
+    `${JSON.stringify(
+      {
+        ok: outcome.ok,
+        counts: outcome.counts,
+        errors: outcome.issues.filter((i) => i.level === 'error'),
+        warnings: outcome.issues.filter((i) => i.level === 'warn'),
+        codes: outcome.codes,
+        code_counts: codeCounts(outcome.issues),
+        markdown: renderMarkdown(outcome.issues, { counts: outcome.counts }),
+      },
+      null,
+      2,
+    )}\n`;
+
+  // --json-out exists because --json does not survive a wrapper. Run through
+  // `pnpm exec ... --json > report.json` and a FAILING validation makes pnpm append its own
+  // ELIFECYCLE block to the same stdout, so the file becomes JSON followed by trailing text
+  // and whoever reads it back gets a parse error instead of the findings. That is not
+  // hypothetical: it is why the first external contribution got a SyntaxError from CI
+  // instead of the one sentence telling them which field was wrong. Writing the report here
+  // is immune to anything else sharing the stream.
+  if (jsonOut) {
+    writeFileSync(resolve(jsonOut), report(), 'utf8');
+  }
+
   if (args.bool('json')) {
-    process.stdout.write(
-      `${JSON.stringify(
-        {
-          ok: outcome.ok,
-          counts: outcome.counts,
-          errors: outcome.issues.filter((i) => i.level === 'error'),
-          warnings: outcome.issues.filter((i) => i.level === 'warn'),
-          codes: outcome.codes,
-          code_counts: codeCounts(outcome.issues),
-          markdown: renderMarkdown(outcome.issues, { counts: outcome.counts }),
-        },
-        null,
-        2,
-      )}\n`,
-    );
+    process.stdout.write(report());
   } else if (args.bool('markdown')) {
     process.stdout.write(`${renderMarkdown(outcome.issues, { counts: outcome.counts })}\n`);
   } else {

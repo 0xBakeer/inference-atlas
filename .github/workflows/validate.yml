@@ -57,13 +57,21 @@ jobs:
       - name: Validate
         id: validate
         run: |
+          # --json-out, not `--json > validate.json`: on a failing validation pnpm appends its
+          # own ELIFECYCLE block to the same stdout, which left the file as JSON plus trailing
+          # text and made the read below throw a SyntaxError. The findings were then never
+          # posted -- exactly on the pull requests that needed them most.
+          #
+          # The path is absolute because `pnpm --filter <pkg> exec` runs with the cwd set to
+          # that package, so a relative --json-out would land in tools/ while every reader
+          # below looks in the workspace root.
           set +e
           pnpm --filter @atlas/tools exec tsx src/validate.ts \
             --changed ${{ steps.changed.outputs.files }} \
             --pr-author '${{ github.event.pull_request.user.login }}' \
             --base '${{ steps.changed.outputs.base }}' \
             ${{ contains(github.event.pull_request.labels.*.name, 'maintainer-override') && '--allow-override' || '' }} \
-            --json > validate.json
+            --json-out "$GITHUB_WORKSPACE/validate.json"
           echo "exit=$?" >> "$GITHUB_OUTPUT"
           set -e
           node -e "const r=require('./validate.json');console.log(r.markdown)"

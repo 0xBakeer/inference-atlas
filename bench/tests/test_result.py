@@ -5,6 +5,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pytest
+
 from atlas_bench.registry import Registry
 from atlas_bench.result import (
     PAYLOAD_LIMIT_BYTES,
@@ -171,3 +173,37 @@ def test_resolve_login_prefers_the_explicit_value(monkeypatch) -> None:
     monkeypatch.setenv("ATLAS_GITHUB_LOGIN", "from-env")
     assert resolve_login("explicit") == "explicit"
     assert resolve_login(None) == "from-env"
+
+
+def test_derived_metrics_scales_registered_figures_by_hardware_count() -> None:
+    """Bandwidth and memory are per device; a tensor-parallel run has all of them.
+
+    Without this the repository's first multi-device result reported twice the bandwidth
+    efficiency it actually achieved. packages/core/src/plausibility.ts already scales the
+    same way, so the two implementations agreeing is the point.
+    """
+    metrics = {
+        "output_tok_s": 50.0,
+        "decode_tok_s_per_request": {"mean": 50.0},
+        "vram_peak_gb": 100.0,
+    }
+    hardware = {"memory_bandwidth_gbs": 273.0, "memory_gb": 128.0}
+    model = {"moe": False}
+    quant = {"size_gb": 10.0}
+
+    one = derived_metrics(metrics, hardware, model, quant, hw_count=1)
+    two = derived_metrics(metrics, hardware, model, quant, hw_count=2)
+
+    # Twice the aggregate bandwidth for the same achieved throughput is half the efficiency.
+    assert two["bandwidth_efficiency"] == pytest.approx(one["bandwidth_efficiency"] / 2)
+    assert two["tok_s_per_gb_bandwidth"] == pytest.approx(one["tok_s_per_gb_bandwidth"] / 2)
+    # Two devices' worth of registered memory, against one measured peak.
+    assert one["memory_headroom_gb"] == pytest.approx(28.0)
+    assert two["memory_headroom_gb"] == pytest.approx(156.0)
+    # Measured figures are never scaled: power is what the meter said.
+    assert two["tokens_per_watt"] == one["tokens_per_watt"]
+    # The default stays single-device.
+    assert (
+        derived_metrics(metrics, hardware, model, quant)["bandwidth_efficiency"]
+        == (one["bandwidth_efficiency"])
+    )
