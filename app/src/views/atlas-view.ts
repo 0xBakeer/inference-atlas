@@ -3,9 +3,11 @@ import { customElement, state } from 'lit/decorators.js';
 import type { CoverageLevel, Gap, WorkloadKind } from '@atlas/core';
 import { addButton } from '../components/add-modal.js';
 import type { HeatCellSelect } from '../components/heatmap.js';
+import '../components/chart.js';
 import '../components/heatmap.js';
 import '../components/cell-drawer.js';
 import { icon } from '../components/icons.js';
+import { activityBuild } from '../components/stat-charts.js';
 import {
   avatar,
   emptyState,
@@ -292,6 +294,25 @@ export class AtlasView extends ViewElement {
     </div>`;
   }
 
+  /** The map's pulse: submissions over time, with the running total. */
+  private activitySection(): TemplateResult | typeof nothing {
+    const rows = store.index.value;
+    const build = activityBuild(
+      rows.map((r) => r.provenance.submitted_at ?? r.provenance.started_at),
+      { label: 'runs', cumulative: true },
+    );
+    if (!build) return nothing;
+    return html`<section class="mt-6">
+      <div class="section-title">
+        <h2>Activity</h2>
+        <span class="meta">results landing on main — per period and running total</span>
+      </div>
+      <div class="card tight">
+        <atlas-chart .build=${build} .height=${180} .key=${rows.length}></atlas-chart>
+      </div>
+    </section>`;
+  }
+
   private gapsSection(): TemplateResult {
     const gaps = store.gaps.value;
     return html`<section class="card flush">
@@ -515,6 +536,8 @@ export class AtlasView extends ViewElement {
         }
         ${this.legend()}
       </section>
+
+      ${this.activitySection()}
 
       <section class="split-3 mt-6">
         ${this.gapsSection()} ${this.latestSection()} ${this.featuredSection()}

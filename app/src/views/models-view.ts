@@ -4,14 +4,26 @@ import { addButton } from '../components/add-modal.js';
 import { icon } from '../components/icons.js';
 import '../components/mini-coverage.js';
 import { runsTable } from '../components/runs-table.js';
+import {
+  barList,
+  bestPerGroup,
+  countPerGroup,
+  firstMetricWithData,
+} from '../components/stat-charts.js';
 import { emptyState, extLink, kv, skeletonLines } from '../components/ui.js';
 import { engineMinors, engineRunsOn, quantRunsOn } from '../data/derive.js';
-import type { RegistryModel } from '../data/types.js';
+import type { IndexRow, RegistryModel } from '../data/types.js';
 import { href, modelHref, qget, qlist, setQuery } from '../router.js';
 import { store } from '../store.js';
+import { vendorClass } from '../util/colors.js';
 import { matchesQuery, uniqueSorted } from '../util/filters.js';
 import { fmtInt, fmtParams, fmtTokens } from '../util/format.js';
 import { ViewElement } from './view-base.js';
+
+/** CSS variable carrying the vendor hue of a device id. */
+function vendorVar(hardwareId: string): string {
+  return `var(--${vendorClass(store.lookups.hardware.get(hardwareId)?.vendor)})`;
+}
 
 @customElement('atlas-models-view')
 export class AtlasModelsView extends ViewElement {
@@ -105,6 +117,7 @@ export class AtlasModelsView extends ViewElement {
         ${chips('modality', 'modality', uniqueSorted(reg.models.flatMap((m) => m.model.modalities ?? ['text'])), mods)}
         ${chips('licence', 'licence', uniqueSorted(reg.models.map((m) => m.model.licence ?? 'unknown')), lic)}
       </div>
+      ${this.listCharts()}
       ${
         rows.length === 0
           ? emptyState({
@@ -143,6 +156,120 @@ export class AtlasModelsView extends ViewElement {
               })}
             </div>`
       }
+    </div>`;
+  }
+
+  /** How this model's quants and devices compare on what was actually measured. */
+  private detailCharts(runs: IndexRow[]): TemplateResult | typeof nothing {
+    const metric = firstMetricWithData(runs);
+    if (!metric) return nothing;
+    const lowerMax = (xs: number[]) =>
+      metric.better === 'lower' ? Math.max(...xs) : undefined;
+    const byQuant = bestPerGroup(runs, (r) => r.model.quant_id, metric).slice(0, 10);
+    const byHw = bestPerGroup(runs, (r) => r.hardware.id, metric).slice(0, 10);
+    if (!byQuant.length && !byHw.length) return nothing;
+    return html`<section class="mt-5">
+      <div class="section-title">
+        <h2>Measured</h2>
+        <span class="meta"
+          >best ${metric.label}${metric.unit ? ` (${metric.unit})` : ''} recorded so far</span
+        >
+      </div>
+      <div class="insights">
+        ${
+          byQuant.length
+            ? html`<section class="card tight">
+                <div class="card-head">
+                  <h3>By quantization</h3>
+                  <span class="muted small">${byQuant.length} measured</span>
+                </div>
+                ${barList(
+                  byQuant.map((b) => ({
+                    label: b.id,
+                    title: `${b.id} — ${metric.fmt(b.value)} ${metric.unit} on ${b.row.hardware.id}`,
+                    value: b.value,
+                    text: metric.fmt(b.value),
+                    note: b.row.hardware.id,
+                    href: href('run', b.row.run_id),
+                  })),
+                  { max: lowerMax(byQuant.map((b) => b.value)), ariaLabel: `Best ${metric.label} per quantization` },
+                )}
+              </section>`
+            : nothing
+        }
+        ${
+          byHw.length
+            ? html`<section class="card tight">
+                <div class="card-head">
+                  <h3>By hardware</h3>
+                  <span class="muted small">${byHw.length} devices measured</span>
+                </div>
+                ${barList(
+                  byHw.map((b) => ({
+                    label: b.id,
+                    title: `${b.id} — ${metric.fmt(b.value)} ${metric.unit} (${b.row.model.quant_id})`,
+                    value: b.value,
+                    text: metric.fmt(b.value),
+                    note: b.row.model.quant_id,
+                    color: vendorVar(b.id),
+                    href: href('run', b.row.run_id),
+                  })),
+                  { max: lowerMax(byHw.map((b) => b.value)), ariaLabel: `Best ${metric.label} per device` },
+                )}
+              </section>`
+            : nothing
+        }
+      </div>
+    </section>`;
+  }
+
+  /** Measured leaders across the registry — only models that actually have runs. */
+  private listCharts(): TemplateResult | typeof nothing {
+    const rows = store.index.value;
+    const metric = firstMetricWithData(rows);
+    if (!metric) return nothing;
+    const best = bestPerGroup(rows, (r) => r.model.id, metric).slice(0, 10);
+    const counts = countPerGroup(rows, (r) => r.model.id).slice(0, 10);
+    if (!best.length) return nothing;
+    return html`<div class="insights">
+      <section class="card tight">
+        <div class="card-head">
+          <h3>${metric.better === 'lower' ? 'Best' : 'Fastest'} measured</h3>
+          <span class="muted small"
+            >best ${metric.label}${metric.unit ? ` (${metric.unit})` : ''} per model</span
+          >
+        </div>
+        ${barList(
+          best.map((b) => ({
+            label: b.id,
+            title: `${b.id} — best ${metric.fmt(b.value)} ${metric.unit} (${b.row.model.quant_id} on ${b.row.hardware.id})`,
+            value: b.value,
+            text: metric.fmt(b.value),
+            note: `${b.row.model.quant_id} · ${b.row.hardware.id}`,
+            href: modelHref(b.id),
+          })),
+          {
+            max: metric.better === 'lower' ? Math.max(...best.map((b) => b.value)) : undefined,
+            ariaLabel: `Best ${metric.label} per model`,
+          },
+        )}
+      </section>
+      <section class="card tight">
+        <div class="card-head">
+          <h3>Most measured</h3>
+          <span class="muted small">runs per model</span>
+        </div>
+        ${barList(
+          counts.map((c) => ({
+            label: c.id,
+            value: c.count,
+            text: fmtInt(c.count),
+            color: 'var(--chart-2)',
+            href: modelHref(c.id),
+          })),
+          { ariaLabel: 'Runs per model' },
+        )}
+      </section>
     </div>`;
   }
 
@@ -318,6 +445,8 @@ export class AtlasModelsView extends ViewElement {
           .filters=${{ model: m.id }}
         ></atlas-mini-coverage>
       </section>
+
+      ${this.detailCharts(runs)}
 
       <section class="mt-5">
         <div class="section-title">

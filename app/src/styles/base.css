@@ -1179,6 +1179,98 @@ table.table {
   font-size: var(--fs-xs);
   text-align: right;
 }
+/* horizontal bar chart (entity comparisons — long labels read better sideways) */
+.bar-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.bl-row {
+  display: grid;
+  grid-template-columns: minmax(120px, 240px) minmax(0, 1fr) minmax(64px, auto);
+  align-items: center;
+  gap: 10px;
+  padding: 3px 4px;
+  border-radius: var(--r-sm);
+  font-size: var(--fs-sm);
+  color: inherit;
+  text-decoration: none;
+  min-width: 0;
+}
+a.bl-row:hover {
+  background: var(--surface-2);
+  text-decoration: none;
+}
+.bl-label {
+  min-width: 0;
+  font-size: var(--fs-xs);
+  color: var(--ink-2);
+}
+.bl-label .mono,
+.bl-label.mono {
+  font-family: var(--font-mono);
+}
+.bl-track {
+  display: block;
+  height: 12px;
+  background: var(--surface-3);
+  border-radius: 3px;
+  overflow: hidden;
+  min-width: 0;
+}
+.bl-fill {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+  transition: width var(--t-med) var(--ease);
+  min-width: 2px;
+}
+.bl-val {
+  font-size: var(--fs-xs);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.bl-val .bl-note {
+  color: var(--muted);
+  font-size: var(--fs-2xs);
+  font-family: var(--font-sans);
+}
+/* small screens: label above its bar, value stays inline with the bar */
+@media (max-width: 560px) {
+  .bl-row {
+    grid-template-columns: minmax(0, 1fr) minmax(72px, auto);
+    grid-template-areas:
+      'label label'
+      'track val';
+    gap: 2px 10px;
+    padding: 4px;
+  }
+  .bl-label {
+    grid-area: label;
+  }
+  .bl-track {
+    grid-area: track;
+  }
+  .bl-val {
+    grid-area: val;
+  }
+}
+
+/* chart sections on list/detail pages */
+.chart-card .chart-box {
+  min-height: 0;
+}
+.insights {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(420px, 100%), 1fr));
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-4);
+}
+.insights .card-head {
+  margin-bottom: var(--sp-2);
+}
+
 .delta {
   font-family: var(--font-mono);
   font-size: var(--fs-xs);

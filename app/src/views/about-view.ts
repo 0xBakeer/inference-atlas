@@ -1,6 +1,8 @@
-import { html } from 'lit';
+import { html, nothing } from 'lit';
 import { customElement } from 'lit/decorators.js';
+import '../components/chart.js';
 import { icon } from '../components/icons.js';
+import { activityBuild } from '../components/stat-charts.js';
 import { store } from '../store.js';
 import { fmtInt } from '../util/format.js';
 import { ViewElement } from './view-base.js';
@@ -71,6 +73,25 @@ export class AtlasAboutView extends ViewElement {
           </li>
         </ul>
         ${stats ? html`<p class="small muted">Right now: ${fmtInt(stats.runs)} runs in ${fmtInt(stats.cells_covered)} of ${fmtInt(stats.cells_possible)} possible cells, from ${fmtInt(stats.contributors)} contributor${stats.contributors === 1 ? '' : 's'}, across ${fmtInt(stats.engines)} engines, ${fmtInt(stats.models)} models and ${fmtInt(stats.hardware)} devices.</p>` : ''}
+        ${(() => {
+          const activity = activityBuild(
+            store.index.value.map((r) => r.provenance.submitted_at ?? r.provenance.started_at),
+            { label: 'runs', cumulative: true },
+          );
+          return activity
+            ? html`<div class="card tight mt-2 mb-4" style="max-width:none">
+                <div class="card-head">
+                  <h3>How the map is filling in</h3>
+                  <span class="muted small">submissions per period, with the running total</span>
+                </div>
+                <atlas-chart
+                  .build=${activity}
+                  .height=${220}
+                  .key=${store.index.value.length}
+                ></atlas-chart>
+              </div>`
+            : nothing;
+        })()}
         <h2>Licences</h2>
         <p>
           Code is MIT. Data — every registry file and every measurement — is CC-BY-4.0: use it,

@@ -3,7 +3,9 @@ import { customElement } from 'lit/decorators.js';
 import type { Gap } from '@atlas/core';
 import { addButton } from '../components/add-modal.js';
 import { icon } from '../components/icons.js';
+import { barList } from '../components/stat-charts.js';
 import { emptyState, selectField, skeletonLines, vendorDot } from '../components/ui.js';
+import { vendorClass } from '../util/colors.js';
 import { href, modelHref, qget, setQuery } from '../router.js';
 import { store } from '../store.js';
 import { matchesQuery, uniqueSorted } from '../util/filters.js';
@@ -15,6 +17,52 @@ export class AtlasGapsView extends ViewElement {
   override connectedCallback(): void {
     super.connectedCallback();
     void store.loadGaps();
+  }
+
+  /** Where the queue concentrates: gaps per device and per engine, under the current filters. */
+  private queueCharts(rows: Gap[]) {
+    if (rows.length < 3) return nothing;
+    const count = (key: (g: Gap) => string) => {
+      const m = new Map<string, number>();
+      for (const g of rows) m.set(key(g), (m.get(key(g)) ?? 0) + 1);
+      return [...m.entries()].sort((a, b) => b[1] - a[1]).slice(0, 8);
+    };
+    const byHw = count((g) => g.hardware_id);
+    const byEngine = count((g) => g.engine_id);
+    return html`<div class="insights">
+      <section class="card tight">
+        <div class="card-head">
+          <h3>Gaps by device</h3>
+          <span class="muted small">where a box would help most</span>
+        </div>
+        ${barList(
+          byHw.map(([id, n]) => ({
+            label: store.lookups.hardware.get(id)?.name ?? id,
+            value: n,
+            text: fmtInt(n),
+            color: `var(--${vendorClass(store.lookups.hardware.get(id)?.vendor)})`,
+            href: href('hardware', id),
+          })),
+          { ariaLabel: 'Open gaps per device' },
+        )}
+      </section>
+      <section class="card tight">
+        <div class="card-head">
+          <h3>Gaps by engine</h3>
+          <span class="muted small">in the current queue</span>
+        </div>
+        ${barList(
+          byEngine.map(([id, n]) => ({
+            label: store.lookups.engines.get(id)?.meta.name ?? id,
+            value: n,
+            text: fmtInt(n),
+            color: 'var(--chart-2)',
+            href: href('engines', id),
+          })),
+          { ariaLabel: 'Open gaps per engine' },
+        )}
+      </section>
+    </div>`;
   }
 
   override render() {
@@ -105,6 +153,7 @@ export class AtlasGapsView extends ViewElement {
         )}
       </div>
 
+      ${this.queueCharts(rows)}
       ${
         gaps.length === 0
           ? emptyState({

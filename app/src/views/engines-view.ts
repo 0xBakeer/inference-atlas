@@ -6,6 +6,7 @@ import { icon } from '../components/icons.js';
 import '../components/mini-coverage.js';
 import { fmtDefault } from '../components/param-form.js';
 import { runsTable } from '../components/runs-table.js';
+import { barList, bestPerGroup, countPerGroup, firstMetricWithData } from '../components/stat-charts.js';
 import {
   codeBlock,
   emptyState,
@@ -15,6 +16,7 @@ import {
   skeletonLines,
 } from '../components/ui.js';
 import { engineMinors, engineRunsOn, quantRunsOn } from '../data/derive.js';
+import type { IndexRow } from '../data/types.js';
 import { href, qget, setQuery } from '../router.js';
 import { store } from '../store.js';
 import { versionDiff } from '../util/diff.js';
@@ -78,6 +80,7 @@ export class AtlasEnginesView extends ViewElement {
           the same command line can be two different configurations on two versions.
         </p>
       </div>
+      ${this.listCharts()}
       <div class="reg-list">
         ${reg.engines.map((e) => {
           const { p, c } = this.covOf(e.meta.id);
@@ -104,6 +107,124 @@ export class AtlasEnginesView extends ViewElement {
           </a>`;
         })}
       </div>
+    </div>`;
+  }
+
+  /** Evidence across this engine's versions: run counts and the best measured number. */
+  private versionCharts(versions: string[], runs: IndexRow[]): TemplateResult | typeof nothing {
+    if (!runs.length || !versions.length) return nothing;
+    const newestFirst = [...versions].reverse();
+    const countOf = (v: string) => runs.filter((r) => r.engine.version === v).length;
+    const metric = firstMetricWithData(runs);
+    const best = metric ? bestPerGroup(runs, (r) => r.engine.version, metric) : [];
+    const bestOf = new Map(best.map((b) => [b.id, b]));
+    return html`<section class="mt-5">
+      <div class="section-title">
+        <h2>Across versions</h2>
+        <span class="meta">newest first — each minor is its own square on the map</span>
+      </div>
+      <div class="insights">
+        <section class="card tight">
+          <div class="card-head"><h3>Runs per version</h3></div>
+          ${barList(
+            newestFirst.map((v) => ({
+              label: v,
+              value: countOf(v),
+              text: fmtInt(countOf(v)),
+              color: 'var(--chart-2)',
+            })),
+            { ariaLabel: 'Runs per engine version' },
+          )}
+        </section>
+        ${
+          metric && best.length
+            ? html`<section class="card tight">
+                <div class="card-head">
+                  <h3>${metric.better === 'lower' ? 'Best' : 'Fastest'} per version</h3>
+                  <span class="muted small"
+                    >${metric.label}${metric.unit ? ` (${metric.unit})` : ''}</span
+                  >
+                </div>
+                ${barList(
+                  newestFirst
+                    .filter((v) => bestOf.has(v))
+                    .map((v) => {
+                      const b = bestOf.get(v)!;
+                      return {
+                        label: v,
+                        title: `${v} — ${metric.fmt(b.value)} ${metric.unit} (${b.row.model.id}/${b.row.model.quant_id} on ${b.row.hardware.id})`,
+                        value: b.value,
+                        text: metric.fmt(b.value),
+                        note: `${b.row.model.id}/${b.row.model.quant_id}`,
+                        href: href('run', b.row.run_id),
+                      };
+                    }),
+                  {
+                    max:
+                      metric.better === 'lower'
+                        ? Math.max(...best.map((b) => b.value))
+                        : undefined,
+                    ariaLabel: `Best ${metric.label} per engine version`,
+                  },
+                )}
+              </section>`
+            : nothing
+        }
+      </div>
+    </section>`;
+  }
+
+  /** Where the evidence is: runs per engine, and the best number each engine produced. */
+  private listCharts(): TemplateResult | typeof nothing {
+    const rows = store.index.value;
+    if (!rows.length) return nothing;
+    const counts = countPerGroup(rows, (r) => r.engine.id).slice(0, 10);
+    const metric = firstMetricWithData(rows);
+    const best = metric ? bestPerGroup(rows, (r) => r.engine.id, metric).slice(0, 10) : [];
+    return html`<div class="insights">
+      <section class="card tight">
+        <div class="card-head">
+          <h3>Runs per engine</h3>
+          <span class="muted small">all workloads, all versions</span>
+        </div>
+        ${barList(
+          counts.map((c) => ({
+            label: store.lookups.engines.get(c.id)?.meta.name ?? c.id,
+            value: c.count,
+            text: fmtInt(c.count),
+            color: 'var(--chart-2)',
+            href: href('engines', c.id),
+          })),
+          { ariaLabel: 'Runs per engine' },
+        )}
+      </section>
+      ${
+        metric && best.length
+          ? html`<section class="card tight">
+              <div class="card-head">
+                <h3>${metric.better === 'lower' ? 'Best' : 'Fastest'} measured</h3>
+                <span class="muted small"
+                  >best ${metric.label}${metric.unit ? ` (${metric.unit})` : ''} per engine</span
+                >
+              </div>
+              ${barList(
+                best.map((b) => ({
+                  label: store.lookups.engines.get(b.id)?.meta.name ?? b.id,
+                  title: `${b.id} — ${metric.fmt(b.value)} ${metric.unit} (${b.row.model.id}/${b.row.model.quant_id} on ${b.row.hardware.id})`,
+                  value: b.value,
+                  text: metric.fmt(b.value),
+                  note: `${b.row.model.id}/${b.row.model.quant_id}`,
+                  href: href('engines', b.id),
+                })),
+                {
+                  max:
+                    metric.better === 'lower' ? Math.max(...best.map((b) => b.value)) : undefined,
+                  ariaLabel: `Best ${metric.label} per engine`,
+                },
+              )}
+            </section>`
+          : nothing
+      }
     </div>`;
   }
 
@@ -373,6 +494,8 @@ export class AtlasEnginesView extends ViewElement {
           }
         </section>
       </div>
+
+      ${this.versionCharts(versions, runs)}
 
       <section class="mt-5">
         <div class="section-title">

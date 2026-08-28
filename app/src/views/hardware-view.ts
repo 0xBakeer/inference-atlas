@@ -5,6 +5,7 @@ import { addButton } from '../components/add-modal.js';
 import { icon } from '../components/icons.js';
 import '../components/mini-coverage.js';
 import { runsTable } from '../components/runs-table.js';
+import { barList, bestPerGroup, firstMetricWithData } from '../components/stat-charts.js';
 import {
   emptyState,
   extLink,
@@ -17,6 +18,7 @@ import {
 import { engineRunsOn, quantRunsOn } from '../data/derive.js';
 import { href, modelHref, navigate, qget, setQuery } from '../router.js';
 import { store } from '../store.js';
+import { vendorClass } from '../util/colors.js';
 import { matchesQuery, parseSort, serializeSort, sortRows, toggleSort } from '../util/filters.js';
 import { fmtInt, fmtNum, fmtTokS, fmtUsd } from '../util/format.js';
 import { ViewElement } from './view-base.js';
@@ -121,6 +123,7 @@ export class AtlasHardwareView extends ViewElement {
           </select></label
         >
       </div>
+      ${this.listCharts(rows)}
       <div class="table-wrap">
         <table class="table cards">
           <thead>
@@ -156,6 +159,113 @@ export class AtlasHardwareView extends ViewElement {
           </tbody>
         </table>
       </div>
+    </div>`;
+  }
+
+  /** Bars of best measured decode against the bandwidth ceiling, per model/quant. */
+  private ceilingChart(
+    ceilings: Array<{
+      m: { model: { id: string } };
+      qq: { id: string };
+      ceiling: number | null;
+      best: number | null;
+    }>,
+  ): TemplateResult | typeof nothing {
+    const measured = ceilings.filter(
+      (x): x is typeof x & { best: number; ceiling: number } =>
+        x.best !== null && x.ceiling !== null && x.ceiling > 0,
+    );
+    if (!measured.length) return nothing;
+    const top = measured.sort((a, b) => b.best - a.best).slice(0, 10);
+    return html`<section class="mt-5">
+      <div class="section-title">
+        <h2>Measured against the ceiling</h2>
+        <span class="meta">bar length = share of the theoretical decode bound reached</span>
+      </div>
+      <div class="card tight">
+        ${barList(
+          top.map((x) => {
+            const pct = Math.round((x.best / x.ceiling) * 100);
+            return {
+              label: `${x.m.model.id}/${x.qq.id}`,
+              title: `${x.m.model.id}/${x.qq.id} — ${fmtTokS(x.best)} of ${fmtTokS(x.ceiling)} tok/s ceiling (${pct}%)`,
+              value: x.best,
+              frac: Math.min(1, x.best / x.ceiling),
+              text: fmtTokS(x.best),
+              note: `${pct}% of ${fmtTokS(x.ceiling)}${pct > 100 ? ' ⚠' : ''}`,
+              color: pct > 100 ? 'var(--warn)' : 'var(--chart-1)',
+            };
+          }),
+          { ariaLabel: 'Best measured decode against the bandwidth ceiling' },
+        )}
+      </div>
+    </section>`;
+  }
+
+  /** Registered bandwidth (the decode ceiling driver) and the best number anyone measured. */
+  private listCharts(devices: Hardware[]): TemplateResult | typeof nothing {
+    const vVar = (h: Hardware | undefined) => `var(--${vendorClass(h?.vendor)})`;
+    const withBw = devices
+      .filter((h) => h.memory_bandwidth_gbs != null)
+      .sort((a, b) => b.memory_bandwidth_gbs! - a.memory_bandwidth_gbs!)
+      .slice(0, 12);
+    const ids = new Set(devices.map((h) => h.id));
+    const runs = store.index.value.filter((r) => ids.has(r.hardware.id));
+    const metric = firstMetricWithData(runs);
+    const best = metric ? bestPerGroup(runs, (r) => r.hardware.id, metric).slice(0, 12) : [];
+    if (!withBw.length && !best.length) return nothing;
+    return html`<div class="insights">
+      ${
+        withBw.length
+          ? html`<section class="card tight">
+              <div class="card-head">
+                <h3>Memory bandwidth</h3>
+                <span class="muted small">GB/s — the single-stream decode ceiling</span>
+              </div>
+              ${barList(
+                withBw.map((h) => ({
+                  label: h.name,
+                  title: `${h.name} — ${h.memory_bandwidth_gbs} GB/s`,
+                  value: h.memory_bandwidth_gbs!,
+                  text: fmtInt(h.memory_bandwidth_gbs),
+                  color: vVar(h),
+                  href: href('hardware', h.id),
+                })),
+                { ariaLabel: 'Memory bandwidth per device' },
+              )}
+            </section>`
+          : nothing
+      }
+      ${
+        metric && best.length
+          ? html`<section class="card tight">
+              <div class="card-head">
+                <h3>${metric.better === 'lower' ? 'Best' : 'Fastest'} measured</h3>
+                <span class="muted small"
+                  >best ${metric.label}${metric.unit ? ` (${metric.unit})` : ''} per device</span
+                >
+              </div>
+              ${barList(
+                best.map((b) => ({
+                  label: store.lookups.hardware.get(b.id)?.name ?? b.id,
+                  title: `${b.id} — ${metric.fmt(b.value)} ${metric.unit} (${b.row.model.id}/${b.row.model.quant_id})`,
+                  value: b.value,
+                  text: metric.fmt(b.value),
+                  note: `${b.row.model.id}/${b.row.model.quant_id}`,
+                  color: vVar(store.lookups.hardware.get(b.id)),
+                  href: href('hardware', b.id),
+                })),
+                {
+                  max:
+                    metric.better === 'lower'
+                      ? Math.max(...best.map((b) => b.value))
+                      : undefined,
+                  ariaLabel: `Best ${metric.label} per device`,
+                },
+              )}
+            </section>`
+          : nothing
+      }
     </div>`;
   }
 
@@ -422,6 +532,8 @@ export class AtlasHardwareView extends ViewElement {
           }
         </section>
       </div>
+
+      ${this.ceilingChart(ceilings)}
 
       <section class="mt-5">
         <div class="section-title">

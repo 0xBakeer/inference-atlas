@@ -1,7 +1,9 @@
 import { html, nothing, type TemplateResult } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import '@lit-labs/virtualizer';
+import '../components/chart.js';
 import { icon } from '../components/icons.js';
+import { activityBuild, barList, histogramBuild } from '../components/stat-charts.js';
 import {
   avatar,
   emptyState,
@@ -202,6 +204,96 @@ export class AtlasResultsView extends ViewElement {
     download(`atlas-results-${new Date().toISOString().slice(0, 10)}.csv`, csv, 'text/csv');
   }
 
+  /** Charts over whatever the filters currently select: distribution, leaders, activity. */
+  private insights(rows: IndexRow[]): TemplateResult | typeof nothing {
+    if (rows.length < 3) return nothing;
+    const wanted = qget(this.q, 'chart');
+    const withData = METRICS.filter((m) => rows.some((r) => m.fromRow(r) !== null));
+    if (!withData.length) return nothing;
+    const metric =
+      (wanted ? withData.find((m) => m.key === wanted) : undefined) ??
+      withData.find((m) => m.key === 'decode_tok_s_per_request') ??
+      withData[0]!;
+    const values = rows
+      .map((r) => metric.fromRow(r))
+      .filter((v): v is number => v !== null);
+    const hist = histogramBuild(values, {
+      label: `${metric.short}${metric.unit ? ` (${metric.unit})` : ''}`,
+      fmt: (v) => metric.fmt(v),
+    });
+    const activity = activityBuild(
+      rows.map((r) => r.provenance.submitted_at ?? r.provenance.started_at),
+      { label: 'runs' },
+    );
+    const best = rows
+      .filter((r) => metric.fromRow(r) !== null)
+      .sort((a, b) =>
+        metric.better === 'higher'
+          ? metric.fromRow(b)! - metric.fromRow(a)!
+          : metric.fromRow(a)! - metric.fromRow(b)!,
+      )
+      .slice(0, 8);
+    const leaders = barList(
+      best.map((r) => ({
+        label: `${r.model.id}/${r.model.quant_id} · ${r.hardware.id}`,
+        title: `${r.engine.id} ${r.engine.version} · ${r.model.id}/${r.model.quant_id} · ${r.hardware.id} · ${r.workload_id}`,
+        value: metric.fromRow(r),
+        text: metric.fmt(metric.fromRow(r)),
+        href: href('run', r.run_id),
+      })),
+      {
+        // "lower is better" bars: scale so the best (smallest) is longest
+        max:
+          metric.better === 'lower'
+            ? Math.max(...best.map((r) => metric.fromRow(r)!))
+            : undefined,
+        ariaLabel: `${metric.better === 'lower' ? 'Best (lowest)' : 'Top'} runs by ${metric.label}`,
+      },
+    );
+    const picker = selectField(
+      'Metric',
+      metric.key,
+      withData.map((m) => ({ value: m.key, label: m.label })),
+      (v) => setQuery({ chart: v === 'decode_tok_s_per_request' ? null : v }),
+      { allowEmpty: false, small: true },
+    );
+    return html`<div class="insights">
+      ${
+        hist
+          ? html`<section class="card tight">
+              <div class="card-head">
+                <h3>Distribution</h3>
+                <span class="muted small"
+                  >${fmtInt(values.length)} runs carry ${metric.label}</span
+                >
+                <span class="spacer"></span>
+                ${picker}
+              </div>
+              <atlas-chart .build=${hist} .height=${190} .key=${`${metric.key}:${rows.length}`}></atlas-chart>
+            </section>`
+          : nothing
+      }
+      <section class="card tight">
+        <div class="card-head">
+          <h3>${metric.better === 'lower' ? 'Best' : 'Top'} runs</h3>
+          <span class="muted small">by ${metric.label}${metric.unit ? ` (${metric.unit})` : ''}</span>
+        </div>
+        ${leaders}
+      </section>
+      ${
+        activity
+          ? html`<section class="card tight">
+              <div class="card-head">
+                <h3>Activity</h3>
+                <span class="muted small">submissions over time</span>
+              </div>
+              <atlas-chart .build=${activity} .height=${190} .key=${rows.length}></atlas-chart>
+            </section>`
+          : nothing
+      }
+    </div>`;
+  }
+
   private cell(c: Col, r: IndexRow): TemplateResult {
     if (c.render) return c.render(r);
     if (c.metric) {
@@ -350,6 +442,7 @@ export class AtlasResultsView extends ViewElement {
         ${active.length ? html`<button class="btn btn-ghost btn-sm" @click=${() => setQuery(Object.fromEntries(active.map((k) => [k, null])))}>${icon('x')} Clear ${active.length}</button>` : nothing}
       </div>
 
+      ${this.insights(rows)}
       ${
         rows.length === 0
           ? emptyState({

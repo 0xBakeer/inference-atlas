@@ -4,9 +4,17 @@ import type { Workload } from '@atlas/core';
 import { addButton } from '../components/add-modal.js';
 import { icon } from '../components/icons.js';
 import { runsTable } from '../components/runs-table.js';
+import {
+  barList,
+  bestPerGroup,
+  countPerGroup,
+  firstMetricWithData,
+} from '../components/stat-charts.js';
 import { codeBlock, emptyState, kindTag, kv, skeletonLines } from '../components/ui.js';
+import type { IndexRow } from '../data/types.js';
 import { href, navigate, qget, setQuery } from '../router.js';
 import { store } from '../store.js';
+import { vendorClass } from '../util/colors.js';
 import { fmtInt } from '../util/format.js';
 import { ViewElement } from './view-base.js';
 
@@ -68,6 +76,7 @@ export class AtlasWorkloadsView extends ViewElement {
         </button>
         ${KINDS.map((k) => html`<button class="chip" aria-pressed=${kind === k} @click=${() => setQuery({ kind: k })}>${k} <span class="count">${reg.workloads.filter((w) => w.kind === k).length}</span></button>`)}
       </div>
+      ${this.listChart(rows.map((w) => w.id))}
       ${grouped.map(
         (g) =>
           html`<section class="mb-5">
@@ -107,6 +116,64 @@ export class AtlasWorkloadsView extends ViewElement {
           </section>`,
       )}
     </div>`;
+  }
+
+  /** Which workloads carry the evidence. */
+  private listChart(ids: string[]): TemplateResult | typeof nothing {
+    const set = new Set(ids);
+    const rows = store.index.value.filter((r) => set.has(r.workload_id));
+    if (!rows.length) return nothing;
+    const counts = countPerGroup(rows, (r) => r.workload_id).slice(0, 12);
+    return html`<section class="card tight mb-5">
+      <div class="card-head">
+        <h3>Runs per workload</h3>
+        <span class="muted small">most exercised first</span>
+      </div>
+      ${barList(
+        counts.map((c) => ({
+          label: c.id,
+          value: c.count,
+          text: fmtInt(c.count),
+          color: 'var(--chart-2)',
+          href: href('workloads', c.id),
+        })),
+        { ariaLabel: 'Runs per workload' },
+      )}
+    </section>`;
+  }
+
+  /** Best measured number per device, on this exact workload — comparable by construction. */
+  private detailChart(runs: IndexRow[]): TemplateResult | typeof nothing {
+    const metric = firstMetricWithData(runs);
+    if (!metric) return nothing;
+    const best = bestPerGroup(runs, (r) => r.hardware.id, metric).slice(0, 10);
+    if (!best.length) return nothing;
+    return html`<section class="mt-5">
+      <div class="section-title">
+        <h2>Measured</h2>
+        <span class="meta"
+          >best ${metric.label}${metric.unit ? ` (${metric.unit})` : ''} per device on this
+          workload</span
+        >
+      </div>
+      <div class="card tight">
+        ${barList(
+          best.map((b) => ({
+            label: store.lookups.hardware.get(b.id)?.name ?? b.id,
+            title: `${b.id} — ${metric.fmt(b.value)} ${metric.unit} (${b.row.engine.id} ${b.row.engine.version}, ${b.row.model.id}/${b.row.model.quant_id})`,
+            value: b.value,
+            text: metric.fmt(b.value),
+            note: `${b.row.model.id}/${b.row.model.quant_id}`,
+            color: `var(--${vendorClass(store.lookups.hardware.get(b.id)?.vendor)})`,
+            href: href('run', b.row.run_id),
+          })),
+          {
+            max: metric.better === 'lower' ? Math.max(...best.map((b) => b.value)) : undefined,
+            ariaLabel: `Best ${metric.label} per device`,
+          },
+        )}
+      </div>
+    </section>`;
   }
 
   private detail(id: string): TemplateResult {
@@ -211,6 +278,7 @@ export class AtlasWorkloadsView extends ViewElement {
           ${codeBlock(JSON.stringify(w, null, 2), { lang: 'json', maxHeight: 520 })}
         </section>
       </div>
+      ${this.detailChart(runs)}
       <section class="mt-5">
         <div class="section-title">
           <h2>Runs</h2>

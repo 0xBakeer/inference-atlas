@@ -11,8 +11,9 @@ import {
 import '../components/cell-picker.js';
 import '../components/packet-preview.js';
 import { icon } from '../components/icons.js';
+import { barList } from '../components/stat-charts.js';
 import { codeBlock, kindTag, skeletonLines } from '../components/ui.js';
-import { qget, qlist, setQuery } from '../router.js';
+import { href, qget, qlist, setQuery } from '../router.js';
 import { store } from '../store.js';
 import { ViewElement } from './view-base.js';
 
@@ -104,6 +105,8 @@ export class AtlasContributeView extends ViewElement {
         ${this.path('2', 'Hand a packet to an agent', 'Every Add button on the site produces a self-contained brief: what to install, which flags, which workloads, where the file goes, how to open the PR — with the rules that keep the data honest. Paste it into Claude Code, Codex or opencode on the box with the GPU.', html`<a class="btn btn-primary" href="#/gaps">${icon('flag')} Pick a gap</a>`)}
         ${this.path('3', 'Open an issue', 'No time, or no hardware? The Issue tab of any packet pre-fills a request. Requests raise the cell on the wanted queue so the next person with that device sees it first.', html`<a class="btn" href=${`${repo}/issues/new?template=request-config.yml`} target="_blank" rel="noopener">${icon('github')} Request a configuration</a>`)}
       </section>
+
+      ${this.coverageChart()}
 
       <section class="mb-6">
         <div class="section-title">
@@ -245,6 +248,45 @@ export class AtlasContributeView extends ViewElement {
         </div>
       </section>
     </div>`;
+  }
+
+  /** Where a contribution moves the needle most: how covered each engine's territory is. */
+  private coverageChart(): TemplateResult | typeof nothing {
+    const reg = store.registry.value;
+    if (!reg || !store.possible.length) return nothing;
+    const cov = store.coverage.value;
+    const per = new Map<string, { covered: number; possible: number }>();
+    for (const pc of store.possible) {
+      const e = per.get(pc.engine_id) ?? { covered: 0, possible: 0 };
+      e.possible++;
+      if (cov[pc.cell_id]) e.covered++;
+      per.set(pc.engine_id, e);
+    }
+    const rows = [...per.entries()]
+      .map(([id, x]) => ({ id, ...x, frac: x.covered / Math.max(1, x.possible) }))
+      .sort((a, b) => a.frac - b.frac)
+      .slice(0, 10);
+    if (!rows.length) return nothing;
+    return html`<section class="mb-6">
+      <div class="section-title">
+        <h2>Where the map is emptiest</h2>
+        <span class="meta">cells measured per engine — least covered first</span>
+      </div>
+      <div class="card tight">
+        ${barList(
+          rows.map((r) => ({
+            label: store.lookups.engines.get(r.id)?.meta.name ?? r.id,
+            title: `${r.id} — ${r.covered} of ${r.possible} possible cells measured`,
+            value: r.frac,
+            frac: r.frac,
+            text: `${r.covered}/${r.possible}`,
+            color: 'var(--ev-single)',
+            href: href('engines', r.id),
+          })),
+          { max: 1, ariaLabel: 'Coverage per engine' },
+        )}
+      </div>
+    </section>`;
   }
 
   private path(num: string, title: string, text: string, cmd: TemplateResult): TemplateResult {

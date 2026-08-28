@@ -1,7 +1,8 @@
-import { html } from 'lit';
+import { html, nothing } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import { addButton } from '../components/add-modal.js';
 import { icon } from '../components/icons.js';
+import { barList } from '../components/stat-charts.js';
 import { emptyState, selectField, skeletonLines } from '../components/ui.js';
 import { resolveSelection } from '../components/cell-picker.js';
 import { href, modelHref, navigate, qget, setQuery } from '../router.js';
@@ -114,7 +115,31 @@ export class AtlasEvalsView extends ViewElement {
                   Show every registered model/quant
                 </button>`,
               })
-            : html`<div class="table-wrap">
+            : html`${(() => {
+                  const scored = rows
+                    .map((p) => ({ ...p, sc: score(p) }))
+                    .filter((p) => p.sc >= 0)
+                    .slice(0, 12);
+                  if (scored.length < 2) return nothing;
+                  return html`<section class="card tight mb-4">
+                    <div class="card-head">
+                      <h3>Mean accuracy</h3>
+                      <span class="muted small">across measured suites, best first</span>
+                    </div>
+                    ${barList(
+                      scored.map((p) => ({
+                        label: `${p.model}/${p.quant}`,
+                        title: `${p.model}/${p.quant} — mean ${fmtPct(p.sc, 1)}`,
+                        value: p.sc,
+                        text: fmtPct(p.sc, 1),
+                        color: `var(--seq-${Math.max(1, seqStep(p.sc) ?? 1)})`,
+                        href: modelHref(p.model),
+                      })),
+                      { max: 1, ariaLabel: 'Mean eval accuracy per model/quant' },
+                    )}
+                  </section>`;
+                })()}
+                <div class="table-wrap">
                   <table class="table">
                     <thead>
                       <tr>

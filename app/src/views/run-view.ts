@@ -8,6 +8,7 @@ import '../components/request-strip.js';
 import '../components/run-picker.js';
 import type { StripMetric } from '../components/request-strip.js';
 import { icon } from '../components/icons.js';
+import { barList, bestPerGroup, firstMetricWithData } from '../components/stat-charts.js';
 import {
   sweepAxisOf,
   sweepChartBuild,
@@ -230,7 +231,7 @@ export class AtlasRunView extends ViewElement {
           }
           ${rec.sweep?.length ? this.sweep(rec) : nothing}
           ${rec.kind === 'prefill' ? this.prefillCurve(rec) : nothing} ${this.arms(rec)}
-          ${rec.scores ? this.scores(rec) : nothing}
+          ${this.contextChart(rec)} ${rec.scores ? this.scores(rec) : nothing}
           ${rec.failures?.length ? this.failures(rec) : nothing}
           ${rec.gotchas?.length ? this.gotchas(rec) : nothing} ${this.args(rec, serve)}
           ${this.raw(rec)}
@@ -582,6 +583,56 @@ export class AtlasRunView extends ViewElement {
           .height=${220}
           .key=${points.length}
         ></atlas-chart>
+      </div>
+    </section>`;
+  }
+
+  /**
+   * This run in context: the same workload on the same model/quant, best number per
+   * device × engine. Same workload id means the comparison is valid by construction.
+   */
+  private contextChart(rec: ResultRecord): TemplateResult | typeof nothing {
+    const rows = store.index.value.filter(
+      (r) =>
+        r.workload_id === rec.workload_id &&
+        r.model.id === rec.model.id &&
+        r.model.quant_id === rec.model.quant_id,
+    );
+    const metric = firstMetricWithData(rows);
+    if (!metric) return nothing;
+    const best = bestPerGroup(rows, (r) => `${r.hardware.id} · ${r.engine.id}`, metric).slice(
+      0,
+      10,
+    );
+    if (best.length < 2) return nothing;
+    const mineKey = `${rec.hardware.id} · ${rec.engine.id}`;
+    return html`<section>
+      <div class="section-title">
+        <h2>In context</h2>
+        <span class="meta"
+          >best ${metric.label}${metric.unit ? ` (${metric.unit})` : ''} on
+          <span class="mono">${rec.workload_id}</span> with this model/quant, per device ×
+          engine</span
+        >
+      </div>
+      <div class="card tight">
+        ${barList(
+          best.map((b) => ({
+            label:
+              b.id === mineKey
+                ? html`${b.id} <span class="tag accent">this run</span>`
+                : b.id,
+            title: `${b.id} — ${metric.fmt(b.value)} ${metric.unit}`,
+            value: b.value,
+            text: metric.fmt(b.value),
+            color: b.id === mineKey ? 'var(--accent)' : 'var(--chart-1)',
+            href: b.row.run_id === rec.run_id ? undefined : href('run', b.row.run_id),
+          })),
+          {
+            max: metric.better === 'lower' ? Math.max(...best.map((b) => b.value)) : undefined,
+            ariaLabel: `Best ${metric.label} per device and engine on this workload`,
+          },
+        )}
       </div>
     </section>`;
   }

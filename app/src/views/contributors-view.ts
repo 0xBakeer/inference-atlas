@@ -1,7 +1,9 @@
 import { html, nothing, type TemplateResult } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
+import '../components/chart.js';
 import { icon } from '../components/icons.js';
 import { runsTable } from '../components/runs-table.js';
+import { activityBuild, barList } from '../components/stat-charts.js';
 import {
   avatar,
   emptyState,
@@ -131,7 +133,8 @@ export class AtlasContributorsView extends ViewElement {
                 <a class="btn" href="#/contribute">How contributing works</a>
               </div>`,
             })
-          : html`<div class="table-wrap">
+          : html`${this.leaderboardCharts(rows)}
+            <div class="table-wrap">
               <table class="table cards">
                 <thead>
                   <tr>
@@ -179,6 +182,55 @@ export class AtlasContributorsView extends ViewElement {
                 </tbody>
               </table>
             </div>`
+      }
+    </div>`;
+  }
+
+  /** Points at a glance plus the map's overall submission rhythm. */
+  private leaderboardCharts(rows: ContributorRow[]): TemplateResult | typeof nothing {
+    if (!rows.length) return nothing;
+    const top = rows.slice(0, 10);
+    const activity = activityBuild(
+      store.index.value.map((r) => r.provenance.submitted_at ?? r.provenance.started_at),
+      { label: 'runs' },
+    );
+    return html`<div class="insights">
+      <section class="card tight">
+        <div class="card-head">
+          <h3>Points</h3>
+          <span class="muted small">top ${top.length}</span>
+        </div>
+        ${barList(
+          top.map((c) => ({
+            label: html`<span class="row" style="gap:6px;min-width:0"
+              >${avatar(c.login, { userId: c.user_id, avatarUrl: c.avatar_url, size: 'sm' })}<span
+                class="ellipsis"
+                >${c.login}</span
+              ></span
+            >`,
+            title: `${c.login} — ${fmtNum(c.points, c.points % 1 ? 1 : 0)} points`,
+            value: c.points,
+            text: fmtNum(c.points, c.points % 1 ? 1 : 0),
+            color: 'var(--accent)',
+            href: href('contributors', c.login),
+          })),
+          { ariaLabel: 'Points per contributor' },
+        )}
+      </section>
+      ${
+        activity
+          ? html`<section class="card tight">
+              <div class="card-head">
+                <h3>Community activity</h3>
+                <span class="muted small">all submissions over time</span>
+              </div>
+              <atlas-chart
+                .build=${activity}
+                .height=${200}
+                .key=${store.index.value.length}
+              ></atlas-chart>
+            </section>`
+          : nothing
       }
     </div>`;
   }
@@ -276,6 +328,21 @@ export class AtlasContributorsView extends ViewElement {
           </section>
         </div>
         <div class="stack">
+          ${(() => {
+            const activity = activityBuild(
+              runs.map((r) => r.provenance.submitted_at ?? r.provenance.started_at),
+              { label: 'runs' },
+            );
+            return activity
+              ? html`<section class="card tight">
+                  <div class="card-head">
+                    <h3>Activity</h3>
+                    <span class="muted small">submissions over time</span>
+                  </div>
+                  <atlas-chart .build=${activity} .height=${180} .key=${runs.length}></atlas-chart>
+                </section>`
+              : nothing;
+          })()}
           <section>
             <div class="section-title">
               <h2>Timeline</h2>
