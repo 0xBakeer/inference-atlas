@@ -1,0 +1,1317 @@
+{
+  "schema_version": 1,
+  "run_id": "cb516ca371e97893--eval-instruction-v1--1737a9",
+  "config_id": "cb516ca371e97893",
+  "cell_id": "146e5bfec676",
+  "workload_id": "eval-instruction-v1",
+  "kind": "eval",
+  "engine": {
+    "id": "vllm",
+    "version": "0.1.dev20073+g8e685d198",
+    "commit": "8e685d198",
+    "container": "qwen38-flash-dgx (built from blazux/qwen3.8-Flash-DGX at 82ed48d)",
+    "install_method": "docker"
+  },
+  "model": {
+    "id": "Qwen/Qwen3.8-Flash-Next",
+    "quant_id": "nvfp4",
+    "hf_id": "Qwen/Qwen3.8-Flash-Next",
+    "revision": "7b719225242aacd3dbd3f9407468c2ee9a9d2594",
+    "dtype": "auto",
+    "local_path": null
+  },
+  "hardware": {
+    "id": "nvidia-gb10-dgx-spark",
+    "count": 1,
+    "driver": "580.173.02",
+    "cuda": "13.0",
+    "host": {
+      "cpu": "Cortex-A725",
+      "cpu_cores": 20,
+      "ram_gb": 121.6,
+      "os": "Ubuntu 24.04.4 LTS",
+      "kernel": "6.17.0-1029-nvidia",
+      "arch": "aarch64"
+    },
+    "fingerprint": "sha256:52ea2bdd513719724db88c162b6cc2c9fb4e5b67e02dbe41b9de00687acefb91",
+    "captured": {
+      "nvidia_smi": {
+        "driver": "580.173.02",
+        "cuda": "13.0",
+        "products": [
+          "NVIDIA GB10"
+        ],
+        "fb_memory_total_mib": 0
+      },
+      "lscpu": {
+        "architecture": "aarch64",
+        "cpus": "20",
+        "vendor_id": "ARM",
+        "model_name": "Cortex-A725",
+        "cores_per_socket": "10",
+        "sockets": "1",
+        "cpu_max_mhz": "2808.0000"
+      }
+    }
+  },
+  "args": {
+    "load-format": "safetensors",
+    "max-model-len": 262144,
+    "max-num-seqs": 64,
+    "gpu-memory-utilization": 0.85,
+    "enable-prefix-caching": false,
+    "enable-chunked-prefill": true,
+    "max-num-batched-tokens": 8192,
+    "compilation-config": {
+      "cudagraph_mode": "PIECEWISE",
+      "splitting_ops": [
+        "vllm::unified_attention_with_output",
+        "vllm::unified_mla_attention_with_output",
+        "vllm::mamba_mixer2",
+        "vllm::mamba_mixer",
+        "vllm::short_conv",
+        "vllm::qwen3_8_flash_next_ple_short_conv",
+        "vllm::qwen3_8_flash_next_qsa_with_output",
+        "vllm::linear_attention",
+        "vllm::qwen_gdn_attention_core",
+        "vllm::qwen_gdn_attention_core_fused_norm_packed",
+        "vllm::sparse_attn_indexer",
+        "vllm::ple_mmap_lookup"
+      ]
+    },
+    "enable-flashinfer-autotune": false,
+    "enable-auto-tool-choice": true,
+    "tool-call-parser": "qwen3_coder",
+    "reasoning-parser": "qwen3",
+    "speculative-config": {
+      "method": "mtp",
+      "num_speculative_tokens": 3
+    },
+    "vllm-ple-mmap": 1,
+    "vllm-ple-mmap-workers": 32,
+    "vllm-ple-mmap-prewarm": 1,
+    "vllm-use-flashinfer-sampler": 1
+  },
+  "args_canonical": "@dtype=auto;@quant=nvfp4;compilation-config={\"cudagraph_mode\":\"PIECEWISE\",\"splitting_ops\":[\"vllm::linear_attention\",\"vllm::mamba_mixer\",\"vllm::mamba_mixer2\",\"vllm::ple_mmap_lookup\",\"vllm::qwen3_8_flash_next_ple_short_conv\",\"vllm::qwen3_8_flash_next_qsa_with_output\",\"vllm::qwen_gdn_attention_core\",\"vllm::qwen_gdn_attention_core_fused_norm_packed\",\"vllm::short_conv\",\"vllm::sparse_attn_indexer\",\"vllm::unified_attention_with_output\",\"vllm::unified_mla_attention_with_output\"]};enable-auto-tool-choice=true;enable-chunked-prefill=true;enable-flashinfer-autotune=false;enable-prefix-caching=false;gpu-memory-utilization=0.85;load-format=safetensors;max-model-len=262144;max-num-batched-tokens=8192;max-num-seqs=64;reasoning-parser=qwen3;speculative-config={\"method\":\"mtp\",\"num_speculative_tokens\":3};tool-call-parser=qwen3_coder;vllm-ple-mmap=1;vllm-ple-mmap-prewarm=1;vllm-ple-mmap-workers=32;vllm-use-flashinfer-sampler=1",
+  "serve_command": null,
+  "workload": {
+    "id": "eval-instruction-v1",
+    "resolved_params": {
+      "dataset_id": "eval-instruction-v1",
+      "suite": "instruction",
+      "scorer": "instruction",
+      "items": 104,
+      "concurrency": 4,
+      "max_output_tokens": 2048,
+      "timeout_s": 300,
+      "temperature": 0,
+      "reasoning": "default",
+      "dataset_categories": null,
+      "dataset_target_tokens": null,
+      "pass_threshold": null,
+      "seed": 42
+    }
+  },
+  "metrics": {
+    "requests_total": 104,
+    "requests_ok": 104,
+    "requests_failed": 0,
+    "success_rate": 1,
+    "duration_s": 392.152,
+    "input_tokens_total": 8450,
+    "output_tokens_total": 27083,
+    "e2e_ms": {
+      "mean": 14709.536,
+      "p50": 12201.117,
+      "p90": 22288.355,
+      "p95": 29197.858,
+      "p99": 62045.553,
+      "min": 2666.531,
+      "max": 85986.665
+    },
+    "vram_peak_gb": null,
+    "ram_peak_gb": 119.391,
+    "power_avg_w": 38.47,
+    "power_peak_w": 44.41,
+    "energy_wh": 4.1888,
+    "gpu_util_avg_pct": 90.84,
+    "temp_max_c": 67,
+    "thermal_throttle_detected": false
+  },
+  "scores": {
+    "suite": "instruction",
+    "total": 104,
+    "correct": 101,
+    "accuracy": 0.971154,
+    "success_rate": 1,
+    "by_category": {
+      "casing": {
+        "total": 11,
+        "correct": 11
+      },
+      "exclusion": {
+        "total": 8,
+        "correct": 8
+      },
+      "format": {
+        "total": 10,
+        "correct": 8
+      },
+      "framing": {
+        "total": 13,
+        "correct": 13
+      },
+      "inclusion": {
+        "total": 11,
+        "correct": 11
+      },
+      "json": {
+        "total": 4,
+        "correct": 3
+      },
+      "language": {
+        "total": 5,
+        "correct": 5
+      },
+      "length": {
+        "total": 17,
+        "correct": 17
+      },
+      "structure": {
+        "total": 25,
+        "correct": 25
+      }
+    },
+    "by_difficulty": {
+      "easy": {
+        "total": 23,
+        "correct": 23
+      },
+      "hard": {
+        "total": 20,
+        "correct": 17
+      },
+      "medium": {
+        "total": 61,
+        "correct": 61
+      }
+    },
+    "avg_output_tokens": 260.41,
+    "avg_latency_ms": 14709.54,
+    "failures": 0,
+    "items": [
+      {
+        "id": "inst-0001",
+        "correct": true,
+        "predicted": "\n\nWriting a plan down clarifies your goal, reduces uncertainty, and keeps you focused, making progress more efficient.",
+        "expected": "1 rules",
+        "latency_ms": 20968.517,
+        "output_tokens": 386,
+        "category": "length",
+        "difficulty": "easy"
+      },
+      {
+        "id": "inst-0002",
+        "correct": true,
+        "predicted": "\n\nExplaining forces you to organize ideas, retrieve details, and simplify them. This active processing creates stronger memory traces and reveals gaps, making the knowledge easier to recall later.",
+        "expected": "1 rules",
+        "latency_ms": 14224.051,
+        "output_tokens": 272,
+        "category": "length",
+        "difficulty": "easy"
+      },
+      {
+        "id": "inst-0003",
+        "correct": true,
+        "predicted": "\n\nFirst, check the power supply: confirm the wall outlet works, the charger is firmly connected, and the cable is undamaged. Also verify the battery is properly seated or charged, then try pressing the power button again.",
+        "expected": "1 rules",
+        "latency_ms": 29442.333,
+        "output_tokens": 552,
+        "category": "length",
+        "difficulty": "easy"
+      },
+      {
+        "id": "inst-0004",
+        "correct": true,
+        "predicted": "\n\nPeople often underestimate task time in everyday planning because they picture smooth, uninterrupted progress, overlook past delays and hidden steps, and confuse hopeful intentions with realistic evidence about their own behavior.",
+        "expected": "1 rules",
+        "latency_ms": 61080.161,
+        "output_tokens": 1214,
+        "category": "length",
+        "difficulty": "easy"
+      },
+      {
+        "id": "inst-0005",
+        "correct": true,
+        "predicted": "\n\nGood instructions are clear, concise, and sequential. They use simple language, define terms, and anticipate mistakes. Each step has one purpose, includes examples when helpful, and offers checkpoints so users can confirm progress and recover easily from errors.",
+        "expected": "1 rules",
+        "latency_ms": 17036.901,
+        "output_tokens": 319,
+        "category": "length",
+        "difficulty": "easy"
+      },
+      {
+        "id": "inst-0006",
+        "correct": true,
+        "predicted": "\n\nThe last page often contains troubleshooting, safety warnings, support contacts, and return instructions. Reading it first helps you avoid mistakes, know what to do if something goes wrong, and save time when you need help.",
+        "expected": "1 rules",
+        "latency_ms": 15781.791,
+        "output_tokens": 321,
+        "category": "length",
+        "difficulty": "easy"
+      },
+      {
+        "id": "inst-0007",
+        "correct": true,
+        "predicted": "\n\nA dress rehearsal tests the full performance under real conditions, revealing problems and building confidence before the audience sees the final show.",
+        "expected": "1 rules",
+        "latency_ms": 9042.091,
+        "output_tokens": 185,
+        "category": "length",
+        "difficulty": "easy"
+      },
+      {
+        "id": "inst-0008",
+        "correct": true,
+        "predicted": "\n\nShared calendars fail because ownership is unclear, permissions are messy, and people avoid updating them. Conflicting priorities, notification overload, and social friction make users ignore entries. Without a simple process, trust, and regular maintenance, the calendar becomes stale, ambiguous, and unreliable, so teams revert to private notes or ad hoc messages.",
+        "expected": "1 rules",
+        "latency_ms": 21731.236,
+        "output_tokens": 404,
+        "category": "length",
+        "difficulty": "easy"
+      },
+      {
+        "id": "inst-0009",
+        "correct": true,
+        "predicted": "\n\nGrey rain slicks harbour dawn",
+        "expected": "1 rules",
+        "latency_ms": 9459.426,
+        "output_tokens": 164,
+        "category": "length",
+        "difficulty": "medium"
+      },
+      {
+        "id": "inst-0010",
+        "correct": true,
+        "predicted": "\n\nSqueezing brake lever pulls cable pads clamp rim friction slows tire stopping bicycle safely when needed",
+        "expected": "1 rules",
+        "latency_ms": 85986.665,
+        "output_tokens": 1639,
+        "category": "length",
+        "difficulty": "medium"
+      },
+      {
+        "id": "inst-0011",
+        "correct": true,
+        "predicted": "\n\nIt relaxes gluten for shaping",
+        "expected": "1 rules",
+        "latency_ms": 22192.701,
+        "output_tokens": 386,
+        "category": "length",
+        "difficulty": "medium"
+      },
+      {
+        "id": "inst-0012",
+        "correct": true,
+        "predicted": "\n\nUnfamiliar streets bright signs nervous hope small discoveries strangers becoming possible neighbors in new city today",
+        "expected": "1 rules",
+        "latency_ms": 29754.4,
+        "output_tokens": 592,
+        "category": "length",
+        "difficulty": "medium"
+      },
+      {
+        "id": "inst-0013",
+        "correct": true,
+        "predicted": "\n\nClean as you go label food and wipe counters daily",
+        "expected": "1 rules",
+        "latency_ms": 11976.275,
+        "output_tokens": 225,
+        "category": "length",
+        "difficulty": "medium"
+      },
+      {
+        "id": "inst-0014",
+        "correct": true,
+        "predicted": "\n\nAwkward, humbling, scary, freeing, rewarding, persistent, transformative",
+        "expected": "1 rules",
+        "latency_ms": 18365.721,
+        "output_tokens": 311,
+        "category": "length",
+        "difficulty": "medium"
+      },
+      {
+        "id": "inst-0015",
+        "correct": true,
+        "predicted": "\n\nThe library opens late welcoming night readers with quiet lamps and endless shelves today",
+        "expected": "1 rules",
+        "latency_ms": 24227.086,
+        "output_tokens": 446,
+        "category": "length",
+        "difficulty": "medium"
+      },
+      {
+        "id": "inst-0016",
+        "correct": true,
+        "predicted": "\n\nTokyo",
+        "expected": "2 rules",
+        "latency_ms": 2666.531,
+        "output_tokens": 48,
+        "category": "format",
+        "difficulty": "easy"
+      },
+      {
+        "id": "inst-0017",
+        "correct": true,
+        "predicted": "\n\n180",
+        "expected": "1 rules",
+        "latency_ms": 3594.251,
+        "output_tokens": 48,
+        "category": "format",
+        "difficulty": "easy"
+      },
+      {
+        "id": "inst-0018",
+        "correct": true,
+        "predicted": "\n\n366",
+        "expected": "2 rules",
+        "latency_ms": 3366.952,
+        "output_tokens": 54,
+        "category": "format",
+        "difficulty": "medium"
+      },
+      {
+        "id": "inst-0019",
+        "correct": true,
+        "predicted": "\n\nPacific Ocean",
+        "expected": "1 rules",
+        "latency_ms": 3026.673,
+        "output_tokens": 50,
+        "category": "format",
+        "difficulty": "easy"
+      },
+      {
+        "id": "inst-0020",
+        "correct": true,
+        "predicted": "\n\nOn my first day in the new city, I wandered the harbour and felt both lost and excited. A lantern swung from a rope above the water, promising light after dark.",
+        "expected": "2 rules",
+        "latency_ms": 11436.969,
+        "output_tokens": 187,
+        "category": "inclusion",
+        "difficulty": "medium"
+      },
+      {
+        "id": "inst-0021",
+        "correct": true,
+        "predicted": "\n\nAfter using the kettle, wipe the counter and put it away so the shared kitchen stays tidy. If rain blows in through the window, dry the sill promptly to prevent clutter and mess.",
+        "expected": "2 rules",
+        "latency_ms": 8268.197,
+        "output_tokens": 141,
+        "category": "inclusion",
+        "difficulty": "medium"
+      },
+      {
+        "id": "inst-0022",
+        "correct": true,
+        "predicted": "\n\nAs an adult learning to swim, I recorded each lesson in a ledger and gave myself a stamp for every small victory. I kept my goggles in a drawer by the pool entrance.",
+        "expected": "2 rules",
+        "latency_ms": 15832.173,
+        "output_tokens": 264,
+        "category": "inclusion",
+        "difficulty": "medium"
+      },
+      {
+        "id": "inst-0023",
+        "correct": true,
+        "predicted": "\n\nThe library opened late, like a ship waiting for the tide to rise. Inside, a compass and an old chart guided readers through shelves of stories.",
+        "expected": "2 rules",
+        "latency_ms": 5710.035,
+        "output_tokens": 87,
+        "category": "inclusion",
+        "difficulty": "medium"
+      },
+      {
+        "id": "inst-0024",
+        "correct": true,
+        "predicted": "\n\nThe workshop smelled of fresh paint clinging to the ladder. A faint metallic tang rose from the hinge oil on the workbench.",
+        "expected": "2 rules",
+        "latency_ms": 6450.738,
+        "output_tokens": 120,
+        "category": "inclusion",
+        "difficulty": "medium"
+      },
+      {
+        "id": "inst-0025",
+        "correct": true,
+        "predicted": "\n\nBefore heading to the platform, I packed a thermos of tea and checked the timetable to make sure I had enough time. For the long train journey, I also packed snacks, a book, and a small bag to keep everything organized.",
+        "expected": "2 rules",
+        "latency_ms": 7255.191,
+        "output_tokens": 112,
+        "category": "inclusion",
+        "difficulty": "medium"
+      },
+      {
+        "id": "inst-0026",
+        "correct": true,
+        "predicted": "\n\nFirst, check the power source: ensure the charger is securely connected, the outlet works, and the battery is charged; if possible, try a different cable, adapter, or socket, and look for any indicator lights or signs of damage.",
+        "expected": "2 rules",
+        "latency_ms": 10334.69,
+        "output_tokens": 180,
+        "category": "exclusion",
+        "difficulty": "medium"
+      },
+      {
+        "id": "inst-0027",
+        "correct": true,
+        "predicted": "\n\nPeople often underestimate task duration because they imagine an ideal version of the work, assuming smooth progress, few interruptions, and quick decisions. This optimistic focus on best-case outcomes makes them overlook past delays, hidden steps, and unexpected problems, while also making familiar tasks feel simpler than they are. As a result, they anchor to a hopeful timeline instead of adjusting for realistic friction.",
+        "expected": "2 rules",
+        "latency_ms": 22196.998,
+        "output_tokens": 343,
+        "category": "exclusion",
+        "difficulty": "medium"
+      },
+      {
+        "id": "inst-0028",
+        "correct": true,
+        "predicted": "\n\nA good set of instructions is easy to follow when it presents steps in a clear, logical order, uses simple language, defines any required terms, anticipates common mistakes, and provides enough detail without overwhelming the reader. Visual cues, numbered steps, and concise examples can further guide attention, while consistent formatting and a calm tone help users feel confident and capable.",
+        "expected": "2 rules",
+        "latency_ms": 13504.739,
+        "output_tokens": 224,
+        "category": "exclusion",
+        "difficulty": "medium"
+      },
+      {
+        "id": "inst-0029",
+        "correct": true,
+        "predicted": "\n\nReading the last page of a manual first can reveal the intended result, common problems, or final checks, giving you a map of what success looks like and where to seek help. This preview helps you approach the instructions with purpose, notice important warnings, and decide which sections matter most, saving time and reducing confusion when you return to the beginning.",
+        "expected": "2 rules",
+        "latency_ms": 15948.17,
+        "output_tokens": 266,
+        "category": "exclusion",
+        "difficulty": "medium"
+      },
+      {
+        "id": "inst-0030",
+        "correct": true,
+        "predicted": "\n\nA dress rehearsal is the final full practice before a performance, using costumes, lighting, sound, and timing to reveal problems, build confidence, and ensure everyone can execute the show smoothly.",
+        "expected": "2 rules",
+        "latency_ms": 8010.158,
+        "output_tokens": 148,
+        "category": "exclusion",
+        "difficulty": "medium"
+      },
+      {
+        "id": "inst-0031",
+        "correct": true,
+        "predicted": "\n\nShared calendars fail because they turn scheduling into a public negotiation where people avoid saying no, owners neglect maintenance, permissions confuse who can edit, and tools treat time as data rather than trust. Without clear rules, reminders, and accountability, entries become stale, conflicts multiply, and users revert to private messages, making the calendar a record of chaos instead of a source of coordination.",
+        "expected": "2 rules",
+        "latency_ms": 19411.79,
+        "output_tokens": 285,
+        "category": "exclusion",
+        "difficulty": "medium"
+      },
+      {
+        "id": "inst-0032",
+        "correct": true,
+        "predicted": "\n\nA checklist guides actions when stress clouds judgment. It reminds responders of critical steps and prevents omissions. Clear prompts save time and reduce panic.",
+        "expected": "2 rules",
+        "latency_ms": 19873.228,
+        "output_tokens": 315,
+        "category": "exclusion",
+        "difficulty": "hard"
+      },
+      {
+        "id": "inst-0033",
+        "correct": true,
+        "predicted": "\n\nRegular backups protect important data from loss and help you recover quickly after failures or mistakes and keep your work safe over time.",
+        "expected": "2 rules",
+        "latency_ms": 13013.3,
+        "output_tokens": 243,
+        "category": "exclusion",
+        "difficulty": "medium"
+      },
+      {
+        "id": "inst-0034",
+        "correct": true,
+        "predicted": "\n\nEXPLAINING FORCES ACTIVE RETRIEVAL, ORGANIZATION, AND DEEPER PROCESSING, CREATING STRONGER MEMORY TRACES AND MORE CONNECTIONS.",
+        "expected": "2 rules",
+        "latency_ms": 13288.844,
+        "output_tokens": 242,
+        "category": "casing",
+        "difficulty": "easy"
+      },
+      {
+        "id": "inst-0035",
+        "correct": true,
+        "predicted": "\n\nCHECK THE POWER SOURCE: ENSURE THE CHARGER IS CONNECTED, THE OUTLET WORKS, AND THE BATTERY IS SEATED.",
+        "expected": "2 rules",
+        "latency_ms": 11106.827,
+        "output_tokens": 199,
+        "category": "casing",
+        "difficulty": "easy"
+      },
+      {
+        "id": "inst-0036",
+        "correct": true,
+        "predicted": "\n\nPEOPLE FOCUS ON BEST CASES, IGNORE PAST DELAYS, AND OVERLOOK INTERRUPTIONS, SO THEY BELIEVE TASKS WILL GO FASTER THAN THEY USUALLY DO.",
+        "expected": "2 rules",
+        "latency_ms": 15171.811,
+        "output_tokens": 263,
+        "category": "casing",
+        "difficulty": "easy"
+      },
+      {
+        "id": "inst-0037",
+        "correct": true,
+        "predicted": "\n\nCLEAR STEPS, SIMPLE WORDS, LOGICAL ORDER, SPECIFIC ACTIONS, AND USEFUL EXAMPLES HELP PEOPLE UNDERSTAND AND SUCCEED.",
+        "expected": "2 rules",
+        "latency_ms": 10502.592,
+        "output_tokens": 187,
+        "category": "casing",
+        "difficulty": "easy"
+      },
+      {
+        "id": "inst-0038",
+        "correct": true,
+        "predicted": "\n\nTO KNOW WHERE TO FIND HELP, SAFETY WARNINGS, WARRANTY, AND TROUBLESHOOTING BEFORE YOU NEED THEM.",
+        "expected": "2 rules",
+        "latency_ms": 22327.508,
+        "output_tokens": 385,
+        "category": "casing",
+        "difficulty": "easy"
+      },
+      {
+        "id": "inst-0039",
+        "correct": true,
+        "predicted": "\n\nTO PRACTICE THE FULL PERFORMANCE WITH COSTUMES, LIGHTING, AND TIMING SO PROBLEMS ARE FOUND AND FIXED BEFORE THE REAL SHOW.",
+        "expected": "2 rules",
+        "latency_ms": 11783.14,
+        "output_tokens": 222,
+        "category": "casing",
+        "difficulty": "easy"
+      },
+      {
+        "id": "inst-0040",
+        "correct": true,
+        "predicted": "\n\nthe library opens late, welcoming night owls with quiet shelves and warm lamps.",
+        "expected": "2 rules",
+        "latency_ms": 7139.426,
+        "output_tokens": 118,
+        "category": "casing",
+        "difficulty": "medium"
+      },
+      {
+        "id": "inst-0041",
+        "correct": true,
+        "predicted": "\n\nthe air hung thick with sawdust, hot metal, and oil.",
+        "expected": "2 rules",
+        "latency_ms": 5619.325,
+        "output_tokens": 90,
+        "category": "casing",
+        "difficulty": "medium"
+      },
+      {
+        "id": "inst-0042",
+        "correct": true,
+        "predicted": "\n\npack snacks, water, a book, and a blanket for comfort.",
+        "expected": "2 rules",
+        "latency_ms": 7091.413,
+        "output_tokens": 118,
+        "category": "casing",
+        "difficulty": "medium"
+      },
+      {
+        "id": "inst-0043",
+        "correct": true,
+        "predicted": "\n\nlists beat memory because they turn fleeting thoughts into visible, manageable pieces that the mind can revisit without strain.",
+        "expected": "2 rules",
+        "latency_ms": 9895.051,
+        "output_tokens": 149,
+        "category": "casing",
+        "difficulty": "medium"
+      },
+      {
+        "id": "inst-0044",
+        "correct": true,
+        "predicted": "\n\na garden in early spring wakes with pale buds and damp soil.",
+        "expected": "2 rules",
+        "latency_ms": 7503.385,
+        "output_tokens": 104,
+        "category": "casing",
+        "difficulty": "medium"
+      },
+      {
+        "id": "inst-0045",
+        "correct": true,
+        "predicted": "\n\n- Check tire pressure and tread depth\n- Verify oil, coolant, and other fluid levels\n- Test brakes, lights, and windshield wipers\n- Ensure the fuel tank is full and emergency kit is packed\n- Plan the route and check weather conditions",
+        "expected": "2 rules",
+        "latency_ms": 10431.478,
+        "output_tokens": 185,
+        "category": "structure",
+        "difficulty": "medium"
+      },
+      {
+        "id": "inst-0046",
+        "correct": true,
+        "predicted": "\n\n- Check that all utilities are turned off or settled.\n- Ensure all keys, fobs, and access devices are returned.\n- Confirm the flat is clean and free of personal belongings.\n- Document any existing damage or issues for the deposit return.",
+        "expected": "2 rules",
+        "latency_ms": 8545.274,
+        "output_tokens": 137,
+        "category": "structure",
+        "difficulty": "medium"
+      },
+      {
+        "id": "inst-0047",
+        "correct": true,
+        "predicted": "\n\n- Confirm the start time, location, and reporting contact.\n- Prepare required documents, such as ID and tax forms.\n- Plan your commute and allow extra travel time.\n- Check the dress code and lay out appropriate attire.\n- Review your job description and first-day schedule.",
+        "expected": "2 rules",
+        "latency_ms": 8300.939,
+        "output_tokens": 134,
+        "category": "structure",
+        "difficulty": "medium"
+      },
+      {
+        "id": "inst-0048",
+        "correct": true,
+        "predicted": "\n\n- Check the weather forecast for the campsite area.\n- Confirm your tent, sleeping bag, and sleeping pad are in good condition.\n- Pack enough food, water, and cooking supplies for the trip.\n- Verify your first-aid kit, flashlight, and extra batteries are ready.\n- Make sure your vehicle, route, and campsite reservation are confirmed.\n- Inform someone of your camping location and expected return time.",
+        "expected": "2 rules",
+        "latency_ms": 9743.969,
+        "output_tokens": 162,
+        "category": "structure",
+        "difficulty": "medium"
+      },
+      {
+        "id": "inst-0049",
+        "correct": true,
+        "predicted": "\n\n- Verify all data and calculations are accurate.\n- Check that the report follows the required format and template.\n- Proofread for spelling, grammar, and punctuation errors.\n- Ensure all required sections and supporting documents are included.\n- Confirm that conclusions and recommendations are clear and supported.\n- Review names, dates, and other key details for correctness.",
+        "expected": "2 rules",
+        "latency_ms": 8659.295,
+        "output_tokens": 146,
+        "category": "structure",
+        "difficulty": "medium"
+      },
+      {
+        "id": "inst-0050",
+        "correct": true,
+        "predicted": "\n\n- Check your passport, visa, and any required travel documents for validity.\n- Confirm your flight time, gate, and any schedule changes with the airline.\n- Review baggage allowances and pack accordingly to avoid extra fees.\n- Check weather conditions and potential delays at your departure and arrival airports.\n- Ensure your phone, laptop, and any medical devices are fully charged.\n- Arrange transportation to the airport and allow extra time for security checks.",
+        "expected": "2 rules",
+        "latency_ms": 10409.114,
+        "output_tokens": 161,
+        "category": "structure",
+        "difficulty": "medium"
+      },
+      {
+        "id": "inst-0051",
+        "correct": true,
+        "predicted": "\n\n- Check guest count and dietary restrictions\n- Confirm menu and ingredients are ready\n- Ensure dining area and tableware are clean\n- Verify cooking equipment and timing plan",
+        "expected": "2 rules",
+        "latency_ms": 8638.796,
+        "output_tokens": 144,
+        "category": "structure",
+        "difficulty": "medium"
+      },
+      {
+        "id": "inst-0052",
+        "correct": true,
+        "predicted": "\n\n1. Resting lets residual heat finish cooking the crumb.\n2. Resting allows steam to redistribute so the texture sets.\n3. Resting prevents a gummy interior and makes slicing easier.",
+        "expected": "2 rules",
+        "latency_ms": 27812.503,
+        "output_tokens": 439,
+        "category": "structure",
+        "difficulty": "medium"
+      },
+      {
+        "id": "inst-0053",
+        "correct": true,
+        "predicted": "\n\n1. Arrive and check into your accommodation.\n2. Explore the immediate neighborhood on foot.\n3. Find a local café or market for lunch.\n4. Visit one major landmark or museum.\n5. Plan tomorrow’s route and rest.",
+        "expected": "2 rules",
+        "latency_ms": 10615.994,
+        "output_tokens": 191,
+        "category": "structure",
+        "difficulty": "medium"
+      },
+      {
+        "id": "inst-0054",
+        "correct": true,
+        "predicted": "\n\n1. Wash or put away dishes immediately after use.\n2. Wipe down counters, sinks, and appliances after cooking.\n3. Label, store, and regularly discard personal food items.",
+        "expected": "2 rules",
+        "latency_ms": 8982.169,
+        "output_tokens": 156,
+        "category": "structure",
+        "difficulty": "medium"
+      },
+      {
+        "id": "inst-0055",
+        "correct": true,
+        "predicted": "\n\n1. Take lessons with a qualified instructor to learn water safety and basic techniques.\n2. Practice breathing, floating, and kicking in shallow water until you feel comfortable.\n3. Learn basic strokes such as freestyle and breaststroke with guided feedback.\n4. Build endurance by swimming short distances regularly in a supervised pool.",
+        "expected": "2 rules",
+        "latency_ms": 12037.236,
+        "output_tokens": 215,
+        "category": "structure",
+        "difficulty": "medium"
+      },
+      {
+        "id": "inst-0056",
+        "correct": true,
+        "predicted": "\n\n1. Extend evening hours and clearly advertise the new late opening time.\n2. Ensure staff, security, and lighting are available during the late hours.\n3. Keep access, checkout, and support services operating smoothly after dark.",
+        "expected": "2 rules",
+        "latency_ms": 12865.449,
+        "output_tokens": 205,
+        "category": "structure",
+        "difficulty": "medium"
+      },
+      {
+        "id": "inst-0057",
+        "correct": true,
+        "predicted": "\n\n1. Sawdust drifts through the air.\n2. Oil and metal mingle near the bench.\n3. Paint fumes curl from the drying rack.\n4. Coffee lingers by the old radio.",
+        "expected": "2 rules",
+        "latency_ms": 11849.131,
+        "output_tokens": 213,
+        "category": "structure",
+        "difficulty": "medium"
+      },
+      {
+        "id": "inst-0058",
+        "correct": true,
+        "predicted": "\n\n1. Pack essential documents, tickets, and money in an easily accessible bag.\n2. Bring comfortable clothing, toiletries, and any required medications.\n3. Include snacks, water, and entertainment for the journey.",
+        "expected": "2 rules",
+        "latency_ms": 6682.638,
+        "output_tokens": 116,
+        "category": "structure",
+        "difficulty": "medium"
+      },
+      {
+        "id": "inst-0059",
+        "correct": true,
+        "predicted": "\n\nLists beat memory because they externalize information, reducing the cognitive load that causes important details to slip away.\n\nLists beat memory because they create a reliable record that can be reviewed, prioritized, and acted upon long after the mind has moved on.",
+        "expected": "2 rules",
+        "latency_ms": 13115.389,
+        "output_tokens": 222,
+        "category": "structure",
+        "difficulty": "medium"
+      },
+      {
+        "id": "inst-0060",
+        "correct": true,
+        "predicted": "\n\nThe garden stirs beneath a pale sun, as crocuses push through the last damp patches of winter soil.\n\nBees hum low among the first blossoms, while birds stitch bright notes through the bare branches.\n\nRain softens the earth, and the gardener kneels to coax green shoots into the waiting beds.\n\nBy evening, the air carries the clean scent of new leaves, promising a season of patient growth.",
+        "expected": "2 rules",
+        "latency_ms": 19559.555,
+        "output_tokens": 318,
+        "category": "structure",
+        "difficulty": "medium"
+      },
+      {
+        "id": "inst-0061",
+        "correct": true,
+        "predicted": "\n\nThe bus schedule promised arrival at noon, but the empty street offered no reassurance.\n\nI checked the app again, hoping the blue dot would finally move toward my stop.\n\nPassersby glanced at the timetable as if it might have rewritten itself in their favor.\n\nBy the time the bus rounded the corner, my impatience had cooled into quiet resignation.",
+        "expected": "2 rules",
+        "latency_ms": 15480.84,
+        "output_tokens": 267,
+        "category": "structure",
+        "difficulty": "medium"
+      },
+      {
+        "id": "inst-0062",
+        "correct": true,
+        "predicted": "\n\nThe old radio sat on the shelf, its wooden case worn smooth by decades of hands.\n\nDespite its age, it still hummed to life with a warm crackle when the dial was turned.\n\nStatic gave way to music, filling the quiet room as if time had folded backward.\n\nListening to it felt like hearing a memory that refused to fade.",
+        "expected": "2 rules",
+        "latency_ms": 15287.029,
+        "output_tokens": 271,
+        "category": "structure",
+        "difficulty": "medium"
+      },
+      {
+        "id": "inst-0063",
+        "correct": true,
+        "predicted": "\n\nThe last hour of the night shift hums with the quiet relief of tasks nearly finished.\n\nFluorescent lights flicker over empty aisles as the worker wipes counters and stacks chairs.\n\nOutside, the first pale suggestion of dawn promises that the long dark is finally ending.",
+        "expected": "2 rules",
+        "latency_ms": 15060.65,
+        "output_tokens": 247,
+        "category": "structure",
+        "difficulty": "medium"
+      },
+      {
+        "id": "inst-0064",
+        "correct": true,
+        "predicted": "\n\nThe market slept behind locked gates, its stalls draped in canvas and waiting for morning.\n\nCrates of produce sat in neat rows, breathing cool dampness into the empty aisles.\n\nA few vendors arrived early, their footsteps echoing softly against the cobblestones.\n\nOutside, the first pale light touched the awnings, promising the day's first customers.",
+        "expected": "2 rules",
+        "latency_ms": 17833.745,
+        "output_tokens": 285,
+        "category": "structure",
+        "difficulty": "medium"
+      },
+      {
+        "id": "inst-0065",
+        "correct": true,
+        "predicted": "\n\nClean as you go\nWipe spills immediately\nLabel your food\nShare cleaning duties",
+        "expected": "3 rules",
+        "latency_ms": 9365.054,
+        "output_tokens": 167,
+        "category": "structure",
+        "difficulty": "hard"
+      },
+      {
+        "id": "inst-0066",
+        "correct": true,
+        "predicted": "\n\nAdults can learn swimming.\nStart in shallow water.\nBreathe slowly, trust buoyancy.\nPractice floating first.\nTake lessons without shame.\nProgress comes with patience.",
+        "expected": "3 rules",
+        "latency_ms": 15759.159,
+        "output_tokens": 279,
+        "category": "structure",
+        "difficulty": "hard"
+      },
+      {
+        "id": "inst-0067",
+        "correct": true,
+        "predicted": "\n\nLibrary glows after dark\nQuiet shelves await night\nLate pages turn softly\nMoonlight marks the stacks\nSilence stays open\nStories sleep past midnight",
+        "expected": "3 rules",
+        "latency_ms": 31338.433,
+        "output_tokens": 574,
+        "category": "structure",
+        "difficulty": "hard"
+      },
+      {
+        "id": "inst-0068",
+        "correct": true,
+        "predicted": "\n\nSawdust hangs in air.\nOil warms the bench.\nMetal dust bites.\nGlue sweetens the room.\nOld varnish lingers.\nFresh shavings exhale.",
+        "expected": "3 rules",
+        "latency_ms": 16645.485,
+        "output_tokens": 315,
+        "category": "structure",
+        "difficulty": "hard"
+      },
+      {
+        "id": "inst-0069",
+        "correct": true,
+        "predicted": "\n\nPack snacks and water\nFold clothes neatly\nKeep tickets accessible",
+        "expected": "3 rules",
+        "latency_ms": 8143.605,
+        "output_tokens": 142,
+        "category": "structure",
+        "difficulty": "hard"
+      },
+      {
+        "id": "inst-0070",
+        "correct": true,
+        "predicted": "\n\nIn short: It makes your goals and steps concrete, reducing uncertainty and helping you stay focused and follow through.",
+        "expected": "2 rules",
+        "latency_ms": 9167.179,
+        "output_tokens": 134,
+        "category": "framing",
+        "difficulty": "easy"
+      },
+      {
+        "id": "inst-0071",
+        "correct": true,
+        "predicted": "\n\nHere is the summary: Explaining something to someone else makes it easier to remember because it forces you to actively retrieve the information, organize it into a clear sequence, and connect it to what you already know. This process, often called the generation effect or self-explanation, strengthens memory traces and helps you notice gaps in your understanding. Teaching also adds meaning, structure, and emotional or social context, all of which make the information more distinctive and easi",
+        "expected": "2 rules",
+        "latency_ms": 12364.997,
+        "output_tokens": 188,
+        "category": "framing",
+        "difficulty": "easy"
+      },
+      {
+        "id": "inst-0072",
+        "correct": true,
+        "predicted": "\n\nFinal note: Check the power source first—make sure the charger is plugged in, the outlet works, and the charging cable/adapter is securely connected.",
+        "expected": "2 rules",
+        "latency_ms": 6960.314,
+        "output_tokens": 120,
+        "category": "framing",
+        "difficulty": "easy"
+      },
+      {
+        "id": "inst-0073",
+        "correct": true,
+        "predicted": "\n\nTo begin with: people often underestimate how long a task will take because they focus on an optimistic, best-case version of the future. This is known as the planning fallacy. When estimating, people tend to imagine the main steps going smoothly, while overlooking interruptions, delays, unexpected problems, and the time needed for small but necessary details.\n\nAnother reason is that people rely too much on their intentions and too little on past experience. Even if similar tasks have taken lo",
+        "expected": "2 rules",
+        "latency_ms": 21380.181,
+        "output_tokens": 283,
+        "category": "framing",
+        "difficulty": "easy"
+      },
+      {
+        "id": "inst-0074",
+        "correct": true,
+        "predicted": "\n\nShort answer: A good set of instructions is easy to follow when it states the goal clearly, uses simple and specific language, presents steps in logical order, breaks complex tasks into small actions, includes examples or visuals, anticipates common mistakes, and provides checkpoints so the reader can confirm they are on track.",
+        "expected": "2 rules",
+        "latency_ms": 15540.791,
+        "output_tokens": 260,
+        "category": "framing",
+        "difficulty": "easy"
+      },
+      {
+        "id": "inst-0075",
+        "correct": true,
+        "predicted": "\n\nOne thing first: the last page of a manual often contains the most practical information—troubleshooting tips, safety warnings, warranty details, or customer support contacts. Reading it first can help you avoid common mistakes, understand what to do if something goes wrong, and know where to get help before you even start using the product.",
+        "expected": "2 rules",
+        "latency_ms": 13444.511,
+        "output_tokens": 205,
+        "category": "framing",
+        "difficulty": "easy"
+      },
+      {
+        "id": "inst-0076",
+        "correct": true,
+        "predicted": "\n\nLearning to swim as an adult means trusting the water, breathing calmly, and practicing small movements. Fear softens into confidence, one stroke at a time. Thank you for reading.",
+        "expected": "2 rules",
+        "latency_ms": 16289.758,
+        "output_tokens": 304,
+        "category": "framing",
+        "difficulty": "medium"
+      },
+      {
+        "id": "inst-0077",
+        "correct": true,
+        "predicted": "\n\nThe library opens late, glowing after midnight. Its lamps hum softly, shelves wait in quiet rows, and readers drift between stories, finding calm in the hushed, amber-lit aisles. End of answer.",
+        "expected": "2 rules",
+        "latency_ms": 22991.647,
+        "output_tokens": 412,
+        "category": "framing",
+        "difficulty": "medium"
+      },
+      {
+        "id": "inst-0078",
+        "correct": true,
+        "predicted": "\n\nSawdust hangs in the air, mixed with warm oil, cold metal, and faint varnish. A sharp tang of solvent cuts through the dust, while old wood and rubber gloves linger. It smells busy, practical, and faintly sweet. That is all.",
+        "expected": "2 rules",
+        "latency_ms": 20669.776,
+        "output_tokens": 372,
+        "category": "framing",
+        "difficulty": "medium"
+      },
+      {
+        "id": "inst-0079",
+        "correct": true,
+        "predicted": "\n\nPack snacks, water, medications, chargers, a book, headphones, a light blanket, and toiletries. Keep essentials accessible. Dress in layers, wear comfortable shoes, and carry a small bag for valuables. Nothing further.",
+        "expected": "2 rules",
+        "latency_ms": 15235.003,
+        "output_tokens": 286,
+        "category": "framing",
+        "difficulty": "medium"
+      },
+      {
+        "id": "inst-0080",
+        "correct": true,
+        "predicted": "\n\nIn short: people underestimate task time because they imagine an ideal path and ignore interruptions and hidden steps and past delays and their own optimism and the need to test and fix and finish the work done",
+        "expected": "4 rules",
+        "latency_ms": 18786.339,
+        "output_tokens": 336,
+        "category": "framing",
+        "difficulty": "hard"
+      },
+      {
+        "id": "inst-0081",
+        "correct": true,
+        "predicted": "\n\nHere is the summary: clear steps simple words logical order and helpful examples make instructions easy to follow and reduce mistakes for every reader done",
+        "expected": "4 rules",
+        "latency_ms": 16041.607,
+        "output_tokens": 269,
+        "category": "framing",
+        "difficulty": "hard"
+      },
+      {
+        "id": "inst-0082",
+        "correct": true,
+        "predicted": "\n\nFinal note: reading the last page first reveals the goal and warnings so you can follow the steps with confidence and safely get it done",
+        "expected": "4 rules",
+        "latency_ms": 62075.411,
+        "output_tokens": 1150,
+        "category": "framing",
+        "difficulty": "hard"
+      },
+      {
+        "id": "inst-0083",
+        "correct": true,
+        "predicted": "\n\n{\n  \"city\": \"Paris\",\n  \"country\": \"France\"\n}",
+        "expected": "3 rules",
+        "latency_ms": 5518.028,
+        "output_tokens": 96,
+        "category": "json",
+        "difficulty": "medium"
+      },
+      {
+        "id": "inst-0084",
+        "correct": true,
+        "predicted": "\n\n[1,2,3]",
+        "expected": "2 rules",
+        "latency_ms": 3493.37,
+        "output_tokens": 58,
+        "category": "json",
+        "difficulty": "medium"
+      },
+      {
+        "id": "inst-0085",
+        "correct": true,
+        "predicted": "\n\n{\"ok\": true, \"count\": 7}",
+        "expected": "3 rules",
+        "latency_ms": 4326.831,
+        "output_tokens": 73,
+        "category": "json",
+        "difficulty": "hard"
+      },
+      {
+        "id": "inst-0086",
+        "correct": false,
+        "predicted": "\n\n{\n  \"steps\": [\n    \"Boil water.\",\n    \"Pour hot water over a tea bag or tea leaves.\",\n    \"Steep for a few minutes, then remove the tea and serve.\"\n  ]\n}",
+        "expected": "3 rules",
+        "latency_ms": 8464.766,
+        "output_tokens": 147,
+        "category": "json",
+        "difficulty": "hard"
+      },
+      {
+        "id": "inst-0087",
+        "correct": true,
+        "predicted": "\n\nMAX_SIZE=4096",
+        "expected": "1 rules",
+        "latency_ms": 6514.846,
+        "output_tokens": 110,
+        "category": "format",
+        "difficulty": "medium"
+      },
+      {
+        "id": "inst-0088",
+        "correct": true,
+        "predicted": "\n\n2026-08-23",
+        "expected": "1 rules",
+        "latency_ms": 4675.223,
+        "output_tokens": 87,
+        "category": "format",
+        "difficulty": "medium"
+      },
+      {
+        "id": "inst-0089",
+        "correct": true,
+        "predicted": "\n\nalpha,beta,gamma",
+        "expected": "1 rules",
+        "latency_ms": 3173.172,
+        "output_tokens": 59,
+        "category": "format",
+        "difficulty": "hard"
+      },
+      {
+        "id": "inst-0090",
+        "correct": true,
+        "predicted": "\n\nRESULT: 12",
+        "expected": "1 rules",
+        "latency_ms": 3738.15,
+        "output_tokens": 54,
+        "category": "format",
+        "difficulty": "medium"
+      },
+      {
+        "id": "inst-0091",
+        "correct": true,
+        "predicted": "\n\nDer Bahnhof ist ein belebter Ort, an dem Züge ankommen und abfahren. Reisende warten auf den Bahnsteigen und folgen den Durchsagen.",
+        "expected": "3 rules",
+        "latency_ms": 7880.125,
+        "output_tokens": 147,
+        "category": "language",
+        "difficulty": "medium"
+      },
+      {
+        "id": "inst-0092",
+        "correct": true,
+        "predicted": "\n\nLa gare est un lieu animé où les voyageurs attendent les trains. Ses quais, ses panneaux lumineux et ses annonces créent une atmosphère de départ.",
+        "expected": "3 rules",
+        "latency_ms": 9379.67,
+        "output_tokens": 145,
+        "category": "language",
+        "difficulty": "medium"
+      },
+      {
+        "id": "inst-0093",
+        "correct": true,
+        "predicted": "\n\nLa estacion tiene andenes largos y un reloj antiguo. Los trenes llegan y parten entre anuncios y pasos de viajeros.",
+        "expected": "3 rules",
+        "latency_ms": 17157.025,
+        "output_tokens": 263,
+        "category": "language",
+        "difficulty": "medium"
+      },
+      {
+        "id": "inst-0094",
+        "correct": true,
+        "predicted": "\n\nLa stazione è un luogo affollato, pieno di treni e viaggiatori. I binari si estendono sotto una grande tettoia di ferro e vetro.",
+        "expected": "3 rules",
+        "latency_ms": 8242.951,
+        "output_tokens": 145,
+        "category": "language",
+        "difficulty": "medium"
+      },
+      {
+        "id": "inst-0095",
+        "correct": true,
+        "predicted": "\n\nA estacao é movimentada, com pessoas indo e vindo. Os trens anunciam chegadas e partidas pelos alto-falantes.",
+        "expected": "3 rules",
+        "latency_ms": 16101.665,
+        "output_tokens": 266,
+        "category": "language",
+        "difficulty": "medium"
+      },
+      {
+        "id": "inst-0096",
+        "correct": true,
+        "predicted": "\n\nThe workshop smelled of oil, sawdust, and warm metal, while the atlas of tools hung above the bench. Each atlas of wood shavings curled underfoot, and the atlas of leather straps carried a tannery tang. Even the atlas of old maps by the window seemed to breathe dust and cedar.",
+        "expected": "2 rules",
+        "latency_ms": 21979.032,
+        "output_tokens": 405,
+        "category": "inclusion",
+        "difficulty": "hard"
+      },
+      {
+        "id": "inst-0097",
+        "correct": true,
+        "predicted": "\n\nPack light for a long train journey: snacks, water, charger, and a signal booster if your phone loses signal. Check signal strength before leaving, and keep a signal plan for dead zones. A small bag with signal essentials makes the trip smoother.",
+        "expected": "2 rules",
+        "latency_ms": 19080.657,
+        "output_tokens": 328,
+        "category": "inclusion",
+        "difficulty": "hard"
+      },
+      {
+        "id": "inst-0098",
+        "correct": true,
+        "predicted": "\n\nLists beat memory because they give every task a safe harbour. Instead of letting worries harbour in your mind, you harbour them on paper. A simple list becomes a harbour for deadlines, ideas, and fears, freeing your mind to act.",
+        "expected": "2 rules",
+        "latency_ms": 19214.429,
+        "output_tokens": 358,
+        "category": "inclusion",
+        "difficulty": "hard"
+      },
+      {
+        "id": "inst-0099",
+        "correct": true,
+        "predicted": "\n\nIn the early spring garden, each green shoot seemed like a fresh entry in a ledger. The crocuses balanced the ledger of winter’s gray, while bees copied the ledger of blossoms into the warm air. I watched the soil’s quiet accounting, feeling hope return.",
+        "expected": "2 rules",
+        "latency_ms": 19098.699,
+        "output_tokens": 360,
+        "category": "inclusion",
+        "difficulty": "hard"
+      },
+      {
+        "id": "inst-0100",
+        "correct": true,
+        "predicted": "\n\nI stood on the platform, checking the platform sign, while the delayed bus made the platform feel endless. Every glance at the platform showed only empty pavement, and I whispered to the platform that I just wanted to go home.",
+        "expected": "2 rules",
+        "latency_ms": 19815.543,
+        "output_tokens": 347,
+        "category": "inclusion",
+        "difficulty": "hard"
+      },
+      {
+        "id": "inst-0101",
+        "correct": false,
+        "predicted": "\n\ngreen",
+        "expected": "2 rules",
+        "latency_ms": 3316.826,
+        "output_tokens": 53,
+        "category": "format",
+        "difficulty": "hard"
+      },
+      {
+        "id": "inst-0102",
+        "correct": false,
+        "predicted": "\n\nI CAN DO THIS NOW",
+        "expected": "3 rules",
+        "latency_ms": 5206.739,
+        "output_tokens": 93,
+        "category": "format",
+        "difficulty": "hard"
+      },
+      {
+        "id": "inst-0103",
+        "correct": true,
+        "predicted": "\n\nA list of tasks to ensure nothing is missed.",
+        "expected": "1 rules",
+        "latency_ms": 25689.515,
+        "output_tokens": 653,
+        "category": "length",
+        "difficulty": "medium"
+      },
+      {
+        "id": "inst-0104",
+        "correct": true,
+        "predicted": "\n\nThe small cat slept on the warm bed all night after dinner.",
+        "expected": "3 rules",
+        "latency_ms": 11014.576,
+        "output_tokens": 218,
+        "category": "length",
+        "difficulty": "hard"
+      }
+    ]
+  },
+  "failures": [],
+  "gotchas": [
+    {
+      "severity": "info",
+      "text": "--max-num-seqs is 64 here, not the 2 the upstream recipe shipped with, and the change rests on a measured curve rather than on preference. At GPU_MEM=0.85 the server reports a KV pool of 654,635 tokens, while the heaviest workload in this run - c64 at about 1.3k tokens per request - needs roughly 83,000. So 2 was a scheduler cap, not a memory limit, and it left about 87 percent of the KV pool unused while turning every cell above concurrency 2 into a measurement of queue depth rather than of batching. Aggregate decode against N concurrent 256-token requests on this same box and this same server: 24.3 tok/s at N=1, 56.2 at 2, 80.2 at 4, 114.6 at 8, 220.5 at 16, 210.9 at 32, 236.2 at 64, with all 64 requests returning and no preemption in the log. Aggregate throughput therefore plateaus around N=16 at roughly 215-235 tok/s; past that the box trades per-request rate (13.8 tok/s at 16 down to 5.4 at 64) for concurrency rather than gaining throughput. 64 is used here so that no workload in the atlas is capped by the scheduler. Results with config_id fa4e2bc-era max-num-seqs 2 exist separately in this repository and are the other arm of that comparison."
+    },
+    {
+      "severity": "info",
+      "text": "Speculative decoding is ON and it is the model's own trained MTP head (--speculative-config {method: mtp, num_speculative_tokens: 3}), not n-gram drafting. Because the head is trained rather than copying from the prompt, throughput is nearly flat across task shapes - the recipe measures a 1.2x spread over four editing and prose tasks where the llama.cpp/ngram-mod recipe for the same model swings 3.2x. Never compare a decode figure here against a cell run with different speculation."
+    },
+    {
+      "severity": "info",
+      "text": "Prefix caching must stay off (--no-enable-prefix-caching) - it is a GB10 GDN kernel bug, not a tuning choice. One upside: the prefill figures here are honest, because nothing is served from cache. Full torch.compile is also off (an Inductor int64-indexing assert on sm_121); the recipe instead declares the n-gram gather a splitting op and captures PIECEWISE CUDA graphs, and switching to a FULL capture mode breaks the run."
+    },
+    {
+      "severity": "info",
+      "text": "A third of this checkpoint is served from NVMe, so page-cache state is a hidden independent variable and any result from this configuration that does not state it is not reproducible. Residency of the 47.75 GiB n-gram table was measured with mincore(2) immediately before this workload started: 100.0% of it was in the page cache."
+    },
+    {
+      "severity": "info",
+      "text": "VLLM_PLE_CPU_OFFLOAD=1, the official pinned-host-RAM path, hangs on this box: it registers a PleOffloadLayer and then spins a core with no disk I/O, indefinitely. Only VLLM_PLE_MMAP works here. The four VLLM_PLE_* / VLLM_USE_* environment variables are recorded in args for that reason - they are not CLI flags, but VLLM_PLE_MMAP is the difference between the model loading and not loading."
+    },
+    {
+      "severity": "info",
+      "text": "Read gpu_util_avg_pct on this box with care, and do not read it as saturation. GB10 is a unified-memory part: the accelerator and the CPU share one pool and one bandwidth budget, so a busy SM can be occupied while stalled on memory rather than doing work. The measurements in this series show exactly that. Utilisation is ANTI-correlated with load at the top end - 90.7 percent at concurrency 16 against 80.3 percent at concurrency 32, and 79.8 percent on the 1-to-64 sweep - where a compute-bound engine would climb. Package power moves the same way, 45.8 W at c16 against 38.8 W at c32, well under the 61.1 W the single-stream 128k prefill draws. More concurrent work, less utilisation and less power, is a stall signature, and on this configuration the plausible stalls are UMA bandwidth contention and the n-gram gather from NVMe. Two further caveats on the telemetry itself: vram_peak_gb is null in every result here because there is no separate device memory to measure and nvidia-smi reports fb_memory_total as 0, so ram_peak_gb (113-119 GB) is the real occupancy figure; and the power figures come from what the driver exposes on this part, which may not account for the whole SoC, so treat them as a relative signal across these runs rather than as absolute wall power."
+    }
+  ],
+  "derived": {
+    "cost_per_1m_output_tokens_usd": null,
+    "tokens_per_watt": null,
+    "tok_s_per_gb_bandwidth": null,
+    "bandwidth_efficiency": null,
+    "memory_headroom_gb": null
+  },
+  "raw": {
+    "harness": "atlas-bench",
+    "harness_version": "0.1.0",
+    "sha256": "2aacadf455a6465916bb2d5ab35abef860290846958d2ec169b863f0139547c7",
+    "payload_path": null,
+    "payload": {
+      "scorer": "instruction",
+      "scorers_used": [
+        "instruction"
+      ],
+      "engine_endpoint": {
+        "attached": true,
+        "base_url": "http://127.0.0.1:8000/v1",
+        "served_model_id": "qwen3.8-flash-next",
+        "advertised_models": [
+          "qwen3.8-flash-next"
+        ]
+      }
+    },
+    "truncated": false
+  },
+  "provenance": {
+    "github_login": "0xBakeer",
+    "github_user_id": 17404809,
+    "started_at": "2026-08-28T13:40:34Z",
+    "finished_at": "2026-08-28T13:47:06Z",
+    "submitted_at": null,
+    "commit": null,
+    "pr": null,
+    "method": "atlas-bench",
+    "agent": null,
+    "notes": "NVIDIA DGX Spark (ASUS Ascent GX10, GB10 / SM121, 128 GB unified memory, ~121 GiB usable) on Ubuntu 24.04.4 LTS, kernel 6.17.0-1029-nvidia aarch64, driver 580.173.02, CUDA 13.0. Swap is off. Engine is the container from the long-context recipe of github.com/0xBakeer/qwen38-flash-next-spark (commit 1611340), which builds github.com/blazux/qwen3.8-Flash-DGX (Apache-2.0) at 82ed48d; pip reports the build as vLLM 0.1.dev20073+g8e685d198, i.e. upstream commit 8e685d198 plus that fork's Qwen3.8-Flash-Next support. Weights are RadixArk/Qwen3.8-Flash-Next-NVFP4 at revision 7b71922, 206 safetensors shards, 135,156,121,594 bytes of tensor data. The server was started by the recipe's own recipes/vllm-longctx/serve.sh with its shipped defaults (CTX=262144, SEQS=2, GPU_MEM=0.85, MTP=3, PREWARM=1, WORKERS=32) and nothing else; the flags in args are exactly what that produced. The defining choice is VLLM_PLE_MMAP=1: the 51.2B-parameter n-gram/PLE embedding table, 47.75 GiB spread over 12 of the 206 shards, is gathered from the checkpoint on disk through the OS page cache instead of being made resident, which is the only reason a 126 GiB checkpoint runs next to a usable KV cache in 128 GB. KV was measured by the server at 18.13 GiB. The machine was fully isolated for the run: the only route to it from outside the box is an SSH tunnel opened by a reverse proxy on the same private network, and that tunnel was stopped before the first run and stayed stopped throughout, so no external client could contend for the GPU. The container publishes 127.0.0.1:8000 only and the harness connects to it directly, so no proxy sits in the measured path."
+  },
+  "verification": {
+    "level": "self-reported",
+    "reproduced_by": [],
+    "flags": []
+  }
+}
