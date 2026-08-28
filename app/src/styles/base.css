@@ -1731,3 +1731,188 @@ table.table {
   margin-right: 5px;
   vertical-align: -1px;
 }
+
+/* ------------------------------------------------------- operating map (run detail sweeps) */
+.chart-pair .eyebrow.plain {
+  margin-bottom: var(--sp-2);
+}
+.chart-pair .eyebrow.pair-lower {
+  margin-top: var(--sp-4);
+}
+
+/* per-request strip: every measured request as one dot on a log latency scale */
+.request-strip {
+  display: block;
+  width: 100%;
+}
+.request-strip .grid {
+  stroke: var(--line);
+  stroke-width: 1;
+  stroke-dasharray: 2 4;
+}
+.request-strip .tick {
+  fill: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-anchor: end;
+}
+.request-strip .tick.level {
+  text-anchor: middle;
+}
+.request-strip .range {
+  stroke: var(--chart-2-soft);
+  stroke-width: 2;
+}
+.request-strip .p50 {
+  stroke: var(--chart-2);
+  stroke-width: 2;
+}
+.request-strip .dot {
+  fill: var(--chart-2);
+  fill-opacity: 0.7;
+  transition: fill-opacity var(--t-fast) var(--ease);
+}
+.request-strip .dot:hover {
+  fill-opacity: 1;
+}
+.request-strip .dot.failed {
+  fill: var(--danger);
+  fill-opacity: 0.9;
+}
+/* the instrument glow — dark theme only, where a lit trace reads instead of smudging */
+:root[data-theme='dark'] .request-strip .p50,
+:root[data-theme='dark'] .request-strip .dot {
+  filter: drop-shadow(0 0 3px var(--chart-2-soft));
+}
+:root[data-theme='dark'] .request-strip .dot.failed {
+  filter: drop-shadow(0 0 3px var(--danger-soft));
+}
+.request-strip-caption {
+  margin-top: 4px;
+  justify-content: space-between;
+}
+.request-strip-caption .strip-key.failed {
+  color: var(--danger);
+}
+
+/* telemetry small multiples: what the machine did while the sweep ran */
+.telemetry-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(164px, 1fr));
+  gap: 1px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  overflow: hidden;
+}
+.telemetry-tile {
+  background: var(--surface);
+  box-shadow: 0 0 0 1px var(--line);
+  padding: 10px 12px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    'k k'
+    'v spark'
+    'range spark';
+  gap: 2px 8px;
+  align-items: end;
+  min-width: 0;
+}
+.telemetry-tile .k {
+  grid-area: k;
+  font-size: var(--fs-2xs);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  font-weight: 600;
+}
+.telemetry-tile .v {
+  grid-area: v;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xl);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+.telemetry-tile .v .unit {
+  font-size: var(--fs-xs);
+  font-family: var(--font-sans);
+  color: var(--muted);
+}
+.telemetry-tile .range {
+  grid-area: range;
+  font-size: var(--fs-2xs);
+  color: var(--faint);
+  font-family: var(--font-mono);
+}
+.telemetry-tile .sparkline {
+  grid-area: spark;
+}
+
+/* arms of one cell: same square, different flag set */
+.arm-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+.arm-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.arm-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.arm-head .chip {
+  cursor: default;
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  height: 22px;
+}
+.arm-run {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 2px 12px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  text-decoration: none;
+  color: inherit;
+  align-items: center;
+}
+.arm-run:hover {
+  border-color: var(--line-strong);
+  background: var(--surface-2);
+  text-decoration: none;
+}
+.arm-run .hl {
+  font-family: var(--font-mono);
+  font-size: var(--fs-md);
+  font-weight: 500;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  justify-content: flex-end;
+}
+.arm-run .hl .unit {
+  font-size: var(--fs-2xs);
+}
+.arm-run .meta {
+  grid-column: 1 / 2;
+}
+@media (max-width: 640px) {
+  .arm-run {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .arm-run .hl {
+    justify-content: flex-start;
+    grid-column: 1 / 2;
+  }
+}

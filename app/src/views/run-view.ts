@@ -1,10 +1,12 @@
 import { html, nothing, type PropertyValues, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { renderServeCommand } from '@atlas/core';
-import type { EngineVersion, ResultRecord } from '@atlas/core';
+import type { EngineVersion, ResultRecord, SweepAxis, SweepPoint } from '@atlas/core';
 import { addButton } from '../components/add-modal.js';
 import '../components/chart.js';
+import '../components/request-strip.js';
 import '../components/run-picker.js';
+import type { StripMetric } from '../components/request-strip.js';
 import { icon } from '../components/icons.js';
 import {
   sweepAxisOf,
@@ -13,10 +15,12 @@ import {
   sweepX,
   sweepY,
   type SweepMetric,
+  type SweepSeries,
 } from '../components/sweep-chart.js';
 import {
   codeBlock,
   copyBtn,
+  deltaTag,
   emptyState,
   engineLink,
   hardwareLink,
@@ -28,17 +32,22 @@ import {
   modelLink,
   skeletonBlock,
   skeletonLines,
+  sparkline,
   verifBadge,
   when,
   who,
   workloadLink,
 } from '../components/ui.js';
+import type { IndexRow } from '../data/types.js';
 import { href, modelHref, navigate } from '../router.js';
 import { store } from '../store.js';
-import { cssVar } from '../util/colors.js';
+import { armDiff, armLabel, cellArms, prefillPoints } from '../util/arms.js';
+import { cssVar, seriesColor } from '../util/colors.js';
 import { absDateTime } from '../util/dates.js';
-import { fmtInt, fmtMs, fmtNum, fmtPct, fmtTokS, shortSha } from '../util/format.js';
-import { blockCards } from '../util/metrics.js';
+import { metricDelta } from '../util/diff.js';
+import { fmtGB, fmtInt, fmtMs, fmtNum, fmtPct, fmtTokS, fmtW, shortSha } from '../util/format.js';
+import { blockCards, headlineMetric } from '../util/metrics.js';
+import { requestSamples } from '../util/requests.js';
 import { fmtDefault, isDefault } from '../components/param-form.js';
 import { modelRefFor } from './explore-view.js';
 import { ViewElement } from './view-base.js';
@@ -49,21 +58,60 @@ export class AtlasRunView extends ViewElement {
   @state() private rec: ResultRecord | null | undefined = undefined;
   @state() private vf: EngineVersion | null = null;
   @state() private itemFilter: 'all' | 'correct' | 'incorrect' = 'all';
-  @state() private sweepMetric: SweepMetric = 'throughput';
+  @state() private stripMetric: StripMetric = 'ttft';
+  @state() private siblings = new Map<string, ResultRecord | null>();
   private loadedFor = '';
 
   protected override willUpdate(_c: PropertyValues): void {
     if (this.runId && this.runId !== this.loadedFor && store.registry.value) {
       this.loadedFor = this.runId;
       this.rec = undefined;
+      this.siblings = new Map();
       const row = store.rowById(this.runId);
       void store.run(row ?? { run_id: this.runId }).then((rec) => {
         if (this.loadedFor !== this.runId) return;
         this.rec = rec;
-        if (rec)
+        if (rec) {
           void store.engineVersion(rec.engine.id, rec.engine.version).then((vf) => (this.vf = vf));
+          this.loadSiblings(rec);
+        }
       });
     }
+  }
+
+  /**
+   * The full records of the cell's other runs: they carry the args (to name each arm by what
+   * actually differs) and the sweep points (to overlay the curves). Cells are small, so a
+   * handful of lazy fetches — the store caches them for the compare view anyway.
+   */
+  private loadSiblings(rec: ResultRecord): void {
+    const runId = this.runId;
+    // Big cells can hold dozens of runs; fetch the ones the page actually draws from first:
+    // same-workload arms (curve overlay), then this config's prefill family (context curve),
+    // then one run per other config (arm naming needs its args).
+    const score = (r: IndexRow): number =>
+      r.workload_id === rec.workload_id
+        ? 0
+        : r.kind === 'prefill' && r.config_id === rec.config_id
+          ? 1
+          : r.config_id !== rec.config_id
+            ? 2
+            : 3;
+    const rows = [...this.siblingRows(rec)].sort((a, b) => score(a) - score(b)).slice(0, 12);
+    for (const row of rows) {
+      void store.run(row).then((sib) => {
+        if (this.loadedFor !== runId) return;
+        this.siblings = new Map(this.siblings).set(row.run_id, sib);
+      });
+    }
+  }
+
+  private siblingRows(rec: ResultRecord): IndexRow[] {
+    return store.index.value.filter((r) => r.cell_id === rec.cell_id && r.run_id !== rec.run_id);
+  }
+
+  private loadedSiblings(): ResultRecord[] {
+    return [...this.siblings.values()].filter((r): r is ResultRecord => !!r);
   }
 
   private repoUrl(): string {
@@ -181,6 +229,7 @@ export class AtlasRunView extends ViewElement {
                 : nothing
           }
           ${rec.sweep?.length ? this.sweep(rec) : nothing}
+          ${rec.kind === 'prefill' ? this.prefillCurve(rec) : nothing} ${this.arms(rec)}
           ${rec.scores ? this.scores(rec) : nothing}
           ${rec.failures?.length ? this.failures(rec) : nothing}
           ${rec.gotchas?.length ? this.gotchas(rec) : nothing} ${this.args(rec, serve)}
@@ -309,45 +358,94 @@ export class AtlasRunView extends ViewElement {
     </div>`;
   }
 
+  /**
+   * The sweep as an operating map: throughput and latency vertically paired over one synced
+   * x axis (never a dual-axis chart), so the point where aggregate tok/s keeps climbing while
+   * TTFT collapses is visible without reading a single number. Arms of the same cell that ran
+   * the same sweep are overlaid, named by the flags that differ.
+   */
   private sweep(rec: ResultRecord): TemplateResult {
     const pts = rec.sweep!;
     const axis = sweepAxisOf(pts);
-    const metrics: SweepMetric[] = (['throughput', 'ttft', 'tpot'] as SweepMetric[]).filter((m) =>
-      sweepHasMetric(pts, m),
+    const series = this.sweepSeriesFor(rec);
+    const throughput = sweepHasMetric(pts, 'throughput');
+    const latency: SweepMetric | null = sweepHasMetric(pts, 'ttft')
+      ? 'ttft'
+      : sweepHasMetric(pts, 'tpot')
+        ? 'tpot'
+        : null;
+    const sync = `sweep-${rec.run_id}`;
+    const samples = requestSamples(rec);
+    const stripMetrics: StripMetric[] = (['ttft', 'e2e'] as StripMetric[]).filter((m) =>
+      samples.some((s) => !s.warmup && (m === 'ttft' ? s.ttft_ms : s.e2e_ms) !== null),
     );
-    const metric = metrics.includes(this.sweepMetric)
-      ? this.sweepMetric
-      : (metrics[0] ?? 'throughput');
-    const color = cssVar('--seq-4');
+    const stripMetric = stripMetrics.includes(this.stripMetric)
+      ? this.stripMetric
+      : (stripMetrics[0] ?? 'ttft');
+    const throttled = pts.some((p) => p.metrics.thermal_throttle_detected);
     return html`<section>
       <div class="section-title">
         <h2>
           ${axis === 'concurrency' ? 'Parallelism sweep' : axis === 'input_tokens' ? 'Depth sweep' : 'Sweep'}
         </h2>
-        <span class="meta">${pts.length} points</span>
-        <span class="spacer"></span>
-        <div class="seg sm">
-          ${metrics.map((m) => html`<button aria-pressed=${m === metric} @click=${() => (this.sweepMetric = m)}>${m === 'throughput' ? 'tok/s' : m === 'ttft' ? 'TTFT' : 'TPOT'}</button>`)}
-        </div>
+        <span class="meta"
+          >${pts.length}
+          points${series.length > 1 ? ` · ${series.length - 1} other arm${series.length === 2 ? '' : 's'} of this cell overlaid` : ''}</span
+        >
+        ${throttled ? html`<span class="tag danger">thermal throttle</span>` : nothing}
       </div>
-      <div class="card">
-        <atlas-chart
-          .build=${sweepChartBuild([{ label: rec.run_id.slice(0, 8), color, points: pts }], metric, axis)}
-          .height=${240}
-          .key=${metric}
-        ></atlas-chart>
+      <div class="card chart-pair">
         ${
-          axis === 'concurrency' && metrics.includes('ttft') && metric === 'throughput'
-            ? html`<div class="mt-3">
-                <div class="eyebrow plain mb-2">TTFT p50 at each point</div>
+          throughput
+            ? html`<div class="eyebrow plain">Aggregate throughput</div>
                 <atlas-chart
-                  .build=${sweepChartBuild([{ label: 'TTFT', color: cssVar('--warn'), points: pts }], 'ttft', axis)}
-                  .height=${160}
-                ></atlas-chart>
-              </div>`
+                  .build=${sweepChartBuild(series, 'throughput', axis, { sync })}
+                  .height=${240}
+                  .key=${`t${series.length}`}
+                ></atlas-chart>`
+            : nothing
+        }
+        ${
+          latency
+            ? html`<div class="eyebrow plain pair-lower">
+                  ${latency === 'ttft' ? 'Time to first token' : 'Time per output token'}
+                  <span class="muted">— p50${series.length === 1 ? ', p95 band' : ''}</span>
+                </div>
+                <atlas-chart
+                  .build=${sweepChartBuild(series, latency, axis, { sync })}
+                  .height=${190}
+                  .key=${`l${series.length}`}
+                ></atlas-chart>`
             : nothing
         }
       </div>
+      ${
+        samples.length && stripMetrics.length
+          ? html`<div class="card mt-3">
+              <div class="row mb-2">
+                <div class="eyebrow plain">Every request</div>
+                <span class="spacer"></span>
+                <div class="seg sm">
+                  ${stripMetrics.map(
+                    (m) =>
+                      html`<button
+                        aria-pressed=${m === stripMetric}
+                        @click=${() => (this.stripMetric = m)}
+                      >
+                        ${m === 'ttft' ? 'TTFT' : 'E2E'}
+                      </button>`,
+                  )}
+                </div>
+              </div>
+              <atlas-request-strip
+                .samples=${samples}
+                .metric=${stripMetric}
+                .height=${230}
+              ></atlas-request-strip>
+            </div>`
+          : nothing
+      }
+      ${this.telemetry(pts, axis)}
       <div class="table-wrap mt-3">
         <table class="table cards">
           <thead>
@@ -386,6 +484,202 @@ export class AtlasRunView extends ViewElement {
             )}
           </tbody>
         </table>
+      </div>
+    </section>`;
+  }
+
+  /** This run plus every loaded arm that ran the same sweep, labelled by what differs. */
+  private sweepSeriesFor(rec: ResultRecord): SweepSeries[] {
+    const series: SweepSeries[] = [
+      { label: 'this run', color: cssVar('--chart-1'), points: rec.sweep! },
+    ];
+    for (const sib of this.loadedSiblings()) {
+      if (!sib.sweep?.length || sib.workload_id !== rec.workload_id) continue;
+      series.push({
+        label: armLabel(rec.args, sib.args, `by ${sib.provenance.github_login}`),
+        color: seriesColor(series.length),
+        points: sib.sweep,
+      });
+    }
+    return series;
+  }
+
+  /**
+   * What the machine did while the sweep ran. Small multiples, one per sensor — never a
+   * second y axis on the main chart. VRAM is null by nature on unified-memory parts, so RAM
+   * stands in when that is what was measured.
+   */
+  private telemetry(pts: SweepPoint[], axis: SweepAxis): TemplateResult | typeof nothing {
+    const ordered = [...pts].sort((a, b) => (sweepX(a, axis) ?? 0) - (sweepX(b, axis) ?? 0));
+    const tiles = [
+      {
+        label: 'GPU util',
+        unit: '%',
+        fmt: (v: number) => fmtNum(v, 0),
+        vals: ordered.map((p) => p.metrics.gpu_util_avg_pct ?? null),
+      },
+      {
+        label: 'Avg power',
+        unit: 'W',
+        fmt: fmtW,
+        vals: ordered.map((p) => p.metrics.power_avg_w ?? null),
+      },
+      ordered.some((p) => p.metrics.vram_peak_gb != null)
+        ? {
+            label: 'Peak VRAM',
+            unit: 'GB',
+            fmt: fmtGB,
+            vals: ordered.map((p) => p.metrics.vram_peak_gb ?? null),
+          }
+        : {
+            label: 'Peak RAM',
+            unit: 'GB',
+            fmt: fmtGB,
+            vals: ordered.map((p) => p.metrics.ram_peak_gb ?? null),
+          },
+      {
+        label: 'Max temp',
+        unit: '°C',
+        fmt: (v: number) => fmtNum(v, 0),
+        vals: ordered.map((p) => p.metrics.temp_max_c ?? null),
+      },
+    ].filter((t) => t.vals.some((v) => v != null));
+    if (tiles.length === 0) return nothing;
+    return html`<div class="telemetry-grid mt-3">
+      ${tiles.map((t) => {
+        const nums = t.vals.filter((v): v is number => v != null);
+        const last = nums[nums.length - 1]!;
+        const min = Math.min(...nums);
+        const max = Math.max(...nums);
+        return html`<div class="telemetry-tile" title=${`${t.label} across the sweep levels`}>
+          <span class="k">${t.label}</span>
+          <span class="v">${t.fmt(last)}<span class="unit">${t.unit}</span></span>
+          ${sparkline(t.vals, { width: 96, height: 26 })}
+          <span class="range">${min === max ? 'flat' : `${t.fmt(min)}–${t.fmt(max)}`}</span>
+        </div>`;
+      })}
+    </div>`;
+  }
+
+  /**
+   * Prefill flatness: the same configuration run at every registered context length. The x
+   * values come from the workloads' resolved `input_tokens`, so a new prefill workload in the
+   * registry extends this chart with no code change.
+   */
+  private prefillCurve(rec: ResultRecord): TemplateResult | typeof nothing {
+    const family = [rec, ...this.loadedSiblings()].filter((r) => r.config_id === rec.config_id);
+    const points = prefillPoints(family);
+    if (points.length < 2) return nothing;
+    const series: SweepSeries[] = [{ label: 'prefill tok/s', color: cssVar('--chart-1'), points }];
+    return html`<section>
+      <div class="section-title">
+        <h2>Prefill across context length</h2>
+        <span class="meta">${points.length} lengths, same configuration — flat is the ideal</span>
+      </div>
+      <div class="card">
+        <atlas-chart
+          .build=${sweepChartBuild(series, 'prefill', 'input_tokens', { logX: true })}
+          .height=${220}
+          .key=${points.length}
+        ></atlas-chart>
+      </div>
+    </section>`;
+  }
+
+  /**
+   * The cell's other arms: same model × quant × hardware × engine-minor, measured under a
+   * different flag set (or reproduced by somebody else). This is the comparison the atlas
+   * exists for, so it is one click, not a search.
+   */
+  private arms(rec: ResultRecord): TemplateResult | typeof nothing {
+    const rows = this.siblingRows(rec);
+    if (rows.length === 0) return nothing;
+    const groups = cellArms(store.index.value, rec).filter(
+      (g) => !(g.configId === rec.config_id && g.rows.every((r) => r.run_id === rec.run_id)),
+    );
+    const currentRow = store.rowById(rec.run_id);
+    return html`<section>
+      <div class="section-title">
+        <h2>Same cell, other runs</h2>
+        <span class="meta">${rows.length} in this model × hardware × engine-minor square</span>
+      </div>
+      <div class="arm-list">
+        ${groups.map((g) => {
+          const sibRec = g.rows
+            .map((r) => this.siblings.get(r.run_id))
+            .find((r): r is ResultRecord => !!r);
+          const sameConfig = g.configId === rec.config_id;
+          const chips = sameConfig ? [] : sibRec ? armDiff(rec.args, sibRec.args) : null;
+          // The same workload is the apples-to-apples comparison — surface it first, cap the
+          // rest: a fully-swept cell holds dozens of runs and this is a summary, not a table.
+          const all = g.rows
+            .filter((r) => r.run_id !== rec.run_id)
+            .sort(
+              (a, b) =>
+                Number(b.workload_id === rec.workload_id) -
+                Number(a.workload_id === rec.workload_id),
+            );
+          const runs = all.slice(0, 6);
+          if (runs.length === 0) return nothing;
+          return html`<div class="arm-group">
+            <div class="arm-head">
+              ${
+                sameConfig
+                  ? html`<span class="tag">same config</span>
+                      <span class="xs muted"
+                        >this exact fingerprint — repeats and other workloads</span
+                      >`
+                  : html`<span class="tag accent">different config</span> ${
+                        chips === null
+                          ? html`<span class="xs muted">config ${hashChip(g.configId)}</span>`
+                          : chips.length
+                            ? chips
+                                .slice(0, 4)
+                                .map((c) => html`<span class="chip mono">${c}</span>`)
+                            : html`<span class="xs muted">differs only in canonical form</span>`
+                      }
+                      ${chips && chips.length > 4 ? html`<span class="xs muted">+${chips.length - 4} more</span>` : nothing}`
+              }
+            </div>
+            ${runs.map((r) => {
+              const hl = headlineMetric(r, store.site.coverage.key_metrics);
+              const comparable = currentRow && r.workload_id === rec.workload_id && hl;
+              const base = comparable ? hl.def.fromRow(currentRow) : null;
+              const delta =
+                comparable && base !== null ? metricDelta(base, hl.value, hl.def.better) : null;
+              return html`<a class="arm-run" href=${href('run', r.run_id)}>
+                <span class="row" style="gap:6px;min-width:0">
+                  ${kindTag(r.kind)}
+                  <span class="mono xs ellipsis">${r.workload_id}</span>
+                </span>
+                <span class="hl">
+                  ${hl ? html`${hl.def.fmt(hl.value)}<span class="unit">${hl.def.unit}</span> <span class="xs muted">${hl.def.short}</span>` : html`<span class="faint">–</span>`}
+                  ${delta ? deltaTag(delta) : nothing}
+                </span>
+                <span class="meta xs muted">
+                  ${r.provenance.login} ·
+                  ${when(r.provenance.submitted_at ?? r.provenance.started_at)}
+                </span>
+                <span
+                  class="btn btn-xs"
+                  @click=${(e: Event) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    navigate(`#/compare?runs=${rec.run_id},${r.run_id}`);
+                  }}
+                  >${icon('compare')} Compare</span
+                >
+              </a>`;
+            })}
+            ${
+              all.length > runs.length
+                ? html`<span class="xs muted"
+                    >+${all.length - runs.length} more runs of this configuration</span
+                  >`
+                : nothing
+            }
+          </div>`;
+        })}
       </div>
     </section>`;
   }

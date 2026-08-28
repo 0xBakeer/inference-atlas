@@ -24,6 +24,12 @@ export interface ChartPalette {
   line: string;
   surface: string;
   accent: string;
+  /** Cobalt — the primary curve (throughput). */
+  chart1: string;
+  /** Signal orange — the counterpart curve (latency). Not --warn: status colours stay reserved. */
+  chart2: string;
+  chart1Soft: string;
+  chart2Soft: string;
 }
 
 export function chartPalette(): ChartPalette {
@@ -33,6 +39,31 @@ export function chartPalette(): ChartPalette {
     line: cssVar('--line'),
     surface: cssVar('--surface'),
     accent: cssVar('--accent'),
+    chart1: cssVar('--chart-1'),
+    chart2: cssVar('--chart-2'),
+    chart1Soft: cssVar('--chart-1-soft', 'rgba(27, 79, 214, 0.14)'),
+    chart2Soft: cssVar('--chart-2-soft', 'rgba(194, 94, 0, 0.13)'),
+  };
+}
+
+/**
+ * Ribbon fill: a vertical gradient from the series' soft colour at the line down to
+ * transparent at the x-axis — the glow that makes a curve read as a lit instrument trace.
+ * Recomputed per draw because uPlot's bbox is only known then.
+ */
+export function ribbonFill(soft: string): uPlot.Series.Fill {
+  // Fade to the same colour at alpha 0 — a black-transparent stop would grey the mid-tones.
+  const m = /^rgba\((\s*\d+\s*,\s*\d+\s*,\s*\d+\s*),/.exec(soft);
+  const clear = m ? `rgba(${m[1]}, 0)` : 'transparent';
+  return (u: uPlot) => {
+    // The legend swatch asks for the fill before the plot has a bbox — a gradient over
+    // non-finite coordinates throws, so the flat soft colour stands in.
+    if (!Number.isFinite(u.bbox.top) || !Number.isFinite(u.bbox.height) || u.bbox.height <= 0)
+      return soft;
+    const grad = u.ctx.createLinearGradient(0, u.bbox.top, 0, u.bbox.top + u.bbox.height);
+    grad.addColorStop(0, soft);
+    grad.addColorStop(1, clear);
+    return grad;
   };
 }
 
