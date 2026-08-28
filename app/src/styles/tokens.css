@@ -91,12 +91,18 @@
   --seq-4: #6366f1;
   --seq-5: #4338ca;
 
-  /* vendor hues for hardware series */
-  --vendor-nvidia: #6aa300;
-  --vendor-amd: #e2463c;
-  --vendor-apple: #5b6f99;
+  /* vendor hues for hardware series — OKLCH-retuned (2026-08-28) so every hue clears the
+   * dataviz chroma floor (C >= 0.10) and the light lightness band, and so the fixed
+   * categorical order in util/colors.ts passes adjacent-pair CVD ΔE >= 8 (deutan/protan,
+   * Machado 2009) with a normal-vision floor >= 15. Hue families are preserved for vendor
+   * recognisability: nvidia chartreuse, amd vermilion, apple violet-slate, intel cobalt,
+   * cpu dark gold. --vendor-other is deliberately near-gray ("unknown", never a series
+   * colour — it is not in SERIES_VARS). Asserted by util/colors.test.ts. */
+  --vendor-nvidia: #649a00;
+  --vendor-amd: #e14b36;
+  --vendor-apple: #5969b8;
   --vendor-intel: #1f6feb;
-  --vendor-cpu: #b07d3c;
+  --vendor-cpu: #a7841d;
   --vendor-other: #7a8494;
 
   /* chart series — cobalt carries throughput/primary curves, signal orange carries latency.
@@ -154,11 +160,14 @@
   --seq-4: #7f8be8;
   --seq-5: #b0b8ff;
 
-  --vendor-nvidia: #8fd400;
-  --vendor-amd: #ff6b5f;
-  --vendor-apple: #9db0dc;
-  --vendor-intel: #58a6ff;
-  --vendor-cpu: #d6a266;
+  /* own dark steps of the same vendor hue families, inside the dark lightness band
+   * (OKLCH L 0.48–0.67) and >= 3:1 on both dark surfaces; --vendor-amd sits away from
+   * --danger (#ff6b6b) — the old #ff6b5f was a near-collision (ΔE 1.4). */
+  --vendor-nvidia: #6ea800;
+  --vendor-amd: #e25a42;
+  --vendor-apple: #7888d3;
+  --vendor-intel: #4091ea;
+  --vendor-cpu: #8f6e00;
   --vendor-other: #9aa4b5;
 
   /* darker steps of the same hues, re-validated against the dark surface */
