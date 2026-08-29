@@ -6,63 +6,23 @@
   "extraction_method": "hand-seeded",
   "extracted_at": "2026-08-27T00:00:00Z",
   "source": "llama-server --help captured from this exact build: version 0.3.0-dev (build 50, commit 035e227), built with GNU 13.3.0 for Linux aarch64. Seeded from the b7000 registry file and extended with the flags that build carries and b7000 does not.",
-  "notes": "NOT an upstream llama.cpp release. This is a build of the unmerged PR #27742 (qwen4exp / Qwen3.8-Flash-Next architecture support) at commit 035e227, which self-reports the placeholder version 0.3.0-dev and build number 50 rather than a real bNNNN build number. It is recorded as its own square (engine_minor falls back to the whole string) because its flag surface and its supported architectures both differ from any released build. Two patches from github.com/0xBakeer/qwen38-flash-next-spark are applied on top: canreuse-qwen4exp.patch, which implements can_reuse() for llm_graph_input_qsa and llm_graph_input_ple so CUDA graphs actually engage (graphs reused 0 -> non-zero, decode +2.8%), and rowband-ple-quant.patch, which only matters when quantizing. The three flags this recipe turns on - override-tensor, load-mode and spec-type - are absent from the b7000 registry file entirely.",
+  "notes": "NOT an upstream llama.cpp release. This is a build of the unmerged PR #27742 (qwen4exp / Qwen3.8-Flash-Next architecture support) at commit 035e227, which self-reports the placeholder version 0.3.0-dev and build number 50 rather than a real bNNNN build number. It is recorded as its own square (engine_minor falls back to the whole string) because its flag surface and its supported architectures both differ from any released build. Two patches from github.com/0xBakeer/qwen38-flash-next-spark are applied on top: canreuse-qwen4exp.patch, which implements can_reuse() for llm_graph_input_qsa and llm_graph_input_ple so CUDA graphs actually engage (graphs reused 0 -> non-zero, decode +2.8%), and rowband-ple-quant.patch, which only matters when quantizing. The three flags this recipe turns on - override-tensor, load-mode and spec-type - are absent from the b7000 registry file entirely. The mmproj entry was added on 2026-08-30 after a run used it: the file was hand-seeded from --help as a 53-flag subset and missed it, though the binary accepts it (-mm, env LLAMA_ARG_MMPROJ).",
   "params": [
     {
-      "name": "model",
-      "type": "path",
+      "name": "alias",
+      "type": "str",
       "default": null,
-      "help": "GGUF file to load. Dropped from the fingerprint.",
-      "aliases": [
-        "-m"
-      ],
-      "group": "model",
+      "help": "Model name reported by the API. Dropped from the fingerprint.",
+      "group": "server",
       "impact": "low"
     },
     {
-      "name": "ctx-size",
-      "type": "int",
-      "default": 4096,
-      "help": "Context size in tokens. 0 means take it from the GGUF metadata.",
-      "aliases": [
-        "-c"
-      ],
-      "group": "memory",
-      "impact": "high"
-    },
-    {
-      "name": "n-gpu-layers",
-      "type": "int",
-      "default": 0,
-      "help": "Layers offloaded to the GPU. Use a large number (999) for all. Builds with a GPU backend compiled in may offload everything by default \u2014 verify against your build and record what you passed.",
-      "aliases": [
-        "-ngl",
-        "gpu-layers"
-      ],
-      "group": "memory",
-      "impact": "high"
-    },
-    {
-      "name": "threads",
-      "type": "int",
-      "default": -1,
-      "help": "CPU threads for generation. -1 means one per physical core.",
-      "aliases": [
-        "-t"
-      ],
-      "group": "memory",
-      "impact": "medium"
-    },
-    {
-      "name": "threads-batch",
-      "type": "int",
-      "default": -1,
-      "help": "CPU threads for prompt processing.",
-      "aliases": [
-        "-tb"
-      ],
-      "group": "memory",
-      "impact": "medium"
+      "name": "api-key",
+      "type": "str",
+      "default": null,
+      "help": "Required API key. Dropped from the fingerprint.",
+      "group": "server",
+      "impact": "low"
     },
     {
       "name": "batch-size",
@@ -73,63 +33,6 @@
         "-b"
       ],
       "group": "batching",
-      "impact": "high"
-    },
-    {
-      "name": "ubatch-size",
-      "type": "int",
-      "default": 512,
-      "help": "Physical micro-batch size \u2014 the one that actually changes prefill speed.",
-      "aliases": [
-        "-ub"
-      ],
-      "group": "batching",
-      "impact": "high"
-    },
-    {
-      "name": "parallel",
-      "type": "int",
-      "default": -1,
-      "help": "Number of server slots. This build reports 'default: -1, -1 = auto' in --help, so -1 is recorded here rather than the 1 carried by the b7000 file; that keeps an explicit --parallel 1 in the fingerprint, which matters because concurrent requests on the qwen4exp architecture are only safe while there is a single slot.",
-      "aliases": [
-        "-np"
-      ],
-      "group": "batching",
-      "impact": "high"
-    },
-    {
-      "name": "cont-batching",
-      "type": "bool",
-      "default": true,
-      "help": "Continuous batching. On by default in llama-server.",
-      "aliases": [
-        "-cb"
-      ],
-      "group": "batching",
-      "impact": "high"
-    },
-    {
-      "name": "no-cont-batching",
-      "type": "bool",
-      "default": false,
-      "help": "Disable continuous batching.",
-      "group": "batching",
-      "impact": "high"
-    },
-    {
-      "name": "flash-attn",
-      "type": "enum",
-      "default": "auto",
-      "choices": [
-        "on",
-        "off",
-        "auto"
-      ],
-      "help": "Flash attention. auto enables it where the backend supports it.",
-      "aliases": [
-        "-fa"
-      ],
-      "group": "compilation",
       "impact": "high"
     },
     {
@@ -177,20 +80,34 @@
       "impact": "high"
     },
     {
-      "name": "kv-unified",
-      "type": "bool",
-      "default": false,
-      "help": "Single unified KV buffer shared by all slots.",
-      "group": "caching",
+      "name": "chat-template",
+      "type": "str",
+      "default": null,
+      "help": "Override the chat template by name.",
+      "group": "model",
       "impact": "medium"
     },
     {
-      "name": "swa-full",
+      "name": "cont-batching",
       "type": "bool",
-      "default": false,
-      "help": "Keep the full KV cache for sliding-window models.",
-      "group": "caching",
-      "impact": "medium"
+      "default": true,
+      "help": "Continuous batching. On by default in llama-server.",
+      "aliases": [
+        "-cb"
+      ],
+      "group": "batching",
+      "impact": "high"
+    },
+    {
+      "name": "ctx-size",
+      "type": "int",
+      "default": 4096,
+      "help": "Context size in tokens. 0 means take it from the GGUF metadata.",
+      "aliases": [
+        "-c"
+      ],
+      "group": "memory",
+      "impact": "high"
     },
     {
       "name": "defrag-thold",
@@ -201,200 +118,12 @@
       "impact": "low"
     },
     {
-      "name": "no-mmap",
-      "type": "bool",
-      "default": false,
-      "help": "Read the whole model instead of memory-mapping it. Slower to start, avoids page-cache thrash.",
-      "group": "memory",
-      "impact": "medium"
-    },
-    {
-      "name": "mlock",
-      "type": "bool",
-      "default": false,
-      "help": "Lock the model in RAM.",
-      "group": "memory",
-      "impact": "medium"
-    },
-    {
-      "name": "split-mode",
-      "type": "enum",
-      "default": "layer",
-      "choices": [
-        "none",
-        "layer",
-        "row"
-      ],
-      "help": "How to split across multiple GPUs.",
-      "aliases": [
-        "-sm"
-      ],
-      "group": "parallelism",
-      "impact": "high"
-    },
-    {
-      "name": "tensor-split",
-      "type": "list",
-      "default": null,
-      "help": "Per-GPU split proportions.",
-      "aliases": [
-        "-ts"
-      ],
-      "group": "parallelism",
-      "impact": "high"
-    },
-    {
-      "name": "main-gpu",
-      "type": "int",
-      "default": 0,
-      "help": "GPU used for small tensors and, with split-mode none, everything.",
-      "aliases": [
-        "-mg"
-      ],
-      "group": "parallelism",
-      "impact": "medium"
-    },
-    {
       "name": "device",
       "type": "str",
       "default": null,
       "help": "Explicit backend device list.",
       "group": "parallelism",
       "impact": "medium"
-    },
-    {
-      "name": "rope-scaling",
-      "type": "enum",
-      "default": "none",
-      "choices": [
-        "none",
-        "linear",
-        "yarn"
-      ],
-      "help": "RoPE scaling method.",
-      "group": "model",
-      "impact": "high"
-    },
-    {
-      "name": "rope-freq-base",
-      "type": "float",
-      "default": 0,
-      "help": "RoPE base frequency. 0 keeps the model's own.",
-      "group": "model",
-      "impact": "high"
-    },
-    {
-      "name": "rope-freq-scale",
-      "type": "float",
-      "default": 0,
-      "help": "RoPE frequency scaling factor.",
-      "group": "model",
-      "impact": "high"
-    },
-    {
-      "name": "yarn-orig-ctx",
-      "type": "int",
-      "default": 0,
-      "help": "Original context size for YaRN scaling.",
-      "group": "model",
-      "impact": "medium"
-    },
-    {
-      "name": "n-predict",
-      "type": "int",
-      "default": -1,
-      "help": "Server-side cap on generated tokens.",
-      "aliases": [
-        "-n"
-      ],
-      "group": "sampling",
-      "impact": "medium"
-    },
-    {
-      "name": "keep",
-      "type": "int",
-      "default": 0,
-      "help": "Tokens of the prompt kept when the context is shifted.",
-      "group": "sampling",
-      "impact": "low"
-    },
-    {
-      "name": "temp",
-      "type": "float",
-      "default": 0.8,
-      "help": "Sampling temperature.",
-      "group": "sampling",
-      "impact": "medium"
-    },
-    {
-      "name": "top-k",
-      "type": "int",
-      "default": 40,
-      "help": "Top-k sampling.",
-      "group": "sampling",
-      "impact": "low"
-    },
-    {
-      "name": "top-p",
-      "type": "float",
-      "default": 0.95,
-      "help": "Top-p sampling.",
-      "group": "sampling",
-      "impact": "low"
-    },
-    {
-      "name": "min-p",
-      "type": "float",
-      "default": 0.05,
-      "help": "Min-p sampling.",
-      "group": "sampling",
-      "impact": "low"
-    },
-    {
-      "name": "repeat-penalty",
-      "type": "float",
-      "default": 1.0,
-      "help": "Repetition penalty. 1.0 disables it.",
-      "group": "sampling",
-      "impact": "low"
-    },
-    {
-      "name": "seed",
-      "type": "int",
-      "default": -1,
-      "help": "Random seed. -1 is random.",
-      "group": "sampling",
-      "impact": "medium"
-    },
-    {
-      "name": "jinja",
-      "type": "bool",
-      "default": false,
-      "help": "Use the GGUF's Jinja chat template. Required for tool calls on most recent models.",
-      "group": "model",
-      "impact": "medium"
-    },
-    {
-      "name": "chat-template",
-      "type": "str",
-      "default": null,
-      "help": "Override the chat template by name.",
-      "group": "model",
-      "impact": "medium"
-    },
-    {
-      "name": "reasoning-format",
-      "type": "enum",
-      "default": "auto",
-      "choices": [
-        "none",
-        "auto",
-        "deepseek",
-        "deepseek-legacy"
-      ],
-      "help": "How reasoning content is returned.",
-      "group": "model",
-      "impact": "low"
     },
     {
       "name": "draft-max",
@@ -416,14 +145,19 @@
       "impact": "medium"
     },
     {
-      "name": "model-draft",
-      "type": "path",
-      "default": null,
-      "help": "Draft model for speculative decoding.",
-      "aliases": [
-        "-md"
+      "name": "flash-attn",
+      "type": "enum",
+      "default": "auto",
+      "choices": [
+        "on",
+        "off",
+        "auto"
       ],
-      "group": "speculative",
+      "help": "Flash attention. auto enables it where the backend supports it.",
+      "aliases": [
+        "-fa"
+      ],
+      "group": "compilation",
       "impact": "high"
     },
     {
@@ -436,6 +170,165 @@
       ],
       "group": "speculative",
       "impact": "medium"
+    },
+    {
+      "name": "host",
+      "type": "str",
+      "default": "127.0.0.1",
+      "help": "Bind address. Dropped from the fingerprint.",
+      "group": "server",
+      "impact": "low"
+    },
+    {
+      "name": "jinja",
+      "type": "bool",
+      "default": false,
+      "help": "Use the GGUF's Jinja chat template. Required for tool calls on most recent models.",
+      "group": "model",
+      "impact": "medium"
+    },
+    {
+      "name": "keep",
+      "type": "int",
+      "default": 0,
+      "help": "Tokens of the prompt kept when the context is shifted.",
+      "group": "sampling",
+      "impact": "low"
+    },
+    {
+      "name": "kv-unified",
+      "type": "bool",
+      "default": false,
+      "help": "Single unified KV buffer shared by all slots.",
+      "group": "caching",
+      "impact": "medium"
+    },
+    {
+      "name": "load-mode",
+      "type": "enum",
+      "default": "auto",
+      "help": "Model loading mode: auto, none, or mmap. auto already memory-maps unless a device cannot; passing mmap forces it. Recorded explicitly here because the whole point of this configuration is that the n-gram table is paged from storage rather than loaded.",
+      "aliases": [
+        "-lm"
+      ],
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "main-gpu",
+      "type": "int",
+      "default": 0,
+      "help": "GPU used for small tensors and, with split-mode none, everything.",
+      "aliases": [
+        "-mg"
+      ],
+      "group": "parallelism",
+      "impact": "medium"
+    },
+    {
+      "name": "metrics",
+      "type": "bool",
+      "default": false,
+      "help": "Expose the Prometheus endpoint. Dropped from the fingerprint.",
+      "group": "server",
+      "impact": "low"
+    },
+    {
+      "name": "min-p",
+      "type": "float",
+      "default": 0.05,
+      "help": "Min-p sampling.",
+      "group": "sampling",
+      "impact": "low"
+    },
+    {
+      "name": "mlock",
+      "type": "bool",
+      "default": false,
+      "help": "Lock the model in RAM.",
+      "group": "memory",
+      "impact": "medium"
+    },
+    {
+      "name": "mmproj",
+      "type": "path",
+      "default": null,
+      "help": "Path to a multimodal projector file. Without it this build serves the model text-only: the GGUF shards carry no vision tensors, because llama.cpp ships multimodal as a separate projector and unsloth publishes it alongside as mmproj-BF16.gguf / mmproj-F16.gguf (~0.9 GB). Passing it is what makes image input work at all, so it belongs in the fingerprint: two runs of this model differing only in --mmproj are not the same configuration.",
+      "aliases": [
+        "-mm"
+      ],
+      "env": "LLAMA_ARG_MMPROJ",
+      "group": "multimodal",
+      "impact": "high"
+    },
+    {
+      "name": "model",
+      "type": "path",
+      "default": null,
+      "help": "GGUF file to load. Dropped from the fingerprint.",
+      "aliases": [
+        "-m"
+      ],
+      "group": "model",
+      "impact": "low"
+    },
+    {
+      "name": "model-draft",
+      "type": "path",
+      "default": null,
+      "help": "Draft model for speculative decoding.",
+      "aliases": [
+        "-md"
+      ],
+      "group": "speculative",
+      "impact": "high"
+    },
+    {
+      "name": "n-gpu-layers",
+      "type": "int",
+      "default": 0,
+      "help": "Layers offloaded to the GPU. Use a large number (999) for all. Builds with a GPU backend compiled in may offload everything by default \u2014 verify against your build and record what you passed.",
+      "aliases": [
+        "-ngl",
+        "gpu-layers"
+      ],
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "n-predict",
+      "type": "int",
+      "default": -1,
+      "help": "Server-side cap on generated tokens.",
+      "aliases": [
+        "-n"
+      ],
+      "group": "sampling",
+      "impact": "medium"
+    },
+    {
+      "name": "no-cont-batching",
+      "type": "bool",
+      "default": false,
+      "help": "Disable continuous batching.",
+      "group": "batching",
+      "impact": "high"
+    },
+    {
+      "name": "no-mmap",
+      "type": "bool",
+      "default": false,
+      "help": "Read the whole model instead of memory-mapping it. Slower to start, avoids page-cache thrash.",
+      "group": "memory",
+      "impact": "medium"
+    },
+    {
+      "name": "no-webui",
+      "type": "bool",
+      "default": false,
+      "help": "Disable the built-in web UI. Dropped from the fingerprint.",
+      "group": "server",
+      "impact": "low"
     },
     {
       "name": "numa",
@@ -451,70 +344,6 @@
       "impact": "medium"
     },
     {
-      "name": "host",
-      "type": "str",
-      "default": "127.0.0.1",
-      "help": "Bind address. Dropped from the fingerprint.",
-      "group": "server",
-      "impact": "low"
-    },
-    {
-      "name": "port",
-      "type": "int",
-      "default": 8080,
-      "help": "Bind port. Dropped from the fingerprint.",
-      "group": "server",
-      "impact": "low"
-    },
-    {
-      "name": "api-key",
-      "type": "str",
-      "default": null,
-      "help": "Required API key. Dropped from the fingerprint.",
-      "group": "server",
-      "impact": "low"
-    },
-    {
-      "name": "alias",
-      "type": "str",
-      "default": null,
-      "help": "Model name reported by the API. Dropped from the fingerprint.",
-      "group": "server",
-      "impact": "low"
-    },
-    {
-      "name": "threads-http",
-      "type": "int",
-      "default": -1,
-      "help": "HTTP worker threads. Dropped from the fingerprint.",
-      "group": "server",
-      "impact": "low"
-    },
-    {
-      "name": "metrics",
-      "type": "bool",
-      "default": false,
-      "help": "Expose the Prometheus endpoint. Dropped from the fingerprint.",
-      "group": "server",
-      "impact": "low"
-    },
-    {
-      "name": "slots",
-      "type": "bool",
-      "default": false,
-      "help": "Expose the slots endpoint. Dropped from the fingerprint.",
-      "group": "server",
-      "impact": "low"
-    },
-    {
-      "name": "no-webui",
-      "type": "bool",
-      "default": false,
-      "help": "Disable the built-in web UI. Dropped from the fingerprint.",
-      "group": "server",
-      "impact": "low"
-    },
-    {
       "name": "override-tensor",
       "type": "str",
       "default": null,
@@ -526,15 +355,90 @@
       "impact": "high"
     },
     {
-      "name": "load-mode",
+      "name": "parallel",
+      "type": "int",
+      "default": -1,
+      "help": "Number of server slots. This build reports 'default: -1, -1 = auto' in --help, so -1 is recorded here rather than the 1 carried by the b7000 file; that keeps an explicit --parallel 1 in the fingerprint, which matters because concurrent requests on the qwen4exp architecture are only safe while there is a single slot.",
+      "aliases": [
+        "-np"
+      ],
+      "group": "batching",
+      "impact": "high"
+    },
+    {
+      "name": "port",
+      "type": "int",
+      "default": 8080,
+      "help": "Bind port. Dropped from the fingerprint.",
+      "group": "server",
+      "impact": "low"
+    },
+    {
+      "name": "reasoning-format",
       "type": "enum",
       "default": "auto",
-      "help": "Model loading mode: auto, none, or mmap. auto already memory-maps unless a device cannot; passing mmap forces it. Recorded explicitly here because the whole point of this configuration is that the n-gram table is paged from storage rather than loaded.",
-      "aliases": [
-        "-lm"
+      "choices": [
+        "none",
+        "auto",
+        "deepseek",
+        "deepseek-legacy"
       ],
-      "group": "memory",
+      "help": "How reasoning content is returned.",
+      "group": "model",
+      "impact": "low"
+    },
+    {
+      "name": "repeat-penalty",
+      "type": "float",
+      "default": 1.0,
+      "help": "Repetition penalty. 1.0 disables it.",
+      "group": "sampling",
+      "impact": "low"
+    },
+    {
+      "name": "rope-freq-base",
+      "type": "float",
+      "default": 0,
+      "help": "RoPE base frequency. 0 keeps the model's own.",
+      "group": "model",
       "impact": "high"
+    },
+    {
+      "name": "rope-freq-scale",
+      "type": "float",
+      "default": 0,
+      "help": "RoPE frequency scaling factor.",
+      "group": "model",
+      "impact": "high"
+    },
+    {
+      "name": "rope-scaling",
+      "type": "enum",
+      "default": "none",
+      "choices": [
+        "none",
+        "linear",
+        "yarn"
+      ],
+      "help": "RoPE scaling method.",
+      "group": "model",
+      "impact": "high"
+    },
+    {
+      "name": "seed",
+      "type": "int",
+      "default": -1,
+      "help": "Random seed. -1 is random.",
+      "group": "sampling",
+      "impact": "medium"
+    },
+    {
+      "name": "slots",
+      "type": "bool",
+      "default": false,
+      "help": "Expose the slots endpoint. Dropped from the fingerprint.",
+      "group": "server",
+      "impact": "low"
     },
     {
       "name": "spec-type",
@@ -544,6 +448,114 @@
       "aliases": [],
       "group": "speculative",
       "impact": "high"
+    },
+    {
+      "name": "split-mode",
+      "type": "enum",
+      "default": "layer",
+      "choices": [
+        "none",
+        "layer",
+        "row"
+      ],
+      "help": "How to split across multiple GPUs.",
+      "aliases": [
+        "-sm"
+      ],
+      "group": "parallelism",
+      "impact": "high"
+    },
+    {
+      "name": "swa-full",
+      "type": "bool",
+      "default": false,
+      "help": "Keep the full KV cache for sliding-window models.",
+      "group": "caching",
+      "impact": "medium"
+    },
+    {
+      "name": "temp",
+      "type": "float",
+      "default": 0.8,
+      "help": "Sampling temperature.",
+      "group": "sampling",
+      "impact": "medium"
+    },
+    {
+      "name": "tensor-split",
+      "type": "list",
+      "default": null,
+      "help": "Per-GPU split proportions.",
+      "aliases": [
+        "-ts"
+      ],
+      "group": "parallelism",
+      "impact": "high"
+    },
+    {
+      "name": "threads",
+      "type": "int",
+      "default": -1,
+      "help": "CPU threads for generation. -1 means one per physical core.",
+      "aliases": [
+        "-t"
+      ],
+      "group": "memory",
+      "impact": "medium"
+    },
+    {
+      "name": "threads-batch",
+      "type": "int",
+      "default": -1,
+      "help": "CPU threads for prompt processing.",
+      "aliases": [
+        "-tb"
+      ],
+      "group": "memory",
+      "impact": "medium"
+    },
+    {
+      "name": "threads-http",
+      "type": "int",
+      "default": -1,
+      "help": "HTTP worker threads. Dropped from the fingerprint.",
+      "group": "server",
+      "impact": "low"
+    },
+    {
+      "name": "top-k",
+      "type": "int",
+      "default": 40,
+      "help": "Top-k sampling.",
+      "group": "sampling",
+      "impact": "low"
+    },
+    {
+      "name": "top-p",
+      "type": "float",
+      "default": 0.95,
+      "help": "Top-p sampling.",
+      "group": "sampling",
+      "impact": "low"
+    },
+    {
+      "name": "ubatch-size",
+      "type": "int",
+      "default": 512,
+      "help": "Physical micro-batch size \u2014 the one that actually changes prefill speed.",
+      "aliases": [
+        "-ub"
+      ],
+      "group": "batching",
+      "impact": "high"
+    },
+    {
+      "name": "yarn-orig-ctx",
+      "type": "int",
+      "default": 0,
+      "help": "Original context size for YaRN scaling.",
+      "group": "model",
+      "impact": "medium"
     }
   ]
 }
