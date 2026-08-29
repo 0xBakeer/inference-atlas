@@ -1,0 +1,357 @@
+{
+  "schema_version": 1,
+  "run_id": "0cad79844e7b427c--prefill-8k-v1--778c10",
+  "config_id": "0cad79844e7b427c",
+  "cell_id": "1ab063de12eb",
+  "workload_id": "prefill-8k-v1",
+  "kind": "prefill",
+  "engine": {
+    "id": "llamacpp",
+    "version": "b50-035e227",
+    "commit": null,
+    "container": null,
+    "install_method": "source"
+  },
+  "model": {
+    "id": "Qwen/Qwen3.8-Flash-Next",
+    "quant_id": "gguf-ud-q4-k-xl",
+    "hf_id": "Qwen/Qwen3.8-Flash-Next",
+    "revision": null,
+    "dtype": "auto",
+    "local_path": null
+  },
+  "hardware": {
+    "id": "nvidia-gb10-dgx-spark",
+    "count": 1,
+    "driver": "580.173.02",
+    "cuda": "13.0",
+    "host": {
+      "cpu": "Cortex-A725",
+      "cpu_cores": 20,
+      "ram_gb": 121.6,
+      "os": "Ubuntu 24.04.4 LTS",
+      "kernel": "6.17.0-1029-nvidia",
+      "arch": "aarch64"
+    },
+    "fingerprint": "sha256:52ea2bdd513719724db88c162b6cc2c9fb4e5b67e02dbe41b9de00687acefb91",
+    "captured": {
+      "nvidia_smi": {
+        "driver": "580.173.02",
+        "cuda": "13.0",
+        "products": [
+          "NVIDIA GB10"
+        ],
+        "fb_memory_total_mib": 0
+      },
+      "lscpu": {
+        "architecture": "aarch64",
+        "cpus": "20",
+        "vendor_id": "ARM",
+        "model_name": "Cortex-A725",
+        "cores_per_socket": "10",
+        "sockets": "1",
+        "cpu_max_mhz": "2808.0000"
+      }
+    }
+  },
+  "args": {
+    "ctx-size": 262144,
+    "n-gpu-layers": 999,
+    "parallel": 2,
+    "override-tensor": "per_layer_token_embd=CPU",
+    "load-mode": "mmap",
+    "spec-type": "ngram-mod",
+    "temp": 1,
+    "top-p": 0.95,
+    "top-k": 20,
+    "mmproj": "mmproj-F16.gguf"
+  },
+  "args_canonical": "@dtype=auto;@quant=gguf-ud-q4-k-xl;ctx-size=262144;load-mode=mmap;mmproj=mmproj-F16.gguf;n-gpu-layers=999;override-tensor=per_layer_token_embd=CPU;parallel=2;spec-type=ngram-mod;temp=1;top-k=20",
+  "serve_command": null,
+  "workload": {
+    "id": "prefill-8k-v1",
+    "resolved_params": {
+      "concurrency": 1,
+      "num_requests": 10,
+      "input_tokens": 8192,
+      "output_tokens": 16,
+      "warmup_requests": 1,
+      "prompts_padded": false,
+      "needle_check": false,
+      "timeout_s": 900,
+      "seed": 42
+    }
+  },
+  "metrics": {
+    "requests_total": 10,
+    "requests_ok": 10,
+    "requests_failed": 0,
+    "success_rate": 1,
+    "duration_s": 64.709,
+    "input_tokens_total": 101962,
+    "output_tokens_total": 160,
+    "output_tok_s": 2.473,
+    "total_tok_s": 1578.163,
+    "req_s": 0.155,
+    "prefill_tok_s": 1772.114,
+    "ttft_ms": {
+      "mean": 5753.695,
+      "p50": 520.702,
+      "p90": 18130.015,
+      "p95": 18214.564,
+      "p99": 18282.203,
+      "min": 162.663,
+      "max": 18299.113
+    },
+    "tpot_ms": {
+      "mean": 47.814,
+      "p50": 47.454,
+      "p90": 48.247,
+      "p95": 50.384,
+      "p99": 52.094,
+      "min": 46.682,
+      "max": 52.522
+    },
+    "itl_ms": {
+      "mean": 47.792,
+      "p50": 45.993,
+      "p90": 51.745,
+      "p95": 58.853,
+      "p99": 64.893,
+      "min": 44.673,
+      "max": 75.9
+    },
+    "e2e_ms": {
+      "mean": 6470.903,
+      "p50": 1229.838,
+      "p90": 18910.206,
+      "p95": 18960.402,
+      "p99": 19000.559,
+      "min": 863.348,
+      "max": 19010.598
+    },
+    "decode_tok_s_per_request": {
+      "mean": 20.936,
+      "p50": 21.073,
+      "p90": 21.409,
+      "p95": 21.415,
+      "p99": 21.42,
+      "min": 19.04,
+      "max": 21.422
+    },
+    "vram_peak_gb": null,
+    "ram_peak_gb": 101.158,
+    "kv_cache_tokens": null,
+    "power_avg_w": 59.65,
+    "power_peak_w": 71.51,
+    "energy_wh": 1.4552,
+    "gpu_util_avg_pct": 82.31,
+    "temp_max_c": 69,
+    "thermal_throttle_detected": false
+  },
+  "failures": [],
+  "gotchas": [
+    {
+      "severity": "info",
+      "text": "--parallel is 2 here, not the 1 the recipe forces. The recipe documents that concurrency does not abort the server but does not batch either at one slot, and it never tries a second slot. Two slots were verified on this build before this run: the server reports n_slots 2 and two concurrent requests both returned 200 with coherent output on the same pid. Upstream does keep a GGML_ASSERT in qwen4exp.cpp that rejects a token belonging to more than one sequence - PLE n-gram embeddings do not support tokens shared by multiple sequences - but that is a constraint on sequence sharing, not on slot count, so independent slots are unaffected. Do not compare a concurrency cell here against one from a parallel=1 configuration without saying which is which."
+    },
+    {
+      "severity": "info",
+      "text": "--mmproj mmproj-F16.gguf is loaded, which the shipped recipe cannot do - it has no mmproj support. This matters for what the numbers mean as well as for what the model can do: the projector is ~0.9 GB of additional resident weights, and any vision workload here is exercising a code path that is simply absent from a text-only run of the same quantization. A cell from this configuration is not comparable to one without the projector."
+    },
+    {
+      "severity": "info",
+      "text": "--spec-type ngram-mod is ON. It drafts spans from repetition already in the context, so throughput varies by up to 3x with how much of the output already appears in the prompt. Speculation is exact - the target verifies every token - so output is byte-identical to running without it. Never compare a decode figure here against a cell run with a different --spec-type."
+    },
+    {
+      "severity": "info",
+      "text": "A quarter of this checkpoint is served from NVMe, so page-cache state is a hidden independent variable. Residency of the 26.82 GiB n-gram table was measured with mincore(2) immediately before this workload: 70.11%. Measured separately on this box: a real startup lands at 0.06 percent, the recipe warmer reaches only 25.9 percent from cold, and a 50-request workload takes the table from 0.06 to 54.75 percent by itself - so a long workload is warm for most of its own duration whatever it started at."
+    }
+  ],
+  "derived": {
+    "cost_per_1m_output_tokens_usd": null,
+    "tokens_per_watt": 0.0415,
+    "tok_s_per_gb_bandwidth": 0.076689,
+    "bandwidth_efficiency": 0.226776,
+    "memory_headroom_gb": null
+  },
+  "raw": {
+    "harness": "atlas-bench",
+    "harness_version": "0.1.0",
+    "sha256": "50c6d970d91af5bb05174f2a3223531250d02b2df3a37308ce9cbeb3114b66db",
+    "payload_path": null,
+    "payload": {
+      "requests": [
+        {
+          "id": "prefill-w00000",
+          "prompt_id": "hay-8k-d10",
+          "warmup": true,
+          "status": "ok",
+          "ttft_ms": 22140.292,
+          "e2e_ms": 22853.54,
+          "prompt_tokens": 10248,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00000",
+          "prompt_id": "hay-8k-d10",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 162.663,
+          "e2e_ms": 863.348,
+          "prompt_tokens": 10248,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00001",
+          "prompt_id": "hay-8k-multi",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 18111.227,
+          "e2e_ms": 18899.051,
+          "prompt_tokens": 10194,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00002",
+          "prompt_id": "hay-8k-d50",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 18299.113,
+          "e2e_ms": 19010.598,
+          "prompt_tokens": 10143,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00003",
+          "prompt_id": "hay-8k-d90",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 17931.439,
+          "e2e_ms": 18643.574,
+          "prompt_tokens": 10175,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00004",
+          "prompt_id": "hay-8k-d10",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 574.485,
+          "e2e_ms": 1291.065,
+          "prompt_tokens": 10248,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00005",
+          "prompt_id": "hay-8k-multi",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 527.54,
+          "e2e_ms": 1237.798,
+          "prompt_tokens": 10194,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00006",
+          "prompt_id": "hay-8k-d50",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 513.865,
+          "e2e_ms": 1221.877,
+          "prompt_tokens": 10143,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00007",
+          "prompt_id": "hay-8k-d90",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 493.995,
+          "e2e_ms": 1194.222,
+          "prompt_tokens": 10175,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00008",
+          "prompt_id": "hay-8k-d10",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 452.349,
+          "e2e_ms": 1164.488,
+          "prompt_tokens": 10248,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00009",
+          "prompt_id": "hay-8k-multi",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 470.27,
+          "e2e_ms": 1183.008,
+          "prompt_tokens": 10194,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        }
+      ],
+      "engine_endpoint": {
+        "attached": true,
+        "base_url": "http://127.0.0.1:30000/v1",
+        "served_model_id": "qwen3.8-flash-next",
+        "advertised_models": [
+          "qwen3.8-flash-next"
+        ]
+      }
+    },
+    "truncated": false
+  },
+  "provenance": {
+    "github_login": "0xBakeer",
+    "github_user_id": 17404809,
+    "started_at": "2026-08-29T22:57:20Z",
+    "finished_at": "2026-08-29T22:58:49Z",
+    "submitted_at": null,
+    "commit": null,
+    "pr": null,
+    "method": "atlas-bench",
+    "agent": null,
+    "notes": "Box WAS dedicated: this DGX Spark runs no desktop session, and no compile or dev server ran on it during the sweep. Isolation check: the only route to it from outside the box is an SSH tunnel opened by a reverse proxy on the same private network, and that tunnel was stopped before the first run and stayed stopped throughout. NVIDIA DGX Spark (ASUS Ascent GX10, GB10 / SM121, 128 GB unified memory, ~121 GiB usable), Ubuntu 24.04.4, kernel 6.17.0-1029-nvidia aarch64, driver 580.173.02, CUDA 13.0, swap off. Engine is llama.cpp at commit 035e227 from what was then the unmerged PR #27742; that PR has since MERGED to master (2026-08-28), and its can_reuse work is upstream, so a build from master no longer needs the canreuse-qwen4exp patch this build carries. Model is unsloth/Qwen3.8-Flash-Next-GGUF UD-Q4_K_XL, four shards, 111,323,630,080 bytes. TWO DEPARTURES FROM THE SHIPPED RECIPE, both verified before this run rather than assumed. First, --parallel 2 instead of 1: the recipe forces one slot and documents that concurrent requests queue there rather than batch, so a second slot is untried territory for it. On this build two slots work - the server reports n_slots 2 and two concurrent requests both returned 200 with coherent output and no abort. Second, --mmproj mmproj-F16.gguf: the GGUF shards carry no vision tensors because llama.cpp ships multimodal as a separate projector, and unsloth publishes one alongside. With it loaded the server correctly described a synthetic image it could not have inferred from the prompt. The recipe has no mmproj support at all, so this configuration is not one the recipe can currently produce."
+  },
+  "verification": {
+    "level": "self-reported",
+    "reproduced_by": [],
+    "flags": []
+  }
+}
