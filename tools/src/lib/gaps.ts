@@ -306,9 +306,9 @@ export function computeGaps(input: GapsInput): GapsOutput {
   };
 }
 
-/** How many cells the registry says are possible — the denominator of the coverage figure. */
-export function possibleCells(repo: Repo): number {
-  let n = 0;
+/** Every cell the registry enumerates: `hw_count` 1, one per model × quant × hardware × minor. */
+function possibleCellIds(repo: Repo): Set<string> {
+  const ids = new Set<string>();
   for (const modelEntry of repo.models.values()) {
     for (const quant of modelEntry.quants.values()) {
       for (const engineId of quant.engines) {
@@ -319,10 +319,36 @@ export function possibleCells(repo: Repo): number {
         if (minors.size === 0) continue;
         for (const hardware of repo.hardware.values()) {
           if (!engineFitsHardware(engine.meta, hardware)) continue;
-          n += minors.size;
+          for (const minor of minors) {
+            ids.add(
+              cellId({
+                model_id: modelEntry.model.id,
+                quant_id: quant.id,
+                hardware_id: hardware.id,
+                hw_count: 1,
+                engine_id: engineId,
+                engine_minor: minor,
+              }),
+            );
+          }
         }
       }
     }
   }
-  return n;
+  return ids;
+}
+
+/**
+ * How many cells are possible — the denominator of the coverage figure.
+ *
+ * The enumeration fixes `hw_count` at 1: there is no bound on how many devices somebody may
+ * gang together, so multi-device cells cannot be crossed ahead of time. A cell somebody has
+ * measured on several devices is possible all the same, and it is already counted in
+ * `cells_covered`, so it is added here rather than making the ratio count a numerator the
+ * denominator does not contain.
+ */
+export function possibleCells(repo: Repo, measured: Record<string, CoverageCell> = {}): number {
+  const ids = possibleCellIds(repo);
+  for (const id of Object.keys(measured)) ids.add(id);
+  return ids.size;
 }
