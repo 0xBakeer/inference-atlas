@@ -23,7 +23,7 @@
  * only where they mean something. A rebuild with no data change produces byte-identical
  * files apart from `built_at`.
  */
-import { existsSync, readFileSync, rmSync } from 'node:fs';
+import { existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { realpathSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -40,6 +40,8 @@ import type {
   Workload,
 } from '@atlas/core';
 import { parseArgv } from './lib/args.js';
+import { resolveUsers } from './resolve-user.js';
+import type { ResolveOptions } from './resolve-user.js';
 import { checkDataset } from './lib/datasets.js';
 import type { DatasetStats } from './lib/datasets.js';
 import { addCommits, headCommit, isGitRepo, loginFromEmail, parsePr } from './lib/git.js';
@@ -497,9 +499,65 @@ function registryCredits(root: string, repo: Repo): RegistryCredits {
   return credits;
 }
 
+/* ------------------------------------------------- fork contributor user ids */
+
+/**
+ * Fill in `user_id` for contributors whose results were merged from a fork.
+ *
+ * `stamp-user-ids` in validate.yml can only push to a branch in this repository, so a
+ * contribution that arrives from a fork keeps `provenance.github_user_id: null` for ever —
+ * and nobody can stamp it afterwards without tripping the ownership rule, which exists
+ * precisely to stop one person editing another's result. check-result.ts already says the
+ * build resolves it later; this is that.
+ *
+ * The login is what the contributors page keys on, so a contributor is listed either way.
+ * The id only decides whether the avatar comes from the permanent numeric URL or the
+ * renameable login one, which is why every failure path here is a shrug rather than an
+ * error: no token, a rate limit, a network blip, a deleted account. The build must never
+ * fail over a decoration.
+ */
+export async function resolveContributorIds(
+  out: string,
+  log: (message: string) => void = () => {},
+  options: ResolveOptions = {},
+): Promise<void> {
+  const file = join(out, 'contributors.json');
+  if (!existsSync(file)) return;
+
+  let contributors: Array<{ login: string; user_id: number | null; avatar_url: string }>;
+  try {
+    contributors = JSON.parse(readFileSync(file, 'utf8'));
+  } catch {
+    return;
+  }
+
+  const missing = contributors.filter((c) => c.user_id == null && c.login);
+  if (missing.length === 0) return;
+
+  const resolutions = await resolveUsers(
+    missing.map((c) => c.login),
+    options,
+  );
+  let filled = 0;
+  for (const contributor of contributors) {
+    const resolution = resolutions.get(contributor.login);
+    if (!resolution || resolution.id == null) continue;
+    contributor.user_id = resolution.id;
+    contributor.avatar_url = avatarUrl(contributor.login, resolution.id);
+    filled += 1;
+  }
+
+  if (filled === 0) {
+    log(`contributor ids: ${missing.length} unresolved (no token, or the API said no)`);
+    return;
+  }
+  writeFileSync(file, `${JSON.stringify(contributors, null, 2)}\n`);
+  log(`contributor ids: resolved ${filled} of ${missing.length}`);
+}
+
 /* ----------------------------------------------------------------------- CLI */
 
-function main(argv: string[]): number {
+async function main(argv: string[]): Promise<number> {
   const args = parseArgv(argv, { boolean: ['no-git', 'force', 'json', 'quiet'] });
   const root = resolve(args.str('root', REPO_ROOT));
   const out = resolve(root, args.str('out', DEFAULT_OUT));
@@ -521,6 +579,11 @@ function main(argv: string[]): number {
     return 1;
   }
 
+  // After the emit, because it rewrites one of the files the emit just wrote.
+  await resolveContributorIds(out, (message) => {
+    if (!args.bool('quiet') && !args.bool('json')) process.stdout.write(`${message}\n`);
+  });
+
   if (args.bool('json')) {
     process.stdout.write(`${JSON.stringify(outcome, null, 2)}\n`);
   } else if (!args.bool('quiet')) {
@@ -539,4 +602,4 @@ const invokedDirectly =
   process.argv[1] !== undefined &&
   realpathSync(process.argv[1]) === realpathSync(fileURLToPath(import.meta.url));
 
-if (invokedDirectly) process.exit(main(process.argv.slice(2)));
+if (invokedDirectly) process.exit(await main(process.argv.slice(2)));
