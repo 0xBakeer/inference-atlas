@@ -287,6 +287,10 @@ export function main(argv: string[]): number {
         warnings: outcome.issues.filter((i) => i.level === 'warn'),
         codes: outcome.codes,
         code_counts: codeCounts(outcome.issues),
+        // Consumed by the workflow that comments on pull requests from forks, which has no
+        // checkout to count changed files for itself.
+        changed_results: (args.list('changed') ?? []).filter((f) => f.startsWith('results/'))
+          .length,
         markdown: renderMarkdown(outcome.issues, { counts: outcome.counts }),
       },
       null,
