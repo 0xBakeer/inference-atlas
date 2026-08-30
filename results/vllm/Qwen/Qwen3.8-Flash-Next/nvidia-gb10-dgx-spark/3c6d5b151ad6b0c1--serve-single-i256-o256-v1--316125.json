@@ -157,7 +157,24 @@
     "thermal_throttle_detected": false
   },
   "failures": [],
-  "gotchas": [],
+  "gotchas": [
+    {
+      "severity": "warn",
+      "text": "max-model-len is 32768, NOT this model's native 262144. Do not read these as a 262k-context result. Launching at native context WEDGED BOTH BOXES: weights load fine, then a post-load profiling pass allocates a dummy forward outside vLLM's own budget, and --kv-cache-memory does not bound it. --max-num-batched-tokens 2048 is what bounds it, together with --enforce-eager. This trio is the only configuration measured to start on this hardware, so every number in this cell is a 32k-context number."
+    },
+    {
+      "severity": "info",
+      "text": "gpu-memory-utilization is 0.80, not the 0.84 the upstream recipe documents, because cluster-tts was left resident on both nodes and holds roughly 20 GiB. At 0.84 startup fails outright with 'Free memory on device cuda:0 (101.27/121.69 GiB) on startup is less than desired GPU memory utilization (0.84, 102.22 GiB)'. Anyone reproducing this on an otherwise idle pair of boxes can use 0.84; on a box with co-resident services, size it from the free-memory line vLLM prints rather than from the recipe."
+    },
+    {
+      "severity": "info",
+      "text": "This is a 2-NODE cell (tensor-parallel 2 over a QSFP/RoCE fabric), which changes how two metrics read. Per-request decode carries a tensor-parallel all-reduce on every layer that a single-node cell does not pay, so the low bandwidth-efficiency flag on the concurrency-16 workload is expected rather than a fault: 16 streams share one two-node engine and aggregate output was 140.3 tok/s, which is the number to read at that concurrency. The 2-node configuration exists because this checkpoint is 172.8 GiB of weights and does not fit one 128 GB GB10 at all - it buys the ability to hold the model, not throughput."
+    },
+    {
+      "severity": "info",
+      "text": "Both nodes were drained from a production cluster for this run and their GPU clocks explicitly unlocked. A drained DGX Spark loses its gateway's clock governor and idles at roughly 600 MHz of a 3003 MHz ceiling; benchmarking one in that state silently produces numbers about a quarter of these. If you drain a node to measure it, unlock the clocks and check nvidia-smi before trusting anything."
+    }
+  ],
   "derived": {
     "cost_per_1m_output_tokens_usd": null,
     "tokens_per_watt": 0.8503,
