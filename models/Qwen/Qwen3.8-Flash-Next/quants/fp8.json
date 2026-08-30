@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "id": "fp8",
+  "model_id": "Qwen/Qwen3.8-Flash-Next",
+  "format": "fp8",
+  "bits": 8.39,
+  "hf_id": "Qwen/Qwen3.8-Flash-Next-FP8",
+  "revision": "970c569adaca6b35532111fd6b27351b2baefe50",
+  "size_gb": 185.5,
+  "engines": [
+    "vllm"
+  ],
+  "source": "official",
+  "calibration": null,
+  "links": {
+    "hf": "https://huggingface.co/Qwen/Qwen3.8-Flash-Next-FP8"
+  },
+  "notes": "First-party FP8 release from Qwen, not a community conversion. Every figure here was read out of the 131 safetensors shards of the snapshot actually served (revision 970c569), not from the model card. 152,089 tensors, 185,502,232,570 bytes of tensor data: 174,512,783,360 F8_E4M3 (one byte per value), 10,989,448,930 BF16 and 280 bytes of I64. bits 8.39 is those bytes over the model's 176.94B parameters, slightly above the nominal 8 because the BF16 remainder is stored at twice the width. By tensor name the payload splits as 120.80B parameters in the 147,456 routed-expert tensors, 51.23B in the 138 n-gram/PLE tensors, 4.91B in the 1,061 remaining backbone tensors, 2.61B in the 3,101 MTP draft-head tensors and 448,931,056 in the 333 vision-tower tensors. Like the NVFP4 build of the same model this one keeps both the trained MTP draft head and the vision tower, so it is multimodal with no separate projector file. calibration is null because FP8 E4M3 here is a direct cast with per-tensor scales and the card states no calibration set; writing a guess would be worse than writing nothing. Only vllm is listed: this architecture needs the Qwen3.8-Flash-Next support that is not in any released engine. At 172.8 GiB of weights this checkpoint does NOT fit one 128 GB GB10 and was benchmarked across two, tensor-parallel, over the QSFP fabric."
+}
