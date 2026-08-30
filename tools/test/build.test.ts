@@ -10,6 +10,7 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { cellId, engineMinor } from '@atlas/core';
 import type { CoverageCell, Gap } from '@atlas/core';
 import { buildData, resolveContributorIds } from '../src/build.js';
 import type { CompiledContributor } from '../src/build.js';
@@ -201,6 +202,31 @@ describe('output shape', () => {
     expect(stats.coverage_pct).toBeGreaterThan(0);
     expect(stats.last_updated).toBe('2026-08-02T10:00:00Z');
     expect((stats.levels as Record<string, number>).reproduced).toBe(1);
+  });
+
+  it('counts a measured multi-device cell in the denominator as well as the numerator', () => {
+    const base = build();
+    expect(base.ok).toBe(true);
+    const before = read<Record<string, number>>('stats.json');
+
+    // The cross product enumerates hw_count 1 only, so a tensor-parallel run lands in a cell
+    // it cannot reach. It still has to be possible: it has been measured.
+    const tp = makeResult(repo, { login: 'alice', startedAt: '2026-08-05T10:00:00Z' });
+    tp.hardware.count = 2;
+    tp.cell_id = cellId({
+      model_id: tp.model.id,
+      quant_id: tp.model.quant_id,
+      hardware_id: tp.hardware.id,
+      hw_count: 2,
+      engine_id: tp.engine.id,
+      engine_minor: engineMinor(tp.engine.version),
+    });
+    repo.writeResult(tp);
+    build();
+
+    const after = read<Record<string, number>>('stats.json');
+    expect(after.cells_covered).toBe(before.cells_covered! + 1);
+    expect(after.cells_possible).toBe(before.cells_possible! + 1);
   });
 
   it('reports dataset metadata and counts without compiling the rows', () => {

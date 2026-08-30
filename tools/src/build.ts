@@ -364,7 +364,7 @@ export function buildData(options: BuildOptions): BuildOutcome {
   const byKind: Record<string, number> = {};
   for (const row of rows) byKind[row.kind] = (byKind[row.kind] ?? 0) + 1;
 
-  const cellsPossible = possibleCells(repo);
+  const cellsPossible = possibleCells(repo, cells);
   const cellsCovered = Object.keys(cells).length;
   const times = rows
     .map((r) => r.provenance.submitted_at ?? r.provenance.started_at)

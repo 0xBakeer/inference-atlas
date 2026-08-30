@@ -40,7 +40,7 @@ export { resolveConditions, conditionsComparability } from './conditions.js';
 export type { ResolvedConditions, ConditionsSource, Comparability } from './conditions.js';
 export { computeScores } from './scoring.js';
 export type { ScoringInput, ScoringOutput, ScoredRun, RegistryCredits } from './scoring.js';
-export { computeCoverage, emptyCell, minorsBehind } from './coverage.js';
+export { computeCoverage, emptyCell, isReleaseVersion, minorsBehind } from './coverage.js';
 export type { CoverageRegistry, CoverageOptions } from './coverage.js';
 export { buildPacket, renderFlags, renderServeCommand, AGENT_RULES } from './packet.js';
 export type { PacketSpec, PacketRegistry, PacketEngineEntry, PacketModelEntry } from './packet.js';
