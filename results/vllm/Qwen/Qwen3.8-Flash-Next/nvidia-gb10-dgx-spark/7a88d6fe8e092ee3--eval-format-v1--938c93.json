@@ -1,0 +1,561 @@
+{
+  "schema_version": 1,
+  "run_id": "7a88d6fe8e092ee3--eval-format-v1--938c93",
+  "config_id": "7a88d6fe8e092ee3",
+  "cell_id": "146e5bfec676",
+  "workload_id": "eval-format-v1",
+  "kind": "eval",
+  "engine": {
+    "id": "vllm",
+    "version": "0.1.dev20073+g8e685d198",
+    "commit": "8e685d198",
+    "container": "qwen38-flash-dgx (built from blazux/qwen3.8-Flash-DGX at 82ed48d)",
+    "install_method": "docker"
+  },
+  "model": {
+    "id": "Qwen/Qwen3.8-Flash-Next",
+    "quant_id": "nvfp4",
+    "hf_id": "Qwen/Qwen3.8-Flash-Next",
+    "revision": "7b719225242aacd3dbd3f9407468c2ee9a9d2594",
+    "dtype": "auto",
+    "local_path": null
+  },
+  "hardware": {
+    "id": "nvidia-gb10-dgx-spark",
+    "count": 1,
+    "driver": "580.173.02",
+    "cuda": "13.0",
+    "host": {
+      "cpu": "Cortex-A725",
+      "cpu_cores": 20,
+      "ram_gb": 121.6,
+      "os": "Ubuntu 24.04.4 LTS",
+      "kernel": "6.17.0-1029-nvidia",
+      "arch": "aarch64"
+    },
+    "fingerprint": "sha256:52ea2bdd513719724db88c162b6cc2c9fb4e5b67e02dbe41b9de00687acefb91",
+    "captured": {
+      "nvidia_smi": {
+        "driver": "580.173.02",
+        "cuda": "13.0",
+        "products": [
+          "NVIDIA GB10"
+        ],
+        "fb_memory_total_mib": 0
+      },
+      "lscpu": {
+        "architecture": "aarch64",
+        "cpus": "20",
+        "vendor_id": "ARM",
+        "model_name": "Cortex-A725",
+        "cores_per_socket": "10",
+        "sockets": "1",
+        "cpu_max_mhz": "2808.0000"
+      }
+    }
+  },
+  "args": {
+    "load-format": "safetensors",
+    "max-model-len": 262144,
+    "max-num-seqs": 64,
+    "gpu-memory-utilization": 0.85,
+    "enable-prefix-caching": true,
+    "enable-chunked-prefill": true,
+    "max-num-batched-tokens": 8192,
+    "compilation-config": {
+      "cudagraph_mode": "PIECEWISE",
+      "splitting_ops": [
+        "vllm::unified_attention_with_output",
+        "vllm::unified_mla_attention_with_output",
+        "vllm::mamba_mixer2",
+        "vllm::mamba_mixer",
+        "vllm::short_conv",
+        "vllm::qwen3_8_flash_next_ple_short_conv",
+        "vllm::qwen3_8_flash_next_qsa_with_output",
+        "vllm::linear_attention",
+        "vllm::qwen_gdn_attention_core",
+        "vllm::qwen_gdn_attention_core_fused_norm_packed",
+        "vllm::sparse_attn_indexer",
+        "vllm::ple_mmap_lookup"
+      ]
+    },
+    "enable-flashinfer-autotune": false,
+    "enable-auto-tool-choice": true,
+    "tool-call-parser": "qwen3_coder",
+    "reasoning-parser": "qwen3",
+    "speculative-config": {
+      "method": "mtp",
+      "num_speculative_tokens": 3
+    },
+    "vllm-ple-mmap": 1,
+    "vllm-ple-mmap-workers": 32,
+    "vllm-ple-mmap-prewarm": 1,
+    "vllm-use-flashinfer-sampler": 1
+  },
+  "args_canonical": "@dtype=auto;@quant=nvfp4;compilation-config={\"cudagraph_mode\":\"PIECEWISE\",\"splitting_ops\":[\"vllm::linear_attention\",\"vllm::mamba_mixer\",\"vllm::mamba_mixer2\",\"vllm::ple_mmap_lookup\",\"vllm::qwen3_8_flash_next_ple_short_conv\",\"vllm::qwen3_8_flash_next_qsa_with_output\",\"vllm::qwen_gdn_attention_core\",\"vllm::qwen_gdn_attention_core_fused_norm_packed\",\"vllm::short_conv\",\"vllm::sparse_attn_indexer\",\"vllm::unified_attention_with_output\",\"vllm::unified_mla_attention_with_output\"]};enable-auto-tool-choice=true;enable-chunked-prefill=true;enable-flashinfer-autotune=false;enable-prefix-caching=true;gpu-memory-utilization=0.85;load-format=safetensors;max-model-len=262144;max-num-batched-tokens=8192;max-num-seqs=64;reasoning-parser=qwen3;speculative-config={\"method\":\"mtp\",\"num_speculative_tokens\":3};tool-call-parser=qwen3_coder;vllm-ple-mmap=1;vllm-ple-mmap-prewarm=1;vllm-ple-mmap-workers=32;vllm-use-flashinfer-sampler=1",
+  "serve_command": null,
+  "workload": {
+    "id": "eval-format-v1",
+    "resolved_params": {
+      "dataset_id": "eval-format-v1",
+      "suite": "format",
+      "scorer": "exact",
+      "items": 30,
+      "concurrency": 4,
+      "max_output_tokens": 256,
+      "timeout_s": 300,
+      "temperature": 0,
+      "reasoning": "default",
+      "dataset_categories": null,
+      "dataset_target_tokens": null,
+      "pass_threshold": null,
+      "seed": 42
+    }
+  },
+  "metrics": {
+    "requests_total": 30,
+    "requests_ok": 30,
+    "requests_failed": 0,
+    "success_rate": 1,
+    "duration_s": 24.368,
+    "input_tokens_total": 2094,
+    "output_tokens_total": 1478,
+    "e2e_ms": {
+      "mean": 3148.167,
+      "p50": 2944.486,
+      "p90": 4141.782,
+      "p95": 4513.111,
+      "p99": 4980.351,
+      "min": 2049.645,
+      "max": 5087.118
+    },
+    "vram_peak_gb": null,
+    "ram_peak_gb": 112.64,
+    "power_avg_w": 34.33,
+    "power_peak_w": 41.74,
+    "energy_wh": 0.2334,
+    "gpu_util_avg_pct": 79.04,
+    "temp_max_c": 54,
+    "thermal_throttle_detected": false
+  },
+  "scores": {
+    "suite": "format",
+    "total": 30,
+    "correct": 30,
+    "accuracy": 1,
+    "success_rate": 1,
+    "by_category": {
+      "boolean": {
+        "total": 4,
+        "correct": 4
+      },
+      "number_only": {
+        "total": 8,
+        "correct": 8
+      },
+      "one_word": {
+        "total": 8,
+        "correct": 8
+      },
+      "pattern": {
+        "total": 3,
+        "correct": 3
+      },
+      "token": {
+        "total": 7,
+        "correct": 7
+      }
+    },
+    "by_difficulty": {
+      "easy": {
+        "total": 12,
+        "correct": 12
+      },
+      "hard": {
+        "total": 3,
+        "correct": 3
+      },
+      "medium": {
+        "total": 15,
+        "correct": 15
+      }
+    },
+    "avg_output_tokens": 49.27,
+    "avg_latency_ms": 3148.17,
+    "failures": 0,
+    "items": [
+      {
+        "id": "fmt-0001",
+        "correct": true,
+        "predicted": "42",
+        "expected": "42",
+        "latency_ms": 3948.727,
+        "output_tokens": 45,
+        "category": "number_only",
+        "difficulty": "easy"
+      },
+      {
+        "id": "fmt-0002",
+        "correct": true,
+        "predicted": "25",
+        "expected": "25",
+        "latency_ms": 3593.436,
+        "output_tokens": 33,
+        "category": "number_only",
+        "difficulty": "easy"
+      },
+      {
+        "id": "fmt-0003",
+        "correct": true,
+        "predicted": "8",
+        "expected": "8",
+        "latency_ms": 3846.02,
+        "output_tokens": 40,
+        "category": "number_only",
+        "difficulty": "easy"
+      },
+      {
+        "id": "fmt-0004",
+        "correct": true,
+        "predicted": "42",
+        "expected": "42",
+        "latency_ms": 4718.956,
+        "output_tokens": 51,
+        "category": "number_only",
+        "difficulty": "easy"
+      },
+      {
+        "id": "fmt-0005",
+        "correct": true,
+        "predicted": "9",
+        "expected": "9",
+        "latency_ms": 3348.556,
+        "output_tokens": 56,
+        "category": "number_only",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0006",
+        "correct": true,
+        "predicted": "30",
+        "expected": "30",
+        "latency_ms": 2719.616,
+        "output_tokens": 43,
+        "category": "number_only",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0007",
+        "correct": true,
+        "predicted": "13",
+        "expected": "13",
+        "latency_ms": 3864.796,
+        "output_tokens": 64,
+        "category": "number_only",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0008",
+        "correct": true,
+        "predicted": "150",
+        "expected": "150",
+        "latency_ms": 3248.503,
+        "output_tokens": 57,
+        "category": "number_only",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0009",
+        "correct": true,
+        "predicted": "OK",
+        "expected": "OK",
+        "latency_ms": 2167.449,
+        "output_tokens": 35,
+        "category": "one_word",
+        "difficulty": "easy"
+      },
+      {
+        "id": "fmt-0010",
+        "correct": true,
+        "predicted": "Tokyo",
+        "expected": "Tokyo",
+        "latency_ms": 2747.748,
+        "output_tokens": 44,
+        "category": "one_word",
+        "difficulty": "easy"
+      },
+      {
+        "id": "fmt-0011",
+        "correct": true,
+        "predicted": "Green",
+        "expected": "green",
+        "latency_ms": 2725.255,
+        "output_tokens": 43,
+        "category": "one_word",
+        "difficulty": "easy"
+      },
+      {
+        "id": "fmt-0012",
+        "correct": true,
+        "predicted": "cold",
+        "expected": "cold",
+        "latency_ms": 2728.178,
+        "output_tokens": 45,
+        "category": "one_word",
+        "difficulty": "easy"
+      },
+      {
+        "id": "fmt-0013",
+        "correct": true,
+        "predicted": "mice",
+        "expected": "mice",
+        "latency_ms": 5087.118,
+        "output_tokens": 78,
+        "category": "one_word",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0014",
+        "correct": true,
+        "predicted": "salta",
+        "expected": "salta",
+        "latency_ms": 2908.416,
+        "output_tokens": 44,
+        "category": "one_word",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0015",
+        "correct": true,
+        "predicted": "jumps",
+        "expected": "jumps",
+        "latency_ms": 4261.522,
+        "output_tokens": 70,
+        "category": "one_word",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0016",
+        "correct": true,
+        "predicted": "inf",
+        "expected": "inf",
+        "latency_ms": 3124.733,
+        "output_tokens": 49,
+        "category": "one_word",
+        "difficulty": "hard"
+      },
+      {
+        "id": "fmt-0017",
+        "correct": true,
+        "predicted": "Fe",
+        "expected": "Fe",
+        "latency_ms": 2049.645,
+        "output_tokens": 32,
+        "category": "token",
+        "difficulty": "easy"
+      },
+      {
+        "id": "fmt-0018",
+        "correct": true,
+        "predicted": "DE",
+        "expected": "DE",
+        "latency_ms": 2937.762,
+        "output_tokens": 59,
+        "category": "token",
+        "difficulty": "easy"
+      },
+      {
+        "id": "fmt-0019",
+        "correct": true,
+        "predicted": "ja",
+        "expected": "ja",
+        "latency_ms": 2937.751,
+        "output_tokens": 49,
+        "category": "token",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0020",
+        "correct": true,
+        "predicted": "s",
+        "expected": "s",
+        "latency_ms": 2450.934,
+        "output_tokens": 46,
+        "category": "token",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0021",
+        "correct": true,
+        "predicted": "ff",
+        "expected": "ff",
+        "latency_ms": 2487.379,
+        "output_tokens": 43,
+        "category": "token",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0022",
+        "correct": true,
+        "predicted": "IX",
+        "expected": "IX",
+        "latency_ms": 2332.371,
+        "output_tokens": 41,
+        "category": "token",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0023",
+        "correct": true,
+        "predicted": "l",
+        "expected": "l",
+        "latency_ms": 3011.093,
+        "output_tokens": 47,
+        "category": "token",
+        "difficulty": "hard"
+      },
+      {
+        "id": "fmt-0024",
+        "correct": true,
+        "predicted": "yes",
+        "expected": "yes",
+        "latency_ms": 2532.455,
+        "output_tokens": 42,
+        "category": "boolean",
+        "difficulty": "easy"
+      },
+      {
+        "id": "fmt-0025",
+        "correct": true,
+        "predicted": "true",
+        "expected": "true",
+        "latency_ms": 2951.209,
+        "output_tokens": 48,
+        "category": "boolean",
+        "difficulty": "easy"
+      },
+      {
+        "id": "fmt-0026",
+        "correct": true,
+        "predicted": "Yes",
+        "expected": "yes",
+        "latency_ms": 2509.226,
+        "output_tokens": 37,
+        "category": "boolean",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0027",
+        "correct": true,
+        "predicted": "false",
+        "expected": "false",
+        "latency_ms": 3147.534,
+        "output_tokens": 55,
+        "category": "boolean",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0028",
+        "correct": true,
+        "predicted": "2026-03-01",
+        "expected": "2026-03-01",
+        "latency_ms": 3751.278,
+        "output_tokens": 70,
+        "category": "pattern",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0029",
+        "correct": true,
+        "predicted": "00:15",
+        "expected": "00:15",
+        "latency_ms": 4128.477,
+        "output_tokens": 71,
+        "category": "pattern",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0030",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 2178.868,
+        "output_tokens": 41,
+        "category": "pattern",
+        "difficulty": "hard"
+      }
+    ]
+  },
+  "failures": [],
+  "gotchas": [
+    {
+      "severity": "info",
+      "text": "--max-num-seqs is 64 here, not the 2 the upstream recipe shipped with, and the change rests on a measured curve rather than on preference. At GPU_MEM=0.85 the server reports a KV pool of 654,635 tokens, while the heaviest workload in this run - c64 at about 1.3k tokens per request - needs roughly 83,000. So 2 was a scheduler cap, not a memory limit, and it left about 87 percent of the KV pool unused while turning every cell above concurrency 2 into a measurement of queue depth rather than of batching. Aggregate decode against N concurrent 256-token requests on this same box and this same server: 24.3 tok/s at N=1, 56.2 at 2, 80.2 at 4, 114.6 at 8, 220.5 at 16, 210.9 at 32, 236.2 at 64, with all 64 requests returning and no preemption in the log. Aggregate throughput therefore plateaus around N=16 at roughly 215-235 tok/s; past that the box trades per-request rate (13.8 tok/s at 16 down to 5.4 at 64) for concurrency rather than gaining throughput. 64 is used here so that no workload in the atlas is capped by the scheduler. Results with config_id fa4e2bc-era max-num-seqs 2 exist separately in this repository and are the other arm of that comparison."
+    },
+    {
+      "severity": "info",
+      "text": "Speculative decoding is ON and it is the model's own trained MTP head (--speculative-config {method: mtp, num_speculative_tokens: 3}), not n-gram drafting. Because the head is trained rather than copying from the prompt, throughput is nearly flat across task shapes - the recipe measures a 1.2x spread over four editing and prose tasks where the llama.cpp/ngram-mod recipe for the same model swings 3.2x. Never compare a decode figure here against a cell run with different speculation."
+    },
+    {
+      "severity": "info",
+      "text": "--enable-prefix-caching is ON in this cell and OFF in every other vLLM cell for this model, which is the entire point of the cell. The recipe disables it and calls it a GB10 GDN kernel bug; that claim carries no recorded source in the recipe, and an outside report of a five-hour coding session at a 96 percent hit rate prompted this measurement. Consequences for reading the numbers: any prompt-sharing workload here is cache-assisted, so its prefill and TTFT figures must never be quoted next to the cache-free ones, and serve-prefix-c16 in particular groups its requests by shared prefix on purpose, so a hit is the thing being measured rather than an artefact. Full torch.compile remains off (an Inductor int64-indexing assert on sm_121) and the n-gram gather is still a splitting op captured PIECEWISE, as in every other cell here. If this cell exists at all the server started and the workload completed - but read success_rate and failures before treating that as a clean bill of health for the flag."
+    },
+    {
+      "severity": "info",
+      "text": "A third of this checkpoint is served from NVMe, so page-cache state is a hidden independent variable and any result from this configuration that does not state it is not reproducible. Residency of the 47.75 GiB n-gram table was measured with mincore(2) immediately before this workload started: 100.0% of it was in the page cache."
+    },
+    {
+      "severity": "info",
+      "text": "VLLM_PLE_CPU_OFFLOAD=1, the official pinned-host-RAM path, hangs on this box: it registers a PleOffloadLayer and then spins a core with no disk I/O, indefinitely. Only VLLM_PLE_MMAP works here. The four VLLM_PLE_* / VLLM_USE_* environment variables are recorded in args for that reason - they are not CLI flags, but VLLM_PLE_MMAP is the difference between the model loading and not loading."
+    },
+    {
+      "severity": "info",
+      "text": "Read gpu_util_avg_pct here with care, and do NOT read a lower average at higher concurrency as evidence of stalling. It is a mean over the ENTIRE workload window - the sampler runs for the whole measured window and summarize() averages every sample it took, with no filtering of warmup, ramp-up or drain - so it is not a steady-state figure. A workload that completes few waves spends proportionally more of its window ramping up and draining with the batch half empty, and that alone drags the mean down: serve-chat-c32 runs 12.5 waves at 76.8 s per wave against serve-short-c16 at 20 waves and 13.5 s, and reports 80.3 percent against 90.7. power_avg_w is averaged the same way and carries the same artefact. An earlier version of this note treated that c16-to-c32 difference as a stall signature on a unified-memory part; that inference was not supported by these numbers and is withdrawn. What IS verified, by sampling utilization.gpu directly during active generation on this box, is that the instantaneous figure does track real work - 88 to 96 percent with four requests generating - so unlike some unified-memory utilisation counters this one is not measuring something unrelated. Two further caveats on the telemetry itself: vram_peak_gb is null in every result here because there is no separate device memory to measure and nvidia-smi reports fb_memory_total as 0, so ram_peak_gb is the real occupancy figure; and the power figures are whatever the driver exposes on this part, which may not account for the whole SoC, so treat them as a relative signal across these runs rather than as absolute wall power."
+    }
+  ],
+  "derived": {
+    "cost_per_1m_output_tokens_usd": null,
+    "tokens_per_watt": null,
+    "tok_s_per_gb_bandwidth": null,
+    "bandwidth_efficiency": null,
+    "memory_headroom_gb": null
+  },
+  "raw": {
+    "harness": "atlas-bench",
+    "harness_version": "0.1.0",
+    "sha256": "e2b1486a87f7bee982a3298f274571156bd58cfc385f05d24afa53aceb499f78",
+    "payload_path": null,
+    "payload": {
+      "scorer": "exact",
+      "scorers_used": [
+        "exact"
+      ],
+      "engine_endpoint": {
+        "attached": true,
+        "base_url": "http://127.0.0.1:8000/v1",
+        "served_model_id": "qwen3.8-flash-next",
+        "advertised_models": [
+          "qwen3.8-flash-next"
+        ]
+      }
+    },
+    "truncated": false
+  },
+  "provenance": {
+    "github_login": "0xBakeer",
+    "github_user_id": 17404809,
+    "started_at": "2026-08-30T06:42:39Z",
+    "finished_at": "2026-08-30T06:43:03Z",
+    "submitted_at": null,
+    "commit": null,
+    "pr": null,
+    "method": "atlas-bench",
+    "agent": null,
+    "notes": "NVIDIA DGX Spark (ASUS Ascent GX10, GB10 / SM121, 128 GB unified memory, ~121 GiB usable) on Ubuntu 24.04.4 LTS, kernel 6.17.0-1029-nvidia aarch64, driver 580.173.02, CUDA 13.0. Swap is off. Engine is the container from the long-context recipe of github.com/0xBakeer/qwen38-flash-next-spark (commit 1611340), which builds github.com/blazux/qwen3.8-Flash-DGX (Apache-2.0) at 82ed48d; pip reports the build as vLLM 0.1.dev20073+g8e685d198, i.e. upstream commit 8e685d198 plus that fork's Qwen3.8-Flash-Next support. Weights are RadixArk/Qwen3.8-Flash-Next-NVFP4 at revision 7b71922, 206 safetensors shards, 135,156,121,594 bytes of tensor data. The server was started by the recipe's own recipes/vllm-longctx/serve.sh with ONE flag changed: --enable-prefix-caching in place of --no-enable-prefix-caching, with SEQS=64 to match the other cells of this configuration. Everything else - CTX=262144, GPU_MEM=0.85, MTP=3, PREWARM=1, WORKERS=32, chunked prefill at 8192 batched tokens, PIECEWISE capture - is what that script produced unmodified, so this arm differs from the published cells on exactly one variable. The defining choice is VLLM_PLE_MMAP=1: the 51.2B-parameter n-gram/PLE embedding table, 47.75 GiB spread over 12 of the 206 shards, is gathered from the checkpoint on disk through the OS page cache instead of being made resident, which is the only reason a 126 GiB checkpoint runs next to a usable KV cache in 128 GB. KV was measured by the server at 18.13 GiB. The machine was fully isolated for the run: the only route to it from outside the box is an SSH tunnel opened by a reverse proxy on the same private network, and that tunnel was stopped before the first run and stayed stopped throughout, so no external client could contend for the GPU. The container publishes 127.0.0.1:8000 only and the harness connects to it directly, so no proxy sits in the measured path."
+  },
+  "verification": {
+    "level": "self-reported",
+    "reproduced_by": [],
+    "flags": []
+  }
+}
