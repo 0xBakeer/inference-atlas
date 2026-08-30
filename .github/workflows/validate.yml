@@ -85,8 +85,39 @@ jobs:
           echo "exit=$?" >> "$GITHUB_OUTPUT"
           set -e
           node -e "const r=require('./validate.json');console.log(r.markdown)"
+          # Also into the run summary. A pull request from a fork gets a read-only token, so
+          # the comment step below cannot speak; the summary is visible to everyone regardless.
+          {
+            echo "### Validation"
+            echo
+            node -e "const r=require('./validate.json');console.log(r.markdown)"
+          } >> "$GITHUB_STEP_SUMMARY"
 
+      # Handed to the companion workflow, which has the permissions a fork's token lacks.
+      - name: Save the report for the comment workflow
+        uses: actions/upload-artifact@v5
+        with:
+          name: validate-report
+          path: |
+            validate.json
+          retention-days: 3
+
+      - name: Save the pull request number
+        run: echo "${{ github.event.pull_request.number }}" > pr-number.txt
+      - uses: actions/upload-artifact@v5
+        with:
+          name: validate-pr-number
+          path: pr-number.txt
+          retention-days: 3
+
+      # Only for branches in this repository. A pull request from a fork gets a read-only
+      # GITHUB_TOKEN no matter what the permissions block above says, so this step 403s and
+      # used to fail the whole job - showing a red cross on a contribution whose validation
+      # had actually passed, to exactly the contributors least able to tell the difference.
+      # Forks are commented on by validate-comment.yml instead.
       - name: Comment on the pull request
+        if: github.event.pull_request.head.repo.full_name == github.repository
+        continue-on-error: true
         uses: actions/github-script@v9
         with:
           script: |

@@ -1,0 +1,82 @@
+name: validate-comment
+
+# Posts the validation report onto pull requests from forks.
+#
+# validate.yml runs on `pull_request`, which for a fork hands the job a read-only token: it
+# can check the contribution but cannot say anything back. That is the wrong way round -
+# a first-time contributor is precisely the person who needs the report. This workflow runs
+# on `workflow_run`, which executes with the repository's own permissions, and posts what
+# the other one found.
+#
+# It deliberately checks out nothing and runs no contributor code. It downloads two small
+# artifacts, reads JSON out of them, and calls the issues API. Anything else here would be
+# handing write permissions to an untrusted branch.
+
+on:
+  workflow_run:
+    workflows: [validate]
+    types: [completed]
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  comment:
+    runs-on: ubuntu-latest
+    # Same-repo pull requests are already commented on by validate.yml itself.
+    if: github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.head_repository.full_name != github.repository
+    steps:
+      - name: Download the report
+        uses: actions/download-artifact@v6
+        with:
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          pattern: validate-*
+          merge-multiple: true
+
+      - name: Post it
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const fs = require('fs');
+            if (!fs.existsSync('validate.json') || !fs.existsSync('pr-number.txt')) {
+              core.info('no report artifact — the validate job failed before writing one');
+              return;
+            }
+            const report = JSON.parse(fs.readFileSync('validate.json', 'utf8'));
+            const issue_number = Number(fs.readFileSync('pr-number.txt', 'utf8').trim());
+            if (!Number.isInteger(issue_number) || issue_number <= 0) {
+              core.setFailed(`unusable pull request number in artifact`);
+              return;
+            }
+
+            const marker = '<!-- inference-atlas: validate -->';
+            const body = [
+              marker,
+              '### Validation',
+              '',
+              report.markdown,
+              '',
+              '<sub>`pnpm validate` runs the same checks locally.</sub>',
+            ].join('\n');
+
+            const { owner, repo } = context.repo;
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner, repo, issue_number, per_page: 100,
+            });
+            const existing = comments.find((c) => c.body?.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body });
+            } else {
+              await github.rest.issues.createComment({ owner, repo, issue_number, body });
+            }
+
+            const codes = new Set(report.codes ?? []);
+            const wanted = [];
+            if (codes.has('needs-review')) wanted.push('needs-review');
+            if ((report.changed_results ?? 0) > 0) wanted.push('results');
+            if (wanted.length > 0) {
+              await github.rest.issues.addLabels({ owner, repo, issue_number, labels: wanted });
+            }
