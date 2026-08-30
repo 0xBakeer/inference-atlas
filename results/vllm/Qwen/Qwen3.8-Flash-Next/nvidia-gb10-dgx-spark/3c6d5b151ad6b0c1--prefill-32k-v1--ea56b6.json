@@ -1,0 +1,340 @@
+{
+  "schema_version": 1,
+  "run_id": "3c6d5b151ad6b0c1--prefill-32k-v1--ea56b6",
+  "config_id": "3c6d5b151ad6b0c1",
+  "cell_id": "d8bc7ae8de81",
+  "workload_id": "prefill-32k-v1",
+  "kind": "prefill",
+  "engine": {
+    "id": "vllm",
+    "version": "0.1.dev20073+g8e685d198",
+    "commit": "8e685d198",
+    "container": "qwen38fn:ray (vllm/vllm-openai:qwen38-flash-next-arm64-cu130 + ray[default])",
+    "install_method": "docker"
+  },
+  "model": {
+    "id": "Qwen/Qwen3.8-Flash-Next",
+    "quant_id": "fp8",
+    "hf_id": "Qwen/Qwen3.8-Flash-Next",
+    "revision": null,
+    "dtype": "auto",
+    "local_path": null
+  },
+  "hardware": {
+    "id": "nvidia-gb10-dgx-spark",
+    "count": 2,
+    "driver": "580.173.02",
+    "cuda": "13.0",
+    "host": {
+      "cpu": "Cortex-A725",
+      "cpu_cores": 20,
+      "ram_gb": 121.7,
+      "os": "Ubuntu 24.04.4 LTS",
+      "kernel": "6.17.0-1029-nvidia",
+      "arch": "aarch64"
+    },
+    "fingerprint": "sha256:52ea2bdd513719724db88c162b6cc2c9fb4e5b67e02dbe41b9de00687acefb91",
+    "captured": {
+      "nvidia_smi": {
+        "driver": "580.173.02",
+        "cuda": "13.0",
+        "products": [
+          "NVIDIA GB10"
+        ],
+        "fb_memory_total_mib": 0.0
+      },
+      "lscpu": {
+        "architecture": "aarch64",
+        "cpus": "20",
+        "vendor_id": "ARM",
+        "model_name": "Cortex-A725",
+        "cores_per_socket": "10",
+        "sockets": "1",
+        "cpu_max_mhz": "2808.0000"
+      }
+    }
+  },
+  "args": {
+    "tensor-parallel-size": 2,
+    "distributed-executor-backend": "ray",
+    "max-model-len": 32768,
+    "max-num-batched-tokens": 2048,
+    "enforce-eager": true,
+    "gpu-memory-utilization": 0.8,
+    "kv-cache-memory": 4294967296,
+    "reasoning-parser": "qwen3",
+    "enable-auto-tool-choice": true,
+    "tool-call-parser": "qwen3_coder"
+  },
+  "args_canonical": "@dtype=auto;@quant=fp8;distributed-executor-backend=ray;enable-auto-tool-choice=true;enforce-eager=true;gpu-memory-utilization=0.8;kv-cache-memory=4294967296;max-model-len=32768;max-num-batched-tokens=2048;reasoning-parser=qwen3;tensor-parallel-size=2;tool-call-parser=qwen3_coder",
+  "serve_command": null,
+  "workload": {
+    "id": "prefill-32k-v1",
+    "resolved_params": {
+      "concurrency": 1,
+      "num_requests": 10,
+      "input_tokens": 32768,
+      "output_tokens": 16,
+      "warmup_requests": 1,
+      "prompts_padded": false,
+      "needle_check": false,
+      "timeout_s": 900.0,
+      "seed": 42
+    }
+  },
+  "metrics": {
+    "requests_total": 10,
+    "requests_ok": 10,
+    "requests_failed": 0,
+    "success_rate": 1.0,
+    "duration_s": 179.76,
+    "input_tokens_total": 403331,
+    "output_tokens_total": 160,
+    "output_tok_s": 0.89,
+    "total_tok_s": 2244.605,
+    "req_s": 0.056,
+    "prefill_tok_s": 2305.794,
+    "ttft_ms": {
+      "mean": 17492.068,
+      "p50": 17342.867,
+      "p90": 18053.799,
+      "p95": 18166.985,
+      "p99": 18257.534,
+      "min": 17213.801,
+      "max": 18280.171
+    },
+    "tpot_ms": {
+      "mean": 32.259,
+      "p50": 31.701,
+      "p90": 37.608,
+      "p95": 37.798,
+      "p99": 37.949,
+      "min": 26.334,
+      "max": 37.987
+    },
+    "itl_ms": {
+      "mean": 91.163,
+      "p50": 96.145,
+      "p90": 104.199,
+      "p95": 107.906,
+      "p99": 110.778,
+      "min": 52.075,
+      "max": 112.964
+    },
+    "e2e_ms": {
+      "mean": 17975.96,
+      "p50": 17862.809,
+      "p90": 18565.712,
+      "p95": 18662.277,
+      "p99": 18739.528,
+      "min": 17608.813,
+      "max": 18758.841
+    },
+    "decode_tok_s_per_request": {
+      "mean": 31.52,
+      "p50": 31.546,
+      "p90": 36.147,
+      "p95": 37.06,
+      "p99": 37.791,
+      "min": 26.325,
+      "max": 37.974
+    },
+    "vram_peak_gb": null,
+    "ram_peak_gb": 115.732,
+    "kv_cache_tokens": null,
+    "power_avg_w": 60.9,
+    "power_peak_w": 65.23,
+    "energy_wh": 3.3938,
+    "gpu_util_avg_pct": 93.42,
+    "temp_max_c": 78.0,
+    "thermal_throttle_detected": false
+  },
+  "failures": [],
+  "gotchas": [],
+  "derived": {
+    "cost_per_1m_output_tokens_usd": null,
+    "tokens_per_watt": 0.0146,
+    "tok_s_per_gb_bandwidth": 0.057729,
+    "bandwidth_efficiency": null,
+    "memory_headroom_gb": null
+  },
+  "raw": {
+    "harness": "atlas-bench",
+    "harness_version": "0.1.0",
+    "sha256": "60163a9a5ab18250d3ce179e1000f95afcc49d06e73e84a1382f3733fb62daab",
+    "payload_path": null,
+    "payload": {
+      "requests": [
+        {
+          "id": "prefill-w00000",
+          "prompt_id": "hay-32k-d10",
+          "warmup": true,
+          "status": "ok",
+          "ttft_ms": 20796.35,
+          "e2e_ms": 21050.664,
+          "prompt_tokens": 40226,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00000",
+          "prompt_id": "hay-32k-d10",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 17263.002,
+          "e2e_ms": 17702.912,
+          "prompt_tokens": 40226,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00001",
+          "prompt_id": "hay-32k-multi",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 17589.036,
+          "e2e_ms": 18006.35,
+          "prompt_tokens": 40465,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00002",
+          "prompt_id": "hay-32k-d50",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 18280.171,
+          "e2e_ms": 18758.841,
+          "prompt_tokens": 40273,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00003",
+          "prompt_id": "hay-32k-d90",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 17355.056,
+          "e2e_ms": 17918.475,
+          "prompt_tokens": 40356,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00004",
+          "prompt_id": "hay-32k-d10",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 17213.801,
+          "e2e_ms": 17608.813,
+          "prompt_tokens": 40226,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00005",
+          "prompt_id": "hay-32k-multi",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 18028.646,
+          "e2e_ms": 18544.254,
+          "prompt_tokens": 40465,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00006",
+          "prompt_id": "hay-32k-d50",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 17250.668,
+          "e2e_ms": 17820.473,
+          "prompt_tokens": 40273,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00007",
+          "prompt_id": "hay-32k-d90",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 17341.651,
+          "e2e_ms": 17905.146,
+          "prompt_tokens": 40356,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00008",
+          "prompt_id": "hay-32k-d10",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 17254.571,
+          "e2e_ms": 17726.93,
+          "prompt_tokens": 40226,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00009",
+          "prompt_id": "hay-32k-multi",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 17344.082,
+          "e2e_ms": 17767.411,
+          "prompt_tokens": 40465,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        }
+      ],
+      "engine_endpoint": {
+        "attached": true,
+        "base_url": "http://127.0.0.1:18300/v1",
+        "served_model_id": "qwen3.8-flash-next",
+        "advertised_models": [
+          "qwen3.8-flash-next"
+        ]
+      }
+    },
+    "truncated": false
+  },
+  "provenance": {
+    "github_login": "johntdavies",
+    "github_user_id": null,
+    "started_at": "2026-08-30T00:10:09Z",
+    "finished_at": "2026-08-30T00:13:30Z",
+    "submitted_at": null,
+    "commit": null,
+    "pr": null,
+    "method": "atlas-bench",
+    "agent": null,
+    "notes": "Two DGX Spark GB10 (spark2 head, spark3 worker), tensor-parallel 2 over the QSFP/RoCE fabric on 10.99.23.0/24, Ray as the distributed executor. This checkpoint is 172.8 GiB of weights and does NOT fit one 128 GB box, which is the reason for the 2-node configuration. Both nodes were drained from their production cluster for the run and their GPU clocks explicitly unlocked (a drained node loses the gateway's clock governor and otherwise idles at ~600 MHz of a 3003 MHz ceiling). cluster-tts was left running on both nodes and holds roughly 20 GiB; that is why gpu-memory-utilization is 0.80 and not the 0.84 the recipe documents - at 0.84 startup fails outright with 'Free memory on device cuda:0 (101.27/121.69 GiB) is less than desired GPU memory utilization (0.84, 102.22 GiB)'. Nothing else was on either GPU. max-model-len is 32768 rather than the model's native 262144, with max-num-batched-tokens 2048 and --enforce-eager. This is deliberate and is the only configuration known to start: launching at native context wedged both boxes, because a post-load profiling pass allocates a dummy forward outside vLLM's own budget and --kv-cache-memory does not bound it. Do not read these numbers as a 262144-context result."
+  },
+  "verification": {
+    "level": "self-reported",
+    "reproduced_by": [],
+    "flags": []
+  }
+}
