@@ -47,6 +47,9 @@ jobs:
           # The site lives under /<repo>/ on github.io; site/config.json carries the same
           # value for the app's own links.
           VITE_BASE: /${{ github.event.repository.name }}/
+          # Lets the build resolve github_user_id for contributions merged from forks, which
+          # stamp-user-ids cannot reach. Read-only, and the build shrugs if it is absent.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: pnpm build
 
       - uses: actions/configure-pages@v6
