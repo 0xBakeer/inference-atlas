@@ -122,6 +122,7 @@ without an adapter falls back to attach mode.
 | `submit --dir DIR [--draft]`                                    | branch `result/<engine>-<model>-<hardware>-<short>`, commits **only** result files, `gh pr create --label results`                                                                                                       |
 | `packet --cell ...`                                             | prints the agent task packet (SPEC §7) for a cell                                                                                                                                                                        |
 | `wrap raw.json --spec task.json`                                | wraps `vllm bench serve` / SGLang `bench_serving` JSON into a result file                                                                                                                                                |
+| `restamp FILE... --build REF`                                   | names the build behind an already-written result, recomputes `config_id`/`run_id` and moves the file (the cell is unchanged); for results written before `engine.build` existed                                          |
 
 Useful `run` flags: `--gotcha "text"` (repeatable), `--notes "ambient 22C, box idle"`,
 `--no-telemetry`, `--tokenizer <hf-id>`, `--login <github-login>`.

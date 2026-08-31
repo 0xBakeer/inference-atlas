@@ -9,6 +9,7 @@ Commands
 ``submit``   branch + commit + ``gh pr create`` for new result files only
 ``packet``   print the agent packet for a cell
 ``wrap``     turn an engine-native benchmark JSON into an Atlas result file
+``restamp``  name the build behind an already-written result and recompute its ids
 """
 
 from __future__ import annotations
@@ -27,6 +28,8 @@ from . import __version__
 from . import hwinfo as hwinfo_module
 from .client import utc_now
 from .engines.base import get_adapter
+from .canonical import canonicalize
+from .ids import config_id_from_canonical, run_id
 from .packet import build_packet, find_cell, parse_cell, write_packet
 from .registry import Registry
 from .repo import find_repo_root, write_json
@@ -548,6 +551,110 @@ def wrap(
     path = output_path(record, out)
     write_json(path, record)
     console.print(f"wrote {path}")
+
+
+# --------------------------------------------------------------------- restamp
+
+
+@app.command()
+def restamp(
+    files: list[Path] = typer.Argument(..., help="Result files (or directories) to restamp."),
+    build: str = typer.Option(
+        ..., "--build", help="What was actually run: an image digest, a wheel, a commit+patch."
+    ),
+    registry_dir: Path | None = typer.Option(None, "--registry-dir", "--repo"),
+    force: bool = typer.Option(
+        False, "--force", help="Overwrite a build that is already recorded and different."
+    ),
+    dry_run: bool = typer.Option(False, "--dry-run", help="Print the plan, change nothing."),
+) -> None:
+    """Name the build behind an already-written result and recompute its ids.
+
+    Two forks of an engine can report the same version string, so a result from one and a
+    result from the other used to collide on ``config_id`` and be read as repeats of a single
+    configuration. ``engine.build`` separates them (SPEC decision 24). A result written before
+    the field existed — or by a harness that left it null — needs the field added and the
+    fingerprint recomputed, which also moves the file, because the filename is the run id.
+
+    The cell id does not change: a build is a property of the configuration, not of the
+    model/quant/hardware/engine-minor cell the configuration sits in.
+    """
+    registry = _registry(registry_dir)
+    targets: list[Path] = []
+    for entry in files:
+        targets.extend(sorted(entry.rglob("*.json")) if entry.is_dir() else [entry])
+    if not targets:
+        error_console.print("[bold red]no result files given[/]")
+        raise typer.Exit(code=2)
+
+    changed = 0
+    for target in targets:
+        record = json.loads(target.read_text())
+        engine = record.get("engine") or {}
+        existing = (engine.get("build") or "").strip()
+        if existing == build.strip():
+            console.print(f"[dim]unchanged[/] {target} — already names this build")
+            continue
+        if existing and not force:
+            error_console.print(
+                f"[bold red]{target}[/] already names a different build "
+                f"({existing}); pass --force to replace it"
+            )
+            raise typer.Exit(code=1)
+
+        model = record.get("model") or {}
+        resolved = registry.resolve_config(
+            engine_id=engine.get("id", ""),
+            engine_version=engine.get("version", ""),
+            args=record.get("args") or {},
+            quant_id=model.get("quant_id", ""),
+            dtype=model.get("dtype"),
+            build=build,
+        )
+        for warning in resolved.warnings:
+            console.print(f"  [yellow]warning[/] {warning}")
+
+        args_canonical = canonicalize(resolved.canonical_input)
+        cfg_id = config_id_from_canonical(args_canonical)
+        provenance = record.get("provenance") or {}
+        rid = run_id(
+            cfg_id=cfg_id,
+            workload_id=str((record.get("workload") or {}).get("id")),
+            github_login=provenance.get("github_login") or "",
+            started_at=provenance.get("started_at") or "",
+        )
+
+        engine["build"] = build
+        record["engine"] = engine
+        record["args_canonical"] = args_canonical
+        record["config_id"] = cfg_id
+        record["run_id"] = rid
+
+        # The filename is the run id, so a recomputed fingerprint always relocates the file.
+        # output_path wants the repo root or its results/ directory; walk up to the results/
+        # the file already sits under, because a model id may be one path segment or two.
+        results_root = next(
+            (parent for parent in target.parents if parent.name == "results"), None
+        )
+        if results_root is None:
+            error_console.print(f"[bold red]{target} is not under a results/ directory[/]")
+            raise typer.Exit(code=2)
+        destination = output_path(record, results_root)
+
+        console.print(f"[bold]{target}[/]")
+        console.print(f"  config_id {record.get('config_id')} ← recomputed with the build")
+        console.print(f"  cell_id   {record.get('cell_id')} (unchanged — a build is not a cell)")
+        console.print(f"  → {destination}")
+        if dry_run:
+            continue
+        write_json(destination, record)
+        if destination.resolve() != target.resolve():
+            target.unlink()
+        changed += 1
+
+    console.print(f"\n{len(targets)} file(s), {changed} restamped")
+    if changed and not dry_run:
+        console.print("[dim]re-run `atlas-bench validate` before submitting.[/]")
 
 
 def main() -> None:
