@@ -3,7 +3,7 @@
   "id": "nvfp4-modelopt",
   "model_id": "Qwen/Qwen3.6-35B-A3B",
   "format": "nvfp4",
-  "bits": 5.36,
+  "bits": 5.22,
   "hf_id": "nvidia/Qwen3.6-35B-A3B-NVFP4",
   "revision": "1355db6a052410cfd62085d94b58866fd0f2c3c5",
   "size_gb": 23.46,
@@ -16,5 +16,5 @@
     "hf": "https://huggingface.co/nvidia/Qwen3.6-35B-A3B-NVFP4",
     "recipe": "https://github.com/NVIDIA/dgx-spark-playbooks/tree/main/nvidia/vllm"
   },
-  "notes": "NVIDIA's own NVFP4 pack of this model, kept separate from the community `nvfp4` entry so the two packers can be compared with everything else held constant. Declared as quant_method modelopt with quant_algo MIXED_PRECISION, 291 quantized layers and 2 ignored, against the community pack's mixed FP8-dense/NVFP4-expert layout. bits 5.36 is the artefact on disk measured against the vendor's 35B parameter count (23,462,482,761 bytes x 8 / 35e9), not a per-tensor figure; it sits below the community pack's 6.06 and the 23.46 GB against 26.53 GB is the same difference seen from the other side. 17 files, 3 shards, 124,468 tensors - more tensors than the 8-bit pack because NVFP4 splits every quantized weight into packed values plus block scales plus a global scale. The MTP draft head and the vision tower are both present and complete: 333 visual tensors, and an mtp block that looks smaller than the FP8 pack's only because the 256 routed experts are stored as two stacked tensors (mtp.layers.0.mlp.experts.gate_up_proj and .down_proj) instead of 256 separate ones per projection. calibration is null because the card states none. Only vllm is listed: this pack needs an engine with NVFP4 kernels for SM121."
+  "notes": "NVIDIA's own NVFP4 pack of this model, kept separate from the community `nvfp4` entry so the two packers can be compared with everything else held constant. Declared as quant_method modelopt with quant_algo MIXED_PRECISION, 291 quantized layers and 2 ignored, against the community pack's mixed FP8-dense/NVFP4-expert layout. bits 5.22 is the artefact on disk measured against the counted parameter total of 35.952B (23,462,482,761 bytes x 8 / 35.952e9), not a per-tensor figure; it sits below the community pack's 5.90 and the 23.46 GB against 26.53 GB is the same difference seen from the other side. 17 files, 3 shards, 124,468 tensors - more tensors than the 8-bit pack because NVFP4 splits every quantized weight into packed values plus block scales plus a global scale. The MTP draft head and the vision tower are both present and complete: 333 visual tensors, and an mtp block that looks smaller than the FP8 pack's only because the 256 routed experts are stored as two stacked tensors (mtp.layers.0.mlp.experts.gate_up_proj and .down_proj) instead of 256 separate ones per projection. calibration is null because the card states none. Only vllm is listed: this pack needs an engine with NVFP4 kernels for SM121."
 }

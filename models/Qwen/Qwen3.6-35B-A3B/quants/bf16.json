@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "id": "bf16",
+  "model_id": "Qwen/Qwen3.6-35B-A3B",
+  "format": "bf16",
+  "bits": 16.01,
+  "hf_id": "Qwen/Qwen3.6-35B-A3B",
+  "revision": "995ad96eacd98c81ed38be0c5b274b04031597b0",
+  "size_gb": 71.93,
+  "engines": [
+    "vllm"
+  ],
+  "source": "official",
+  "calibration": null,
+  "links": {
+    "hf": "https://huggingface.co/Qwen/Qwen3.6-35B-A3B"
+  },
+  "notes": "The unquantized release, and the reference the other three packs of this model are measured against. 71,926,880,711 bytes, 26 shards, 1,045 tensors, no quantization_config. bits 16.01 (71,926,880,711 x 8 / 35.952e9) is what makes this entry worth reading: a BF16 pack must land at 16 bits per parameter, and it only does so against the counted parameter total. Against the vendor's rounded 35B headline it would read 16.44, which no BF16 artefact can be - that is the check that established the divisor for every quant of this model. The stacked routed-expert layout (mtp.layers.0.mlp.experts.gate_up_proj and .down_proj as single tensors) is upstream's own here, so it is the FP8 pack that departs from it by splitting the 256 experts into separate tensors to carry a block scale each. MTP draft head 0.845B parameters, vision tower 0.447B, main body 34.661B. Only vllm is listed because that is what has been tried; vLLM's own recipes page puts BF16 of this model on 1x H200 or 2x H100, and no published single-Spark BF16 recipe was found, so whether one GB10 serves it is the open question this entry exists to answer."
+}
