@@ -1,0 +1,1043 @@
+{
+  "schema_version": 1,
+  "run_id": "8cd52c733b36ecb7--eval-multilingual-v1--197ecb",
+  "config_id": "8cd52c733b36ecb7",
+  "cell_id": "803dc89250a5",
+  "workload_id": "eval-multilingual-v1",
+  "kind": "eval",
+  "engine": {
+    "id": "vllm",
+    "version": "0.26.1.dev0+gf2654939e.d20260726",
+    "commit": null,
+    "build": "ghcr.io/miaai-lab/mia-vllm-gb10-linear-b12x@sha256:19627342e1da2607f4db50745dca30e57d7dd0ebff06062f03fd69b43a252931",
+    "container": "ghcr.io/miaai-lab/mia-vllm-gb10-linear-b12x:latest",
+    "install_method": "docker"
+  },
+  "model": {
+    "id": "Qwen/Qwen3.6-35B-A3B",
+    "quant_id": "fp8",
+    "hf_id": "Qwen/Qwen3.6-35B-A3B",
+    "revision": "95a723d08a94",
+    "dtype": "auto",
+    "local_path": null
+  },
+  "hardware": {
+    "id": "nvidia-gb10-dgx-spark",
+    "count": 1,
+    "driver": "580.173.02",
+    "cuda": "13.0",
+    "host": {
+      "cpu": "Cortex-A725",
+      "cpu_cores": 20,
+      "ram_gb": 121.6,
+      "os": "Ubuntu 24.04.4 LTS",
+      "kernel": "6.17.0-1029-nvidia",
+      "arch": "aarch64"
+    },
+    "fingerprint": "sha256:52ea2bdd513719724db88c162b6cc2c9fb4e5b67e02dbe41b9de00687acefb91",
+    "captured": {
+      "nvidia_smi": {
+        "driver": "580.173.02",
+        "cuda": "13.0",
+        "products": [
+          "NVIDIA GB10"
+        ],
+        "fb_memory_total_mib": 0.0
+      },
+      "lscpu": {
+        "architecture": "aarch64",
+        "cpus": "20",
+        "vendor_id": "ARM",
+        "model_name": "Cortex-A725",
+        "cores_per_socket": "10",
+        "sockets": "1",
+        "cpu_max_mhz": "2808.0000"
+      }
+    }
+  },
+  "args": {
+    "tensor-parallel-size": 1,
+    "trust-remote-code": true,
+    "moe-backend": "auto",
+    "gpu-memory-utilization": 0.8,
+    "attention-backend": "flashinfer",
+    "max-model-len": 262144,
+    "max-num-seqs": 24,
+    "max-num-batched-tokens": 32768,
+    "enable-chunked-prefill": true,
+    "async-scheduling": true,
+    "kv-cache-dtype": "fp8",
+    "limit-mm-per-prompt": {
+      "image": 4
+    },
+    "speculative-config": {
+      "method": "mtp",
+      "num_speculative_tokens": 2,
+      "moe_backend": "triton"
+    },
+    "reasoning-parser": "qwen3",
+    "tool-call-parser": "qwen3_coder",
+    "enable-auto-tool-choice": true,
+    "default-chat-template-kwargs": {
+      "enable_thinking": true,
+      "preserve_thinking": true
+    },
+    "override-generation-config": {
+      "temperature": 0.6,
+      "top_p": 0.95,
+      "top_k": 20,
+      "min_p": 0.0,
+      "presence_penalty": 0.0,
+      "repetition_penalty": 1.0
+    }
+  },
+  "args_canonical": "@build=ghcr.io/miaai-lab/mia-vllm-gb10-linear-b12x@sha256:19627342e1da2607f4db50745dca30e57d7dd0ebff06062f03fd69b43a252931;@dtype=auto;@quant=fp8;attention-backend=flashinfer;default-chat-template-kwargs={\"enable_thinking\":true,\"preserve_thinking\":true};enable-auto-tool-choice=true;gpu-memory-utilization=0.8;kv-cache-dtype=fp8;limit-mm-per-prompt={\"image\":4};max-model-len=262144;max-num-batched-tokens=32768;max-num-seqs=24;no-async-scheduling=true;no-enable-chunked-prefill=true;no-trust-remote-code=true;override-generation-config={\"min_p\":0,\"presence_penalty\":0,\"repetition_penalty\":1,\"temperature\":0.6,\"top_k\":20,\"top_p\":0.95};reasoning-parser=qwen3;speculative-config={\"method\":\"mtp\",\"moe_backend\":\"triton\",\"num_speculative_tokens\":2};tool-call-parser=qwen3_coder",
+  "serve_command": null,
+  "workload": {
+    "id": "eval-multilingual-v1",
+    "resolved_params": {
+      "dataset_id": "eval-multilingual-v1",
+      "suite": "multilingual",
+      "scorer": "contains",
+      "items": 80,
+      "concurrency": 4,
+      "max_output_tokens": 2048,
+      "timeout_s": 300.0,
+      "temperature": 0,
+      "reasoning": "default",
+      "dataset_categories": null,
+      "dataset_target_tokens": null,
+      "pass_threshold": null,
+      "seed": 42
+    }
+  },
+  "metrics": {
+    "requests_total": 80,
+    "requests_ok": 80,
+    "requests_failed": 0,
+    "success_rate": 1.0,
+    "duration_s": 435.486,
+    "input_tokens_total": 4083,
+    "output_tokens_total": 54953,
+    "e2e_ms": {
+      "mean": 21637.727,
+      "p50": 14823.663,
+      "p90": 48909.436,
+      "p95": 55161.61,
+      "p99": 63971.355,
+      "min": 4151.337,
+      "max": 64166.534
+    },
+    "vram_peak_gb": null,
+    "ram_peak_gb": 110.917,
+    "power_avg_w": 37.83,
+    "power_peak_w": 39.75,
+    "energy_wh": 4.5794,
+    "gpu_util_avg_pct": 95.28,
+    "temp_max_c": 68.0,
+    "thermal_throttle_detected": false
+  },
+  "scores": {
+    "suite": "multilingual",
+    "total": 80,
+    "correct": 76,
+    "accuracy": 0.95,
+    "success_rate": 1.0,
+    "by_category": {
+      "comprehension": {
+        "total": 20,
+        "correct": 19
+      },
+      "translate_from": {
+        "total": 16,
+        "correct": 16
+      },
+      "translate_to": {
+        "total": 24,
+        "correct": 21
+      },
+      "word_problem": {
+        "total": 20,
+        "correct": 20
+      }
+    },
+    "by_difficulty": {
+      "medium": {
+        "total": 80,
+        "correct": 76
+      }
+    },
+    "avg_output_tokens": 686.91,
+    "avg_latency_ms": 21637.73,
+    "failures": 0,
+    "items": [
+      {
+        "id": "lang-0001",
+        "correct": true,
+        "predicted": "Der Bahnhof ist am Sonntag geschlossen.",
+        "expected": "{'all': ['bahnhof', 'sonntag', ['geschlossen', 'zu']]}",
+        "latency_ms": 58478.236,
+        "output_tokens": 1903,
+        "category": "translate_to",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0002",
+        "correct": true,
+        "predicted": "La gare est fermée le dimanche.",
+        "expected": "{'all': ['gare', 'dimanche', ['fermée', 'fermee', 'fermé', 'ferme']]}",
+        "latency_ms": 49167.784,
+        "output_tokens": 1580,
+        "category": "translate_to",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0003",
+        "correct": true,
+        "predicted": "La estación está cerrada el domingo.",
+        "expected": "{'all': [['estación', 'estacion'], 'domingo', ['cerrada', 'cerrado']]}",
+        "latency_ms": 29918.435,
+        "output_tokens": 945,
+        "category": "translate_to",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0004",
+        "correct": true,
+        "predicted": "Vorrei un caffè senza zucchero, per favore.",
+        "expected": "{'all': [['caffè', 'caffe'], 'zucchero', 'senza']}",
+        "latency_ms": 11341.583,
+        "output_tokens": 377,
+        "category": "translate_to",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0005",
+        "correct": true,
+        "predicted": "Gostaria de um café sem açúcar, por favor.",
+        "expected": "{'all': [['café', 'cafe'], ['açúcar', 'acucar'], 'sem']}",
+        "latency_ms": 12753.518,
+        "output_tokens": 419,
+        "category": "translate_to",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0006",
+        "correct": true,
+        "predicted": "Lütfen şekersiz bir kahve istiyorum.",
+        "expected": "{'all': ['kahve', ['şeker', 'seker']]}",
+        "latency_ms": 52904.255,
+        "output_tokens": 1699,
+        "category": "translate_to",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0007",
+        "correct": false,
+        "predicted": "Das Meeting beginnt um halb vier.",
+        "expected": "{'all': [['besprechung', 'sitzung', 'treffen', 'meeting'], 'halb', 'drei']}",
+        "latency_ms": 27442.661,
+        "output_tokens": 897,
+        "category": "translate_to",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0008",
+        "correct": true,
+        "predicted": "La réunion commence à trois heures et demie.",
+        "expected": "{'all': [['réunion', 'reunion'], 'trois', ['demie', 'heure']]}",
+        "latency_ms": 38336.611,
+        "output_tokens": 1223,
+        "category": "translate_to",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0009",
+        "correct": true,
+        "predicted": "يبدأ الاجتماع في الثالثة والنصف.",
+        "expected": "{'all': [['الاجتماع', 'اجتماع'], ['الثالثة', 'ثلاث'], ['النصف', 'نصف']]}",
+        "latency_ms": 19357.068,
+        "output_tokens": 596,
+        "category": "translate_to",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0010",
+        "correct": true,
+        "predicted": "¿Dónde está la farmacia más cercana?",
+        "expected": "{'all': ['farmacia', ['dónde', 'donde'], ['cercana', 'cerca', 'próxima', 'proxima']]}",
+        "latency_ms": 9346.895,
+        "output_tokens": 304,
+        "category": "translate_to",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0011",
+        "correct": true,
+        "predicted": "最近的药店在哪里？",
+        "expected": "{'all': [['药店', '药房'], ['哪里', '在哪', '哪儿']]}",
+        "latency_ms": 19758.599,
+        "output_tokens": 613,
+        "category": "translate_to",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0012",
+        "correct": true,
+        "predicted": "一番近い薬局はどこですか？",
+        "expected": "{'all': ['薬局', ['どこ', '何処']]}",
+        "latency_ms": 24296.775,
+        "output_tokens": 760,
+        "category": "translate_to",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0013",
+        "correct": true,
+        "predicted": "Mein Zug hatte zwanzig Minuten Verspätung.",
+        "expected": "{'all': ['zug', 'zwanzig', ['minuten', 'verspätung', 'verspatung', 'verspätet']]}",
+        "latency_ms": 44474.039,
+        "output_tokens": 1425,
+        "category": "translate_to",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0014",
+        "correct": true,
+        "predicted": "電車が20分遅れました。",
+        "expected": "{'all': [['電車', '列車'], ['20', '二十'], ['遅れ', '遅延']]}",
+        "latency_ms": 55064.182,
+        "output_tokens": 1681,
+        "category": "translate_to",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0015",
+        "correct": true,
+        "predicted": "Trenim yirmi dakika gecikti.",
+        "expected": "{'all': ['tren', 'yirmi', ['dakika', 'gecik']]}",
+        "latency_ms": 21484.372,
+        "output_tokens": 646,
+        "category": "translate_to",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0016",
+        "correct": true,
+        "predicted": "Veuillez m'envoyer la facture par e-mail.",
+        "expected": "{'all': ['facture', ['e-mail', 'email', 'courriel'], ['envoy', 'adress']]}",
+        "latency_ms": 17740.529,
+        "output_tokens": 557,
+        "category": "translate_to",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0017",
+        "correct": false,
+        "predicted": "",
+        "expected": "{'all': [['fatura', 'factura'], ['e-mail', 'email'], ['envi', 'mand']]}",
+        "latency_ms": 63919.472,
+        "output_tokens": 2048,
+        "category": "translate_to",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0018",
+        "correct": true,
+        "predicted": "يرجى إرسال الفاتورة إليّ عبر البريد الإلكتروني.",
+        "expected": "{'all': [['الفاتورة', 'فاتورة'], 'البريد', ['أرسل', 'ارسل', 'إرسال', 'ارسال']]}",
+        "latency_ms": 26134.327,
+        "output_tokens": 835,
+        "category": "translate_to",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0019",
+        "correct": true,
+        "predicted": "La biblioteca apre più tardi di martedì.",
+        "expected": "{'all': ['biblioteca', ['martedì', 'martedi'], ['apre', 'tardi']]}",
+        "latency_ms": 37843.048,
+        "output_tokens": 1169,
+        "category": "translate_to",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0020",
+        "correct": true,
+        "predicted": "图书馆周二开门较晚。",
+        "expected": "{'all': ['图书馆', ['周二', '星期二'], ['晚', '迟']]}",
+        "latency_ms": 31557.273,
+        "output_tokens": 999,
+        "category": "translate_to",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0021",
+        "correct": true,
+        "predicted": "Die Bibliothek öffnet dienstags später.",
+        "expected": "{'all': ['bibliothek', ['dienstag', 'dienstags'], ['später', 'spater', 'spät']]}",
+        "latency_ms": 42476.954,
+        "output_tokens": 1317,
+        "category": "translate_to",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0022",
+        "correct": true,
+        "predicted": "Necesitamos dos sillas más para la sala de reuniones.",
+        "expected": "{'all': [['sillas', 'silla'], 'dos', ['sala', 'reunión', 'reunion']]}",
+        "latency_ms": 11442.884,
+        "output_tokens": 380,
+        "category": "translate_to",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0023",
+        "correct": true,
+        "predicted": "نحتاج إلى كرسيين إضافيين لغرفة الاجتماعات.",
+        "expected": "{'all': [['كرسي', 'كراسي', 'كرسيين'], ['اجتماع', 'الاجتماع'], ['غرفة', 'قاعة']]}",
+        "latency_ms": 31383.76,
+        "output_tokens": 990,
+        "category": "translate_to",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0024",
+        "correct": false,
+        "predicted": "",
+        "expected": "{'all': ['椅子', ['2', '二', 'ふた'], ['会議', 'ミーティング']]}",
+        "latency_ms": 64166.534,
+        "output_tokens": 2048,
+        "category": "translate_to",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0025",
+        "correct": true,
+        "predicted": "The train departs from track four today.",
+        "expected": "{'all': ['train', ['platform', 'track'], ['four', '4']]}",
+        "latency_ms": 52813.357,
+        "output_tokens": 1664,
+        "category": "translate_from",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0026",
+        "correct": true,
+        "predicted": "The library is closed on Sunday.",
+        "expected": "{'all': ['library', 'sunday', ['closed', 'shut']]}",
+        "latency_ms": 44340.324,
+        "output_tokens": 1346,
+        "category": "translate_from",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0027",
+        "correct": true,
+        "predicted": "The market opens at eight in the morning.",
+        "expected": "{'all': ['market', ['open'], ['eight', '8']]}",
+        "latency_ms": 11445.342,
+        "output_tokens": 376,
+        "category": "translate_from",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0028",
+        "correct": true,
+        "predicted": "I would like to reserve a table for four people.",
+        "expected": "{'all': [['book', 'reserve'], 'table', ['four', '4']]}",
+        "latency_ms": 11365.776,
+        "output_tokens": 374,
+        "category": "translate_from",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0029",
+        "correct": true,
+        "predicted": "The meeting has been postponed until Thursday.",
+        "expected": "{'all': ['meeting', ['postponed', 'moved', 'delayed', 'put off'], 'thursday']}",
+        "latency_ms": 11067.91,
+        "output_tokens": 354,
+        "category": "translate_from",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0030",
+        "correct": true,
+        "predicted": "The elevator has been out of service since yesterday.",
+        "expected": "{'all': [['lift', 'elevator'], ['out of service', 'out of order', 'not working', 'broken'], 'yesterday']}",
+        "latency_ms": 48880.731,
+        "output_tokens": 1535,
+        "category": "translate_from",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0031",
+        "correct": true,
+        "predicted": "The nine o'clock train is ten minutes late.",
+        "expected": "{'all': ['train', ['late', 'delay'], ['ten', '10']]}",
+        "latency_ms": 29054.459,
+        "output_tokens": 958,
+        "category": "translate_from",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0032",
+        "correct": true,
+        "predicted": "The shop closes at seven in the evening.",
+        "expected": "{'all': [['shop', 'store'], 'close', ['seven', '7']]}",
+        "latency_ms": 11393.373,
+        "output_tokens": 360,
+        "category": "translate_from",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0033",
+        "correct": true,
+        "predicted": "The meeting was postponed to Friday.",
+        "expected": "{'all': ['meeting', ['postponed', 'moved', 'delayed', 'put off'], 'friday']}",
+        "latency_ms": 11237.516,
+        "output_tokens": 341,
+        "category": "translate_from",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0034",
+        "correct": true,
+        "predicted": "The train departs from platform two.",
+        "expected": "{'all': ['train', ['platform', 'track'], ['two', '2']]}",
+        "latency_ms": 12373.695,
+        "output_tokens": 399,
+        "category": "translate_from",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0035",
+        "correct": true,
+        "predicted": "The museum will close its doors at five o'clock.",
+        "expected": "{'all': ['museum', ['close', 'shut'], ['five', '5']]}",
+        "latency_ms": 26712.978,
+        "output_tokens": 855,
+        "category": "translate_from",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0036",
+        "correct": true,
+        "predicted": "There is no hot water in the apartment since yesterday.",
+        "expected": "{'all': [['hot water', 'no hot water'], ['flat', 'apartment'], 'yesterday']}",
+        "latency_ms": 57012.74,
+        "output_tokens": 1771,
+        "category": "translate_from",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0037",
+        "correct": true,
+        "predicted": "This store is closed on Monday.",
+        "expected": "{'all': [['shop', 'store'], 'monday', ['closed', 'not open', 'does not open']]}",
+        "latency_ms": 30842.571,
+        "output_tokens": 993,
+        "category": "translate_from",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0038",
+        "correct": true,
+        "predicted": "The meeting has been rescheduled to 3 PM.",
+        "expected": "{'all': ['meeting', ['three', '3'], ['afternoon', 'pm']]}",
+        "latency_ms": 36255.337,
+        "output_tokens": 1174,
+        "category": "translate_from",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0039",
+        "correct": true,
+        "predicted": "This train does not stop at the next station.",
+        "expected": "{'all': ['train', ['stop'], ['next station', 'next stop']]}",
+        "latency_ms": 28650.561,
+        "output_tokens": 916,
+        "category": "translate_from",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0040",
+        "correct": true,
+        "predicted": "The meeting was postponed to Wednesday.",
+        "expected": "{'all': ['meeting', 'wednesday', ['postponed', 'moved', 'delayed', 'put off']]}",
+        "latency_ms": 22086.715,
+        "output_tokens": 677,
+        "category": "translate_from",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0041",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 22435.667,
+        "output_tokens": 692,
+        "category": "comprehension",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0042",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 12824.516,
+        "output_tokens": 410,
+        "category": "comprehension",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0043",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 18091.752,
+        "output_tokens": 563,
+        "category": "comprehension",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0044",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 19721.422,
+        "output_tokens": 618,
+        "category": "comprehension",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0045",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 14248.644,
+        "output_tokens": 467,
+        "category": "comprehension",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0046",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 27704.415,
+        "output_tokens": 851,
+        "category": "comprehension",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0047",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 13628.627,
+        "output_tokens": 436,
+        "category": "comprehension",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0048",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 8407.123,
+        "output_tokens": 265,
+        "category": "comprehension",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0049",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 14175.852,
+        "output_tokens": 456,
+        "category": "comprehension",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0050",
+        "correct": false,
+        "predicted": "A",
+        "expected": "B",
+        "latency_ms": 9368.234,
+        "output_tokens": 285,
+        "category": "comprehension",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0051",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 7584.677,
+        "output_tokens": 231,
+        "category": "comprehension",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0052",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 11918.065,
+        "output_tokens": 367,
+        "category": "comprehension",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0053",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 16984.551,
+        "output_tokens": 540,
+        "category": "comprehension",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0054",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 17673.535,
+        "output_tokens": 545,
+        "category": "comprehension",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0055",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 12737.604,
+        "output_tokens": 413,
+        "category": "comprehension",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0056",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 18460.535,
+        "output_tokens": 575,
+        "category": "comprehension",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0057",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 12759.638,
+        "output_tokens": 379,
+        "category": "comprehension",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0058",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 5200.55,
+        "output_tokens": 160,
+        "category": "comprehension",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0059",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 15398.681,
+        "output_tokens": 475,
+        "category": "comprehension",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0060",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 12935.216,
+        "output_tokens": 421,
+        "category": "comprehension",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0061",
+        "correct": true,
+        "predicted": "108",
+        "expected": "108",
+        "latency_ms": 7808.079,
+        "output_tokens": 250,
+        "category": "word_problem",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0062",
+        "correct": true,
+        "predicted": "78",
+        "expected": "78",
+        "latency_ms": 7414.312,
+        "output_tokens": 235,
+        "category": "word_problem",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0063",
+        "correct": true,
+        "predicted": "832",
+        "expected": "832",
+        "latency_ms": 11753.76,
+        "output_tokens": 381,
+        "category": "word_problem",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0064",
+        "correct": true,
+        "predicted": "48",
+        "expected": "48",
+        "latency_ms": 8114.401,
+        "output_tokens": 252,
+        "category": "word_problem",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0065",
+        "correct": true,
+        "predicted": "306",
+        "expected": "306",
+        "latency_ms": 12081.496,
+        "output_tokens": 396,
+        "category": "word_problem",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0066",
+        "correct": true,
+        "predicted": "264",
+        "expected": "264",
+        "latency_ms": 10177.387,
+        "output_tokens": 318,
+        "category": "word_problem",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0067",
+        "correct": true,
+        "predicted": "602",
+        "expected": "602",
+        "latency_ms": 13004.412,
+        "output_tokens": 420,
+        "category": "word_problem",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0068",
+        "correct": true,
+        "predicted": "816",
+        "expected": "816",
+        "latency_ms": 9691.736,
+        "output_tokens": 308,
+        "category": "word_problem",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0069",
+        "correct": true,
+        "predicted": "319",
+        "expected": "319",
+        "latency_ms": 16484.416,
+        "output_tokens": 520,
+        "category": "word_problem",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0070",
+        "correct": true,
+        "predicted": "264",
+        "expected": "264",
+        "latency_ms": 9241.568,
+        "output_tokens": 302,
+        "category": "word_problem",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0071",
+        "correct": true,
+        "predicted": "133",
+        "expected": "133",
+        "latency_ms": 4151.337,
+        "output_tokens": 128,
+        "category": "word_problem",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0072",
+        "correct": true,
+        "predicted": "430",
+        "expected": "430",
+        "latency_ms": 4896.895,
+        "output_tokens": 157,
+        "category": "word_problem",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0073",
+        "correct": true,
+        "predicted": "119",
+        "expected": "119",
+        "latency_ms": 17514.188,
+        "output_tokens": 561,
+        "category": "word_problem",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0074",
+        "correct": true,
+        "predicted": "48",
+        "expected": "48",
+        "latency_ms": 7231.051,
+        "output_tokens": 230,
+        "category": "word_problem",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0075",
+        "correct": true,
+        "predicted": "69",
+        "expected": "69",
+        "latency_ms": 8609.385,
+        "output_tokens": 278,
+        "category": "word_problem",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0076",
+        "correct": true,
+        "predicted": "928",
+        "expected": "928",
+        "latency_ms": 11434.116,
+        "output_tokens": 368,
+        "category": "word_problem",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0077",
+        "correct": true,
+        "predicted": "110",
+        "expected": "110",
+        "latency_ms": 9397.341,
+        "output_tokens": 302,
+        "category": "word_problem",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0078",
+        "correct": true,
+        "predicted": "162",
+        "expected": "162",
+        "latency_ms": 8804.972,
+        "output_tokens": 286,
+        "category": "word_problem",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0079",
+        "correct": true,
+        "predicted": "243",
+        "expected": "243",
+        "latency_ms": 7258.076,
+        "output_tokens": 292,
+        "category": "word_problem",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0080",
+        "correct": true,
+        "predicted": "228",
+        "expected": "228",
+        "latency_ms": 7366.734,
+        "output_tokens": 316,
+        "category": "word_problem",
+        "difficulty": "medium"
+      }
+    ]
+  },
+  "failures": [],
+  "conditions": null,
+  "gotchas": [
+    {
+      "severity": "info",
+      "text": "GPU CLOCK IS A HIDDEN VARIABLE ON THIS BOX AND IT IS NOT AT MAXIMUM. Sampled at workload start: 2392MHz,3003MHz. nvidia-smi reports no active clock event reason - no SW power cap, no HW slowdown, no thermal slowdown, no applications-clock setting - and the clock cannot be raised without root on this account. Under load the SM clock sits around 2470-2490 MHz against a 3003 MHz ceiling, roughly 82 percent. Treat any comparison against a figure from another Spark as carrying this unknown unless that box clock state is also stated. The same gotcha is recorded on the NVFP4 rung, so the two rungs of this ladder carry it equally and comparing them against each other is unaffected."
+    },
+    {
+      "severity": "info",
+      "text": "The pack is block-scaled FP8 and the registry bits figure of 8.57 is not a rounding error. config.json declares quant_method fp8, fmt e4m3, activation_scheme dynamic and weight_block_size 128x128, so weights carry one scale per 128x128 tile and activations are scaled at runtime rather than from a calibration set. 648 modules are listed in modules_to_not_convert and stay wider than 8 bits. Both the MTP draft head (1,560 tensors) and the vision tower (333 tensors) are present in the checkpoint, so this rung supports the same speculative decoding and image input as the NVFP4 rung and the two are comparable on capability, not only on flags."
+    },
+    {
+      "severity": "info",
+      "text": "Speculative decoding is the model own MTP head at 2 tokens with moe_backend triton, matching the NVFP4 rung. Prefix caching is OFF - the engine log confirms enable_prefix_caching=False - so no workload in this rung benefits from a shared prefix, and cells run with it on are not comparable. --linear-backend is left at auto here rather than the NVFP4 rung flashinfer_b12x, which is the only intentional flag difference between the two rungs."
+    },
+    {
+      "severity": "info",
+      "text": "THE ENGINE SILENTLY CHANGED ITS OWN FP8 KERNEL CHOICE FOR ACCURACY REASONS, AND THE TWO HALVES OF THE MODEL ENDED UP ON DIFFERENT BACKENDS. At startup it logged: Auto-disabled DeepGemm for model_type=qwen3_5_moe_text on Blackwell, DeepGemm E8M0 scale format causes accuracy degradation for this architecture, falling back to CUTLASS - and then selected CutlassFp8BlockScaledMMKernel for the dense linear layers while separately selecting the DEEPGEMM Fp8 MoE backend for the experts. Neither choice was requested on the command line, both are decided by the engine from the architecture and the GPU, and a build without that auto-disable would run the dense path on DeepGemm instead. Any eval score in this rung is a score for that kernel pairing on this build, not for FP8 in the abstract."
+    }
+  ],
+  "derived": {
+    "cost_per_1m_output_tokens_usd": null,
+    "tokens_per_watt": null,
+    "tok_s_per_gb_bandwidth": null,
+    "bandwidth_efficiency": null,
+    "memory_headroom_gb": null
+  },
+  "raw": {
+    "harness": "atlas-bench",
+    "harness_version": "0.1.0",
+    "sha256": "05d09b18d114299e83044015217d27eb9e2c683cf1b1024520f0b418665e69e8",
+    "payload_path": null,
+    "payload": {
+      "scorer": "contains",
+      "scorers_used": [
+        "contains",
+        "mc",
+        "numeric"
+      ],
+      "engine_endpoint": {
+        "attached": true,
+        "base_url": "http://127.0.0.1:8888/v1",
+        "served_model_id": "Qwen/Qwen3.6-35B-A3B-FP8",
+        "advertised_models": [
+          "Qwen/Qwen3.6-35B-A3B-FP8"
+        ]
+      }
+    },
+    "truncated": false
+  },
+  "provenance": {
+    "github_login": "0xBakeer",
+    "github_user_id": null,
+    "started_at": "2026-08-31T09:41:25Z",
+    "finished_at": "2026-08-31T09:48:40Z",
+    "submitted_at": null,
+    "commit": null,
+    "pr": null,
+    "method": "atlas-bench",
+    "agent": null,
+    "notes": "Rung 2 of a quantization ladder on one box: same hardware, same container image, same engine build and the same serve flags as the NVFP4 rung, with only the weights changed, so a difference between the two rungs is attributable to the pack rather than to the setup. The one flag not carried over is --linear-backend flashinfer_b12x, which selects an NVFP4 GEMM path and has nothing to apply to here. Box was dedicated: no desktop session, no other GPU work, and the reverse-proxy SSH tunnel that is the only external route in was stopped for the whole sweep. NVIDIA DGX Spark (ASUS Ascent GX10, GB10 / SM121, 128 GB unified, ~121 GiB usable), Ubuntu 24.04.4, kernel 6.17.0-1029-nvidia aarch64, driver 580.173.02, CUDA 13.0, swap off. Image is ghcr.io/miaai-lab/mia-vllm-gb10-linear-b12x:latest, reporting vLLM 0.26.1.dev0+gf2654939e.d20260726; unlike the NVFP4 rung it is not launched through the MiaAI-Lab recipe start.sh but directly with --entrypoint /usr/local/bin/vllm, because that script hard-codes its own checkpoint. Weights are the official Qwen/Qwen3.6-35B-A3B-FP8 at revision 95a723d08a94, 42 shards, 37.49 GB on disk. At startup the server reported a GPU KV cache of 4,690,997 tokens and a maximum concurrency of 17.89x for 262,144-token requests."
+  },
+  "verification": {
+    "level": "self-reported",
+    "reproduced_by": [],
+    "flags": []
+  }
+}
