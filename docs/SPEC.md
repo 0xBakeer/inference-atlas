@@ -686,7 +686,7 @@ or where reality disagreed with it. Each one is binding until superseded here.
     gap.
 
     A result already on disk without the field is repaired by `atlas-bench restamp FILE
-    --build <ref>`, which recomputes the fingerprint and moves the file, because the
+--build <ref>`, which recomputes the fingerprint and moves the file, because the
     filename is the run id. Restamping is idempotent, refuses to replace a build already
     recorded unless forced, and never touches `cell_id`: a build is a property of the
     configuration, not of the cell the configuration sits in.
