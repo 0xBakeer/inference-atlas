@@ -1,0 +1,1251 @@
+{
+  "schema_version": 1,
+  "run_id": "8cd52c733b36ecb7--eval-longctx-v1--5e3718",
+  "config_id": "8cd52c733b36ecb7",
+  "cell_id": "803dc89250a5",
+  "workload_id": "eval-longctx-v1",
+  "kind": "eval",
+  "engine": {
+    "id": "vllm",
+    "version": "0.26.1.dev0+gf2654939e.d20260726",
+    "commit": null,
+    "build": "ghcr.io/miaai-lab/mia-vllm-gb10-linear-b12x@sha256:19627342e1da2607f4db50745dca30e57d7dd0ebff06062f03fd69b43a252931",
+    "container": "ghcr.io/miaai-lab/mia-vllm-gb10-linear-b12x:latest",
+    "install_method": "docker"
+  },
+  "model": {
+    "id": "Qwen/Qwen3.6-35B-A3B",
+    "quant_id": "fp8",
+    "hf_id": "Qwen/Qwen3.6-35B-A3B",
+    "revision": "95a723d08a94",
+    "dtype": "auto",
+    "local_path": null
+  },
+  "hardware": {
+    "id": "nvidia-gb10-dgx-spark",
+    "count": 1,
+    "driver": "580.173.02",
+    "cuda": "13.0",
+    "host": {
+      "cpu": "Cortex-A725",
+      "cpu_cores": 20,
+      "ram_gb": 121.6,
+      "os": "Ubuntu 24.04.4 LTS",
+      "kernel": "6.17.0-1029-nvidia",
+      "arch": "aarch64"
+    },
+    "fingerprint": "sha256:52ea2bdd513719724db88c162b6cc2c9fb4e5b67e02dbe41b9de00687acefb91",
+    "captured": {
+      "nvidia_smi": {
+        "driver": "580.173.02",
+        "cuda": "13.0",
+        "products": [
+          "NVIDIA GB10"
+        ],
+        "fb_memory_total_mib": 0.0
+      },
+      "lscpu": {
+        "architecture": "aarch64",
+        "cpus": "20",
+        "vendor_id": "ARM",
+        "model_name": "Cortex-A725",
+        "cores_per_socket": "10",
+        "sockets": "1",
+        "cpu_max_mhz": "2808.0000"
+      }
+    }
+  },
+  "args": {
+    "tensor-parallel-size": 1,
+    "trust-remote-code": true,
+    "moe-backend": "auto",
+    "gpu-memory-utilization": 0.8,
+    "attention-backend": "flashinfer",
+    "max-model-len": 262144,
+    "max-num-seqs": 24,
+    "max-num-batched-tokens": 32768,
+    "enable-chunked-prefill": true,
+    "async-scheduling": true,
+    "kv-cache-dtype": "fp8",
+    "limit-mm-per-prompt": {
+      "image": 4
+    },
+    "speculative-config": {
+      "method": "mtp",
+      "num_speculative_tokens": 2,
+      "moe_backend": "triton"
+    },
+    "reasoning-parser": "qwen3",
+    "tool-call-parser": "qwen3_coder",
+    "enable-auto-tool-choice": true,
+    "default-chat-template-kwargs": {
+      "enable_thinking": true,
+      "preserve_thinking": true
+    },
+    "override-generation-config": {
+      "temperature": 0.6,
+      "top_p": 0.95,
+      "top_k": 20,
+      "min_p": 0.0,
+      "presence_penalty": 0.0,
+      "repetition_penalty": 1.0
+    }
+  },
+  "args_canonical": "@build=ghcr.io/miaai-lab/mia-vllm-gb10-linear-b12x@sha256:19627342e1da2607f4db50745dca30e57d7dd0ebff06062f03fd69b43a252931;@dtype=auto;@quant=fp8;attention-backend=flashinfer;default-chat-template-kwargs={\"enable_thinking\":true,\"preserve_thinking\":true};enable-auto-tool-choice=true;gpu-memory-utilization=0.8;kv-cache-dtype=fp8;limit-mm-per-prompt={\"image\":4};max-model-len=262144;max-num-batched-tokens=32768;max-num-seqs=24;no-async-scheduling=true;no-enable-chunked-prefill=true;no-trust-remote-code=true;override-generation-config={\"min_p\":0,\"presence_penalty\":0,\"repetition_penalty\":1,\"temperature\":0.6,\"top_k\":20,\"top_p\":0.95};reasoning-parser=qwen3;speculative-config={\"method\":\"mtp\",\"moe_backend\":\"triton\",\"num_speculative_tokens\":2};tool-call-parser=qwen3_coder",
+  "serve_command": null,
+  "workload": {
+    "id": "eval-longctx-v1",
+    "resolved_params": {
+      "dataset_id": "eval-longctx-v1",
+      "suite": "longctx",
+      "scorer": "needle",
+      "items": 100,
+      "concurrency": 1,
+      "max_output_tokens": 1024,
+      "timeout_s": 300.0,
+      "temperature": 0,
+      "reasoning": "default",
+      "dataset_categories": null,
+      "dataset_target_tokens": null,
+      "pass_threshold": null,
+      "seed": 42
+    }
+  },
+  "metrics": {
+    "requests_total": 100,
+    "requests_ok": 100,
+    "requests_failed": 0,
+    "success_rate": 1.0,
+    "duration_s": 1538.145,
+    "input_tokens_total": 2649461,
+    "output_tokens_total": 38148,
+    "e2e_ms": {
+      "mean": 15377.756,
+      "p50": 6887.813,
+      "p90": 67259.041,
+      "p95": 69107.432,
+      "p99": 71580.183,
+      "min": 2909.651,
+      "max": 72606.335
+    },
+    "vram_peak_gb": null,
+    "ram_peak_gb": 113.8,
+    "power_avg_w": 62.09,
+    "power_peak_w": 101.38,
+    "energy_wh": 26.4725,
+    "gpu_util_avg_pct": 95.05,
+    "temp_max_c": 85.0,
+    "thermal_throttle_detected": false
+  },
+  "scores": {
+    "suite": "longctx",
+    "total": 100,
+    "correct": 67,
+    "accuracy": 0.67,
+    "success_rate": 1.0,
+    "by_category": {
+      "absent": {
+        "total": 18,
+        "correct": 1
+      },
+      "line_lookup": {
+        "total": 13,
+        "correct": 0
+      },
+      "multi_needle": {
+        "total": 15,
+        "correct": 12
+      },
+      "needle": {
+        "total": 54,
+        "correct": 54
+      }
+    },
+    "by_difficulty": {
+      "easy": {
+        "total": 45,
+        "correct": 35
+      },
+      "hard": {
+        "total": 34,
+        "correct": 11
+      },
+      "medium": {
+        "total": 21,
+        "correct": 21
+      }
+    },
+    "avg_output_tokens": 381.48,
+    "avg_latency_ms": 15377.76,
+    "failures": 0,
+    "items": [
+      {
+        "id": "lctx-0001",
+        "correct": true,
+        "predicted": "18687",
+        "expected": "18687",
+        "latency_ms": 4745.017,
+        "output_tokens": 263,
+        "category": "needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0002",
+        "correct": true,
+        "predicted": "81149",
+        "expected": "81149",
+        "latency_ms": 2980.74,
+        "output_tokens": 149,
+        "category": "needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0003",
+        "correct": true,
+        "predicted": "71944",
+        "expected": "71944",
+        "latency_ms": 4211.711,
+        "output_tokens": 219,
+        "category": "needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0004",
+        "correct": true,
+        "predicted": "47948",
+        "expected": "47948",
+        "latency_ms": 2909.651,
+        "output_tokens": 155,
+        "category": "needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0005",
+        "correct": true,
+        "predicted": "41180",
+        "expected": "41180",
+        "latency_ms": 4529.322,
+        "output_tokens": 250,
+        "category": "needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0006",
+        "correct": true,
+        "predicted": "60364",
+        "expected": "60364",
+        "latency_ms": 4849.458,
+        "output_tokens": 276,
+        "category": "needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0007",
+        "correct": true,
+        "predicted": "35623",
+        "expected": "35623",
+        "latency_ms": 5032.891,
+        "output_tokens": 280,
+        "category": "needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0008",
+        "correct": true,
+        "predicted": "47522",
+        "expected": "47522",
+        "latency_ms": 3191.137,
+        "output_tokens": 164,
+        "category": "needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0009",
+        "correct": true,
+        "predicted": "66991",
+        "expected": "66991",
+        "latency_ms": 4981.647,
+        "output_tokens": 286,
+        "category": "needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0010",
+        "correct": true,
+        "predicted": "12045",
+        "expected": "12045",
+        "latency_ms": 4525.235,
+        "output_tokens": 249,
+        "category": "needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0011",
+        "correct": true,
+        "predicted": "67899",
+        "expected": "67899",
+        "latency_ms": 2915.693,
+        "output_tokens": 151,
+        "category": "needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0012",
+        "correct": true,
+        "predicted": "57430",
+        "expected": "57430",
+        "latency_ms": 4589.547,
+        "output_tokens": 250,
+        "category": "needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0013",
+        "correct": true,
+        "predicted": "71893",
+        "expected": "71893",
+        "latency_ms": 4618.686,
+        "output_tokens": 262,
+        "category": "needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0014",
+        "correct": true,
+        "predicted": "35997",
+        "expected": "35997",
+        "latency_ms": 3177.73,
+        "output_tokens": 165,
+        "category": "needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0015",
+        "correct": true,
+        "predicted": "18130",
+        "expected": "18130",
+        "latency_ms": 5034.961,
+        "output_tokens": 288,
+        "category": "needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0016",
+        "correct": true,
+        "predicted": "17986",
+        "expected": "17986",
+        "latency_ms": 5431.165,
+        "output_tokens": 248,
+        "category": "needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0017",
+        "correct": true,
+        "predicted": "50488",
+        "expected": "50488",
+        "latency_ms": 5611.412,
+        "output_tokens": 291,
+        "category": "needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0018",
+        "correct": true,
+        "predicted": "11192",
+        "expected": "11192",
+        "latency_ms": 5560.421,
+        "output_tokens": 253,
+        "category": "needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0019",
+        "correct": true,
+        "predicted": "27490",
+        "expected": "27490",
+        "latency_ms": 3868.258,
+        "output_tokens": 147,
+        "category": "needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0020",
+        "correct": true,
+        "predicted": "14787",
+        "expected": "14787",
+        "latency_ms": 6102.575,
+        "output_tokens": 291,
+        "category": "needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0021",
+        "correct": true,
+        "predicted": "26744",
+        "expected": "26744",
+        "latency_ms": 5916.983,
+        "output_tokens": 282,
+        "category": "needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0022",
+        "correct": true,
+        "predicted": "24939",
+        "expected": "24939",
+        "latency_ms": 5561.061,
+        "output_tokens": 254,
+        "category": "needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0023",
+        "correct": true,
+        "predicted": "80585",
+        "expected": "80585",
+        "latency_ms": 5884.276,
+        "output_tokens": 270,
+        "category": "needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0024",
+        "correct": true,
+        "predicted": "75241",
+        "expected": "75241",
+        "latency_ms": 5600.067,
+        "output_tokens": 259,
+        "category": "needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0025",
+        "correct": true,
+        "predicted": "22884",
+        "expected": "22884",
+        "latency_ms": 5751.857,
+        "output_tokens": 274,
+        "category": "needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0026",
+        "correct": true,
+        "predicted": "51134",
+        "expected": "51134",
+        "latency_ms": 5600.988,
+        "output_tokens": 260,
+        "category": "needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0027",
+        "correct": true,
+        "predicted": "95893",
+        "expected": "95893",
+        "latency_ms": 5263.196,
+        "output_tokens": 261,
+        "category": "needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0028",
+        "correct": true,
+        "predicted": "54666",
+        "expected": "54666",
+        "latency_ms": 5178.093,
+        "output_tokens": 259,
+        "category": "needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0029",
+        "correct": true,
+        "predicted": "66873",
+        "expected": "66873",
+        "latency_ms": 5612.703,
+        "output_tokens": 261,
+        "category": "needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0030",
+        "correct": true,
+        "predicted": "45106",
+        "expected": "45106",
+        "latency_ms": 4194.196,
+        "output_tokens": 172,
+        "category": "needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0031",
+        "correct": true,
+        "predicted": "96112",
+        "expected": "96112",
+        "latency_ms": 5945.082,
+        "output_tokens": 253,
+        "category": "needle",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lctx-0032",
+        "correct": true,
+        "predicted": "41017",
+        "expected": "41017",
+        "latency_ms": 6534.105,
+        "output_tokens": 254,
+        "category": "needle",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lctx-0033",
+        "correct": true,
+        "predicted": "39372",
+        "expected": "39372",
+        "latency_ms": 5126.569,
+        "output_tokens": 173,
+        "category": "needle",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lctx-0034",
+        "correct": true,
+        "predicted": "80581",
+        "expected": "80581",
+        "latency_ms": 6568.335,
+        "output_tokens": 260,
+        "category": "needle",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lctx-0035",
+        "correct": true,
+        "predicted": "42352",
+        "expected": "42352",
+        "latency_ms": 6613.994,
+        "output_tokens": 253,
+        "category": "needle",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lctx-0036",
+        "correct": true,
+        "predicted": "26808",
+        "expected": "26808",
+        "latency_ms": 4390.524,
+        "output_tokens": 126,
+        "category": "needle",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lctx-0037",
+        "correct": true,
+        "predicted": "61323",
+        "expected": "61323",
+        "latency_ms": 6612.25,
+        "output_tokens": 254,
+        "category": "needle",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lctx-0038",
+        "correct": true,
+        "predicted": "30583",
+        "expected": "30583",
+        "latency_ms": 4240.46,
+        "output_tokens": 122,
+        "category": "needle",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lctx-0039",
+        "correct": true,
+        "predicted": "11484",
+        "expected": "11484",
+        "latency_ms": 4308.756,
+        "output_tokens": 121,
+        "category": "needle",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lctx-0040",
+        "correct": true,
+        "predicted": "62242",
+        "expected": "62242",
+        "latency_ms": 6516.846,
+        "output_tokens": 261,
+        "category": "needle",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lctx-0041",
+        "correct": true,
+        "predicted": "91112",
+        "expected": "91112",
+        "latency_ms": 5631.054,
+        "output_tokens": 197,
+        "category": "needle",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lctx-0042",
+        "correct": true,
+        "predicted": "16628",
+        "expected": "16628",
+        "latency_ms": 4634.976,
+        "output_tokens": 171,
+        "category": "needle",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lctx-0043",
+        "correct": true,
+        "predicted": "74147",
+        "expected": "74147",
+        "latency_ms": 11881.056,
+        "output_tokens": 173,
+        "category": "needle",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lctx-0044",
+        "correct": true,
+        "predicted": "46450",
+        "expected": "46450",
+        "latency_ms": 11317.317,
+        "output_tokens": 141,
+        "category": "needle",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lctx-0045",
+        "correct": true,
+        "predicted": "92824",
+        "expected": "92824",
+        "latency_ms": 13074.125,
+        "output_tokens": 249,
+        "category": "needle",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lctx-0046",
+        "correct": true,
+        "predicted": "39301",
+        "expected": "39301",
+        "latency_ms": 13822.528,
+        "output_tokens": 284,
+        "category": "needle",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lctx-0047",
+        "correct": true,
+        "predicted": "83709",
+        "expected": "83709",
+        "latency_ms": 11823.633,
+        "output_tokens": 196,
+        "category": "needle",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lctx-0048",
+        "correct": true,
+        "predicted": "31819",
+        "expected": "31819",
+        "latency_ms": 13030.095,
+        "output_tokens": 244,
+        "category": "needle",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lctx-0049",
+        "correct": true,
+        "predicted": "35215",
+        "expected": "35215",
+        "latency_ms": 67208.748,
+        "output_tokens": 168,
+        "category": "needle",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0050",
+        "correct": true,
+        "predicted": "27222",
+        "expected": "27222",
+        "latency_ms": 69157.605,
+        "output_tokens": 261,
+        "category": "needle",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0051",
+        "correct": true,
+        "predicted": "29829",
+        "expected": "29829",
+        "latency_ms": 69062.014,
+        "output_tokens": 259,
+        "category": "needle",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0052",
+        "correct": true,
+        "predicted": "64395",
+        "expected": "64395",
+        "latency_ms": 67962.102,
+        "output_tokens": 260,
+        "category": "needle",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0053",
+        "correct": true,
+        "predicted": "99701",
+        "expected": "99701",
+        "latency_ms": 67711.684,
+        "output_tokens": 254,
+        "category": "needle",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0054",
+        "correct": true,
+        "predicted": "50695",
+        "expected": "50695",
+        "latency_ms": 69398.127,
+        "output_tokens": 272,
+        "category": "needle",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0055",
+        "correct": false,
+        "predicted": "",
+        "expected": "1562",
+        "latency_ms": 16792.737,
+        "output_tokens": 1024,
+        "category": "multi_needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0056",
+        "correct": false,
+        "predicted": "",
+        "expected": "1772",
+        "latency_ms": 16733.697,
+        "output_tokens": 1024,
+        "category": "multi_needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0057",
+        "correct": true,
+        "predicted": "1625",
+        "expected": "1625",
+        "latency_ms": 13408.87,
+        "output_tokens": 789,
+        "category": "multi_needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0058",
+        "correct": false,
+        "predicted": "",
+        "expected": "1319",
+        "latency_ms": 17291.305,
+        "output_tokens": 1024,
+        "category": "multi_needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0059",
+        "correct": true,
+        "predicted": "1873",
+        "expected": "1873",
+        "latency_ms": 11572.624,
+        "output_tokens": 618,
+        "category": "multi_needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0060",
+        "correct": true,
+        "predicted": "1308",
+        "expected": "1308",
+        "latency_ms": 11962.317,
+        "output_tokens": 665,
+        "category": "multi_needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0061",
+        "correct": true,
+        "predicted": "1096",
+        "expected": "1096",
+        "latency_ms": 11786.197,
+        "output_tokens": 625,
+        "category": "multi_needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0062",
+        "correct": true,
+        "predicted": "2128",
+        "expected": "2128",
+        "latency_ms": 9747.452,
+        "output_tokens": 510,
+        "category": "multi_needle",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0063",
+        "correct": true,
+        "predicted": "1850",
+        "expected": "1850",
+        "latency_ms": 8872.277,
+        "output_tokens": 427,
+        "category": "multi_needle",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lctx-0064",
+        "correct": true,
+        "predicted": "2473",
+        "expected": "2473",
+        "latency_ms": 6790.7,
+        "output_tokens": 310,
+        "category": "multi_needle",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lctx-0065",
+        "correct": true,
+        "predicted": "1181",
+        "expected": "1181",
+        "latency_ms": 9812.896,
+        "output_tokens": 491,
+        "category": "multi_needle",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lctx-0066",
+        "correct": true,
+        "predicted": "1244",
+        "expected": "1244",
+        "latency_ms": 14285.689,
+        "output_tokens": 313,
+        "category": "multi_needle",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0067",
+        "correct": true,
+        "predicted": "1216",
+        "expected": "1216",
+        "latency_ms": 14152.728,
+        "output_tokens": 317,
+        "category": "multi_needle",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0068",
+        "correct": true,
+        "predicted": "2455",
+        "expected": "2455",
+        "latency_ms": 71569.818,
+        "output_tokens": 399,
+        "category": "multi_needle",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0069",
+        "correct": true,
+        "predicted": "1694",
+        "expected": "1694",
+        "latency_ms": 72606.335,
+        "output_tokens": 510,
+        "category": "multi_needle",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0070",
+        "correct": false,
+        "predicted": "000021",
+        "expected": "21",
+        "latency_ms": 11861.766,
+        "output_tokens": 702,
+        "category": "line_lookup",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0071",
+        "correct": false,
+        "predicted": "000022",
+        "expected": "22",
+        "latency_ms": 6039.851,
+        "output_tokens": 347,
+        "category": "line_lookup",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0072",
+        "correct": false,
+        "predicted": "000022",
+        "expected": "22",
+        "latency_ms": 6605.544,
+        "output_tokens": 378,
+        "category": "line_lookup",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0073",
+        "correct": false,
+        "predicted": "000022",
+        "expected": "22",
+        "latency_ms": 6747.939,
+        "output_tokens": 391,
+        "category": "line_lookup",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0074",
+        "correct": false,
+        "predicted": "000083",
+        "expected": "83",
+        "latency_ms": 9989.703,
+        "output_tokens": 533,
+        "category": "line_lookup",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0075",
+        "correct": false,
+        "predicted": "000084",
+        "expected": "84",
+        "latency_ms": 6304.339,
+        "output_tokens": 307,
+        "category": "line_lookup",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0076",
+        "correct": false,
+        "predicted": "000084",
+        "expected": "84",
+        "latency_ms": 7577.008,
+        "output_tokens": 385,
+        "category": "line_lookup",
+        "difficulty": "easy"
+      },
+      {
+        "id": "lctx-0077",
+        "correct": false,
+        "predicted": "000166",
+        "expected": "166",
+        "latency_ms": 8126.826,
+        "output_tokens": 359,
+        "category": "line_lookup",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0078",
+        "correct": false,
+        "predicted": "000165",
+        "expected": "165",
+        "latency_ms": 6283.451,
+        "output_tokens": 241,
+        "category": "line_lookup",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0079",
+        "correct": false,
+        "predicted": "000167",
+        "expected": "167",
+        "latency_ms": 7981.026,
+        "output_tokens": 377,
+        "category": "line_lookup",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0080",
+        "correct": false,
+        "predicted": "000660",
+        "expected": "660",
+        "latency_ms": 15918.565,
+        "output_tokens": 408,
+        "category": "line_lookup",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0081",
+        "correct": false,
+        "predicted": "000662",
+        "expected": "662",
+        "latency_ms": 12206.011,
+        "output_tokens": 194,
+        "category": "line_lookup",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0082",
+        "correct": false,
+        "predicted": "002643",
+        "expected": "2643",
+        "latency_ms": 67871.05,
+        "output_tokens": 210,
+        "category": "line_lookup",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0083",
+        "correct": false,
+        "predicted": "",
+        "expected": "{'any': ['not mentioned', 'not in the log', 'no line', 'does not appear', 'not appear', 'not stated', 'not present', 'no mention', 'cannot find', \"can't find\", 'not there', 'nothing about', 'no such', 'not given', 'not found']}",
+        "latency_ms": 17008.082,
+        "output_tokens": 1024,
+        "category": "absent",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0084",
+        "correct": false,
+        "predicted": "The log does not mention a maintenance passphrase for the Norhaven vault.",
+        "expected": "{'any': ['not mentioned', 'not in the log', 'no line', 'does not appear', 'not appear', 'not stated', 'not present', 'no mention', 'cannot find', \"can't find\", 'not there', 'nothing about', 'no such', 'not given', 'not found']}",
+        "latency_ms": 13592.681,
+        "output_tokens": 798,
+        "category": "absent",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0085",
+        "correct": false,
+        "predicted": "",
+        "expected": "{'any': ['not mentioned', 'not in the log', 'no line', 'does not appear', 'not appear', 'not stated', 'not present', 'no mention', 'cannot find', \"can't find\", 'not there', 'nothing about', 'no such', 'not given', 'not found']}",
+        "latency_ms": 16951.5,
+        "output_tokens": 1024,
+        "category": "absent",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0086",
+        "correct": false,
+        "predicted": "",
+        "expected": "{'any': ['not mentioned', 'not in the log', 'no line', 'does not appear', 'not appear', 'not stated', 'not present', 'no mention', 'cannot find', \"can't find\", 'not there', 'nothing about', 'no such', 'not given', 'not found']}",
+        "latency_ms": 16903.548,
+        "output_tokens": 1024,
+        "category": "absent",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0087",
+        "correct": false,
+        "predicted": "",
+        "expected": "{'any': ['not mentioned', 'not in the log', 'no line', 'does not appear', 'not appear', 'not stated', 'not present', 'no mention', 'cannot find', \"can't find\", 'not there', 'nothing about', 'no such', 'not given', 'not found']}",
+        "latency_ms": 16738.33,
+        "output_tokens": 1024,
+        "category": "absent",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0088",
+        "correct": false,
+        "predicted": "The log",
+        "expected": "{'any': ['not mentioned', 'not in the log', 'no line', 'does not appear', 'not appear', 'not stated', 'not present', 'no mention', 'cannot find', \"can't find\", 'not there', 'nothing about', 'no such', 'not given', 'not found']}",
+        "latency_ms": 18668.147,
+        "output_tokens": 1024,
+        "category": "absent",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0089",
+        "correct": false,
+        "predicted": "",
+        "expected": "{'any': ['not mentioned', 'not in the log', 'no line', 'does not appear', 'not appear', 'not stated', 'not present', 'no mention', 'cannot find', \"can't find\", 'not there', 'nothing about', 'no such', 'not given', 'not found']}",
+        "latency_ms": 18164.244,
+        "output_tokens": 1024,
+        "category": "absent",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0090",
+        "correct": false,
+        "predicted": "",
+        "expected": "{'any': ['not mentioned', 'not in the log', 'no line', 'does not appear', 'not appear', 'not stated', 'not present', 'no mention', 'cannot find', \"can't find\", 'not there', 'nothing about', 'no such', 'not given', 'not found']}",
+        "latency_ms": 18263.321,
+        "output_tokens": 1024,
+        "category": "absent",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0091",
+        "correct": false,
+        "predicted": "The log does not mention the maintenance passphrase for the Ilmouth vault.",
+        "expected": "{'any': ['not mentioned', 'not in the log', 'no line', 'does not appear', 'not appear', 'not stated', 'not present', 'no mention', 'cannot find', \"can't find\", 'not there', 'nothing about', 'no such', 'not given', 'not found']}",
+        "latency_ms": 6442.222,
+        "output_tokens": 292,
+        "category": "absent",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0092",
+        "correct": false,
+        "predicted": "The log does not mention a maintenance passphrase for the Garrowby vault.",
+        "expected": "{'any': ['not mentioned', 'not in the log', 'no line', 'does not appear', 'not appear', 'not stated', 'not present', 'no mention', 'cannot find', \"can't find\", 'not there', 'nothing about', 'no such', 'not given', 'not found']}",
+        "latency_ms": 18529.996,
+        "output_tokens": 1011,
+        "category": "absent",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0093",
+        "correct": false,
+        "predicted": "The log does not mention the maintenance passphrase for the Redlow Point vault.",
+        "expected": "{'any': ['not mentioned', 'not in the log', 'no line', 'does not appear', 'not appear', 'not stated', 'not present', 'no mention', 'cannot find', \"can't find\", 'not there', 'nothing about', 'no such', 'not given', 'not found']}",
+        "latency_ms": 6984.926,
+        "output_tokens": 306,
+        "category": "absent",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0094",
+        "correct": false,
+        "predicted": "The log does not mention the maintenance passphrase for the Norhaven vault.",
+        "expected": "{'any': ['not mentioned', 'not in the log', 'no line', 'does not appear', 'not appear', 'not stated', 'not present', 'no mention', 'cannot find', \"can't find\", 'not there', 'nothing about', 'no such', 'not given', 'not found']}",
+        "latency_ms": 9389.41,
+        "output_tokens": 417,
+        "category": "absent",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0095",
+        "correct": false,
+        "predicted": "The log does not mention the maintenance passphrase for the Westcarr vault.",
+        "expected": "{'any': ['not mentioned', 'not in the log', 'no line', 'does not appear', 'not appear', 'not stated', 'not present', 'no mention', 'cannot find', \"can't find\", 'not there', 'nothing about', 'no such', 'not given', 'not found']}",
+        "latency_ms": 9008.089,
+        "output_tokens": 402,
+        "category": "absent",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0096",
+        "correct": false,
+        "predicted": "The log does not mention a maintenance passphrase for the Ilmouth vault.",
+        "expected": "{'any': ['not mentioned', 'not in the log', 'no line', 'does not appear', 'not appear', 'not stated', 'not present', 'no mention', 'cannot find', \"can't find\", 'not there', 'nothing about', 'no such', 'not given', 'not found']}",
+        "latency_ms": 5543.83,
+        "output_tokens": 220,
+        "category": "absent",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0097",
+        "correct": false,
+        "predicted": "The log does not mention the maintenance passphrase for the Redlow Point vault.",
+        "expected": "{'any': ['not mentioned', 'not in the log', 'no line', 'does not appear', 'not appear', 'not stated', 'not present', 'no mention', 'cannot find', \"can't find\", 'not there', 'nothing about', 'no such', 'not given', 'not found']}",
+        "latency_ms": 15099.473,
+        "output_tokens": 365,
+        "category": "absent",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0098",
+        "correct": false,
+        "predicted": "The log does not mention the maintenance passphrase for the Norhaven vault.",
+        "expected": "{'any': ['not mentioned', 'not in the log', 'no line', 'does not appear', 'not appear', 'not stated', 'not present', 'no mention', 'cannot find', \"can't find\", 'not there', 'nothing about', 'no such', 'not given', 'not found']}",
+        "latency_ms": 14749.237,
+        "output_tokens": 341,
+        "category": "absent",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0099",
+        "correct": true,
+        "predicted": "The maintenance passphrase for the Redlow Point vault is not mentioned in the log.",
+        "expected": "{'any': ['not mentioned', 'not in the log', 'no line', 'does not appear', 'not appear', 'not stated', 'not present', 'no mention', 'cannot find', \"can't find\", 'not there', 'nothing about', 'no such', 'not given', 'not found']}",
+        "latency_ms": 69732.378,
+        "output_tokens": 293,
+        "category": "absent",
+        "difficulty": "hard"
+      },
+      {
+        "id": "lctx-0100",
+        "correct": false,
+        "predicted": "The log does not mention the maintenance passphrase for the Norhaven vault.",
+        "expected": "{'any': ['not mentioned', 'not in the log', 'no line', 'does not appear', 'not appear', 'not stated', 'not present', 'no mention', 'cannot find', \"can't find\", 'not there', 'nothing about', 'no such', 'not given', 'not found']}",
+        "latency_ms": 69104.792,
+        "output_tokens": 262,
+        "category": "absent",
+        "difficulty": "hard"
+      }
+    ]
+  },
+  "failures": [],
+  "conditions": null,
+  "gotchas": [
+    {
+      "severity": "info",
+      "text": "GPU CLOCK IS A HIDDEN VARIABLE ON THIS BOX AND IT IS NOT AT MAXIMUM. Sampled at workload start: 2392MHz,3003MHz. nvidia-smi reports no active clock event reason - no SW power cap, no HW slowdown, no thermal slowdown, no applications-clock setting - and the clock cannot be raised without root on this account. Under load the SM clock sits around 2470-2490 MHz against a 3003 MHz ceiling, roughly 82 percent. Treat any comparison against a figure from another Spark as carrying this unknown unless that box clock state is also stated. The same gotcha is recorded on the NVFP4 rung, so the two rungs of this ladder carry it equally and comparing them against each other is unaffected."
+    },
+    {
+      "severity": "info",
+      "text": "The pack is block-scaled FP8 and the registry bits figure of 8.57 is not a rounding error. config.json declares quant_method fp8, fmt e4m3, activation_scheme dynamic and weight_block_size 128x128, so weights carry one scale per 128x128 tile and activations are scaled at runtime rather than from a calibration set. 648 modules are listed in modules_to_not_convert and stay wider than 8 bits. Both the MTP draft head (1,560 tensors) and the vision tower (333 tensors) are present in the checkpoint, so this rung supports the same speculative decoding and image input as the NVFP4 rung and the two are comparable on capability, not only on flags."
+    },
+    {
+      "severity": "info",
+      "text": "Speculative decoding is the model own MTP head at 2 tokens with moe_backend triton, matching the NVFP4 rung. Prefix caching is OFF - the engine log confirms enable_prefix_caching=False - so no workload in this rung benefits from a shared prefix, and cells run with it on are not comparable. --linear-backend is left at auto here rather than the NVFP4 rung flashinfer_b12x, which is the only intentional flag difference between the two rungs."
+    },
+    {
+      "severity": "info",
+      "text": "THE ENGINE SILENTLY CHANGED ITS OWN FP8 KERNEL CHOICE FOR ACCURACY REASONS, AND THE TWO HALVES OF THE MODEL ENDED UP ON DIFFERENT BACKENDS. At startup it logged: Auto-disabled DeepGemm for model_type=qwen3_5_moe_text on Blackwell, DeepGemm E8M0 scale format causes accuracy degradation for this architecture, falling back to CUTLASS - and then selected CutlassFp8BlockScaledMMKernel for the dense linear layers while separately selecting the DEEPGEMM Fp8 MoE backend for the experts. Neither choice was requested on the command line, both are decided by the engine from the architecture and the GPU, and a build without that auto-disable would run the dense path on DeepGemm instead. Any eval score in this rung is a score for that kernel pairing on this build, not for FP8 in the abstract."
+    }
+  ],
+  "derived": {
+    "cost_per_1m_output_tokens_usd": null,
+    "tokens_per_watt": null,
+    "tok_s_per_gb_bandwidth": null,
+    "bandwidth_efficiency": null,
+    "memory_headroom_gb": null
+  },
+  "raw": {
+    "harness": "atlas-bench",
+    "harness_version": "0.1.0",
+    "sha256": "02c301c7cc3c396cff8591d8b31808dd7f7eb0672bd9483da3f435a469fa1324",
+    "payload_path": null,
+    "payload": {
+      "scorer": "needle",
+      "scorers_used": [
+        "contains",
+        "exact",
+        "needle"
+      ],
+      "engine_endpoint": {
+        "attached": true,
+        "base_url": "http://127.0.0.1:8888/v1",
+        "served_model_id": "Qwen/Qwen3.6-35B-A3B-FP8",
+        "advertised_models": [
+          "Qwen/Qwen3.6-35B-A3B-FP8"
+        ]
+      }
+    },
+    "truncated": false
+  },
+  "provenance": {
+    "github_login": "0xBakeer",
+    "github_user_id": null,
+    "started_at": "2026-08-31T15:06:34Z",
+    "finished_at": "2026-08-31T15:32:12Z",
+    "submitted_at": null,
+    "commit": null,
+    "pr": null,
+    "method": "atlas-bench",
+    "agent": null,
+    "notes": "Rung 2 of a quantization ladder on one box: same hardware, same container image, same engine build and the same serve flags as the NVFP4 rung, with only the weights changed, so a difference between the two rungs is attributable to the pack rather than to the setup. The one flag not carried over is --linear-backend flashinfer_b12x, which selects an NVFP4 GEMM path and has nothing to apply to here. Box was dedicated: no desktop session, no other GPU work, and the reverse-proxy SSH tunnel that is the only external route in was stopped for the whole sweep. NVIDIA DGX Spark (ASUS Ascent GX10, GB10 / SM121, 128 GB unified, ~121 GiB usable), Ubuntu 24.04.4, kernel 6.17.0-1029-nvidia aarch64, driver 580.173.02, CUDA 13.0, swap off. Image is ghcr.io/miaai-lab/mia-vllm-gb10-linear-b12x:latest, reporting vLLM 0.26.1.dev0+gf2654939e.d20260726; unlike the NVFP4 rung it is not launched through the MiaAI-Lab recipe start.sh but directly with --entrypoint /usr/local/bin/vllm, because that script hard-codes its own checkpoint. Weights are the official Qwen/Qwen3.6-35B-A3B-FP8 at revision 95a723d08a94, 42 shards, 37.49 GB on disk. At startup the server reported a GPU KV cache of 4,690,997 tokens and a maximum concurrency of 17.89x for 262,144-token requests."
+  },
+  "verification": {
+    "level": "self-reported",
+    "reproduced_by": [],
+    "flags": []
+  }
+}
