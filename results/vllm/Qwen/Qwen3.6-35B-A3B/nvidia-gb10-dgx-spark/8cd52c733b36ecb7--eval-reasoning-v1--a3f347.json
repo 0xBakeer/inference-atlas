@@ -1,0 +1,1462 @@
+{
+  "schema_version": 1,
+  "run_id": "8cd52c733b36ecb7--eval-reasoning-v1--a3f347",
+  "config_id": "8cd52c733b36ecb7",
+  "cell_id": "803dc89250a5",
+  "workload_id": "eval-reasoning-v1",
+  "kind": "eval",
+  "engine": {
+    "id": "vllm",
+    "version": "0.26.1.dev0+gf2654939e.d20260726",
+    "commit": null,
+    "build": "ghcr.io/miaai-lab/mia-vllm-gb10-linear-b12x@sha256:19627342e1da2607f4db50745dca30e57d7dd0ebff06062f03fd69b43a252931",
+    "container": "ghcr.io/miaai-lab/mia-vllm-gb10-linear-b12x:latest",
+    "install_method": "docker"
+  },
+  "model": {
+    "id": "Qwen/Qwen3.6-35B-A3B",
+    "quant_id": "fp8",
+    "hf_id": "Qwen/Qwen3.6-35B-A3B",
+    "revision": "95a723d08a94",
+    "dtype": "auto",
+    "local_path": null
+  },
+  "hardware": {
+    "id": "nvidia-gb10-dgx-spark",
+    "count": 1,
+    "driver": "580.173.02",
+    "cuda": "13.0",
+    "host": {
+      "cpu": "Cortex-A725",
+      "cpu_cores": 20,
+      "ram_gb": 121.6,
+      "os": "Ubuntu 24.04.4 LTS",
+      "kernel": "6.17.0-1029-nvidia",
+      "arch": "aarch64"
+    },
+    "fingerprint": "sha256:52ea2bdd513719724db88c162b6cc2c9fb4e5b67e02dbe41b9de00687acefb91",
+    "captured": {
+      "nvidia_smi": {
+        "driver": "580.173.02",
+        "cuda": "13.0",
+        "products": [
+          "NVIDIA GB10"
+        ],
+        "fb_memory_total_mib": 0.0
+      },
+      "lscpu": {
+        "architecture": "aarch64",
+        "cpus": "20",
+        "vendor_id": "ARM",
+        "model_name": "Cortex-A725",
+        "cores_per_socket": "10",
+        "sockets": "1",
+        "cpu_max_mhz": "2808.0000"
+      }
+    }
+  },
+  "args": {
+    "tensor-parallel-size": 1,
+    "trust-remote-code": true,
+    "moe-backend": "auto",
+    "gpu-memory-utilization": 0.8,
+    "attention-backend": "flashinfer",
+    "max-model-len": 262144,
+    "max-num-seqs": 24,
+    "max-num-batched-tokens": 32768,
+    "enable-chunked-prefill": true,
+    "async-scheduling": true,
+    "kv-cache-dtype": "fp8",
+    "limit-mm-per-prompt": {
+      "image": 4
+    },
+    "speculative-config": {
+      "method": "mtp",
+      "num_speculative_tokens": 2,
+      "moe_backend": "triton"
+    },
+    "reasoning-parser": "qwen3",
+    "tool-call-parser": "qwen3_coder",
+    "enable-auto-tool-choice": true,
+    "default-chat-template-kwargs": {
+      "enable_thinking": true,
+      "preserve_thinking": true
+    },
+    "override-generation-config": {
+      "temperature": 0.6,
+      "top_p": 0.95,
+      "top_k": 20,
+      "min_p": 0.0,
+      "presence_penalty": 0.0,
+      "repetition_penalty": 1.0
+    }
+  },
+  "args_canonical": "@build=ghcr.io/miaai-lab/mia-vllm-gb10-linear-b12x@sha256:19627342e1da2607f4db50745dca30e57d7dd0ebff06062f03fd69b43a252931;@dtype=auto;@quant=fp8;attention-backend=flashinfer;default-chat-template-kwargs={\"enable_thinking\":true,\"preserve_thinking\":true};enable-auto-tool-choice=true;gpu-memory-utilization=0.8;kv-cache-dtype=fp8;limit-mm-per-prompt={\"image\":4};max-model-len=262144;max-num-batched-tokens=32768;max-num-seqs=24;no-async-scheduling=true;no-enable-chunked-prefill=true;no-trust-remote-code=true;override-generation-config={\"min_p\":0,\"presence_penalty\":0,\"repetition_penalty\":1,\"temperature\":0.6,\"top_k\":20,\"top_p\":0.95};reasoning-parser=qwen3;speculative-config={\"method\":\"mtp\",\"moe_backend\":\"triton\",\"num_speculative_tokens\":2};tool-call-parser=qwen3_coder",
+  "serve_command": null,
+  "workload": {
+    "id": "eval-reasoning-v1",
+    "resolved_params": {
+      "dataset_id": "eval-reasoning-v1",
+      "suite": "reasoning",
+      "scorer": "exact",
+      "items": 120,
+      "concurrency": 4,
+      "max_output_tokens": 2048,
+      "timeout_s": 300.0,
+      "temperature": 0,
+      "reasoning": "default",
+      "dataset_categories": null,
+      "dataset_target_tokens": null,
+      "pass_threshold": null,
+      "seed": 42
+    }
+  },
+  "metrics": {
+    "requests_total": 120,
+    "requests_ok": 120,
+    "requests_failed": 0,
+    "success_rate": 1.0,
+    "duration_s": 1110.893,
+    "input_tokens_total": 10354,
+    "output_tokens_total": 140157,
+    "e2e_ms": {
+      "mean": 36651.075,
+      "p50": 34498.67,
+      "p90": 62661.065,
+      "p95": 64510.076,
+      "p99": 66954.626,
+      "min": 7493.494,
+      "max": 67019.919
+    },
+    "vram_peak_gb": null,
+    "ram_peak_gb": 112.256,
+    "power_avg_w": 38.94,
+    "power_peak_w": 40.31,
+    "energy_wh": 12.0138,
+    "gpu_util_avg_pct": 95.37,
+    "temp_max_c": 69.0,
+    "thermal_throttle_detected": false
+  },
+  "scores": {
+    "suite": "reasoning",
+    "total": 120,
+    "correct": 108,
+    "accuracy": 0.9,
+    "success_rate": 1.0,
+    "by_category": {
+      "counting": {
+        "total": 20,
+        "correct": 20
+      },
+      "datetime": {
+        "total": 18,
+        "correct": 14
+      },
+      "deduction": {
+        "total": 15,
+        "correct": 15
+      },
+      "ordering": {
+        "total": 18,
+        "correct": 17
+      },
+      "spatial": {
+        "total": 15,
+        "correct": 14
+      },
+      "syllogism": {
+        "total": 18,
+        "correct": 18
+      },
+      "truth_liar": {
+        "total": 16,
+        "correct": 10
+      }
+    },
+    "by_difficulty": {
+      "easy": {
+        "total": 31,
+        "correct": 31
+      },
+      "hard": {
+        "total": 39,
+        "correct": 31
+      },
+      "medium": {
+        "total": 50,
+        "correct": 46
+      }
+    },
+    "avg_output_tokens": 1167.97,
+    "avg_latency_ms": 36651.07,
+    "failures": 0,
+    "items": [
+      {
+        "id": "reason-0001",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 33180.296,
+        "output_tokens": 1058,
+        "category": "syllogism",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0002",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 25170.209,
+        "output_tokens": 809,
+        "category": "syllogism",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0003",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 24280.432,
+        "output_tokens": 802,
+        "category": "syllogism",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0004",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 29412.239,
+        "output_tokens": 940,
+        "category": "syllogism",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0005",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 19946.626,
+        "output_tokens": 644,
+        "category": "syllogism",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0006",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 28627.463,
+        "output_tokens": 905,
+        "category": "syllogism",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0007",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 38242.077,
+        "output_tokens": 1178,
+        "category": "syllogism",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0008",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 21694.459,
+        "output_tokens": 699,
+        "category": "syllogism",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0009",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 20297.547,
+        "output_tokens": 620,
+        "category": "syllogism",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0010",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 23387.213,
+        "output_tokens": 730,
+        "category": "syllogism",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0011",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 36881.203,
+        "output_tokens": 1158,
+        "category": "syllogism",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0012",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 28295.772,
+        "output_tokens": 886,
+        "category": "syllogism",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0013",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 50565.171,
+        "output_tokens": 1518,
+        "category": "syllogism",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0014",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 34009.948,
+        "output_tokens": 1021,
+        "category": "syllogism",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0015",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 27637.864,
+        "output_tokens": 868,
+        "category": "syllogism",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0016",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 18689.947,
+        "output_tokens": 570,
+        "category": "syllogism",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0017",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 40571.055,
+        "output_tokens": 1231,
+        "category": "syllogism",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0018",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 22377.779,
+        "output_tokens": 685,
+        "category": "syllogism",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0019",
+        "correct": true,
+        "predicted": "Hana",
+        "expected": "Hana",
+        "latency_ms": 51249.99,
+        "output_tokens": 1629,
+        "category": "ordering",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0020",
+        "correct": true,
+        "predicted": "Fenna",
+        "expected": "Fenna",
+        "latency_ms": 59255.074,
+        "output_tokens": 1896,
+        "category": "ordering",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0021",
+        "correct": true,
+        "predicted": "Cai",
+        "expected": "Cai",
+        "latency_ms": 35812.816,
+        "output_tokens": 1153,
+        "category": "ordering",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0022",
+        "correct": true,
+        "predicted": "Dita",
+        "expected": "Dita",
+        "latency_ms": 33682.963,
+        "output_tokens": 1057,
+        "category": "ordering",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0023",
+        "correct": true,
+        "predicted": "Fenna",
+        "expected": "Fenna",
+        "latency_ms": 62618.512,
+        "output_tokens": 1969,
+        "category": "ordering",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0024",
+        "correct": true,
+        "predicted": "Lars",
+        "expected": "Lars",
+        "latency_ms": 33393.937,
+        "output_tokens": 1098,
+        "category": "ordering",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0025",
+        "correct": true,
+        "predicted": "Ivo",
+        "expected": "Ivo",
+        "latency_ms": 34987.391,
+        "output_tokens": 1108,
+        "category": "ordering",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0026",
+        "correct": true,
+        "predicted": "Fenna",
+        "expected": "Fenna",
+        "latency_ms": 44680.479,
+        "output_tokens": 1403,
+        "category": "ordering",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0027",
+        "correct": true,
+        "predicted": "Kira",
+        "expected": "Kira",
+        "latency_ms": 48861.231,
+        "output_tokens": 1537,
+        "category": "ordering",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0028",
+        "correct": true,
+        "predicted": "Hana",
+        "expected": "Hana",
+        "latency_ms": 56093.458,
+        "output_tokens": 1822,
+        "category": "ordering",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0029",
+        "correct": true,
+        "predicted": "Emre",
+        "expected": "Emre",
+        "latency_ms": 32232.102,
+        "output_tokens": 1023,
+        "category": "ordering",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0030",
+        "correct": true,
+        "predicted": "Emre",
+        "expected": "Emre",
+        "latency_ms": 55267.843,
+        "output_tokens": 1768,
+        "category": "ordering",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0031",
+        "correct": false,
+        "predicted": "",
+        "expected": "Ivo",
+        "latency_ms": 64121.505,
+        "output_tokens": 2048,
+        "category": "ordering",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0032",
+        "correct": true,
+        "predicted": "Cai",
+        "expected": "Cai",
+        "latency_ms": 38183.322,
+        "output_tokens": 1229,
+        "category": "ordering",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0033",
+        "correct": true,
+        "predicted": "Hana",
+        "expected": "Hana",
+        "latency_ms": 41187.905,
+        "output_tokens": 1293,
+        "category": "ordering",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0034",
+        "correct": true,
+        "predicted": "Ada",
+        "expected": "Ada",
+        "latency_ms": 52627.083,
+        "output_tokens": 1684,
+        "category": "ordering",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0035",
+        "correct": true,
+        "predicted": "Gus",
+        "expected": "Gus",
+        "latency_ms": 35171.132,
+        "output_tokens": 1113,
+        "category": "ordering",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0036",
+        "correct": true,
+        "predicted": "Hana",
+        "expected": "Hana",
+        "latency_ms": 47517.031,
+        "output_tokens": 1528,
+        "category": "ordering",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0037",
+        "correct": true,
+        "predicted": "Juno",
+        "expected": "Juno",
+        "latency_ms": 65259.202,
+        "output_tokens": 1999,
+        "category": "truth_liar",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0038",
+        "correct": true,
+        "predicted": "Dita, Juno",
+        "expected": "Dita, Juno",
+        "latency_ms": 58128.42,
+        "output_tokens": 1859,
+        "category": "truth_liar",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0039",
+        "correct": true,
+        "predicted": "Ada",
+        "expected": "Ada",
+        "latency_ms": 52499.135,
+        "output_tokens": 1649,
+        "category": "truth_liar",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0040",
+        "correct": false,
+        "predicted": "",
+        "expected": "0",
+        "latency_ms": 66945.209,
+        "output_tokens": 2048,
+        "category": "truth_liar",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0041",
+        "correct": true,
+        "predicted": "1",
+        "expected": "1",
+        "latency_ms": 62562.487,
+        "output_tokens": 1999,
+        "category": "truth_liar",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0042",
+        "correct": true,
+        "predicted": "1",
+        "expected": "1",
+        "latency_ms": 63152.16,
+        "output_tokens": 1985,
+        "category": "truth_liar",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0043",
+        "correct": false,
+        "predicted": "",
+        "expected": "0",
+        "latency_ms": 67019.919,
+        "output_tokens": 2048,
+        "category": "truth_liar",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0044",
+        "correct": false,
+        "predicted": "",
+        "expected": "1",
+        "latency_ms": 65474.848,
+        "output_tokens": 2048,
+        "category": "truth_liar",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0045",
+        "correct": true,
+        "predicted": "1",
+        "expected": "1",
+        "latency_ms": 53042.212,
+        "output_tokens": 1658,
+        "category": "truth_liar",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0046",
+        "correct": true,
+        "predicted": "1",
+        "expected": "1",
+        "latency_ms": 41311.611,
+        "output_tokens": 1305,
+        "category": "truth_liar",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0047",
+        "correct": true,
+        "predicted": "1",
+        "expected": "1",
+        "latency_ms": 46657.223,
+        "output_tokens": 1475,
+        "category": "truth_liar",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0048",
+        "correct": true,
+        "predicted": "2",
+        "expected": "2",
+        "latency_ms": 55047.052,
+        "output_tokens": 1727,
+        "category": "truth_liar",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0049",
+        "correct": false,
+        "predicted": "",
+        "expected": "0",
+        "latency_ms": 64485.629,
+        "output_tokens": 2048,
+        "category": "truth_liar",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0050",
+        "correct": false,
+        "predicted": "",
+        "expected": "Bo",
+        "latency_ms": 64404.697,
+        "output_tokens": 2048,
+        "category": "truth_liar",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0051",
+        "correct": true,
+        "predicted": "Ada, Gus",
+        "expected": "Ada, Gus",
+        "latency_ms": 47582.483,
+        "output_tokens": 1531,
+        "category": "truth_liar",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0052",
+        "correct": false,
+        "predicted": "",
+        "expected": "Cai",
+        "latency_ms": 66956.836,
+        "output_tokens": 2048,
+        "category": "truth_liar",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0053",
+        "correct": true,
+        "predicted": "3024",
+        "expected": "3024",
+        "latency_ms": 13213.646,
+        "output_tokens": 428,
+        "category": "counting",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0054",
+        "correct": true,
+        "predicted": "119",
+        "expected": "119",
+        "latency_ms": 25988.965,
+        "output_tokens": 808,
+        "category": "counting",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0055",
+        "correct": true,
+        "predicted": "210",
+        "expected": "210",
+        "latency_ms": 13746.571,
+        "output_tokens": 430,
+        "category": "counting",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0056",
+        "correct": true,
+        "predicted": "276",
+        "expected": "276",
+        "latency_ms": 14126.23,
+        "output_tokens": 448,
+        "category": "counting",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0057",
+        "correct": true,
+        "predicted": "504",
+        "expected": "504",
+        "latency_ms": 11787.781,
+        "output_tokens": 376,
+        "category": "counting",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0058",
+        "correct": true,
+        "predicted": "15",
+        "expected": "15",
+        "latency_ms": 18162.964,
+        "output_tokens": 579,
+        "category": "counting",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0059",
+        "correct": true,
+        "predicted": "60",
+        "expected": "60",
+        "latency_ms": 19852.02,
+        "output_tokens": 645,
+        "category": "counting",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0060",
+        "correct": true,
+        "predicted": "170",
+        "expected": "170",
+        "latency_ms": 14904.21,
+        "output_tokens": 477,
+        "category": "counting",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0061",
+        "correct": true,
+        "predicted": "60",
+        "expected": "60",
+        "latency_ms": 27195.961,
+        "output_tokens": 845,
+        "category": "counting",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0062",
+        "correct": true,
+        "predicted": "58",
+        "expected": "58",
+        "latency_ms": 47810.745,
+        "output_tokens": 1547,
+        "category": "counting",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0063",
+        "correct": true,
+        "predicted": "35",
+        "expected": "35",
+        "latency_ms": 21616.925,
+        "output_tokens": 681,
+        "category": "counting",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0064",
+        "correct": true,
+        "predicted": "45",
+        "expected": "45",
+        "latency_ms": 12901.442,
+        "output_tokens": 411,
+        "category": "counting",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0065",
+        "correct": true,
+        "predicted": "703",
+        "expected": "703",
+        "latency_ms": 16449.112,
+        "output_tokens": 535,
+        "category": "counting",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0066",
+        "correct": true,
+        "predicted": "72",
+        "expected": "72",
+        "latency_ms": 29399.091,
+        "output_tokens": 958,
+        "category": "counting",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0067",
+        "correct": true,
+        "predicted": "1287",
+        "expected": "1287",
+        "latency_ms": 31895.515,
+        "output_tokens": 1019,
+        "category": "counting",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0068",
+        "correct": true,
+        "predicted": "87",
+        "expected": "87",
+        "latency_ms": 32059.287,
+        "output_tokens": 1045,
+        "category": "counting",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0069",
+        "correct": true,
+        "predicted": "20",
+        "expected": "20",
+        "latency_ms": 23382.207,
+        "output_tokens": 751,
+        "category": "counting",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0070",
+        "correct": true,
+        "predicted": "330",
+        "expected": "330",
+        "latency_ms": 39174.474,
+        "output_tokens": 1281,
+        "category": "counting",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0071",
+        "correct": true,
+        "predicted": "210",
+        "expected": "210",
+        "latency_ms": 13392.226,
+        "output_tokens": 422,
+        "category": "counting",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0072",
+        "correct": true,
+        "predicted": "720",
+        "expected": "720",
+        "latency_ms": 13268.475,
+        "output_tokens": 441,
+        "category": "counting",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0073",
+        "correct": true,
+        "predicted": "Tuesday",
+        "expected": "Tuesday",
+        "latency_ms": 43624.893,
+        "output_tokens": 1360,
+        "category": "datetime",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0074",
+        "correct": true,
+        "predicted": "2014-01-13",
+        "expected": "2014-01-13",
+        "latency_ms": 38202.492,
+        "output_tokens": 1262,
+        "category": "datetime",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0075",
+        "correct": true,
+        "predicted": "4",
+        "expected": "4",
+        "latency_ms": 26047.444,
+        "output_tokens": 854,
+        "category": "datetime",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0076",
+        "correct": true,
+        "predicted": "22:00",
+        "expected": "22:00",
+        "latency_ms": 24947.634,
+        "output_tokens": 831,
+        "category": "datetime",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0077",
+        "correct": false,
+        "predicted": "",
+        "expected": "5",
+        "latency_ms": 64974.564,
+        "output_tokens": 2048,
+        "category": "datetime",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0078",
+        "correct": true,
+        "predicted": "04:00",
+        "expected": "04:00",
+        "latency_ms": 22949.737,
+        "output_tokens": 730,
+        "category": "datetime",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0079",
+        "correct": true,
+        "predicted": "18:45",
+        "expected": "18:45",
+        "latency_ms": 13631.725,
+        "output_tokens": 444,
+        "category": "datetime",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0080",
+        "correct": false,
+        "predicted": "",
+        "expected": "4",
+        "latency_ms": 62558.885,
+        "output_tokens": 2048,
+        "category": "datetime",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0081",
+        "correct": false,
+        "predicted": "",
+        "expected": "Monday",
+        "latency_ms": 63044.035,
+        "output_tokens": 2048,
+        "category": "datetime",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0082",
+        "correct": true,
+        "predicted": "Monday",
+        "expected": "Monday",
+        "latency_ms": 26936.071,
+        "output_tokens": 861,
+        "category": "datetime",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0083",
+        "correct": true,
+        "predicted": "07:00",
+        "expected": "07:00",
+        "latency_ms": 11937.713,
+        "output_tokens": 386,
+        "category": "datetime",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0084",
+        "correct": true,
+        "predicted": "07:40",
+        "expected": "07:40",
+        "latency_ms": 10190.891,
+        "output_tokens": 344,
+        "category": "datetime",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0085",
+        "correct": false,
+        "predicted": "",
+        "expected": "2022-11-25",
+        "latency_ms": 60909.849,
+        "output_tokens": 2048,
+        "category": "datetime",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0086",
+        "correct": true,
+        "predicted": "2037-01-26",
+        "expected": "2037-01-26",
+        "latency_ms": 50190.993,
+        "output_tokens": 1639,
+        "category": "datetime",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0087",
+        "correct": true,
+        "predicted": "05:15",
+        "expected": "05:15",
+        "latency_ms": 22896.153,
+        "output_tokens": 763,
+        "category": "datetime",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0088",
+        "correct": true,
+        "predicted": "859",
+        "expected": "859",
+        "latency_ms": 59268.226,
+        "output_tokens": 1939,
+        "category": "datetime",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0089",
+        "correct": true,
+        "predicted": "2010-05-19",
+        "expected": "2010-05-19",
+        "latency_ms": 46777.061,
+        "output_tokens": 1521,
+        "category": "datetime",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0090",
+        "correct": true,
+        "predicted": "4",
+        "expected": "4",
+        "latency_ms": 39165.606,
+        "output_tokens": 1255,
+        "category": "datetime",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0091",
+        "correct": true,
+        "predicted": "north",
+        "expected": "north",
+        "latency_ms": 29549.496,
+        "output_tokens": 920,
+        "category": "spatial",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0092",
+        "correct": true,
+        "predicted": "9",
+        "expected": "9",
+        "latency_ms": 54325.586,
+        "output_tokens": 1683,
+        "category": "spatial",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0093",
+        "correct": true,
+        "predicted": "Ada",
+        "expected": "Ada",
+        "latency_ms": 18798.557,
+        "output_tokens": 594,
+        "category": "spatial",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0094",
+        "correct": true,
+        "predicted": "Cai",
+        "expected": "Cai",
+        "latency_ms": 24810.449,
+        "output_tokens": 777,
+        "category": "spatial",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0095",
+        "correct": true,
+        "predicted": "north",
+        "expected": "north",
+        "latency_ms": 7493.494,
+        "output_tokens": 228,
+        "category": "spatial",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0096",
+        "correct": true,
+        "predicted": "Hana",
+        "expected": "Hana",
+        "latency_ms": 18316.632,
+        "output_tokens": 601,
+        "category": "spatial",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0097",
+        "correct": true,
+        "predicted": "east",
+        "expected": "east",
+        "latency_ms": 27339.568,
+        "output_tokens": 828,
+        "category": "spatial",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0098",
+        "correct": true,
+        "predicted": "Dita",
+        "expected": "Dita",
+        "latency_ms": 24335.215,
+        "output_tokens": 777,
+        "category": "spatial",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0099",
+        "correct": true,
+        "predicted": "Lars",
+        "expected": "Lars",
+        "latency_ms": 13480.087,
+        "output_tokens": 435,
+        "category": "spatial",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0100",
+        "correct": true,
+        "predicted": "Ada",
+        "expected": "Ada",
+        "latency_ms": 21264.647,
+        "output_tokens": 664,
+        "category": "spatial",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0101",
+        "correct": true,
+        "predicted": "east",
+        "expected": "east",
+        "latency_ms": 15622.016,
+        "output_tokens": 469,
+        "category": "spatial",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0102",
+        "correct": true,
+        "predicted": "Gus",
+        "expected": "Gus",
+        "latency_ms": 19693.143,
+        "output_tokens": 621,
+        "category": "spatial",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0103",
+        "correct": false,
+        "predicted": "",
+        "expected": "20",
+        "latency_ms": 63398.89,
+        "output_tokens": 2048,
+        "category": "spatial",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0104",
+        "correct": true,
+        "predicted": "Kira",
+        "expected": "Kira",
+        "latency_ms": 24497.467,
+        "output_tokens": 792,
+        "category": "spatial",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0105",
+        "correct": true,
+        "predicted": "Cai",
+        "expected": "Cai",
+        "latency_ms": 27184.805,
+        "output_tokens": 846,
+        "category": "spatial",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0106",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 38171.008,
+        "output_tokens": 1196,
+        "category": "deduction",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0107",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 37650.813,
+        "output_tokens": 1180,
+        "category": "deduction",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0108",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 38193.863,
+        "output_tokens": 1213,
+        "category": "deduction",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0109",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 44169.113,
+        "output_tokens": 1410,
+        "category": "deduction",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0110",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 43928.644,
+        "output_tokens": 1399,
+        "category": "deduction",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0111",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 37266.426,
+        "output_tokens": 1197,
+        "category": "deduction",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0112",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 32633.016,
+        "output_tokens": 1045,
+        "category": "deduction",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0113",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 31689.964,
+        "output_tokens": 1009,
+        "category": "deduction",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0114",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 33018.091,
+        "output_tokens": 1069,
+        "category": "deduction",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0115",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 27000.059,
+        "output_tokens": 863,
+        "category": "deduction",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0116",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 39327.77,
+        "output_tokens": 1291,
+        "category": "deduction",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0117",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 57987.669,
+        "output_tokens": 1877,
+        "category": "deduction",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0118",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 39691.545,
+        "output_tokens": 1270,
+        "category": "deduction",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0119",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 41879.082,
+        "output_tokens": 1346,
+        "category": "deduction",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0120",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 46089.851,
+        "output_tokens": 1846,
+        "category": "deduction",
+        "difficulty": "hard"
+      }
+    ]
+  },
+  "failures": [],
+  "conditions": null,
+  "gotchas": [
+    {
+      "severity": "info",
+      "text": "GPU CLOCK IS A HIDDEN VARIABLE ON THIS BOX AND IT IS NOT AT MAXIMUM. Sampled at workload start: 2392MHz,3003MHz. nvidia-smi reports no active clock event reason - no SW power cap, no HW slowdown, no thermal slowdown, no applications-clock setting - and the clock cannot be raised without root on this account. Under load the SM clock sits around 2470-2490 MHz against a 3003 MHz ceiling, roughly 82 percent. Treat any comparison against a figure from another Spark as carrying this unknown unless that box clock state is also stated. The same gotcha is recorded on the NVFP4 rung, so the two rungs of this ladder carry it equally and comparing them against each other is unaffected."
+    },
+    {
+      "severity": "info",
+      "text": "The pack is block-scaled FP8 and the registry bits figure of 8.57 is not a rounding error. config.json declares quant_method fp8, fmt e4m3, activation_scheme dynamic and weight_block_size 128x128, so weights carry one scale per 128x128 tile and activations are scaled at runtime rather than from a calibration set. 648 modules are listed in modules_to_not_convert and stay wider than 8 bits. Both the MTP draft head (1,560 tensors) and the vision tower (333 tensors) are present in the checkpoint, so this rung supports the same speculative decoding and image input as the NVFP4 rung and the two are comparable on capability, not only on flags."
+    },
+    {
+      "severity": "info",
+      "text": "Speculative decoding is the model own MTP head at 2 tokens with moe_backend triton, matching the NVFP4 rung. Prefix caching is OFF - the engine log confirms enable_prefix_caching=False - so no workload in this rung benefits from a shared prefix, and cells run with it on are not comparable. --linear-backend is left at auto here rather than the NVFP4 rung flashinfer_b12x, which is the only intentional flag difference between the two rungs."
+    },
+    {
+      "severity": "info",
+      "text": "THE ENGINE SILENTLY CHANGED ITS OWN FP8 KERNEL CHOICE FOR ACCURACY REASONS, AND THE TWO HALVES OF THE MODEL ENDED UP ON DIFFERENT BACKENDS. At startup it logged: Auto-disabled DeepGemm for model_type=qwen3_5_moe_text on Blackwell, DeepGemm E8M0 scale format causes accuracy degradation for this architecture, falling back to CUTLASS - and then selected CutlassFp8BlockScaledMMKernel for the dense linear layers while separately selecting the DEEPGEMM Fp8 MoE backend for the experts. Neither choice was requested on the command line, both are decided by the engine from the architecture and the GPU, and a build without that auto-disable would run the dense path on DeepGemm instead. Any eval score in this rung is a score for that kernel pairing on this build, not for FP8 in the abstract."
+    }
+  ],
+  "derived": {
+    "cost_per_1m_output_tokens_usd": null,
+    "tokens_per_watt": null,
+    "tok_s_per_gb_bandwidth": null,
+    "bandwidth_efficiency": null,
+    "memory_headroom_gb": null
+  },
+  "raw": {
+    "harness": "atlas-bench",
+    "harness_version": "0.1.0",
+    "sha256": "23eb18faf31bad9ddea21462c572f1b8d25a96a01789ceca51ccc1a017e871c3",
+    "payload_path": null,
+    "payload": {
+      "scorer": "exact",
+      "scorers_used": [
+        "exact",
+        "mc"
+      ],
+      "engine_endpoint": {
+        "attached": true,
+        "base_url": "http://127.0.0.1:8888/v1",
+        "served_model_id": "Qwen/Qwen3.6-35B-A3B-FP8",
+        "advertised_models": [
+          "Qwen/Qwen3.6-35B-A3B-FP8"
+        ]
+      }
+    },
+    "truncated": false
+  },
+  "provenance": {
+    "github_login": "0xBakeer",
+    "github_user_id": null,
+    "started_at": "2026-08-31T09:52:09Z",
+    "finished_at": "2026-08-31T10:10:40Z",
+    "submitted_at": null,
+    "commit": null,
+    "pr": null,
+    "method": "atlas-bench",
+    "agent": null,
+    "notes": "Rung 2 of a quantization ladder on one box: same hardware, same container image, same engine build and the same serve flags as the NVFP4 rung, with only the weights changed, so a difference between the two rungs is attributable to the pack rather than to the setup. The one flag not carried over is --linear-backend flashinfer_b12x, which selects an NVFP4 GEMM path and has nothing to apply to here. Box was dedicated: no desktop session, no other GPU work, and the reverse-proxy SSH tunnel that is the only external route in was stopped for the whole sweep. NVIDIA DGX Spark (ASUS Ascent GX10, GB10 / SM121, 128 GB unified, ~121 GiB usable), Ubuntu 24.04.4, kernel 6.17.0-1029-nvidia aarch64, driver 580.173.02, CUDA 13.0, swap off. Image is ghcr.io/miaai-lab/mia-vllm-gb10-linear-b12x:latest, reporting vLLM 0.26.1.dev0+gf2654939e.d20260726; unlike the NVFP4 rung it is not launched through the MiaAI-Lab recipe start.sh but directly with --entrypoint /usr/local/bin/vllm, because that script hard-codes its own checkpoint. Weights are the official Qwen/Qwen3.6-35B-A3B-FP8 at revision 95a723d08a94, 42 shards, 37.49 GB on disk. At startup the server reported a GPU KV cache of 4,690,997 tokens and a maximum concurrency of 17.89x for 262,144-token requests."
+  },
+  "verification": {
+    "level": "self-reported",
+    "reproduced_by": [],
+    "flags": []
+  }
+}
