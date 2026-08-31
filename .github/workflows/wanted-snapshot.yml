@@ -67,19 +67,39 @@ jobs:
               .sort((a, b) => b.reactions - a.reactions || a.issue - b.issue);
 
             fs.mkdirSync('site', { recursive: true });
-            fs.writeFileSync(
-              'site/wanted-requests.json',
-              JSON.stringify(
-                {
-                  schema_version: 1,
-                  generated_at: new Date().toISOString(),
-                  requests,
-                },
-                null,
-                2,
-              ) + '\n',
-            );
-            core.info(`${requests.length} request(s) snapshotted`);
+            const path = 'site/wanted-requests.json';
+
+            // Stamping generated_at unconditionally makes every weekly run a diff, so the
+            // job opened a pull request each week that changed one timestamp and nothing
+            // else. Keep the committed timestamp when the requests themselves have not
+            // moved: create-pull-request then sees a clean tree and opens nothing.
+            let previous = null;
+            try {
+              previous = JSON.parse(fs.readFileSync(path, 'utf8'));
+            } catch {
+              previous = null;
+            }
+            const unchanged =
+              previous !== null &&
+              JSON.stringify(previous.requests ?? null) === JSON.stringify(requests);
+
+            if (unchanged) {
+              core.info(`${requests.length} request(s) snapshotted; unchanged, leaving the file alone`);
+            } else {
+              fs.writeFileSync(
+                path,
+                JSON.stringify(
+                  {
+                    schema_version: 1,
+                    generated_at: new Date().toISOString(),
+                    requests,
+                  },
+                  null,
+                  2,
+                ) + '\n',
+              );
+              core.info(`${requests.length} request(s) snapshotted; file updated`);
+            }
 
       - uses: peter-evans/create-pull-request@v8
         with:
