@@ -70,6 +70,38 @@ export function checkResult(
     );
   }
 
+  // A fork's version string names the upstream commit it branched from, not its own patches,
+  // so two forks - or two builds of one fork either side of a fix - can share it. Where the
+  // registry says the version is a fork, the result has to say which build it was, and that
+  // answer goes into the fingerprint (SPEC §3, decision 24).
+  const isFork = versionFile?.distribution === 'fork';
+  const build = result.engine.build ?? null;
+  // Only for results under review. Every cell merged before this rule existed predates the
+  // engine.build field, and failing them now would say their numbers are wrong when what is
+  // actually missing is a provenance field nobody could have filled in.
+  if (options.underReview && isFork && !build) {
+    reporter.error(
+      file,
+      'fork-build-unnamed',
+      `engines/${result.engine.id}/versions/${result.engine.version}.json is registered as a fork ` +
+        `of ${versionFile?.source_repo ?? 'an unnamed repository'}, whose version string names the ` +
+        `upstream commit rather than the fork's patches. Set engine.build to the build actually ` +
+        `served - a container digest, or <fork repo>@<fork ref> - so two builds sharing this ` +
+        `version do not share a fingerprint`,
+      { path: 'engine.build' },
+    );
+  }
+  if (!isFork && build && versionFile) {
+    reporter.warn(
+      file,
+      'build-on-upstream-version',
+      `engine.build is set but ${result.engine.version} is registered as an upstream release, ` +
+        `whose version string already pins the build; this result will not share a config_id ` +
+        `with otherwise identical runs that omit it`,
+      { path: 'engine.build' },
+    );
+  }
+
   const { canonical, configId } = canonicalizeArgs({
     engine_id: result.engine.id,
     engine_version: result.engine.version,
@@ -79,6 +111,7 @@ export function checkResult(
     params: versionFile?.params ?? null,
     drop_params: engine?.meta.drop_params ?? [],
     param_aliases: engine?.meta.param_aliases ?? null,
+    build,
   });
 
   if (canonical !== result.args_canonical) {

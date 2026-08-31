@@ -71,6 +71,9 @@ class CanonicalInput:
     params: tuple[ParamSpec, ...] | None = None
     drop_params: tuple[str, ...] = ()
     param_aliases: dict[str, str] = field(default_factory=dict)
+    #: Identity of the engine BUILD when the version string alone does not pin it: a container
+    #: digest, or ``<fork repo>@<fork ref>``. Required for engine versions registered as forks.
+    build: str | None = None
 
     @classmethod
     def from_dict(cls, raw: dict[str, Any]) -> CanonicalInput:
@@ -97,6 +100,7 @@ class CanonicalInput:
             params=params,
             drop_params=tuple(str(d) for d in raw.get("drop_params") or ()),
             param_aliases={str(k): str(v) for k, v in (raw.get("param_aliases") or {}).items()},
+            build=raw.get("build"),
         )
 
 
@@ -351,6 +355,15 @@ def canonicalize_full(inp: CanonicalInput) -> CanonicalResult:
 
     resolved["@quant"] = (inp.quant_id or "").strip().lower()
     resolved["@dtype"] = (inp.dtype or "auto").strip().lower() or "auto"
+
+    # ``@build`` distinguishes engine builds that share a version string (SPEC §3, decision
+    # 24). A fork's version is usually ``<upstream release>+g<upstream sha>``: it names the
+    # commit the fork branched from, not the fork's own patches, so two people patching the
+    # same upstream commit differently produce the same string and land on the same
+    # fingerprint. Omitted when absent, so results recorded before this existed keep their id.
+    build = (getattr(inp, "build", None) or "").strip().lower()
+    if build:
+        resolved["@build"] = build
 
     canonical = ";".join(f"{key}={resolved[key]}" for key in sorted(resolved))
     return CanonicalResult(
