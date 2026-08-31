@@ -267,6 +267,7 @@ def build_result(inputs: ResultInputs) -> dict[str, Any]:
         args=spec.args,
         quant_id=spec.model.quant_id,
         dtype=spec.model.dtype,
+        build=spec.engine.build,
     )
     inputs.warnings.extend(resolved.warnings)
     args_canonical = canonicalize(resolved.canonical_input)
@@ -320,6 +321,7 @@ def build_result(inputs: ResultInputs) -> dict[str, Any]:
             "id": spec.engine.id,
             "version": spec.engine.version,
             "commit": spec.engine.commit,
+            "build": spec.engine.build,
             "container": inputs.container or spec.engine.container,
             "install_method": _install_method(inputs.install_method or spec.engine.install_method),
         },
