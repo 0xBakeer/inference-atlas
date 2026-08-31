@@ -219,3 +219,104 @@ def test_wrap_writes_a_result(atlas_repo: Path, tmp_path: Path, monkeypatch) -> 
     assert record["raw"]["payload"]["source"] == "vllm-bench-serve"
     assert record["provenance"]["started_at"] == "2026-08-16T14:15:16Z"
     assert any("not by atlas-bench" in g["text"] for g in record["gotchas"])
+
+
+# ------------------------------------------------------------------- restamp
+
+
+def _result_for_restamp(atlas_repo: Path) -> Path:
+    """One written result whose engine.build is missing, at its correct path."""
+    record = {
+        "schema_version": 1,
+        "config_id": "0000000000000000",
+        "cell_id": "000000000000",
+        "run_id": "0000000000000000--workload-test-v1--aaaaaa",
+        "engine": {"id": "vllm", "version": "0.27.1", "build": None},
+        "model": {"id": "acme/test-model-1b", "quant_id": "fp8", "dtype": "auto"},
+        "hardware": {"id": "test-gpu-24gb", "count": 1},
+        "args": {"max-model-len": 4096},
+        "args_canonical": "max-model-len=4096",
+        "workload": {"id": "workload-test-v1"},
+        "provenance": {"github_login": "someone", "started_at": "2026-01-01T00:00:00Z"},
+    }
+    path = (
+        atlas_repo
+        / "results"
+        / "vllm"
+        / "acme"
+        / "test-model-1b"
+        / "test-gpu-24gb"
+        / f"{record['run_id']}.json"
+    )
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(record, indent=2) + "\n", encoding="utf-8")
+    return path
+
+
+def test_restamp_names_the_build_and_moves_the_file(atlas_repo: Path) -> None:
+    """Adding the build changes the config fingerprint, so the result relocates with it."""
+    path = _result_for_restamp(atlas_repo)
+    build = "ghcr.io/example/vllm@sha256:" + "a" * 64
+
+    result = runner.invoke(
+        app, ["restamp", str(path), "--build", build, "--registry-dir", str(atlas_repo)]
+    )
+    assert result.exit_code == 0, result.stdout
+    assert not path.exists(), "the old filename still carries the old fingerprint"
+
+    written = sorted(p for p in path.parent.glob("*.json"))
+    assert len(written) == 1
+    record = json.loads(written[0].read_text())
+    assert record["engine"]["build"] == build
+    assert record["config_id"] != "0000000000000000"
+    assert written[0].name == f"{record['run_id']}.json"
+    assert record["run_id"].startswith(record["config_id"])
+    # A build is a property of the configuration, not of the cell it sits in.
+    assert record["cell_id"] == "000000000000"
+
+
+def test_restamp_is_idempotent(atlas_repo: Path) -> None:
+    """Restamping the same build twice is a no-op, not a second relocation."""
+    path = _result_for_restamp(atlas_repo)
+    build = "ghcr.io/example/vllm@sha256:" + "b" * 64
+    args = ["restamp", "--build", build, "--registry-dir", str(atlas_repo)]
+
+    first = runner.invoke(app, ["restamp", str(path), *args[1:]])
+    assert first.exit_code == 0, first.stdout
+    moved = next(iter(path.parent.glob("*.json")))
+    before = moved.read_text()
+
+    second = runner.invoke(app, ["restamp", str(moved), *args[1:]])
+    assert second.exit_code == 0, second.stdout
+    assert "unchanged" in second.stdout
+    assert moved.read_text() == before
+
+
+def test_restamp_refuses_to_replace_a_different_build(atlas_repo: Path) -> None:
+    """Silently overwriting a recorded build would rewrite somebody's measurement."""
+    path = _result_for_restamp(atlas_repo)
+    args = ["--registry-dir", str(atlas_repo)]
+    first = runner.invoke(app, ["restamp", str(path), "--build", "image-a", *args])
+    assert first.exit_code == 0, first.stdout
+    moved = next(iter(path.parent.glob("*.json")))
+
+    refused = runner.invoke(app, ["restamp", str(moved), "--build", "image-b", *args])
+    assert refused.exit_code == 1
+    assert json.loads(moved.read_text())["engine"]["build"] == "image-a"
+
+    forced = runner.invoke(app, ["restamp", str(moved), "--build", "image-b", "--force", *args])
+    assert forced.exit_code == 0, forced.stdout
+    replaced = next(iter(path.parent.glob("*.json")))
+    assert json.loads(replaced.read_text())["engine"]["build"] == "image-b"
+
+
+def test_restamp_dry_run_changes_nothing(atlas_repo: Path) -> None:
+    """The plan is printable without touching the file."""
+    path = _result_for_restamp(atlas_repo)
+    before = path.read_text()
+    result = runner.invoke(
+        app,
+        ["restamp", str(path), "--build", "image-x", "--dry-run", "--registry-dir", str(atlas_repo)],
+    )
+    assert result.exit_code == 0, result.stdout
+    assert path.exists() and path.read_text() == before

@@ -684,3 +684,9 @@ or where reality disagreed with it. Each one is binding until superseded here.
     known — `sglang 0.0.0.dev0+qwen38.27b.g561c8f3` — `source_repo` is recorded as
     `unknown` rather than guessed; an invented repository would be worse than an admitted
     gap.
+
+    A result already on disk without the field is repaired by `atlas-bench restamp FILE
+    --build <ref>`, which recomputes the fingerprint and moves the file, because the
+    filename is the run id. Restamping is idempotent, refuses to replace a build already
+    recorded unless forced, and never touches `cell_id`: a build is a property of the
+    configuration, not of the cell the configuration sits in.
