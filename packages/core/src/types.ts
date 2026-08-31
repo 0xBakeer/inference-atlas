@@ -208,6 +208,15 @@ export interface EngineVersion {
   source?: string | null;
   notes?: string | null;
   params: EngineParam[];
+  /**
+   * `upstream` — a published release, where the version string identifies the build.
+   * `fork` — a build carrying patches the version string does not name, which is the usual
+   * case for a `+g<sha>` dev version: that sha is the UPSTREAM commit branched from. Forks
+   * must declare `source_repo` and `source_ref`, and results on them must set `engine.build`.
+   */
+  distribution?: 'upstream' | 'fork';
+  source_repo?: string | null;
+  source_ref?: string | null;
 }
 
 export interface EngineOverlayEntry {
@@ -445,6 +454,12 @@ export interface ResultRecord {
     container?: string | null;
     install_method?: InstallMethod | null;
     build_flags?: string | null;
+    /**
+     * Identity of the engine build when its version string does not pin it: a container
+     * digest, or `<fork repo>@<fork ref>`. Folded into `config_id` as `@build`, and required
+     * when the engine version is registered with `distribution: "fork"`.
+     */
+    build?: string | null;
   };
   model: {
     id: ModelId;

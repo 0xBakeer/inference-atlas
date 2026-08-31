@@ -1,10 +1,12 @@
 import { cellId, computeCoverage } from '@atlas/core';
 import { describe, expect, it } from 'vitest';
 import {
+  atlasCells,
   buildHeatMatrix,
   buildLookups,
   hardwarePlatforms,
   heatKey,
+  measuredCells,
   possibleCells,
 } from './derive.js';
 import { fixtureRegistry, fixtureRow } from './fixture.js';
@@ -69,6 +71,108 @@ describe('possibleCells', () => {
         memory_gb: 1,
       }),
     ).toEqual(['linux-cpu', 'windows-cpu']);
+  });
+});
+
+describe('measuredCells', () => {
+  const reg = fixtureRegistry();
+  const enumerated = possibleCells(reg);
+  const tpCellId = cellId({
+    model_id: 'Qwen/Qwen3-8B',
+    quant_id: 'fp8',
+    hardware_id: 'nvidia-rtx-4090',
+    hw_count: 2,
+    engine_id: 'vllm',
+    engine_minor: '0.27',
+  });
+  const tpIndex = normalizeIndex([
+    fixtureRow({
+      cell_id: tpCellId,
+      run_id: 'cfg0000000000002--serve-single-i256-o256-v1--abc125',
+      config_id: 'cfg0000000000002',
+      hardware: { id: 'nvidia-rtx-4090', count: 2 },
+      metrics: { output_tok_s: 200 },
+    }),
+  ]);
+  const tpCoverage = computeCoverage(
+    tpIndex,
+    { engineVersions: { vllm: ['0.26.1', '0.27.1'], 'mlx-lm': ['0.28.4'] } },
+    { site: reg.site },
+  );
+
+  it('adds a measured multi-device cell the cross product cannot enumerate', () => {
+    expect(enumerated.some((pc) => pc.cell_id === tpCellId)).toBe(false);
+    const extra = measuredCells(reg, tpCoverage, enumerated);
+    expect(extra).toHaveLength(1);
+    expect(extra[0]!.cell_id).toBe(tpCellId);
+    expect(extra[0]!.hw_count).toBe(2);
+    // pinned to the newest registered version of the cell's own minor, for the packet
+    expect(extra[0]!.engine_version).toBe('0.27.1');
+  });
+
+  it('adds nothing for a cell the cross product already has', () => {
+    const single = enumerated.find(
+      (c) => c.engine_id === 'vllm' && c.quant_id === 'fp8' && c.engine_minor === '0.27',
+    )!;
+    const cov = computeCoverage(
+      normalizeIndex([fixtureRow({ cell_id: single.cell_id })]),
+      { engineVersions: { vllm: ['0.26.1', '0.27.1'] } },
+      { site: reg.site },
+    );
+    expect(measuredCells(reg, cov, enumerated)).toHaveLength(0);
+  });
+
+  it('skips a cell naming hardware the registry does not have', () => {
+    const cov = {
+      deadbeef0000: {
+        cell_id: 'deadbeef0000',
+        model_id: 'Qwen/Qwen3-8B',
+        quant_id: 'fp8',
+        hardware_id: 'nvidia-rtx-9090',
+        hw_count: 2,
+        engine_id: 'vllm',
+        engine_minor: '0.27',
+        runs: 1,
+        logins: ['someone'],
+        workloads: [],
+        configs: [],
+        level: 'single' as const,
+        best: null,
+      },
+    };
+    expect(measuredCells(reg, cov, enumerated)).toHaveLength(0);
+  });
+
+  it('counts the multi-device square on the grid instead of dropping it', () => {
+    const before = buildHeatMatrix(
+      reg,
+      buildLookups(reg),
+      enumerated,
+      tpCoverage,
+      tpIndex,
+      'model',
+      'hardware',
+      {},
+      reg.site.coverage.key_metrics,
+    );
+    expect(before.cells.get(heatKey('Qwen/Qwen3-8B', 'nvidia-rtx-4090'))!.runs).toBe(0);
+
+    const after = buildHeatMatrix(
+      reg,
+      buildLookups(reg),
+      atlasCells(reg, tpCoverage),
+      tpCoverage,
+      tpIndex,
+      'model',
+      'hardware',
+      {},
+      reg.site.coverage.key_metrics,
+    );
+    const hc = after.cells.get(heatKey('Qwen/Qwen3-8B', 'nvidia-rtx-4090'))!;
+    expect(hc.runs).toBe(1);
+    expect(hc.covered).toBe(1);
+    expect(hc.possible).toBe(5);
+    expect(hc.cells.map((c) => c.cell_id)).toEqual([tpCellId]);
   });
 });
 

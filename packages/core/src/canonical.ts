@@ -41,10 +41,16 @@ export interface CanonicalizeInput {
   drop_params?: string[] | null;
   /** engine meta `param_aliases`, merged under the per-param aliases. */
   param_aliases?: Record<string, string> | null;
+  /**
+   * Identity of the engine BUILD, when the version string alone does not pin it: a container
+   * digest, or `<fork repo>@<fork ref>`. Required by the validator for any engine version
+   * registered as a fork; absent for upstream releases, whose version string is sufficient.
+   */
+  build?: string | null;
 }
 
 export interface CanonicalizeResult {
-  /** `k=v;k=v`, sorted, including the `@quant` / `@dtype` pseudo-params. */
+  /** `k=v;k=v`, sorted, including the `@quant` / `@dtype` / `@build` pseudo-params. */
   canonical: string;
   /** `sha256(canonical)[:16]` */
   configId: string;
@@ -166,7 +172,7 @@ function tryParseJson(s: string): ArgValue | undefined {
  * SPEC §3 steps 1–6.
  *
  * 1. resolve aliases, 2. drop values equal to the version default, 3. normalize values and
- * remove `drop_params`, 4. prepend `@quant` / `@dtype`, 5. sort, 6. hash.
+ * remove `drop_params`, 4. prepend `@quant` / `@dtype` / `@build`, 5. sort, 6. hash.
  *
  * Steps 2 and 3 are fused: the default is normalized with the same rules as the value and
  * the two canonical *strings* are compared, so `"0.90"` matches a default of `0.9` and
@@ -211,6 +217,14 @@ export function canonicalizeArgs(input: CanonicalizeInput): CanonicalizeResult {
 
   resolved['@quant'] = input.quant_id.trim().toLowerCase();
   resolved['@dtype'] = (input.dtype ?? 'auto').trim().toLowerCase() || 'auto';
+
+  // `@build` distinguishes engine builds that share a version string (SPEC §3, decision 24).
+  // A fork's version is usually `<upstream release>+g<upstream sha>`: it names the commit the
+  // fork branched from, not the fork's own patches, so two people patching the same upstream
+  // commit differently produce the same string and land on the same fingerprint. Omitted when
+  // absent, so every result recorded before this existed keeps its id.
+  const build = (input.build ?? '').trim().toLowerCase();
+  if (build) resolved['@build'] = build;
 
   const canonical = Object.keys(resolved)
     .sort(byteCompare)

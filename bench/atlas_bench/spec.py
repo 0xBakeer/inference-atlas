@@ -51,6 +51,11 @@ class EngineRef(_Base):
     id: str
     version: str
     commit: str | None = None
+    #: Identity of the BUILD when the version string does not pin it: a container digest, or
+    #: ``<fork repo>@<fork ref>``. Required for engine versions registered as forks, because
+    #: a fork's ``<release>+g<sha>`` names the upstream commit it branched from rather than
+    #: its own patches (SPEC §3, decision 24). Enters the fingerprint as ``@build``.
+    build: str | None = None
     install: InstallSpec | None = None
     container: str | None = None
     base_url: str | None = None

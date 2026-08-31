@@ -88,6 +88,9 @@ export function engineMinors(engine: RegistryEngine): Array<{ minor: string; ver
 /**
  * Every cell that could exist given the registry: model x quant x hardware x engine-minor where
  * the quant lists the engine and the engine has a platform the device can run.
+ *
+ * `hw_count` is fixed at 1 — see `measuredCells` for the multi-device cells this cannot reach.
+ * Use `atlasCells` for the union, which is what the grid and the coverage ratio are built on.
  */
 export function possibleCells(reg: Registry): PossibleCell[] {
   const out: PossibleCell[] = [];
@@ -123,6 +126,61 @@ export function possibleCells(reg: Registry): PossibleCell[] {
     }
   }
   return out;
+}
+
+/**
+ * Cells somebody has measured that `possibleCells` does not enumerate.
+ *
+ * The cross product fixes `hw_count` at 1 because there is no bound on how many devices a
+ * contributor may gang together: enumerating 2, 4 and 8 of every device would be inventing a
+ * denominator nobody asked for. A configuration somebody has actually run, though,
+ * demonstrably exists — leaving it out does not make the map more honest, it hides evidence.
+ * A tensor-parallel run used to count in `coverage.json` and in `stats.cells_covered` and
+ * appear nowhere on the grid: the square's run count, its evidence level, its best number and
+ * the drawer's "Measured" list all silently excluded it.
+ *
+ * Only cells whose model, hardware and engine are all in the registry are returned, because a
+ * cell that names something the registry does not have cannot be placed on an axis or
+ * filtered by vendor.
+ */
+export function measuredCells(
+  reg: Registry,
+  coverage: CoverageMap,
+  enumerated: PossibleCell[],
+): PossibleCell[] {
+  const seen = new Set(enumerated.map((pc) => pc.cell_id));
+  const models = new Set(reg.models.map((m) => m.model.id));
+  const hardware = new Set(reg.hardware.map((h) => h.id));
+  const versionForMinor = new Map<string, string>();
+  for (const e of reg.engines)
+    for (const { minor, version } of engineMinors(e))
+      versionForMinor.set(`${e.meta.id} ${minor}`, version);
+
+  const out: PossibleCell[] = [];
+  for (const cell of Object.values(coverage)) {
+    if (!cell?.cell_id || seen.has(cell.cell_id)) continue;
+    if (!models.has(cell.model_id) || !hardware.has(cell.hardware_id)) continue;
+    const key = `${cell.engine_id} ${cell.engine_minor}`;
+    if (!versionForMinor.has(key)) continue;
+    seen.add(cell.cell_id);
+    out.push({
+      cell_id: cell.cell_id,
+      model_id: cell.model_id,
+      quant_id: cell.quant_id,
+      hardware_id: cell.hardware_id,
+      hw_count: cell.hw_count,
+      engine_id: cell.engine_id,
+      engine_version: versionForMinor.get(key)!,
+      engine_minor: cell.engine_minor,
+    });
+  }
+  return out;
+}
+
+/** The cross product plus the measured cells it does not reach — the app's whole universe. */
+export function atlasCells(reg: Registry, coverage: CoverageMap): PossibleCell[] {
+  const enumerated = possibleCells(reg);
+  return [...enumerated, ...measuredCells(reg, coverage, enumerated)];
 }
 
 /* --------------------------------------------------------------- heatmap aggregation */

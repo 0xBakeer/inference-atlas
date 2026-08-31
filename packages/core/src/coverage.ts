@@ -16,6 +16,10 @@ import type { CompiledIndexRow, CoverageCell, CoverageLevel, SiteConfig } from '
  * Precedence when several apply: disputed > stale > reproduced > single. Disputed wins
  * because a wrong number is worse than an old one; stale beats reproduced because a cell
  * that was reproduced on vLLM 0.19 tells you nothing about 0.27.
+ *
+ * `stale` is only claimed between two versions the registry can actually order — see
+ * `isReleaseVersion`. A development or fork build is never behind anything, because the
+ * release numbers it would be compared against do not describe the same software.
  */
 
 const DEFAULTS = {
@@ -69,14 +73,52 @@ function median(values: number[]): number {
   return (sorted[mid - 1]! + sorted[mid]!) / 2;
 }
 
+/** A dotted numeric version (`0.27.1`, `1.2.0`, `2026.08.1`), optionally `v`-prefixed. */
+const DOTTED_RELEASE = /^v?\d+(?:\.\d+)*$/;
+/** A build number in a monotonic sequence: llama.cpp's `b7000`, or a bare `7000`. */
+const BUILD_NUMBER = /^[a-z]*\d+$/;
+
 /**
- * How many registered minors of this engine are newer than `minor`.
+ * Can this version string be placed on its engine's published release lineage?
  *
- * Non-numeric version schemes (llama.cpp `b7000`) sort lexicographically after being
- * zero-padded, which is good enough because build numbers grow monotonically.
+ * "Behind" is a claim about two points on one lineage, and only two version shapes carry
+ * that information — the two `compareMinor` can order: a dotted numeric release and a
+ * monotonic build number. Everything else is off the lineage and is never compared:
+ *
+ *   - Development and pre-release builds, and anything carrying a local-version segment:
+ *     `0.1.dev20073+g8e685d198`, `0.0.0.dev0+qwen38.27b.g561c8f3`. setuptools-scm emits
+ *     `0.1.devN+g<sha>` for a checkout with no reachable tag, which is what building a fork
+ *     or an unmerged branch produces, so the leading `0.1` is a placeholder — it is not
+ *     vLLM 0.1, and ordering it against 0.27 says nothing about age. These builds are
+ *     registered as their own engine version precisely because their flags and their
+ *     behaviour are those of no published release; treating them as an old release
+ *     contradicts the reason they exist.
+ *   - Opaque build identifiers: a bare commit sha (`960652b`), or a build number carrying
+ *     one (`b50-035e227`). `compareMinor` falls back to string comparison for these, which
+ *     is a guess about ordering, not evidence of age.
+ *
+ * Both directions matter. A cell measured on such a build is never behind, and such a build
+ * in the registry never makes anybody else's cell look behind.
  */
-export function minorsBehind(minor: string, registered: string[]): number {
-  const known = new Set(registered.map(engineMinor));
+export function isReleaseVersion(version: string): boolean {
+  const v = version.trim().toLowerCase();
+  return DOTTED_RELEASE.test(v) || BUILD_NUMBER.test(v);
+}
+
+/**
+ * How many registered release minors of this engine are newer than `version`.
+ *
+ * `version` may be a full version (`0.27.1`) or the minor itself (`0.27`) — a minor is its
+ * own minor. A version that is not on the release lineage is never behind: it returns 0,
+ * and registered versions that are not on the lineage are not counted as newer.
+ *
+ * Build-number schemes (llama.cpp `b7000`) are ordered by their numeric part, which is good
+ * enough because build numbers grow monotonically.
+ */
+export function minorsBehind(version: string, registered: string[]): number {
+  if (!isReleaseVersion(version)) return 0;
+  const minor = engineMinor(version);
+  const known = new Set(registered.filter(isReleaseVersion).map(engineMinor));
   known.add(minor);
   const ordered = [...known].sort(compareMinor);
   const idx = ordered.indexOf(minor);
@@ -194,8 +236,13 @@ function buildCell(
     }
   }
 
+  // A cell is one engine minor, but its rows carry full versions, and only the full version
+  // says whether this is a release or a build off the lineage (`engineMinor` drops the
+  // `.dev20073+g8e685d198` that carries that information). If any row is a real release of
+  // the minor, the cell is on the lineage and ordinary staleness applies.
   const registered = registry.engineVersions[facts.engine_id] ?? [];
-  const behind = minorsBehind(facts.engine_minor, registered);
+  const versions = rows.map((r) => r.engine.version);
+  const behind = minorsBehind(versions.find(isReleaseVersion) ?? versions[0] ?? '', registered);
 
   let level: CoverageLevel;
   if (disputes.length > 0) level = 'disputed';

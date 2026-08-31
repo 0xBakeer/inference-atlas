@@ -629,3 +629,58 @@ or where reality disagreed with it. Each one is binding until superseded here.
 
 21. **No seed results; measurements run on contributors' machines only.** The 8 hand-entered seed
     files were removed; `docs/reference-measurements.md` keeps the numbers as reference.
+
+22. **Staleness is only claimed on the release lineage (2026-08-30).** `minorsBehind` counts
+    only registered versions that can be placed on the engine's published release lineage —
+    a dotted numeric release (`0.27.1`) or a monotonic build number (`b7000`), the two shapes
+    `compareMinor` can actually order. Development and pre-release builds
+    (`0.1.dev20073+g8e685d198`, `0.0.0.dev0+qwen38.27b.g561c8f3`) and opaque build
+    identifiers (`960652b`, `b50-035e227`) are off the lineage: a cell measured on one is
+    never `stale`, and one of them in `versions_available` never makes anybody else's cell
+    stale. setuptools-scm reports `0.1.devN+g<sha>` for a checkout with no reachable tag,
+    which is what building an unmerged branch produces, so the leading `0.1` is a placeholder
+    and ordering it against 0.27 says nothing about age. Such a build is registered as its
+    own engine version precisely because its flags and its behaviour are those of no
+    published release (decision 7, and `engines/vllm/versions/0.1.dev20073+g8e685d198.json`);
+    calling it two minors old contradicts the reason it exists. This is a rule about version
+    strings, not about which engine version can load which model — the registry records no
+    per-version model support, so "is there a newer engine that can even run this" is not a
+    question the data can answer today.
+
+23. **The coverage denominator is the cross product plus what has been measured
+    (2026-08-30).** The registry cross product fixes `hw_count` at 1, because there is no
+    bound on how many devices a contributor may gang together and enumerating 2, 4 and 8 of
+    every device would invent a denominator. A cell somebody has run on several devices is
+    possible all the same, so `stats.cells_possible` and the app's atlas grid are the cross
+    product **union** the measured cells (`possibleCells(repo, cells)`,
+    `atlasCells(reg, coverage)`). Before this, a tensor-parallel run counted in
+    `coverage.json` and in `cells_covered` but appeared nowhere on the grid: the square's run
+    count, its evidence level, its best number and the cell drawer's "Measured" list all
+    silently excluded it, and the coverage ratio had a numerator its denominator did not
+    contain.
+
+24. **A fork's version string does not identify its build, so `@build` does
+    (2026-08-31).** `config_id` was `sha256` over the canonical args plus `@quant` and
+    `@dtype`, and `cell_id` carries the engine _minor_. Neither distinguishes two engines
+    that report the same version. That is not a corner case: a fork built with
+    setuptools-scm reports `<release>+g<sha>` where the sha is the **upstream** commit it
+    branched from, not the patches it carries. Three vLLM builds in this registry today —
+    `0.1.dev20073+g8e685d198`, `0.26.1.dev0+gf2654939e.d20260726`,
+    `0.0.0.dev0+qwen38.27b.g561c8f3` — are forks whose version strings say nothing about
+    their forks, and the same string covers builds either side of a correctness fix: the
+    author of one told us its pre-2026-08-30 wheels write a sparse-MLA cache out of bounds
+    on long generations, which is a different engine wearing the same name.
+
+    An engine version therefore declares `distribution`, and a fork must name
+    `source_repo` and `source_ref`. A result on a fork must set `engine.build` — a
+    container digest, or `<fork repo>@<fork ref>` — and that value enters the canonical
+    string as `@build`, so two builds of one version get two fingerprints.
+
+    Two deliberate limits. The pseudo-param is **omitted when absent**, so every result
+    merged before this rule keeps its `config_id` and no history is rewritten. And the
+    missing-build check fires **only under review**: an already-merged cell predates the
+    field, and failing it now would claim its numbers are wrong when what is missing is a
+    provenance field nobody could have supplied. Where a fork's origin is genuinely not
+    known — `sglang 0.0.0.dev0+qwen38.27b.g561c8f3` — `source_repo` is recorded as
+    `unknown` rather than guessed; an invented repository would be worse than an admitted
+    gap.

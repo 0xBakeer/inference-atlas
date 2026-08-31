@@ -243,3 +243,21 @@ def test_conditions_absent_stays_null(atlas_repo: Path) -> None:
     """No conditions given: the field is null, never invented."""
     record = build_result(inputs(atlas_repo, WorkloadOutcome(kind="serving")))
     assert record["conditions"] is None
+
+
+def test_engine_build_reaches_the_fingerprint_and_the_record() -> None:
+    """A fork build must change config_id and be recorded, or the fork rule is unenforceable.
+
+    A fork's version string names the upstream commit it branched from, so two builds share
+    it; ``engine.build`` is what separates them (SPEC §3, decision 24).
+    """
+    from atlas_bench.canonical import CanonicalInput, canonicalize
+
+    base = dict(engine_id="vllm", engine_version="0.1.dev20073+g8e685d198", args={}, quant_id="nvfp4")
+    before = canonicalize(CanonicalInput(**base, build="github.com/example/fork@82ed48d"))
+    after = canonicalize(CanonicalInput(**base, build="github.com/example/fork@8347e7c"))
+    assert before != after, "two builds of one version must not share a canonical string"
+
+    # And a run that declares nothing hashes exactly as it did before the field existed.
+    assert canonicalize(CanonicalInput(**base)) == canonicalize(CanonicalInput(**base, build=None))
+    assert canonicalize(CanonicalInput(**base)) == "@dtype=auto;@quant=nvfp4"

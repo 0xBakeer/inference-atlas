@@ -1,0 +1,550 @@
+{
+  "schema_version": 1,
+  "run_id": "bee4892d51ef0bfb--eval-format-v1--206d25",
+  "config_id": "bee4892d51ef0bfb",
+  "cell_id": "611bb86b867d",
+  "workload_id": "eval-format-v1",
+  "kind": "eval",
+  "engine": {
+    "id": "vllm",
+    "version": "0.26.1.dev0+gf2654939e.d20260726",
+    "commit": null,
+    "build": "ghcr.io/miaai-lab/mia-vllm-gb10-linear-b12x@sha256:19627342e1da2607f4db50745dca30e57d7dd0ebff06062f03fd69b43a252931",
+    "container": "ghcr.io/miaai-lab/mia-vllm-gb10-linear-b12x:latest",
+    "install_method": "docker"
+  },
+  "model": {
+    "id": "Qwen/Qwen3.6-35B-A3B",
+    "quant_id": "nvfp4",
+    "hf_id": "Qwen/Qwen3.6-35B-A3B",
+    "revision": "739af1e7aac320af1682ed1e0cce369af4c5265d",
+    "dtype": "auto",
+    "local_path": null
+  },
+  "hardware": {
+    "id": "nvidia-gb10-dgx-spark",
+    "count": 1,
+    "driver": "580.173.02",
+    "cuda": "13.0",
+    "host": {
+      "cpu": "Cortex-A725",
+      "cpu_cores": 20,
+      "ram_gb": 121.6,
+      "os": "Ubuntu 24.04.4 LTS",
+      "kernel": "6.17.0-1029-nvidia",
+      "arch": "aarch64"
+    },
+    "fingerprint": "sha256:52ea2bdd513719724db88c162b6cc2c9fb4e5b67e02dbe41b9de00687acefb91",
+    "captured": {
+      "nvidia_smi": {
+        "driver": "580.173.02",
+        "cuda": "13.0",
+        "products": [
+          "NVIDIA GB10"
+        ],
+        "fb_memory_total_mib": 0
+      },
+      "lscpu": {
+        "architecture": "aarch64",
+        "cpus": "20",
+        "vendor_id": "ARM",
+        "model_name": "Cortex-A725",
+        "cores_per_socket": "10",
+        "sockets": "1",
+        "cpu_max_mhz": "2808.0000"
+      }
+    }
+  },
+  "args": {
+    "tensor-parallel-size": 1,
+    "trust-remote-code": true,
+    "moe-backend": "auto",
+    "gpu-memory-utilization": 0.8,
+    "linear-backend": "flashinfer_b12x",
+    "attention-backend": "flashinfer",
+    "max-model-len": 262144,
+    "max-num-seqs": 24,
+    "max-num-batched-tokens": 32768,
+    "enable-chunked-prefill": true,
+    "async-scheduling": true,
+    "kv-cache-dtype": "fp8",
+    "limit-mm-per-prompt": {
+      "image": 4
+    },
+    "speculative-config": {
+      "method": "mtp",
+      "num_speculative_tokens": 2,
+      "moe_backend": "triton"
+    },
+    "reasoning-parser": "qwen3",
+    "tool-call-parser": "qwen3_coder",
+    "enable-auto-tool-choice": true,
+    "default-chat-template-kwargs": {
+      "enable_thinking": true,
+      "preserve_thinking": true
+    },
+    "override-generation-config": {
+      "temperature": 0.6,
+      "top_p": 0.95,
+      "top_k": 20,
+      "min_p": 0,
+      "presence_penalty": 0,
+      "repetition_penalty": 1
+    }
+  },
+  "args_canonical": "@build=ghcr.io/miaai-lab/mia-vllm-gb10-linear-b12x@sha256:19627342e1da2607f4db50745dca30e57d7dd0ebff06062f03fd69b43a252931;@dtype=auto;@quant=nvfp4;attention-backend=flashinfer;default-chat-template-kwargs={\"enable_thinking\":true,\"preserve_thinking\":true};enable-auto-tool-choice=true;gpu-memory-utilization=0.8;kv-cache-dtype=fp8;limit-mm-per-prompt={\"image\":4};linear-backend=flashinfer_b12x;max-model-len=262144;max-num-batched-tokens=32768;max-num-seqs=24;no-async-scheduling=true;no-enable-chunked-prefill=true;no-trust-remote-code=true;override-generation-config={\"min_p\":0,\"presence_penalty\":0,\"repetition_penalty\":1,\"temperature\":0.6,\"top_k\":20,\"top_p\":0.95};reasoning-parser=qwen3;speculative-config={\"method\":\"mtp\",\"moe_backend\":\"triton\",\"num_speculative_tokens\":2};tool-call-parser=qwen3_coder",
+  "serve_command": null,
+  "workload": {
+    "id": "eval-format-v1",
+    "resolved_params": {
+      "dataset_id": "eval-format-v1",
+      "suite": "format",
+      "scorer": "exact",
+      "items": 30,
+      "concurrency": 4,
+      "max_output_tokens": 256,
+      "timeout_s": 300,
+      "temperature": 0,
+      "reasoning": "default",
+      "dataset_categories": null,
+      "dataset_target_tokens": null,
+      "pass_threshold": null,
+      "seed": 42
+    }
+  },
+  "metrics": {
+    "requests_total": 30,
+    "requests_ok": 30,
+    "requests_failed": 0,
+    "success_rate": 1,
+    "duration_s": 42.158,
+    "input_tokens_total": 834,
+    "output_tokens_total": 6449,
+    "e2e_ms": {
+      "mean": 5326.998,
+      "p50": 5656.035,
+      "p90": 6339.184,
+      "p95": 6464.053,
+      "p99": 6571.605,
+      "min": 2669.629,
+      "max": 6575.089
+    },
+    "vram_peak_gb": null,
+    "ram_peak_gb": 110.077,
+    "power_avg_w": 36.25,
+    "power_peak_w": 38.67,
+    "energy_wh": 0.4149,
+    "gpu_util_avg_pct": 95.45,
+    "temp_max_c": 66,
+    "thermal_throttle_detected": false
+  },
+  "scores": {
+    "suite": "format",
+    "total": 30,
+    "correct": 21,
+    "accuracy": 0.7,
+    "success_rate": 1,
+    "by_category": {
+      "boolean": {
+        "total": 4,
+        "correct": 3
+      },
+      "number_only": {
+        "total": 8,
+        "correct": 6
+      },
+      "one_word": {
+        "total": 8,
+        "correct": 5
+      },
+      "pattern": {
+        "total": 3,
+        "correct": 2
+      },
+      "token": {
+        "total": 7,
+        "correct": 5
+      }
+    },
+    "by_difficulty": {
+      "easy": {
+        "total": 12,
+        "correct": 9
+      },
+      "hard": {
+        "total": 3,
+        "correct": 3
+      },
+      "medium": {
+        "total": 15,
+        "correct": 9
+      }
+    },
+    "avg_output_tokens": 214.97,
+    "avg_latency_ms": 5327,
+    "failures": 0,
+    "items": [
+      {
+        "id": "fmt-0001",
+        "correct": true,
+        "predicted": "42",
+        "expected": "42",
+        "latency_ms": 3441.556,
+        "output_tokens": 145,
+        "category": "number_only",
+        "difficulty": "easy"
+      },
+      {
+        "id": "fmt-0002",
+        "correct": true,
+        "predicted": "25",
+        "expected": "25",
+        "latency_ms": 3441.104,
+        "output_tokens": 142,
+        "category": "number_only",
+        "difficulty": "easy"
+      },
+      {
+        "id": "fmt-0003",
+        "correct": true,
+        "predicted": "8",
+        "expected": "8",
+        "latency_ms": 5361.664,
+        "output_tokens": 219,
+        "category": "number_only",
+        "difficulty": "easy"
+      },
+      {
+        "id": "fmt-0004",
+        "correct": true,
+        "predicted": "42",
+        "expected": "42",
+        "latency_ms": 2963.83,
+        "output_tokens": 123,
+        "category": "number_only",
+        "difficulty": "easy"
+      },
+      {
+        "id": "fmt-0005",
+        "correct": false,
+        "predicted": "",
+        "expected": "9",
+        "latency_ms": 6296.58,
+        "output_tokens": 256,
+        "category": "number_only",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0006",
+        "correct": true,
+        "predicted": "30",
+        "expected": "30",
+        "latency_ms": 3510.148,
+        "output_tokens": 136,
+        "category": "number_only",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0007",
+        "correct": true,
+        "predicted": "13",
+        "expected": "13",
+        "latency_ms": 5973.695,
+        "output_tokens": 245,
+        "category": "number_only",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0008",
+        "correct": false,
+        "predicted": "",
+        "expected": "150",
+        "latency_ms": 6563.075,
+        "output_tokens": 256,
+        "category": "number_only",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0009",
+        "correct": true,
+        "predicted": "OK",
+        "expected": "OK",
+        "latency_ms": 5823.718,
+        "output_tokens": 222,
+        "category": "one_word",
+        "difficulty": "easy"
+      },
+      {
+        "id": "fmt-0010",
+        "correct": true,
+        "predicted": "Tokyo",
+        "expected": "Tokyo",
+        "latency_ms": 3730.635,
+        "output_tokens": 150,
+        "category": "one_word",
+        "difficulty": "easy"
+      },
+      {
+        "id": "fmt-0011",
+        "correct": true,
+        "predicted": "Green",
+        "expected": "green",
+        "latency_ms": 5482.058,
+        "output_tokens": 214,
+        "category": "one_word",
+        "difficulty": "easy"
+      },
+      {
+        "id": "fmt-0012",
+        "correct": false,
+        "predicted": "",
+        "expected": "cold",
+        "latency_ms": 6343.026,
+        "output_tokens": 256,
+        "category": "one_word",
+        "difficulty": "easy"
+      },
+      {
+        "id": "fmt-0013",
+        "correct": true,
+        "predicted": "mice",
+        "expected": "mice",
+        "latency_ms": 5428.375,
+        "output_tokens": 223,
+        "category": "one_word",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0014",
+        "correct": false,
+        "predicted": "",
+        "expected": "salta",
+        "latency_ms": 6338.757,
+        "output_tokens": 256,
+        "category": "one_word",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0015",
+        "correct": false,
+        "predicted": "",
+        "expected": "jumps",
+        "latency_ms": 5937.525,
+        "output_tokens": 256,
+        "category": "one_word",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0016",
+        "correct": true,
+        "predicted": "inf",
+        "expected": "inf",
+        "latency_ms": 5182.456,
+        "output_tokens": 217,
+        "category": "one_word",
+        "difficulty": "hard"
+      },
+      {
+        "id": "fmt-0017",
+        "correct": true,
+        "predicted": "Fe",
+        "expected": "Fe",
+        "latency_ms": 6233.143,
+        "output_tokens": 234,
+        "category": "token",
+        "difficulty": "easy"
+      },
+      {
+        "id": "fmt-0018",
+        "correct": false,
+        "predicted": "",
+        "expected": "DE",
+        "latency_ms": 6095.665,
+        "output_tokens": 256,
+        "category": "token",
+        "difficulty": "easy"
+      },
+      {
+        "id": "fmt-0019",
+        "correct": true,
+        "predicted": "ja",
+        "expected": "ja",
+        "latency_ms": 4874.56,
+        "output_tokens": 184,
+        "category": "token",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0020",
+        "correct": true,
+        "predicted": "s",
+        "expected": "s",
+        "latency_ms": 2669.629,
+        "output_tokens": 102,
+        "category": "token",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0021",
+        "correct": false,
+        "predicted": "",
+        "expected": "ff",
+        "latency_ms": 6575.089,
+        "output_tokens": 256,
+        "category": "token",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0022",
+        "correct": true,
+        "predicted": "IX",
+        "expected": "IX",
+        "latency_ms": 5417.721,
+        "output_tokens": 226,
+        "category": "token",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0023",
+        "correct": true,
+        "predicted": "l",
+        "expected": "l",
+        "latency_ms": 5199.557,
+        "output_tokens": 218,
+        "category": "token",
+        "difficulty": "hard"
+      },
+      {
+        "id": "fmt-0024",
+        "correct": false,
+        "predicted": "",
+        "expected": "yes",
+        "latency_ms": 6291.82,
+        "output_tokens": 256,
+        "category": "boolean",
+        "difficulty": "easy"
+      },
+      {
+        "id": "fmt-0025",
+        "correct": true,
+        "predicted": "true",
+        "expected": "true",
+        "latency_ms": 5667.919,
+        "output_tokens": 225,
+        "category": "boolean",
+        "difficulty": "easy"
+      },
+      {
+        "id": "fmt-0026",
+        "correct": true,
+        "predicted": "yes",
+        "expected": "yes",
+        "latency_ms": 6306.082,
+        "output_tokens": 238,
+        "category": "boolean",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0027",
+        "correct": true,
+        "predicted": "False",
+        "expected": "false",
+        "latency_ms": 5844.38,
+        "output_tokens": 244,
+        "category": "boolean",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0028",
+        "correct": false,
+        "predicted": "",
+        "expected": "2026-03-01",
+        "latency_ms": 6248.376,
+        "output_tokens": 256,
+        "category": "pattern",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0029",
+        "correct": true,
+        "predicted": "00:15",
+        "expected": "00:15",
+        "latency_ms": 5644.151,
+        "output_tokens": 239,
+        "category": "pattern",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0030",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 4923.645,
+        "output_tokens": 199,
+        "category": "pattern",
+        "difficulty": "hard"
+      }
+    ]
+  },
+  "failures": [],
+  "conditions": null,
+  "gotchas": [
+    {
+      "severity": "info",
+      "text": "GPU CLOCK IS A HIDDEN VARIABLE ON THIS BOX AND IT IS NOT AT MAXIMUM. Sampled at workload start: 2463MHz,3003MHz. nvidia-smi reports no active clock event reason - no SW power cap, no HW slowdown, no thermal slowdown, no applications-clock setting - and the clock cannot be raised without root, which this account does not have. Under load the SM clock sits around 2470-2490 MHz against a 3003 MHz ceiling, roughly 82 percent. On this model the effect is small: the author's own TTFT benchmark reproduced to within 4 percent. On a much larger model measured on the same box the same day the gap to the author's published decode figure was about 11 percent. Treat any comparison against a figure from another Spark as carrying this unknown unless that box's clock state is also stated."
+    },
+    {
+      "severity": "info",
+      "text": "Quantization is mixed, not uniform NVFP4, and the registry bits figure reflects that. Read out of the shard headers: routed experts are NVFP4 (packed U8 values with per-block F8_E4M3 scales and F32 global scales, 7830 of each per shard), attention is F8_E4M3 with BF16, and the router, gates and norms stay BF16. The router in particular is full precision because a routing error is discrete - a different set of experts fires - rather than a small numeric one. The pack is 6.06 bits per parameter overall, not 4."
+    },
+    {
+      "severity": "info",
+      "text": "Speculative decoding is the model's own MTP head at 2 tokens with moe_backend triton, and the linear backend is flashinfer_b12x with a soft fallback to auto for layers that are not NVFP4. Both are the recipe's defaults, both change decode throughput, and neither is comparable with a cell run without them."
+    }
+  ],
+  "derived": {
+    "cost_per_1m_output_tokens_usd": null,
+    "tokens_per_watt": null,
+    "tok_s_per_gb_bandwidth": null,
+    "bandwidth_efficiency": null,
+    "memory_headroom_gb": null
+  },
+  "raw": {
+    "harness": "atlas-bench",
+    "harness_version": "0.1.0",
+    "sha256": "e0248dc6ebc58aea09f43bd3733ffd958a2f9e7653dcc9f9870c3abb7a9b1f7d",
+    "payload_path": null,
+    "payload": {
+      "scorer": "exact",
+      "scorers_used": [
+        "exact"
+      ],
+      "engine_endpoint": {
+        "attached": true,
+        "base_url": "http://127.0.0.1:8888/v1",
+        "served_model_id": "unsloth/Qwen3.6-35B-A3B-NVFP4",
+        "advertised_models": [
+          "unsloth/Qwen3.6-35B-A3B-NVFP4"
+        ]
+      }
+    },
+    "truncated": false
+  },
+  "provenance": {
+    "github_login": "0xBakeer",
+    "github_user_id": 17404809,
+    "started_at": "2026-08-31T07:01:22Z",
+    "finished_at": "2026-08-31T07:02:05Z",
+    "submitted_at": null,
+    "commit": null,
+    "pr": null,
+    "method": "atlas-bench",
+    "agent": null,
+    "notes": "Box was dedicated: no desktop session, no other GPU work, and the reverse-proxy SSH tunnel that is the only external route in was stopped for the whole sweep. NVIDIA DGX Spark (ASUS Ascent GX10, GB10 / SM121, 128 GB unified, ~121 GiB usable), Ubuntu 24.04.4, kernel 6.17.0-1029-nvidia aarch64, driver 580.173.02, CUDA 13.0, swap off. Server is the published recipe at github.com/MiaAI-Lab/Unsloth-Qwen3.6-35b-NVFP4-DGX-Spark run unmodified via its own start.sh: image ghcr.io/miaai-lab/mia-vllm-gb10-linear-b12x:latest, which reports vLLM 0.26.1.dev0+gf2654939e.d20260726 and is built on timothystewart6/vllm-gb10 for ARM64/SM121. Weights are unsloth/Qwen3.6-35B-A3B-NVFP4 at revision 739af1e, 19 files, 26.53 GB. Reproduction check before measuring: the recipe author reports 103 ms TTFT at concurrency 1, and his own bench_ttft.py on this box gave a mean of 107 ms over 8 runs (P95 108 ms), so this is his configuration behaving as published rather than a re-tuned one."
+  },
+  "verification": {
+    "level": "self-reported",
+    "reproduced_by": [],
+    "flags": []
+  }
+}
