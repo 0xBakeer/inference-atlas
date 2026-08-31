@@ -104,6 +104,7 @@ def _id_issues(record: dict[str, Any], registry: Registry, file_path: Path | Non
         args=record.get("args") or {},
         quant_id=str(model.get("quant_id")),
         dtype=model.get("dtype"),
+        build=engine.get("build"),
     )
     for warning in resolved.warnings:
         issues.append(Issue("warning", warning.split(":", 1)[0], warning, path))

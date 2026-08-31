@@ -167,6 +167,7 @@ class Registry:
         args: dict[str, Any],
         quant_id: str,
         dtype: str | None,
+        build: str | None = None,
     ) -> ResolvedConfig:
         """Build the :class:`CanonicalInput` for a run from the registries.
 
@@ -182,6 +183,10 @@ class Registry:
         version = self.engine_version(engine_id, engine_version)
         if version is None:
             warnings.append(f"unknown-engine-version:{engine_id}@{engine_version}")
+        elif version.get("distribution") == "fork" and not (build or "").strip():
+            # The validator refuses this on review; failing here means the contributor finds
+            # out before the run rather than after it.
+            warnings.append(f"fork-build-unnamed:{engine_id}@{engine_version}")
 
         params: tuple[ParamSpec, ...] | None = None
         if version is not None:
@@ -209,6 +214,7 @@ class Registry:
                 param_aliases={
                     str(k): str(v) for k, v in (meta.get("param_aliases") or {}).items()
                 },
+                build=build,
             ),
             warnings=warnings,
         )
