@@ -1,0 +1,722 @@
+{
+  "schema_version": 1,
+  "run_id": "51e73b9c4540fa1d--longctx-depth-sweep-v1--f4b141",
+  "config_id": "51e73b9c4540fa1d",
+  "cell_id": "866dee37fab5",
+  "workload_id": "longctx-depth-sweep-v1",
+  "kind": "longctx",
+  "engine": {
+    "id": "atlas",
+    "version": "bdcccc2c",
+    "commit": "bdcccc2ca91eba084aac94a059e3b0f4a5d556dd",
+    "build": null,
+    "container": null,
+    "install_method": "source"
+  },
+  "model": {
+    "id": "Qwen/Qwen3.8-27B",
+    "quant_id": "nvfp4-unsloth",
+    "hf_id": "Qwen/Qwen3.8-27B",
+    "revision": "57926baca9a82b4d6906b43f2750d55315f5b10f",
+    "dtype": "auto",
+    "local_path": null
+  },
+  "hardware": {
+    "id": "nvidia-gb10-dgx-spark",
+    "count": 1,
+    "driver": "580.126.09",
+    "cuda": "13.0",
+    "host": {
+      "cpu": "Cortex-A725",
+      "cpu_cores": 20,
+      "ram_gb": 119.6,
+      "os": "Ubuntu 24.04.4 LTS",
+      "kernel": "6.17.0-1008-nvidia",
+      "arch": "aarch64"
+    },
+    "fingerprint": "sha256:9aff5f479aad989c6cfda95e78b5731ca0028ea5f5897a212d91f81bf360bff3",
+    "captured": {
+      "nvidia_smi": {
+        "driver": "580.126.09",
+        "cuda": "13.0",
+        "products": [
+          "NVIDIA GB10"
+        ],
+        "fb_memory_total_mib": 0.0
+      },
+      "lscpu": {
+        "architecture": "aarch64",
+        "cpus": "20",
+        "vendor_id": "ARM",
+        "model_name": "Cortex-A725",
+        "cores_per_socket": "10",
+        "sockets": "1",
+        "cpu_max_mhz": "2808.0000"
+      }
+    }
+  },
+  "args": {
+    "max-seq-len": 2048,
+    "max-batch-size": 128,
+    "gpu-memory-utilization": 0.85,
+    "kv-cache-dtype": "fp8",
+    "enable-prefix-caching": true,
+    "ssm-cache-slots": 8,
+    "ssm-checkpoint-interval": 32,
+    "speculative": true,
+    "num-drafts": 3,
+    "mtp-quantization": "bf16",
+    "scheduling-policy": "fifo",
+    "tool-call-parser": "qwen3_coder",
+    "disable-tool-grammar": true,
+    "disable-thinking": true,
+    "ssm-h-dtype": "f16-pool",
+    "gdn-fused-norm": true,
+    "ssm-batched-recurrent": true,
+    "ssm-tail-midchunk": false,
+    "mtp-gate": "force",
+    "prefill-varlen-batch": true,
+    "request-timeout": 0,
+    "atlas-prefill-codispatch": true,
+    "atlas-fp8-rowwise": true,
+    "atlas-mtp-dcut-ratio": 1.0,
+    "atlas-mtp-k-ladder": "1:3,2:1,4:2,8:2,16:1"
+  },
+  "args_canonical": "@dtype=auto;@quant=nvfp4-unsloth;atlas-fp8-rowwise=true;atlas-mtp-dcut-ratio=1;atlas-mtp-k-ladder=1:3,2:1,4:2,8:2,16:1;atlas-prefill-codispatch=true;disable-thinking=true;disable-tool-grammar=true;enable-prefix-caching=true;gdn-fused-norm=true;gpu-memory-utilization=0.85;kv-cache-dtype=fp8;max-batch-size=128;max-seq-len=2048;mtp-gate=force;num-drafts=3;prefill-varlen-batch=true;request-timeout=0;speculative=true;ssm-batched-recurrent=true;ssm-cache-slots=8;ssm-checkpoint-interval=32;ssm-h-dtype=f16-pool;ssm-tail-midchunk=false;tool-call-parser=qwen3_coder",
+  "serve_command": null,
+  "workload": {
+    "id": "longctx-depth-sweep-v1",
+    "resolved_params": {
+      "axis": "input_tokens",
+      "points": [
+        [
+          1024,
+          90.0
+        ],
+        [
+          4096,
+          90.0
+        ],
+        [
+          8192,
+          90.0
+        ],
+        [
+          16384,
+          90.0
+        ],
+        [
+          32768,
+          90.0
+        ],
+        [
+          65536,
+          90.0
+        ],
+        [
+          131072,
+          90.0
+        ],
+        [
+          262144,
+          90.0
+        ]
+      ],
+      "output_tokens": 256,
+      "needle_check": true,
+      "needle_depth": 0.9,
+      "headline_input_tokens": 1024,
+      "needles_found": 1,
+      "needles_total": 1,
+      "dataset_categories": null,
+      "dataset_target_tokens": null,
+      "timeout_s": 1800.0,
+      "seed": 42
+    }
+  },
+  "metrics": {
+    "requests_total": 1,
+    "requests_ok": 1,
+    "requests_failed": 0,
+    "success_rate": 1.0,
+    "duration_s": 1.619,
+    "input_tokens_total": 1361,
+    "output_tokens_total": 6,
+    "output_tok_s": 3.705,
+    "total_tok_s": 844.121,
+    "req_s": 0.617,
+    "prefill_tok_s": 841.86,
+    "ttft_ms": {
+      "mean": 1616.658,
+      "p50": 1616.658,
+      "p90": 1616.658,
+      "p95": 1616.658,
+      "p99": 1616.658,
+      "min": 1616.658,
+      "max": 1616.658
+    },
+    "tpot_ms": null,
+    "itl_ms": null,
+    "e2e_ms": {
+      "mean": 1619.337,
+      "p50": 1619.337,
+      "p90": 1619.337,
+      "p95": 1619.337,
+      "p99": 1619.337,
+      "min": 1619.337,
+      "max": 1619.337
+    },
+    "decode_tok_s_per_request": null,
+    "vram_peak_gb": null,
+    "ram_peak_gb": 114.113,
+    "kv_cache_tokens": null,
+    "power_avg_w": 48.95,
+    "power_peak_w": 76.56,
+    "energy_wh": 0.0141,
+    "gpu_util_avg_pct": 48.0,
+    "temp_max_c": 78.0,
+    "thermal_throttle_detected": false
+  },
+  "sweep": [
+    {
+      "input_tokens": 1024,
+      "output_tokens": 256,
+      "label": "depth 90% \u00b7 needle found",
+      "metrics": {
+        "requests_total": 1,
+        "requests_ok": 1,
+        "requests_failed": 0,
+        "success_rate": 1.0,
+        "duration_s": 1.619,
+        "input_tokens_total": 1361,
+        "output_tokens_total": 6,
+        "output_tok_s": 3.705,
+        "total_tok_s": 844.121,
+        "req_s": 0.617,
+        "prefill_tok_s": 841.86,
+        "ttft_ms": {
+          "mean": 1616.658,
+          "p50": 1616.658,
+          "p90": 1616.658,
+          "p95": 1616.658,
+          "p99": 1616.658,
+          "min": 1616.658,
+          "max": 1616.658
+        },
+        "tpot_ms": null,
+        "itl_ms": null,
+        "e2e_ms": {
+          "mean": 1619.337,
+          "p50": 1619.337,
+          "p90": 1619.337,
+          "p95": 1619.337,
+          "p99": 1619.337,
+          "min": 1619.337,
+          "max": 1619.337
+        },
+        "decode_tok_s_per_request": null,
+        "vram_peak_gb": null,
+        "ram_peak_gb": 114.113,
+        "kv_cache_tokens": null,
+        "power_avg_w": 48.95,
+        "power_peak_w": 76.56,
+        "energy_wh": 0.0141,
+        "gpu_util_avg_pct": 48.0,
+        "temp_max_c": 78.0,
+        "thermal_throttle_detected": false
+      }
+    },
+    {
+      "input_tokens": 4096,
+      "output_tokens": 256,
+      "label": "depth 90% \u00b7 needle n/a",
+      "metrics": {
+        "requests_total": 1,
+        "requests_ok": 0,
+        "requests_failed": 1,
+        "success_rate": 0.0,
+        "duration_s": 0.014,
+        "input_tokens_total": 0,
+        "output_tokens_total": 0,
+        "output_tok_s": 0.0,
+        "total_tok_s": 0.0,
+        "req_s": 0.0,
+        "prefill_tok_s": null,
+        "ttft_ms": null,
+        "tpot_ms": null,
+        "itl_ms": null,
+        "e2e_ms": null,
+        "decode_tok_s_per_request": null,
+        "vram_peak_gb": null,
+        "ram_peak_gb": 114.107,
+        "kv_cache_tokens": null,
+        "power_avg_w": 70.3,
+        "power_peak_w": 70.3,
+        "energy_wh": 0.0,
+        "gpu_util_avg_pct": 96.0,
+        "temp_max_c": 74.0,
+        "thermal_throttle_detected": false
+      }
+    },
+    {
+      "input_tokens": 8192,
+      "output_tokens": 256,
+      "label": "depth 90% \u00b7 needle n/a",
+      "metrics": {
+        "requests_total": 1,
+        "requests_ok": 0,
+        "requests_failed": 1,
+        "success_rate": 0.0,
+        "duration_s": 0.024,
+        "input_tokens_total": 0,
+        "output_tokens_total": 0,
+        "output_tok_s": 0.0,
+        "total_tok_s": 0.0,
+        "req_s": 0.0,
+        "prefill_tok_s": null,
+        "ttft_ms": null,
+        "tpot_ms": null,
+        "itl_ms": null,
+        "e2e_ms": null,
+        "decode_tok_s_per_request": null,
+        "vram_peak_gb": null,
+        "ram_peak_gb": 114.111,
+        "kv_cache_tokens": null,
+        "power_avg_w": 67.85,
+        "power_peak_w": 67.85,
+        "energy_wh": 0.0,
+        "gpu_util_avg_pct": 64.0,
+        "temp_max_c": 72.0,
+        "thermal_throttle_detected": false
+      }
+    },
+    {
+      "input_tokens": 16384,
+      "output_tokens": 256,
+      "label": "depth 90% \u00b7 needle n/a",
+      "metrics": {
+        "requests_total": 1,
+        "requests_ok": 0,
+        "requests_failed": 1,
+        "success_rate": 0.0,
+        "duration_s": 0.046,
+        "input_tokens_total": 0,
+        "output_tokens_total": 0,
+        "output_tok_s": 0.0,
+        "total_tok_s": 0.0,
+        "req_s": 0.0,
+        "prefill_tok_s": null,
+        "ttft_ms": null,
+        "tpot_ms": null,
+        "itl_ms": null,
+        "e2e_ms": null,
+        "decode_tok_s_per_request": null,
+        "vram_peak_gb": null,
+        "ram_peak_gb": 114.112,
+        "kv_cache_tokens": null,
+        "power_avg_w": 65.74,
+        "power_peak_w": 65.74,
+        "energy_wh": 0.0,
+        "gpu_util_avg_pct": 64.0,
+        "temp_max_c": 72.0,
+        "thermal_throttle_detected": false
+      }
+    },
+    {
+      "input_tokens": 32768,
+      "output_tokens": 256,
+      "label": "depth 90% \u00b7 needle n/a",
+      "metrics": {
+        "requests_total": 1,
+        "requests_ok": 0,
+        "requests_failed": 1,
+        "success_rate": 0.0,
+        "duration_s": 0.066,
+        "input_tokens_total": 0,
+        "output_tokens_total": 0,
+        "output_tok_s": 0.0,
+        "total_tok_s": 0.0,
+        "req_s": 0.0,
+        "prefill_tok_s": null,
+        "ttft_ms": null,
+        "tpot_ms": null,
+        "itl_ms": null,
+        "e2e_ms": null,
+        "decode_tok_s_per_request": null,
+        "vram_peak_gb": null,
+        "ram_peak_gb": 114.116,
+        "kv_cache_tokens": null,
+        "power_avg_w": 63.16,
+        "power_peak_w": 63.16,
+        "energy_wh": 0.0,
+        "gpu_util_avg_pct": 0.0,
+        "temp_max_c": 70.0,
+        "thermal_throttle_detected": false
+      }
+    },
+    {
+      "input_tokens": 65536,
+      "output_tokens": 256,
+      "label": "depth 90% \u00b7 needle n/a",
+      "metrics": {
+        "requests_total": 1,
+        "requests_ok": 0,
+        "requests_failed": 1,
+        "success_rate": 0.0,
+        "duration_s": 0.119,
+        "input_tokens_total": 0,
+        "output_tokens_total": 0,
+        "output_tok_s": 0.0,
+        "total_tok_s": 0.0,
+        "req_s": 0.0,
+        "prefill_tok_s": null,
+        "ttft_ms": null,
+        "tpot_ms": null,
+        "itl_ms": null,
+        "e2e_ms": null,
+        "decode_tok_s_per_request": null,
+        "vram_peak_gb": null,
+        "ram_peak_gb": 114.131,
+        "kv_cache_tokens": null,
+        "power_avg_w": 59.78,
+        "power_peak_w": 59.78,
+        "energy_wh": 0.0,
+        "gpu_util_avg_pct": 0.0,
+        "temp_max_c": 70.0,
+        "thermal_throttle_detected": false
+      }
+    },
+    {
+      "input_tokens": 131072,
+      "output_tokens": 256,
+      "label": "depth 90% \u00b7 needle n/a",
+      "metrics": {
+        "requests_total": 1,
+        "requests_ok": 0,
+        "requests_failed": 1,
+        "success_rate": 0.0,
+        "duration_s": 0.263,
+        "input_tokens_total": 0,
+        "output_tokens_total": 0,
+        "output_tok_s": 0.0,
+        "total_tok_s": 0.0,
+        "req_s": 0.0,
+        "prefill_tok_s": null,
+        "ttft_ms": null,
+        "tpot_ms": null,
+        "itl_ms": null,
+        "e2e_ms": null,
+        "decode_tok_s_per_request": null,
+        "vram_peak_gb": null,
+        "ram_peak_gb": 114.153,
+        "kv_cache_tokens": null,
+        "power_avg_w": 51.53,
+        "power_peak_w": 51.53,
+        "energy_wh": 0.0,
+        "gpu_util_avg_pct": 0.0,
+        "temp_max_c": 68.0,
+        "thermal_throttle_detected": false
+      }
+    },
+    {
+      "input_tokens": 262144,
+      "output_tokens": 256,
+      "label": "depth 90% \u00b7 needle n/a",
+      "metrics": {
+        "requests_total": 1,
+        "requests_ok": 0,
+        "requests_failed": 1,
+        "success_rate": 0.0,
+        "duration_s": 0.575,
+        "input_tokens_total": 0,
+        "output_tokens_total": 0,
+        "output_tok_s": 0.0,
+        "total_tok_s": 0.0,
+        "req_s": 0.0,
+        "prefill_tok_s": null,
+        "ttft_ms": null,
+        "tpot_ms": null,
+        "itl_ms": null,
+        "e2e_ms": null,
+        "decode_tok_s_per_request": null,
+        "vram_peak_gb": null,
+        "ram_peak_gb": 114.175,
+        "kv_cache_tokens": null,
+        "power_avg_w": 36.46,
+        "power_peak_w": 36.46,
+        "energy_wh": 0.0,
+        "gpu_util_avg_pct": 0.0,
+        "temp_max_c": 68.0,
+        "thermal_throttle_detected": false
+      }
+    }
+  ],
+  "failures": [
+    {
+      "at": "request",
+      "count": 7,
+      "category": "http-4xx",
+      "message": "{\"error\":{\"message\":\"Prompt too long: 5152 tokens exceeds max_seq_len 2048 (leave room for output tokens)\",\"type\":\"invalid_request_error\",\"param\":null,\"code\":null,\"hint\":null}}",
+      "sample_request_id": "ctx4096-r00000"
+    }
+  ],
+  "conditions": null,
+  "gotchas": [
+    {
+      "severity": "info",
+      "text": "Atlas publishes no releases and every build reports the same version string (spark 1.0.0-beta-preview), so the engine version registered for this run is the git commit, as the sparkinfer entry does. engine.build carries Atlas-Inf/atlas@bdcccc2c."
+    },
+    {
+      "severity": "info",
+      "text": "The published container azeezish/atlas-gb10:latest (digest sha256:faa6e5820c42dd86d0ae9e12cbaf2a2e9f32d0f7a9ab348a75ee54d4253929a6) CANNOT run these recipes: its spark serve --help has no --prefill-varlen-batch and its --ssm-h-dtype accepts only f32 and f16, not f16-pool. Both landed in Atlas-Inf/atlas#572 on 2026-08-18 and the image predates them despite a later tag date. This run is therefore a source build, not that image."
+    },
+    {
+      "severity": "info",
+      "text": "The engine will not link with default cargo features: NCCL is a default feature and libnccl is absent on a single-box DGX Spark. Build with --no-default-features --features cuda."
+    },
+    {
+      "severity": "info",
+      "text": "spark serve --check-kernels is a real preflight and worth running first: it loads the model, resolves every kernel lookup and exits with the number that did not resolve. Here it reported 251 lookups, 0 unresolved, 1 expected-absent for (qwen3.8-27b, sm_121, nvfp4), kernel_set_hash 7d4320ea200f. An unresolved lookup does not error at serve time - it silently takes a slower dispatch path."
+    },
+    {
+      "severity": "info",
+      "text": "Four of this configuration's knobs have no CLI flag and are read from the environment (ATLAS_PREFILL_CODISPATCH, ATLAS_FP8_ROWWISE, ATLAS_MTP_DCUT_RATIO, ATLAS_MTP_K_LADDER). The published recipe says the ladder does not reproduce without them, so they are registered as engine params and passed in args; a fingerprint that dropped them would merge two configurations that differ by more than 20% at C=2."
+    },
+    {
+      "severity": "info",
+      "text": "Configuration is the published recipe Atlas-Inf/sparkrun-recipes recipes/qwen3.8/qwen3.8-27b-nvfp4-throughput.yaml verbatim, including its documented ATLAS_* environment stack, which the recipe schema cannot express and which the recipe says the ladder does not reproduce without. max_model_len 2048 is that recipe's own value; the long-context workload is therefore expected to overflow above 2048 and those points are recorded as failures rather than dropped."
+    }
+  ],
+  "derived": {
+    "cost_per_1m_output_tokens_usd": null,
+    "tokens_per_watt": 0.0757,
+    "tok_s_per_gb_bandwidth": 0.013571,
+    "bandwidth_efficiency": null,
+    "memory_headroom_gb": null
+  },
+  "raw": {
+    "harness": "atlas-bench",
+    "harness_version": "0.1.0",
+    "sha256": "47c4e4d62f5ac991f9fc07fd11c26a75f134ac2709c5caf68c4f808eb2c69822",
+    "payload_path": null,
+    "payload": {
+      "points": [
+        {
+          "id": "hay-1k-d90",
+          "input_tokens": 1024,
+          "depth_pct": 90.0,
+          "needle_correct": true,
+          "output_tok_s": 3.705,
+          "decode_tok_s": null,
+          "ttft_ms": 1616.658,
+          "success_rate": 1.0
+        },
+        {
+          "id": "hay-4k-d90",
+          "input_tokens": 4096,
+          "depth_pct": 90.0,
+          "needle_correct": null,
+          "output_tok_s": 0.0,
+          "decode_tok_s": null,
+          "ttft_ms": null,
+          "success_rate": 0.0
+        },
+        {
+          "id": "hay-8k-d90",
+          "input_tokens": 8192,
+          "depth_pct": 90.0,
+          "needle_correct": null,
+          "output_tok_s": 0.0,
+          "decode_tok_s": null,
+          "ttft_ms": null,
+          "success_rate": 0.0
+        },
+        {
+          "id": "hay-16k-d90",
+          "input_tokens": 16384,
+          "depth_pct": 90.0,
+          "needle_correct": null,
+          "output_tok_s": 0.0,
+          "decode_tok_s": null,
+          "ttft_ms": null,
+          "success_rate": 0.0
+        },
+        {
+          "id": "hay-32k-d90",
+          "input_tokens": 32768,
+          "depth_pct": 90.0,
+          "needle_correct": null,
+          "output_tok_s": 0.0,
+          "decode_tok_s": null,
+          "ttft_ms": null,
+          "success_rate": 0.0
+        },
+        {
+          "id": "hay-64k-d90",
+          "input_tokens": 65536,
+          "depth_pct": 90.0,
+          "needle_correct": null,
+          "output_tok_s": 0.0,
+          "decode_tok_s": null,
+          "ttft_ms": null,
+          "success_rate": 0.0
+        },
+        {
+          "id": "hay-128k-d90",
+          "input_tokens": 131072,
+          "depth_pct": 90.0,
+          "needle_correct": null,
+          "output_tok_s": 0.0,
+          "decode_tok_s": null,
+          "ttft_ms": null,
+          "success_rate": 0.0
+        },
+        {
+          "id": "hay-256k-d90",
+          "input_tokens": 262144,
+          "depth_pct": 90.0,
+          "needle_correct": null,
+          "output_tok_s": 0.0,
+          "decode_tok_s": null,
+          "ttft_ms": null,
+          "success_rate": 0.0
+        }
+      ],
+      "requests": [
+        {
+          "id": "ctx1024-r00000",
+          "prompt_id": "hay-1k-d90",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 1616.658,
+          "e2e_ms": 1619.337,
+          "prompt_tokens": 1361,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "ctx4096-r00000",
+          "prompt_id": "hay-4k-d90",
+          "warmup": false,
+          "status": "error",
+          "ttft_ms": null,
+          "e2e_ms": 6.434,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "token_source": "usage",
+          "finish_reason": null,
+          "error_category": "http-4xx"
+        },
+        {
+          "id": "ctx8192-r00000",
+          "prompt_id": "hay-8k-d90",
+          "warmup": false,
+          "status": "error",
+          "ttft_ms": null,
+          "e2e_ms": 11.491,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "token_source": "usage",
+          "finish_reason": null,
+          "error_category": "http-4xx"
+        },
+        {
+          "id": "ctx16384-r00000",
+          "prompt_id": "hay-16k-d90",
+          "warmup": false,
+          "status": "error",
+          "ttft_ms": null,
+          "e2e_ms": 22.117,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "token_source": "usage",
+          "finish_reason": null,
+          "error_category": "http-4xx"
+        },
+        {
+          "id": "ctx32768-r00000",
+          "prompt_id": "hay-32k-d90",
+          "warmup": false,
+          "status": "error",
+          "ttft_ms": null,
+          "e2e_ms": 29.207,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "token_source": "usage",
+          "finish_reason": null,
+          "error_category": "http-4xx"
+        },
+        {
+          "id": "ctx65536-r00000",
+          "prompt_id": "hay-64k-d90",
+          "warmup": false,
+          "status": "error",
+          "ttft_ms": null,
+          "e2e_ms": 58.309,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "token_source": "usage",
+          "finish_reason": null,
+          "error_category": "http-4xx"
+        },
+        {
+          "id": "ctx131072-r00000",
+          "prompt_id": "hay-128k-d90",
+          "warmup": false,
+          "status": "error",
+          "ttft_ms": null,
+          "e2e_ms": 122.302,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "token_source": "usage",
+          "finish_reason": null,
+          "error_category": "http-4xx"
+        },
+        {
+          "id": "ctx262144-r00000",
+          "prompt_id": "hay-256k-d90",
+          "warmup": false,
+          "status": "error",
+          "ttft_ms": null,
+          "e2e_ms": 268.86,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "token_source": "usage",
+          "finish_reason": null,
+          "error_category": "http-4xx"
+        }
+      ],
+      "engine_endpoint": {
+        "attached": true,
+        "base_url": "http://127.0.0.1:8888/v1",
+        "served_model_id": "unsloth/Qwen3.8-27B-NVFP4",
+        "advertised_models": [
+          "unsloth/Qwen3.8-27B-NVFP4"
+        ]
+      }
+    },
+    "truncated": false
+  },
+  "provenance": {
+    "github_login": "AzeezIsh",
+    "github_user_id": null,
+    "started_at": "2026-09-01T07:21:16Z",
+    "finished_at": "2026-09-01T07:21:19Z",
+    "submitted_at": null,
+    "commit": null,
+    "pr": null,
+    "method": "agent",
+    "agent": {
+      "name": "Claude Code",
+      "model": "claude-opus-5"
+    },
+    "notes": "Box idle: no other GPU work, no compile, one model resident. reiner / gx10-e3a3, NVIDIA GB10 DGX Spark, 119.6 GB unified, driver 580.126.09, CUDA 13.0, Ubuntu 24.04.4, kernel 6.17.0-1008-nvidia. Ambient temperature not measured. Engine is a source build of Atlas-Inf/atlas at bdcccc2c, not the published container - see gotchas."
+  },
+  "verification": {
+    "level": "self-reported",
+    "reproduced_by": [],
+    "flags": []
+  }
+}
