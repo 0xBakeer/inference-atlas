@@ -51,8 +51,9 @@ and generate agent-ready install recipes. Charts included.
 
   --repo <path>   read a local checkout (no network at all)
   --url <url>     override the data URL (default: the deployed site)
-  --box <box>     target another machine: an ssh destination, or a hardware
-                  registry id (also switchable in the TUI with 'b')
+  --box <box>     target another machine: an ssh destination, a hardware
+                  registry id, or a box named in the config ('local' resets
+                  to this machine; also switchable in the TUI with 'b')
   --sync          refresh the data cache and exit
   -h, --help      this
 
@@ -102,7 +103,7 @@ async function main(): Promise<void> {
 
   // --box wins over the remembered selection; a named box from the config resolves first.
   const requested = args.box ?? loadState().targetId ?? null;
-  if (requested) {
+  if (requested && requested !== 'local') {
     const named = config.boxes[requested];
     const spec = named?.ssh ?? (requested.startsWith('ssh:') ? requested.slice(4) : null);
     const hardwareId =

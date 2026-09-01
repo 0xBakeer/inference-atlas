@@ -6,7 +6,13 @@ import { captureHardware, localPlatformTags, parseProbe } from './capture.js';
 import { matchHardware } from './match.js';
 import { fitVerdict } from './fit.js';
 import type { Target } from './target.js';
-import { describeTarget, registryTarget, targetMemoryGb, targetPlatformTags } from './target.js';
+import {
+  describeTarget,
+  registryTarget,
+  remoteTarget,
+  targetMemoryGb,
+  targetPlatformTags,
+} from './target.js';
 
 const m2max: CapturedHardware = {
   platform: 'darwin',
@@ -297,5 +303,34 @@ describe('parseProbe', () => {
 
   it('survives junk without throwing', () => {
     expect(parseProbe('garbage\n\n=x').nvidiaGpus).toEqual([]);
+  });
+});
+
+describe('remoteTarget', () => {
+  it('reports a failed ssh probe instead of throwing', () => {
+    const result = remoteTarget('nowhere.invalid', REGISTRY, () => {
+      throw new Error('ssh: Could not resolve hostname nowhere.invalid\nlost connection');
+    });
+    expect('error' in result && result.error).toContain('nowhere.invalid');
+  });
+
+  it('matches a probed remote box against the registry', () => {
+    const result = remoteTarget('spark', REGISTRY, () =>
+      ['os=Linux', 'arch=aarch64', 'cpu=Cortex-X925', 'memkb=127512345', 'gpu=NVIDIA GB10, 0'].join(
+        '\n',
+      ),
+    );
+    expect('target' in result).toBe(true);
+    if ('target' in result) {
+      expect(result.target.kind).toBe('remote');
+      expect(result.target.id).toBe('ssh:spark');
+      expect(result.target.hardware?.id).toBe('nvidia-gb10-dgx-spark');
+      expect(result.target.ssh).toBe('spark');
+    }
+  });
+
+  it('rejects a box that answers ssh but reports nothing usable', () => {
+    const result = remoteTarget('empty', REGISTRY, () => '\n');
+    expect('error' in result && result.error).toContain('nothing usable');
   });
 });
