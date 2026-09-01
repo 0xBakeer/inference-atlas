@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "id": "atlas",
+  "name": "Atlas",
+  "repo": "https://github.com/Atlas-Inf/atlas",
+  "docs": "https://atlasinference.dev",
+  "description": "A Rust inference server (binary: `spark`) built for single-box NVIDIA Grace-Blackwell hardware, with hand-written per-model CUDA kernels selected by a kernel target under kernels/<hw>/<model>/ rather than a generic compiler path. Its distinguishing features for the configuration space here are a first-class MTP speculative decoder with a width-adaptive draft-depth ladder, and Marconi-style checkpoint/restore of Mamba/GDN recurrent state (ssm_cache_slots) so hybrid SSM+attention models get prefix reuse that a KV-only prefix cache cannot give them. Serving configurations are published as YAML recipes in Atlas-Inf/sparkrun-recipes.",
+  "api": "openai",
+  "default_port": 8888,
+  "platforms": [
+    "linux-cuda"
+  ],
+  "quant_formats": [
+    "bf16",
+    "fp8",
+    "nvfp4",
+    "compressed-tensors"
+  ],
+  "install": [
+    {
+      "method": "docker",
+      "image": "azeezish/atlas-gb10:latest",
+      "arch": [
+        "aarch64"
+      ],
+      "notes": "The published GB10 image. It is a single moving `latest` tag, so pin the digest a run actually used \u2014 the version file for a run names it. Only aarch64/GB10 is published; there is no x86_64 image."
+    },
+    {
+      "method": "source",
+      "package": "cargo build --release -p spark-server --no-default-features --features cuda",
+      "arch": [
+        "aarch64"
+      ],
+      "notes": "NCCL is a default cargo feature and libnccl is absent on a single-box DGX Spark, so the default feature set does not link. A source build must also carry the kernels/<hw>/<model> target for the checkpoint being served."
+    }
+  ],
+  "serve": {
+    "command_template": "spark serve --model {model_ref} {flags}",
+    "model_ref": "hf_id",
+    "flag_style": "--{name} {value}",
+    "bool_style": "--{name}",
+    "bool_false_style": "--{name} false",
+    "env_style": "{NAME}={value}",
+    "notes": "Two kinds of knob, and both are in the params list because both change numbers. FLAGS are clap arguments on `spark serve`. Booleans come in two shapes: plain switches (--speculative, --disable-thinking, --enable-prefix-caching) which are simply omitted when false, and tri-state Option<bool> knobs (--gdn-fused-norm, --ssm-batched-recurrent, --ssm-tail-midchunk, --prefill-varlen-batch, --disable-tool-grammar) which take an explicit value and whose absence means 'the engine decides', not false \u2014 which is why their registry default is null. ENV VARS are the second kind: several measured optimisations have no flag at all and are read from the process environment, so a recipe's documented ATLAS_* stack is part of the configuration and is registered here with the env var named in each param's help. The recipe YAML in sparkrun-recipes uses its own names for a few flags (max_model_len for --max-seq-len, host for --bind); those are in param_aliases."
+  },
+  "health": {
+    "path": "/health",
+    "models_path": "/v1/models",
+    "ready_timeout_s": 1800
+  },
+  "bench_harness": "atlas-bench",
+  "drop_params": [
+    "model",
+    "model-from-path",
+    "model-name",
+    "kernel-target",
+    "cache-dir",
+    "port",
+    "bind",
+    "gpu-ordinal",
+    "no-tui",
+    "require-auth",
+    "auth-token",
+    "auth-tokens-file",
+    "master-addr",
+    "master-port",
+    "dump",
+    "profile"
+  ],
+  "param_aliases": {
+    "max-model-len": "max-seq-len",
+    "host": "bind",
+    "stupify": "disable-thinking"
+  },
+  "version_source": {
+    "kind": "manual",
+    "repo": "Atlas-Inf/atlas",
+    "version_scheme": "opaque"
+  },
+  "versions_available": [
+    "bdcccc2c"
+  ],
+  "links": {
+    "image": "https://hub.docker.com/r/azeezish/atlas-gb10",
+    "recipes": "https://github.com/Atlas-Inf/sparkrun-recipes"
+  },
+  "notes": "There are no releases or tags: Atlas ships as a rolling main plus a published container, so a version here is what the binary reports (`spark --version`), and the run's `engine.container` carries the image digest that produced it. Kernel targets are per model AND per hardware, so an Atlas build that serves one checkpoint on GB10 says nothing about another; `kernels/gb10/<model>/MODEL.toml` is what decides whether a checkpoint is servable at all."
+}

@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "id": "nvfp4-unsloth",
+  "model_id": "Qwen/Qwen3.8-27B",
+  "format": "nvfp4",
+  "bits": 4.0,
+  "hf_id": "unsloth/Qwen3.8-27B-NVFP4",
+  "revision": "57926baca9a82b4d6906b43f2750d55315f5b10f",
+  "size_gb": 23.42,
+  "engines": [
+    "atlas"
+  ],
+  "source": "community",
+  "calibration": "compressed-tensors, two config groups. group_1 is nvfp4-pack-quantized over re:.*mlp\\.(gate|up|down)_proj$ \u2014 4-bit weights, group_size 16, static actorder, float8_e4m3fn scales, tensor_group strategy, with dynamic local FP4 input activations. group_0 is float-quantized 8-bit, channel-wise, symmetric, with dynamic per-token FP8 activations, over attention (q|k|v|o_proj), linear_attn (in_proj_qkv, in_proj_z, out_proj), lm_head, and the mlp of layers 56-63. The calibration set is not stated on the card.",
+  "links": {
+    "hf": "https://huggingface.co/unsloth/Qwen3.8-27B-NVFP4"
+  },
+  "notes": "NOT the same quantization as nvfp4-bf16-lmhead in this directory: that one is RadixArk's, with the lm_head left in BF16; here the lm_head is in the FP8 group. Also distinct from RadixArk/Qwen3.8-27B-NVFP4, which is a different repository and is not registered. The repository is not split: the weights are one shard, model.safetensors (22,568,192,096 bytes). Beside it sits model_mtp.safetensors (849,400,392 bytes), a bundled MTP draft head that ships alongside the main shard; Atlas loads it when --speculative is passed and ignores it otherwise. size_gb 23.42 is the sum of the two weight shards read from the Hugging Face file listing (22,568,192,096 + 849,400,392 bytes); the full repository including tokenizer and vocab is 23.44 GB. The `engines` list is short because it is the list of engines this quantization has actually been loaded by, not a claim about which could: vLLM and SGLang read compressed-tensors NVFP4 too, but neither has a run here on this repo."
+}
