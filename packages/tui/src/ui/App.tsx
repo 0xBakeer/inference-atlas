@@ -83,8 +83,9 @@ export function App({
   const [recipe, setRecipe] = useState<RecipeState | null>(null);
   const [, bump] = useState(0);
 
-  const cols = stdout?.columns ?? 100;
-  const rows = stdout?.rows ?? 32;
+  // `|| ` not `?? `: a pty that reports 0 columns is not a 0-column terminal.
+  const cols = stdout?.columns || 100;
+  const rows = stdout?.rows || 32;
   const bodyHeight = Math.max(6, rows - 12);
 
   useEffect(() => {
@@ -453,7 +454,7 @@ export function App({
             loading={detail.loading}
             fit={fitFor(detail.row, detail.record)}
             targetLabel={targetLabel(target)}
-            width={Math.min(cols - 6, 100)}
+            width={cols - 6}
             level={level}
           />
         ) : view === 'recipe' && recipe ? (

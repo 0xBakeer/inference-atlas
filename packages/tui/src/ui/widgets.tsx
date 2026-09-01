@@ -2,29 +2,63 @@
 
 import React from 'react';
 import { Box, Text } from 'ink';
-import { COLORS } from './theme.js';
+import { COLORS, SEVERITY } from './theme.js';
 
 export function Panel({
   title,
   children,
   grow,
+  borderColor,
 }: {
   title: string;
   children: React.ReactNode;
   grow?: boolean;
+  /** Tints the frame — a fit verdict or a severity carries better in the border than in prose. */
+  borderColor?: string;
 }): React.JSX.Element {
   return (
     <Box
       flexDirection="column"
       borderStyle="round"
-      borderColor={COLORS.muted}
+      borderColor={borderColor ?? COLORS.line}
       paddingX={1}
       flexGrow={grow ? 1 : 0}
     >
-      <Text color={COLORS.accent} bold>
+      <Text color={borderColor ?? COLORS.accent} bold>
         {title}
       </Text>
       {children}
+    </Box>
+  );
+}
+
+/**
+ * One gotcha in its own frame, coloured by severity. Stacked as a wall of `[info]` lines
+ * they read as boilerplate; framed and coloured, the blocker in the pile is findable.
+ */
+export function SeverityNote({
+  severity,
+  text,
+  link,
+}: {
+  severity: string;
+  text: string;
+  link?: string | null;
+}): React.JSX.Element {
+  const style = SEVERITY[severity] ?? SEVERITY['info']!;
+  return (
+    <Box
+      flexDirection="column"
+      borderStyle="round"
+      borderColor={style.color}
+      paddingX={1}
+      marginTop={1}
+    >
+      <Text color={style.color} bold>
+        {style.label}
+      </Text>
+      <Text>{text}</Text>
+      {link ? <Text color={COLORS.muted}>{link}</Text> : null}
     </Box>
   );
 }

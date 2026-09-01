@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { BrailleGrid } from './braille.js';
-import { heatmapRows, hbar, sparkline } from './blocks.js';
+import { columnRows, heatmapRows, hbar, resample, resampleFlags, sparkline } from './blocks.js';
 import { detectColorLevel, hexToRgb, paint, ramp, rgbTo256 } from './color.js';
-import { renderChart } from './chart.js';
+import { legendChips, renderChart } from './chart.js';
 import { niceTicks, padDomain } from './scale.js';
 
 const plain = () => (s: string) => s;
@@ -118,7 +118,7 @@ describe('heatmapRows', () => {
 });
 
 describe('renderChart', () => {
-  it('renders a mono line chart with axis and legend', () => {
+  it('renders a mono line chart with a drawn axis', () => {
     const lines = renderChart({
       width: 30,
       height: 4,
@@ -128,10 +128,100 @@ describe('renderChart', () => {
       ],
     });
     expect(lines.some((l) => l.includes('│'))).toBe(true);
-    expect(lines.some((l) => l.includes('└'))).toBe(true);
-    expect(lines[lines.length - 1]).toContain('tok/s');
+    expect(lines.some((l) => l.includes('┤'))).toBe(true); // a labelled tick
+    expect(lines.some((l) => l.includes('└') && l.includes('┬'))).toBe(true);
     // The plot body carries braille characters.
     expect(lines.join('')).toMatch(/[⠀-⣿]/);
+  });
+
+  it('labels the exact sweep levels rather than inventing round numbers', () => {
+    const levels = [1, 2, 4, 8, 16, 32];
+    const lines = renderChart({
+      width: 46,
+      height: 5,
+      level: 'mono',
+      tightX: true,
+      xTicks: levels,
+      xFmt: (v) => String(Math.round(v)),
+      series: [{ label: '', color: '#fff', points: levels.map((x) => ({ x, y: 100 / x })) }],
+    });
+    const xRow = lines[lines.length - 1]!;
+    expect(xRow).toContain('1');
+    expect(xRow).toContain('32');
+    // No padded phantom values outside the measured range.
+    expect(xRow).not.toContain('-');
+    expect(xRow).not.toContain('34');
+  });
+
+  it('never repeats a y label', () => {
+    // A narrow range formats many ticks to the same "20k" — those rows must collapse.
+    const lines = renderChart({
+      width: 30,
+      height: 8,
+      level: 'mono',
+      series: [
+        {
+          label: '',
+          color: '#fff',
+          points: [17451, 19673, 20433, 22766].map((y, i) => ({ x: i, y })),
+        },
+      ],
+    });
+    const labels = lines
+      .map((l) => l.split('│')[0]?.split('┤')[0]?.trim())
+      .filter((l): l is string => !!l);
+    expect(new Set(labels).size).toBe(labels.length);
+  });
+
+  it('fills the area under a curve so a shallow slope reads as a body', () => {
+    const points = [1, 2, 4, 8].map((x) => ({ x, y: x }));
+    const bare = renderChart({
+      width: 30,
+      height: 5,
+      level: 'mono',
+      series: [{ label: '', color: '#fff', points }],
+    });
+    const filled = renderChart({
+      width: 30,
+      height: 5,
+      level: 'mono',
+      series: [{ label: '', color: '#fff', points, fill: true }],
+    });
+    const ink = (ls: string[]) => ls.join('').replace(/[^⠀-⣿]/g, '').length;
+    expect(ink(filled)).toBeGreaterThan(ink(bare));
+  });
+
+  it('gives a second series its own right-hand axis', () => {
+    const lines = renderChart({
+      width: 44,
+      height: 6,
+      level: 'mono',
+      series: [
+        { label: 'tok/s', color: '#5b8cff', points: [1, 2, 4].map((x) => ({ x, y: x * 100 })) },
+        {
+          label: 'ms',
+          color: '#f97316',
+          axis: 'right',
+          points: [1, 2, 4].map((x) => ({ x, y: x * 7 })),
+        },
+      ],
+    });
+    // Left labels in the gutter, right labels after the plot.
+    expect(lines.some((l) => l.includes('├'))).toBe(true);
+    expect(lines.join('\n')).toMatch(/\b400\b/);
+    expect(lines.join('\n')).toMatch(/\b25\b/);
+  });
+
+  it('legendChips names each series', () => {
+    const chips = legendChips(
+      [
+        { label: 'tok/s', color: '#5b8cff', points: [] },
+        { label: 'TTFT ms', color: '#f97316', points: [] },
+      ],
+      'mono',
+    );
+    expect(chips).toContain('tok/s');
+    expect(chips).toContain('TTFT ms');
   });
   it('says so when there is no data', () => {
     expect(renderChart({ width: 20, height: 4, level: 'mono', series: [] })).toEqual(['(no data)']);
@@ -155,5 +245,95 @@ describe('renderChart', () => {
       highlight: { series: 0, point: 1 },
     });
     expect(lines.join('')).toContain('◉');
+  });
+});
+
+describe('resample', () => {
+  it('averages a long series down to the target width', () => {
+    const out = resample([0, 10, 20, 30], 2);
+    expect(out).toEqual([5, 25]);
+  });
+
+  it('repeats a short series up so the chart fills its panel', () => {
+    expect(resample([1, 2], 6)).toEqual([1, 1, 1, 2, 2, 2]);
+  });
+
+  it('keeps a series that already fits', () => {
+    expect(resample([1, 2, 3], 3)).toEqual([1, 2, 3]);
+  });
+
+  it('yields null for a bucket with no measured value', () => {
+    expect(resample([null, null, 4, 4], 2)).toEqual([null, 4]);
+  });
+
+  it('never truncates — the tail of the run must survive', () => {
+    const values = Array.from({ length: 400 }, (_, i) => (i < 200 ? 0 : 100));
+    const out = resample(values, 10);
+    expect(out.slice(0, 5)).toEqual([0, 0, 0, 0, 0]);
+    expect(out.slice(5)).toEqual([100, 100, 100, 100, 100]);
+  });
+});
+
+describe('resampleFlags', () => {
+  it('flags a column when any sample in it failed', () => {
+    expect(resampleFlags([false, true, false, false], 2)).toEqual([true, false]);
+  });
+  it('stretches a short flag series', () => {
+    expect(resampleFlags([true, false], 4)).toEqual([true, true, false, false]);
+  });
+});
+
+describe('columnRows', () => {
+  it('fills columns from the bottom row up', () => {
+    const rows = columnRows([1, 0.5, 0], 2, { min: 0, max: 1 });
+    expect(rows).toHaveLength(2);
+    expect(rows[0]![0]).toBe('█'); // full column reaches the top row
+    expect(rows[1]![0]).toBe('█');
+    expect(rows[0]![1]).toBe(' '); // half column: nothing in the top row
+    expect(rows[1]![1]).toBe('█');
+    expect(rows[0]![2]).toBe(' ');
+  });
+
+  it('marks a missing value on the baseline instead of dropping the column', () => {
+    const rows = columnRows([null], 2, { min: 0, max: 1 });
+    expect(rows[1]).toBe('·');
+  });
+});
+
+/** Visible width: ANSI codes cost no columns, braille and blocks cost one each. */
+const ANSI = new RegExp(`${String.fromCharCode(27)}[[][0-9;]*m`, 'g');
+const visible = (s: string): number => s.replace(ANSI, '').length;
+
+describe('layout invariants', () => {
+  it('never renders a chart line wider than the width it was given', () => {
+    const points = [1, 2, 4, 8, 16, 32].map((x) => ({ x, y: 1000 / x }));
+    for (const width of [30, 46, 74, 100, 140]) {
+      for (const level of ['mono', 'truecolor'] as const) {
+        const lines = renderChart({
+          width,
+          height: 8,
+          level,
+          tightX: true,
+          xTicks: points.map((p) => p.x),
+          series: [
+            { label: 'tok/s', color: '#5b8cff', points, fill: true },
+            {
+              label: 'ms',
+              color: '#f97316',
+              axis: 'right',
+              points: points.map((p) => ({ x: p.x, y: p.y * 40 })),
+            },
+          ],
+        });
+        for (const line of lines) expect(visible(line)).toBeLessThanOrEqual(width);
+      }
+    }
+  });
+
+  it('never renders a column chart wider than its column count', () => {
+    for (const width of [10, 40, 96]) {
+      const rows = columnRows(resample([1, 2, 3, 4, 5], width), 3);
+      for (const row of rows) expect(row.length).toBe(width);
+    }
   });
 });

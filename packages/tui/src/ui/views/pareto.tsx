@@ -4,7 +4,7 @@ import React from 'react';
 import { Box, Text } from 'ink';
 import { fmtMs, fmtTokS } from '@atlas/core';
 import type { ColorLevel } from '../../canvas/color.js';
-import { renderChart } from '../../canvas/chart.js';
+import { legendChips, renderChart } from '../../canvas/chart.js';
 import type { ParetoPointRow } from '../../derive.js';
 import { COLORS } from '../theme.js';
 import { ChartLines, Panel } from '../widgets.js';
@@ -54,7 +54,10 @@ export function ParetoView({
   });
   return (
     <Box flexDirection="column" gap={1}>
-      <Panel title="Pareto — TTFT p50 (x) vs output tok/s (y)" grow>
+      <Panel
+        title={`Pareto — TTFT p50 (x) vs output tok/s (y)    ${legendChips(chartSeries, level)}`}
+        grow
+      >
         <ChartLines lines={lines} />
       </Panel>
       <Panel title={frontier.has(selectedIdx) ? '◉ selected (on the frontier)' : '◉ selected'}>
