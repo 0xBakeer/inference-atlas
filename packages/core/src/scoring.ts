@@ -39,6 +39,19 @@ const DEFAULT_DIMINISHING = {
   max_runs_counted_per_cell: null as number | null,
 };
 
+/**
+ * The identity a login belongs to, for grouping.
+ *
+ * GitHub logins are unique but not case-sensitive, and the same person reaches this file
+ * spelled two ways: `provenance.login` is the login as the contributor's result file carries
+ * it, while a registry credit is read out of a `…@users.noreply.github.com` address. One
+ * casing difference used to split a person into two rows on the leaderboard, half their
+ * points on each. Group on this; display the spelling that came with the data.
+ */
+export function loginKey(login: string): string {
+  return login.trim().toLowerCase();
+}
+
 /** Who first registered each piece of the registry. `tools/build` derives this from git history. */
 export interface RegistryCredits {
   hardware?: Record<string, string>;
@@ -106,9 +119,9 @@ export function computeScores(input: ScoringInput): ScoringOutput {
   const rows = chronological(input.rows);
 
   const seenCells = new Set<string>();
-  /** cell + config + workload → logins that have already run it, for reproduction credit. */
+  /** cell + config + workload → identities that have already run it, for reproduction credit. */
   const seenExact = new Map<string, Set<string>>();
-  /** login + cell → how many runs that person already has there, for diminishing returns. */
+  /** identity + cell → how many runs that person already has there, for diminishing returns. */
   const perLoginCell = new Map<string, number>();
 
   const contributors = new Map<string, Contributor>();
@@ -116,7 +129,8 @@ export function computeScores(input: ScoringInput): ScoringOutput {
 
   for (const row of rows) {
     const login = row.provenance.login;
-    const contributor = contributors.get(login) ?? {
+    const key = loginKey(login);
+    const contributor = contributors.get(key) ?? {
       login,
       user_id: row.provenance.user_id ?? null,
       runs: 0,
@@ -128,7 +142,7 @@ export function computeScores(input: ScoringInput): ScoringOutput {
       points: 0,
       breakdown: emptyBreakdown(),
     };
-    contributors.set(login, contributor);
+    contributors.set(key, contributor);
     if (contributor.user_id === null && row.provenance.user_id != null) {
       contributor.user_id = row.provenance.user_id;
     }
@@ -136,9 +150,9 @@ export function computeScores(input: ScoringInput): ScoringOutput {
     const exactKey = `${row.cell_id}|${row.config_id}|${row.workload_id}`;
     const priorLogins = seenExact.get(exactKey) ?? new Set<string>();
     const isFill = !seenCells.has(row.cell_id);
-    const isReproduction = !isFill && priorLogins.size > 0 && !priorLogins.has(login);
+    const isReproduction = !isFill && priorLogins.size > 0 && !priorLogins.has(key);
 
-    const perCellKey = `${login}|${row.cell_id}`;
+    const perCellKey = `${key}|${row.cell_id}`;
     const priorOwnRuns = perLoginCell.get(perCellKey) ?? 0;
     const capped =
       diminishing.max_runs_counted_per_cell != null &&
@@ -195,10 +209,17 @@ export function computeScores(input: ScoringInput): ScoringOutput {
       }
     }
 
-    scoredRuns.push({ run_id: row.run_id, login, cell_id: row.cell_id, points, role, factor });
+    scoredRuns.push({
+      run_id: row.run_id,
+      login: contributor.login,
+      cell_id: row.cell_id,
+      points,
+      role,
+      factor,
+    });
 
     seenCells.add(row.cell_id);
-    priorLogins.add(login);
+    priorLogins.add(key);
     seenExact.set(exactKey, priorLogins);
     perLoginCell.set(perCellKey, priorOwnRuns + 1);
   }
@@ -213,8 +234,9 @@ export function computeScores(input: ScoringInput): ScoringOutput {
   ];
   for (const [kind, weight, field] of creditKinds) {
     for (const login of Object.values(credits[kind] ?? {})) {
+      const key = loginKey(login);
       const contributor =
-        contributors.get(login) ??
+        contributors.get(key) ??
         ({
           login,
           user_id: null,
@@ -227,7 +249,7 @@ export function computeScores(input: ScoringInput): ScoringOutput {
           points: 0,
           breakdown: emptyBreakdown(),
         } satisfies Contributor);
-      contributors.set(login, contributor);
+      contributors.set(key, contributor);
       contributor.points += weight;
       contributor.breakdown[field] += 1;
     }

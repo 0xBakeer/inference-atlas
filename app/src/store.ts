@@ -3,7 +3,7 @@
  * them in memory, and exposes derived lookups. Initial load = manifest + registry + index +
  * coverage + stats; gaps, contributors, engine version files and full runs are lazy.
  */
-import { computeCoverage } from '@atlas/core';
+import { computeCoverage, loginKey } from '@atlas/core';
 import type { EngineVersion, Gap, ResultRecord, SiteConfig } from '@atlas/core';
 import siteFallbackJson from '../../site/config.json';
 import { atlasCells, buildLookups, type Lookups, type PossibleCell } from './data/derive.js';
@@ -146,7 +146,7 @@ class Store {
     coverage: CoverageMap,
     _manifest: Manifest,
   ): Stats {
-    const logins = new Set(index.map((r) => r.provenance.login));
+    const logins = new Set(index.map((r) => loginKey(r.provenance.login)));
     let last: string | null = null;
     for (const r of index) {
       const t = r.provenance.submitted_at ?? r.provenance.started_at ?? null;
@@ -204,7 +204,8 @@ class Store {
     const by = new Map<string, ContributorRow>();
     for (const r of this.index.value) {
       const login = r.provenance.login;
-      let c = by.get(login);
+      const key = loginKey(login);
+      let c = by.get(key);
       if (!c) {
         c = {
           login,
@@ -231,7 +232,7 @@ class Store {
             registry_workloads: 0,
           },
         };
-        by.set(login, c);
+        by.set(key, c);
       }
       c.runs += 1;
       if (!c.hardware_ids.includes(r.hardware.id)) c.hardware_ids.push(r.hardware.id);
@@ -243,7 +244,9 @@ class Store {
     }
     for (const c of by.values()) {
       const cells = new Set(
-        this.index.value.filter((r) => r.provenance.login === c.login).map((r) => r.cell_id),
+        this.index.value
+          .filter((r) => loginKey(r.provenance.login) === loginKey(c.login))
+          .map((r) => r.cell_id),
       );
       c.cells_filled = cells.size;
     }
