@@ -7,7 +7,7 @@ import { emptyState, selectField, skeletonLines, vendorDot } from '../components
 import { href, modelHref, qget, setQuery } from '../router.js';
 import { store } from '../store.js';
 import { matchesQuery, uniqueSorted } from '../util/filters.js';
-import { fmtInt } from '../util/format.js';
+import { fmtInt } from '@atlas/core';
 import { ViewElement } from './view-base.js';
 
 @customElement('atlas-gaps-view')

@@ -2,7 +2,7 @@ import { html } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import { icon } from '../components/icons.js';
 import { store } from '../store.js';
-import { fmtInt } from '../util/format.js';
+import { fmtInt } from '@atlas/core';
 import { ViewElement } from './view-base.js';
 
 @customElement('atlas-about-view')

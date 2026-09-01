@@ -10,7 +10,7 @@ import {
   possibleCells,
 } from './derive.js';
 import { fixtureRegistry, fixtureRow } from './fixture.js';
-import { normalizeIndex, normalizeRegistry } from './normalize.js';
+import { normalizeIndex, normalizeRegistry } from '@atlas/core';
 
 describe('possibleCells', () => {
   const reg = fixtureRegistry();

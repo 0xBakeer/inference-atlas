@@ -3,7 +3,7 @@ import { html, nothing, type TemplateResult } from 'lit';
 import type { IndexRow } from '../data/types.js';
 import { href, navigate } from '../router.js';
 import { store } from '../store.js';
-import { headlineMetric } from '../util/metrics.js';
+import { headlineMetric } from '@atlas/core';
 import { avatar, kindTag, verifBadge, when } from './ui.js';
 
 export function runsTable(

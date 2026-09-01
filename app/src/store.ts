@@ -3,18 +3,19 @@
  * them in memory, and exposes derived lookups. Initial load = manifest + registry + index +
  * coverage + stats; gaps, contributors, engine version files and full runs are lazy.
  */
-import { computeCoverage, loginKey } from '@atlas/core';
-import type { EngineVersion, Gap, ResultRecord, SiteConfig } from '@atlas/core';
-import siteFallbackJson from '../../site/config.json';
-import { atlasCells, buildLookups, type Lookups, type PossibleCell } from './data/derive.js';
 import {
+  computeCoverage,
+  loginKey,
   normalizeContributors,
   normalizeCoverage,
   normalizeGaps,
   normalizeIndex,
   normalizeRegistry,
   normalizeStats,
-} from './data/normalize.js';
+} from '@atlas/core';
+import type { EngineVersion, Gap, ResultRecord, SiteConfig } from '@atlas/core';
+import siteFallbackJson from '../../site/config.json';
+import { atlasCells, buildLookups, type Lookups, type PossibleCell } from './data/derive.js';
 import type {
   ContributorRow,
   CoverageMap,

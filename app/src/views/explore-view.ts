@@ -27,9 +27,9 @@ import type { IndexRow } from '../data/types.js';
 import { href, qget, setQuery } from '../router.js';
 import { store } from '../store.js';
 import { copyText } from '../util/clipboard.js';
-import { shortSha } from '../util/format.js';
-import { blockCards, headlineMetric } from '../util/metrics.js';
-import { nearestNeighbours } from '../util/neighbours.js';
+import { shortSha } from '@atlas/core';
+import { blockCards, headlineMetric } from '@atlas/core';
+import { nearestNeighbours } from '@atlas/core';
 import { ViewElement } from './view-base.js';
 
 /** Mirrors core's model-ref resolution (not exported there) for the Copy-serve-command button. */

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { ResultRecord } from '@atlas/core';
+import type { ResultRecord } from './types.js';
 import { levelFromId, quantile, requestSamples, samplesByLevel } from './requests.js';
 
 function recWith(payload: unknown): ResultRecord {

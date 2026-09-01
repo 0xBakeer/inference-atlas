@@ -7,7 +7,7 @@ import { resolveSelection } from '../components/cell-picker.js';
 import { href, modelHref, navigate, qget, setQuery } from '../router.js';
 import { store } from '../store.js';
 import { seqStep } from '../util/colors.js';
-import { fmtPct } from '../util/format.js';
+import { fmtPct } from '@atlas/core';
 import { ViewElement } from './view-base.js';
 
 @customElement('atlas-evals-view')

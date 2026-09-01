@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import type { ResultRecord } from '@atlas/core';
-import type { IndexRow } from '../data/types.js';
+import type { ResultRecord } from './types.js';
+import type { IndexRow } from './shards.js';
 import { armDiff, armLabel, cellArms, prefillPoints } from './arms.js';
 
 function row(over: Partial<IndexRow>): IndexRow {

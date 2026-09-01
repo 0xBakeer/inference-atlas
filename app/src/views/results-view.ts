@@ -26,8 +26,8 @@ import {
   uniqueSorted,
   type SortSpec,
 } from '../util/filters.js';
-import { fmtInt } from '../util/format.js';
-import { METRICS, type MetricDef } from '../util/metrics.js';
+import { fmtInt } from '@atlas/core';
+import { METRICS, type MetricDef } from '@atlas/core';
 import { ViewElement } from './view-base.js';
 
 interface Col {

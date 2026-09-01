@@ -1,7 +1,7 @@
 /** Shared uPlot builders: sweep lines (x = concurrency | input_tokens), timeline lines, scatter. */
 import type uPlot from 'uplot';
 import type { SweepAxis, SweepPoint } from '@atlas/core';
-import { fmtCompact, fmtMs, fmtTokS, fmtTokens } from '../util/format.js';
+import { fmtCompact, fmtMs, fmtTokS, fmtTokens } from '@atlas/core';
 import { withAlpha } from '../util/colors.js';
 import {
   axisDefaults,

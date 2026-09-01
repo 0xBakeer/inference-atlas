@@ -11,8 +11,8 @@ import { engineMinors } from '../data/derive.js';
 import { href, qget, setQuery } from '../router.js';
 import { store } from '../store.js';
 import { seriesColor } from '../util/colors.js';
-import { fmtSignedPct } from '../util/format.js';
-import { METRIC_BY_KEY, METRICS } from '../util/metrics.js';
+import { fmtSignedPct } from '@atlas/core';
+import { METRIC_BY_KEY, METRICS } from '@atlas/core';
 import { ViewElement } from './view-base.js';
 
 const REGRESSION = 0.1;

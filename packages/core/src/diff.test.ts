@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { EngineParam } from '@atlas/core';
+import type { EngineParam } from './types.js';
 import { argsDiff, canonicalDistance, metricDelta, parseCanonical, versionDiff } from './diff.js';
 
 describe('argsDiff', () => {

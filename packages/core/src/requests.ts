@@ -4,7 +4,7 @@
  * untyped by contract (`Record<string, unknown>`), so everything here guards at runtime and
  * an absent or foreign payload simply yields no samples.
  */
-import type { ResultRecord } from '@atlas/core';
+import type { ResultRecord } from './types.js';
 import { isNum } from './format.js';
 
 export interface RequestSample {

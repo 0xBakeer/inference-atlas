@@ -95,11 +95,37 @@ results/     one JSON file per measurement, owned by its contributor:
              <engine>/<owner>/<name>/<hardware>/<run_id>.json
 site/        branding, navigation, colours, scoring weights, thresholds
 packages/    @atlas/core — shared types, fingerprinting, ids, plausibility, coverage, packets
+             @atlas/tui — the terminal UI (see below)
 tools/       node CLIs: validate, build, packet, ingest
 app/         the Vite + Lit 3 site
 bench/       atlas-bench, the Python harness
-docs/        DESIGN.md (the vision) and SPEC.md (the binding contract)
+docs/        DESIGN.md (the vision), SPEC.md (the binding contract), tui/ (the terminal app manual)
 ```
+
+## The terminal UI
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/0xBakeer/inference-atlas/main/install.sh | sh
+inference-atlas
+```
+
+The atlas in your terminal: it identifies a **target box** — this machine, or any entry in
+the hardware registry, times however many of them you have — ranks every measured
+configuration by whether it would actually run there, draws the sweep curves,
+latency distributions, the Pareto frontier and the coverage map as terminal charts, and turns
+any run into a Markdown **install recipe** — pinned weights, install commands, the exact
+serve command, per-flag documentation, the run's gotchas, the numbers to expect, and the
+`atlas-bench` steps to verify and contribute your own measurement back. Data comes from the
+published shards (one conditional GET, cached, works offline); `--repo` reads a local
+checkout instead.
+
+**Manual:** [`docs/tui/`](docs/tui/README.md) — [installation](docs/tui/installation.md) ·
+[getting started](docs/tui/getting-started.md) · [keys](docs/tui/keys.md) ·
+[views](docs/tui/views.md) · [the target box](docs/tui/target-box.md) ·
+[charts](docs/tui/charts.md) · [recipes](docs/tui/recipes.md) ·
+[configuration](docs/tui/configuration.md) · [data & syncing](docs/tui/data-and-sync.md) ·
+[CLI](docs/tui/cli.md) · [troubleshooting](docs/tui/troubleshooting.md) ·
+[development](docs/tui/development.md)
 
 ## Identifiers
 

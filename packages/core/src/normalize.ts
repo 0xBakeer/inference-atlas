@@ -16,7 +16,7 @@ import type {
   Quant,
   SiteConfig,
   Workload,
-} from '@atlas/core';
+} from './types.js';
 import type {
   ContributorRow,
   CoverageMap,
@@ -25,7 +25,7 @@ import type {
   RegistryEngine,
   RegistryModel,
   Stats,
-} from './types.js';
+} from './shards.js';
 
 type AnyRec = Record<string, unknown>;
 

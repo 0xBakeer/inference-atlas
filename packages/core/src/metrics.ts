@@ -5,10 +5,11 @@ import type {
   ResultRecord,
   SiteConfig,
   WorkloadKind,
-} from '@atlas/core';
+} from './types.js';
 import { fmtGB, fmtMs, fmtNum, fmtPct, fmtTokS, fmtW, isNum } from './format.js';
 
-export type Better = 'higher' | 'lower';
+import type { Better } from './pareto.js';
+export type { Better };
 
 export interface MetricDef {
   key: string;

@@ -17,8 +17,8 @@ import {
 import { engineMinors, engineRunsOn, quantRunsOn } from '../data/derive.js';
 import { href, qget, setQuery } from '../router.js';
 import { store } from '../store.js';
-import { versionDiff } from '../util/diff.js';
-import { fmtInt } from '../util/format.js';
+import { versionDiff } from '@atlas/core';
+import { fmtInt } from '@atlas/core';
 import { ViewElement } from './view-base.js';
 
 @customElement('atlas-engines-view')

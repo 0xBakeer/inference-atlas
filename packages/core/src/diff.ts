@@ -1,5 +1,5 @@
-import { normalizeValue } from '@atlas/core';
-import type { ArgValue, Args, EngineParam } from '@atlas/core';
+import { normalizeValue } from './canonical.js';
+import type { ArgValue, Args, EngineParam } from './types.js';
 
 export interface ArgsDiffRow {
   name: string;

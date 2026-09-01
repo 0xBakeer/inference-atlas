@@ -14,8 +14,8 @@ import { store } from '../store.js';
 import { copyText } from '../util/clipboard.js';
 import { vendorClass } from '../util/colors.js';
 import { absDateTime, relTime } from '../util/dates.js';
-import { fmtMs, fmtTokS, fmtSignedPct, isNum } from '../util/format.js';
-import { distSummary, type MetricCardData } from '../util/metrics.js';
+import { fmtMs, fmtTokS, fmtSignedPct, isNum } from '@atlas/core';
+import { distSummary, type MetricCardData } from '@atlas/core';
 import { icon } from './icons.js';
 
 /* ------------------------------------------------------------------ people */

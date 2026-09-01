@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { fixtureRow } from '../data/fixture.js';
+import { fixtureRow } from './fixtures.js';
 import { headlineMetric } from './metrics.js';
 
 /** The site-wide order, as `site/config.json` carries it. */

@@ -10,7 +10,7 @@ import type { RegistryModel } from '../data/types.js';
 import { href, modelHref, qget, qlist, setQuery } from '../router.js';
 import { store } from '../store.js';
 import { matchesQuery, uniqueSorted } from '../util/filters.js';
-import { fmtInt, fmtParams, fmtTokens } from '../util/format.js';
+import { fmtInt, fmtParams, fmtTokens } from '@atlas/core';
 import { ViewElement } from './view-base.js';
 
 @customElement('atlas-models-view')
