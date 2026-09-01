@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "id": "eval-math-v2",
+  "name": "Mathematics eval v2",
+  "kind": "eval",
+  "description": "Runs all 140 items of eval-math-v2 at temperature 0 and reports accuracy overall, by category and by difficulty. Supersedes eval-math-v1, which strong models saturate at 98-100%. Pinned together with the dataset: a change to either means a new -v3 id.",
+  "dataset_id": "eval-math-v2",
+  "params": {
+    "concurrency": 4,
+    "num_requests": 140,
+    "input_tokens": null,
+    "output_tokens": 4096,
+    "seed": 42,
+    "warmup_requests": 0,
+    "temperature": 0,
+    "repeat": 1,
+    "timeout_s": 300,
+    "reasoning": "default"
+  },
+  "sweep": null,
+  "eval": {
+    "suite": "math",
+    "scorer": "numeric",
+    "pass_threshold": null,
+    "max_output_tokens": 4096,
+    "categories": [
+      "arithmetic",
+      "algebra",
+      "number_theory",
+      "word_problems",
+      "combinatorics_probability",
+      "sequences",
+      "claims"
+    ],
+    "notes": "Mixed scorers per row: the claims category's true/false rows carry `choices` and are scored with mc, everything else with numeric. Always use the row's own `scorer` field; eval.scorer is only the default. Hard items ask for step-by-step work and a final 'Answer: <number>' line, which is why max_output_tokens is 4096."
+  },
+  "metrics_required": [
+    "accuracy",
+    "success_rate",
+    "avg_latency_ms"
+  ],
+  "immutable": true,
+  "created": "2026-09-01",
+  "supersedes": "eval-math-v1",
+  "notes": "accuracy and avg_latency_ms live in the result's `scores` block, not in `metrics`; success_rate is the share of requests that completed at all and is independent of whether the answers were right."
+}

@@ -29,9 +29,27 @@ comparable when they saw the same bytes.
 | `eval-multilingual-v1`     | eval     |   80 |   39 KB | `gen_eval_multilingual.py`     | `contains`         |
 | `eval-longctx-v1`          | eval     |  100 |  100 KB | `gen_eval_longctx.py`          | `needle`           |
 | `eval-format-v1`           | eval     |   30 |    8 KB | `gen_eval_format.py`           | `exact`            |
+| `eval-math-v2`             | eval     |  140 |   54 KB | `gen_eval_math_v2.py`          | `numeric`          |
+| `eval-reasoning-v2`        | eval     |  140 |   81 KB | `gen_eval_reasoning_v2.py`     | `exact`            |
+| `eval-knowledge-v2`        | eval     |  151 |   63 KB | `gen_eval_knowledge_v2.py`     | `mc`               |
+| `eval-science-v2`          | eval     |  120 |   49 KB | `gen_eval_science_v2.py`       | `numeric`          |
+| `eval-commonsense-v2`      | eval     |  116 |   75 KB | `gen_eval_commonsense_v2.py`   | `mc`               |
+| `eval-security-v2`         | eval     |  111 |   63 KB | `gen_eval_security_v2.py`      | `mc`               |
+
+The `-v2` rows are the **second-generation eval wave** (2026-09-01): the v1
+capability evals saturated — several models score 98–100 % on knowledge, math,
+reasoning, tools and format — so v2 raises the difficulty ceiling.
+`eval-math-v2`, `eval-reasoning-v2` and `eval-knowledge-v2` supersede their v1
+ids (which stay published and immutable); `eval-science-v2` (applied
+physics/chemistry with every constant pinned in the prompt) and
+`eval-commonsense-v2` (goal-tracking traps, altered classic riddles, false
+premises, literal-text questions) and `eval-security-v2` (defensive cyber
+security: toy crypto, CIDR arithmetic, vulnerability classification, log
+forensics, incident-response traps) are new suites, versioned `-v2` to mark
+the wave they belong to.
 
 Licence for all of the above: **MIT**. Total, including the generator scripts:
-about 8.7 MB against a 25 MB budget, which `_gen/check.py` prints and enforces.
+about 11.5 MB against a 25 MB budget, which `_gen/check.py` prints and enforces.
 
 Validate the whole corpus:
 
@@ -107,8 +125,9 @@ system message naming the language.
 ```
 
 **Always use the row's own `scorer`.** A workload's `eval.scorer` is only the
-dataset default; `eval-reasoning-v1` mixes `mc` and `exact`, and
-`eval-multilingual-v1` mixes `contains`, `mc` and `numeric`.
+dataset default; `eval-reasoning-v1` mixes `mc` and `exact`,
+`eval-multilingual-v1` mixes `contains`, `mc` and `numeric`, and the `-v2`
+evals mix `mc`, `exact` and `numeric` per row.
 
 ### `kind: haystack`
 
