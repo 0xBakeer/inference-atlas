@@ -13,22 +13,22 @@ import { coverageGrid, filterRows, paretoData, rankForHome } from '../derive.js'
 import type { FitVerdict } from '../hw/fit.js';
 import { fitVerdict } from '../hw/fit.js';
 import type { Target } from '../hw/target.js';
-import { describeTarget, registryTarget, remoteTarget } from '../hw/target.js';
-import { saveState } from '../data/state.js';
+import { chooseTarget, targetLabel } from '../hw/target.js';
+import { saveTarget } from '../config.js';
 import { generateRecipe, recipeFileName } from '../recipe/generate.js';
 import { agentCommand, copyToClipboard, runAgentCommand, writeRecipe } from '../recipe/send.js';
 import { COLORS } from './theme.js';
 import { KeyHints } from './widgets.js';
-import type { BoxChoice } from './views/boxes.js';
-import { BoxesView } from './views/boxes.js';
 import { CoverageView } from './views/coverage.js';
+import type { HardwareChoice } from './views/hardware.js';
+import { HardwareView } from './views/hardware.js';
 import { DetailView } from './views/detail.js';
 import { HomeView } from './views/home.js';
 import { ParetoView } from './views/pareto.js';
 import { RecipeView } from './views/recipe.js';
 import { RunsView } from './views/runs.js';
 
-type View = 'home' | 'runs' | 'pareto' | 'coverage' | 'boxes' | 'detail' | 'recipe' | 'help';
+type View = 'home' | 'runs' | 'pareto' | 'coverage' | 'hardware' | 'detail' | 'recipe' | 'help';
 
 export interface AppProps {
   source: DataSource;
@@ -66,15 +66,17 @@ export function App({
   const { stdout } = useStdout();
   const [data, setData] = useState(initialData);
   const [checkedAt, setCheckedAt] = useState(() => Date.now());
-  const [view, setView] = useState<View>('home');
+  const [view, setView] = useState<View>(initialTarget.hardware === null ? 'hardware' : 'home');
   const [back, setBack] = useState<View>('home');
   const [selHome, setSelHome] = useState(0);
   const [selRuns, setSelRuns] = useState(0);
   const [selPareto, setSelPareto] = useState(0);
   const [target, setTarget] = useState<Target>(initialTarget);
-  const [selBox, setSelBox] = useState(0);
-  const [sshPrompt, setSshPrompt] = useState<string | null>(null);
-  const [boxStatus, setBoxStatus] = useState<string | null>(null);
+  const [selHw, setSelHw] = useState(0);
+  const [counts, setCounts] = useState<Record<string, number>>({});
+  const [hwStatus, setHwStatus] = useState<string | null>(null);
+  // No recognised hardware and nothing chosen: ask before showing verdicts nobody can trust.
+  const [firstRun, setFirstRun] = useState(initialTarget.hardware === null);
   const [filter, setFilter] = useState('');
   const [filtering, setFiltering] = useState(false);
   const [detail, setDetail] = useState<DetailState | null>(null);
@@ -193,85 +195,44 @@ export function App({
     [data, fitFor, target, config],
   );
 
-  /** Everything the picker can offer: this machine, configured boxes, the registry. */
-  const boxChoices = useMemo((): BoxChoice[] => {
-    const out: BoxChoice[] = [
-      {
-        kind: 'local',
-        id: 'local',
-        name: initialTarget.label,
-        detail: describeTarget(initialTarget),
-        hardware: initialTarget.hardware,
-        ssh: null,
-      },
-    ];
-    for (const [name, box] of Object.entries(config.boxes)) {
-      const hardware = box.hardware ? (data.hardwareById.get(box.hardware) ?? null) : null;
-      out.push({
-        kind: 'configured',
-        id: box.ssh ? `ssh:${box.ssh}` : `hw:${box.hardware}`,
-        name,
-        detail: box.ssh ? `ssh ${box.ssh} — probed on selection` : `pinned to ${box.hardware}`,
-        hardware,
-        ssh: box.ssh,
-      });
-    }
-    for (const hw of data.registry.hardware) {
-      out.push({
-        kind: 'registry',
-        id: `hw:${hw.id}`,
-        name: hw.id,
-        detail: hw.name,
-        hardware: hw,
-        ssh: null,
-      });
-    }
-    return out;
-  }, [config.boxes, data, initialTarget]);
+  /** Every registry entry, the detected one first, each carrying its own pending count. */
+  const hwChoices = useMemo((): HardwareChoice[] => {
+    const detectedId = initialTarget.source === 'detected' ? initialTarget.hardware?.id : null;
+    const rows = data.registry.hardware.map((hardware) => ({
+      hardware,
+      count: counts[hardware.id] ?? (hardware.id === target.hardware?.id ? target.count : 1),
+      detected: hardware.id === detectedId,
+    }));
+    return rows.sort((a, b) => {
+      if (a.detected !== b.detected) return a.detected ? -1 : 1;
+      return a.hardware.id.localeCompare(b.hardware.id);
+    });
+  }, [data, counts, target, initialTarget]);
 
-  const selectTarget = useCallback((next: Target) => {
-    setTarget(next);
-    saveState({ targetId: next.id });
-    setBoxStatus(null);
-    setSelHome(0);
+  const selectHardware = useCallback(
+    (choice: HardwareChoice) => {
+      const next = chooseTarget(choice.hardware, choice.count, initialTarget.captured);
+      setTarget(next);
+      setFirstRun(false);
+      setSelHome(0);
+      const saved = saveTarget(choice.hardware.id, choice.count);
+      setHwStatus(
+        saved.ok
+          ? `${targetLabel(next)} — saved to ${saved.file}`
+          : `selected, but could not write the config: ${saved.error}`,
+      );
+    },
+    [initialTarget],
+  );
+
+  const bumpCount = useCallback((choice: HardwareChoice, delta: number) => {
+    setCounts((c) => ({
+      ...c,
+      [choice.hardware.id]: Math.max(1, Math.min(64, choice.count + delta)),
+    }));
   }, []);
 
-  /** ssh probes block on the network, so they run outside render and report progress. */
-  const probeSsh = useCallback(
-    (destination: string) => {
-      setBoxStatus(`probing ${destination} over ssh…`);
-      setTimeout(() => {
-        const result = remoteTarget(destination, data.registry.hardware);
-        if ('error' in result) setBoxStatus(result.error);
-        else selectTarget(result.target);
-      }, 0);
-    },
-    [data, selectTarget],
-  );
-
-  const chooseBox = useCallback(
-    (choice: BoxChoice) => {
-      if (choice.kind === 'local') selectTarget(initialTarget);
-      else if (choice.ssh) probeSsh(choice.ssh);
-      else if (choice.hardware) selectTarget(registryTarget(choice.hardware));
-      else setBoxStatus(`${choice.name}: no ssh destination and no known hardware id`);
-    },
-    [initialTarget, probeSsh, selectTarget],
-  );
-
   useInput((input, key) => {
-    // The ssh prompt swallows everything printable.
-    if (sshPrompt !== null) {
-      if (key.escape) setSshPrompt(null);
-      else if (key.return) {
-        const dest = sshPrompt.trim();
-        setSshPrompt(null);
-        if (dest) probeSsh(dest);
-      } else if (key.backspace || key.delete) setSshPrompt((s) => (s ?? '').slice(0, -1));
-      else if (input && !key.ctrl && !key.meta) setSshPrompt((s) => (s ?? '') + input);
-      return;
-    }
-
     // Filter entry swallows everything printable.
     if (filtering) {
       if (key.return || key.escape) setFiltering(false);
@@ -288,6 +249,7 @@ export function App({
     if (key.escape) {
       if (view === 'recipe') setView('detail');
       else if (view === 'detail' || view === 'help') setView(back);
+      else if (view === 'hardware' && !firstRun) setView('home');
       return;
     }
     if (input === '?') {
@@ -343,32 +305,35 @@ export function App({
     }
 
     if (input === 'b') {
-      setSelBox(
+      setSelHw(
         Math.max(
           0,
-          boxChoices.findIndex((c) => c.id === target.id),
+          hwChoices.findIndex((c) => c.hardware.id === target.hardware?.id),
         ),
       );
-      setView('boxes');
+      setHwStatus(null);
+      setView('hardware');
       return;
     }
     if (input === '1') setView('home');
     else if (input === '2') setView('runs');
     else if (input === '3') setView('pareto');
     else if (input === '4') setView('coverage');
-    else if (input === '5') setView('boxes');
+    else if (input === '5') setView('hardware');
     else if (key.tab) {
-      const order: View[] = ['home', 'runs', 'pareto', 'coverage', 'boxes'];
+      const order: View[] = ['home', 'runs', 'pareto', 'coverage', 'hardware'];
       const current = order.indexOf(view);
       setView(order[(current + 1) % order.length]!);
     } else if (input === '/') {
       setView('runs');
       setFiltering(true);
-    } else if (view === 'boxes') {
-      if (down) setSelBox((s) => clampSel(s + 1, boxChoices.length));
-      else if (up) setSelBox((s) => clampSel(s - 1, boxChoices.length));
-      else if (input === 's') setSshPrompt('');
-      else if (key.return && boxChoices[selBox]) chooseBox(boxChoices[selBox]!);
+    } else if (view === 'hardware') {
+      const choice = hwChoices[selHw];
+      if (down) setSelHw((s) => clampSel(s + 1, hwChoices.length));
+      else if (up) setSelHw((s) => clampSel(s - 1, hwChoices.length));
+      else if (choice && (input === '+' || input === '=' || key.rightArrow)) bumpCount(choice, 1);
+      else if (choice && (input === '-' || input === '_' || key.leftArrow)) bumpCount(choice, -1);
+      else if (key.return && choice) selectHardware(choice);
     } else if (view === 'home') {
       if (down) setSelHome((s) => clampSel(s + 1, ranked.length));
       else if (up) setSelHome((s) => clampSel(s - 1, ranked.length));
@@ -409,12 +374,12 @@ export function App({
             ['esc', 'back'],
             ['?', 'help'],
           ]
-        : view === 'boxes'
+        : view === 'hardware'
           ? [
               ['j/k', 'move'],
-              ['enter', 'use this box'],
-              ['s', 'probe an ssh host'],
-              ['esc', 'back'],
+              ['+/-', 'how many'],
+              ['enter', 'use it'],
+              ...(firstRun ? [] : ([['esc', 'back']] as Array<[string, string]>)),
             ]
           : [
               ['1-5', 'views'],
@@ -432,9 +397,10 @@ export function App({
         <Text bold color={COLORS.accent}>
           INFERENCE ATLAS{' '}
           <Text color={COLORS.muted}>[{view === 'home' ? 'target' : view}] · box </Text>
-          <Text color={COLORS.ok}>{target.label}</Text>
+          <Text color={COLORS.ok}>{targetLabel(target)}</Text>
           <Text color={COLORS.muted}>
-            {target.ssh ? ` (ssh ${target.ssh})` : ''} · data @ {commit} · {syncLabel}
+            {' '}
+            · data @ {commit} · {syncLabel}
           </Text>
         </Text>
       </Box>
@@ -470,15 +436,15 @@ export function App({
           />
         ) : view === 'coverage' ? (
           <CoverageView grid={coverage} level={level} />
-        ) : view === 'boxes' ? (
-          <BoxesView
-            choices={boxChoices}
-            selected={selBox}
-            active={target}
-            height={bodyHeight - 8}
+        ) : view === 'hardware' ? (
+          <HardwareView
+            choices={hwChoices}
+            selected={selHw}
+            target={target}
+            firstRun={firstRun}
+            status={hwStatus}
+            height={bodyHeight - 9}
             width={cols - 6}
-            sshPrompt={sshPrompt}
-            status={boxStatus}
           />
         ) : view === 'detail' && detail ? (
           <DetailView
@@ -486,7 +452,7 @@ export function App({
             record={detail.record}
             loading={detail.loading}
             fit={fitFor(detail.row, detail.record)}
-            targetLabel={target.label}
+            targetLabel={targetLabel(target)}
             width={Math.min(cols - 6, 100)}
             level={level}
           />
@@ -512,9 +478,9 @@ export function App({
 
 function HelpView(): React.JSX.Element {
   const rows: Array<[string, string]> = [
-    ['1 / 2 / 3 / 4 / 5', 'target · all runs · pareto · coverage · boxes'],
-    ['b', 'switch the target box (this machine, an ssh host, a registry entry)'],
-    ['s (in boxes)', 'probe a box over ssh and target it'],
+    ['1 / 2 / 3 / 4 / 5', 'target · all runs · pareto · coverage · hardware'],
+    ['b', 'pick the target hardware — saved to your config'],
+    ['+ / - (in b)', 'how many of that device you have'],
     ['tab', 'cycle views'],
     ['j / k, arrows', 'move selection / scroll'],
     ['enter', 'open the selected run'],

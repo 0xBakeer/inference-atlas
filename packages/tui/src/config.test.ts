@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { DEFAULT_CONFIG, parseConfig } from './config.js';
+import { DEFAULT_CONFIG, parseConfig, withTargetSection } from './config.js';
 
 describe('parseConfig', () => {
   it('returns defaults for an empty file', () => {
@@ -33,20 +33,56 @@ describe('parseConfig', () => {
   });
 });
 
-describe('boxes', () => {
-  it('reads ssh boxes and hardware-pinned boxes', () => {
-    const c = parseConfig(
-      ['[boxes.dgx]', 'ssh = "spark"', '[boxes.rented]', 'hardware = "nvidia-rtx-4090"'].join('\n'),
-    );
-    expect(c.boxes['dgx']).toEqual({ ssh: 'spark', hardware: null });
-    expect(c.boxes['rented']).toEqual({ ssh: null, hardware: 'nvidia-rtx-4090' });
+describe('target', () => {
+  it('reads the selected hardware and count', () => {
+    const c = parseConfig('[target]\nhardware = "nvidia-rtx-6000-ada"\ncount = 3');
+    expect(c.target).toEqual({ hardware: 'nvidia-rtx-6000-ada', count: 3 });
   });
 
-  it('skips a box that declares neither ssh nor hardware', () => {
-    expect(parseConfig('[boxes.empty]\nnote = "nothing"').boxes['empty']).toBeUndefined();
+  it('defaults to detection with a count of one', () => {
+    expect(parseConfig('').target).toEqual({ hardware: null, count: 1 });
   });
 
-  it('defaults to no boxes', () => {
-    expect(parseConfig('').boxes).toEqual({});
+  it('floors a nonsense count at one', () => {
+    expect(parseConfig('[target]\nhardware = "x"\ncount = 0').target.count).toBe(1);
+  });
+});
+
+describe('withTargetSection', () => {
+  it('appends the section to a config that has none', () => {
+    const out = withTargetSection('[ui]\ncolor = "auto"\n', 'nvidia-rtx-4090', 2);
+    expect(out).toContain('[ui]');
+    expect(out).toContain('[target]\nhardware = "nvidia-rtx-4090"\ncount = 2');
+  });
+
+  it('replaces an existing section and keeps every comment around it', () => {
+    const before = [
+      '# my notes',
+      '[ui]',
+      'color = "mono"',
+      '',
+      '# the box',
+      '[target]',
+      'hardware = "old-gpu"',
+      'count = 1',
+      '',
+      '[recipes]',
+      'dir = "~/x"',
+      '',
+    ].join('\n');
+    const out = withTargetSection(before, 'nvidia-h100-80gb', 8);
+    expect(out).toContain('# my notes');
+    expect(out).toContain('# the box');
+    expect(out).toContain('[recipes]');
+    expect(out).toContain('hardware = "nvidia-h100-80gb"');
+    expect(out).toContain('count = 8');
+    expect(out).not.toContain('old-gpu');
+    // and it is still valid TOML that round-trips
+    expect(parseConfig(out).target).toEqual({ hardware: 'nvidia-h100-80gb', count: 8 });
+    expect(parseConfig(out).recipes.dir).toBe('~/x');
+  });
+
+  it('handles an empty file', () => {
+    expect(parseConfig(withTargetSection('', 'x', 1)).target).toEqual({ hardware: 'x', count: 1 });
   });
 });

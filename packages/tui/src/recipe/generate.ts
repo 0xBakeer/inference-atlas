@@ -20,7 +20,7 @@ import type {
 import { AGENT_RULES, fmtGB, fmtMs, fmtPct, fmtTokS, fmtW, renderServeCommand } from '@atlas/core';
 import type { FitVerdict } from '../hw/fit.js';
 import type { Target } from '../hw/target.js';
-import { describeTarget } from '../hw/target.js';
+import { describeTarget, targetLabel } from '../hw/target.js';
 
 export interface RecipeInput {
   row: IndexRow;
@@ -137,33 +137,34 @@ export function generateRecipe(input: RecipeInput): string {
   lines.push('');
 
   const target = input.target;
-  lines.push('## Where to run this');
+  const label = targetLabel(target);
+  lines.push('## The box this is for');
   lines.push('');
-  if (target.ssh) {
-    lines.push(
-      `**Target box: \`${target.label}\` — reachable at \`ssh ${target.ssh}\`.** Every command below runs *there*, not on the machine you are reading this on. Either open a shell first (\`ssh ${target.ssh}\`) or prefix each command with \`ssh ${target.ssh} '…'\`.`,
-    );
-  } else if (target.kind === 'local') {
-    lines.push(`**Target box: \`${target.label}\` — the machine you are on.**`);
-  } else {
-    lines.push(
-      `**Target box: \`${target.label}\`** — chosen from the hardware registry; nothing was probed, so confirm the box matches before running anything.`,
-    );
-  }
+  lines.push(
+    `**${label}**` +
+      (target.source === 'detected'
+        ? ' — detected on the machine that generated this recipe.'
+        : ' — selected by hand, not probed; confirm it matches before running anything.'),
+  );
   const described = describeTarget(target);
   if (described) lines.push(`\n${described}`);
   if (target.hardware) lines.push(`\nAtlas hardware id: \`${target.hardware.id}\`.`);
+  if (input.fit && input.fit.devicesNeeded > 1) {
+    lines.push(
+      `\nThis model does not fit one device: it has to be sharded across **${input.fit.devicesNeeded}** of them, so the serve command below needs the engine's tensor-parallel flag set to ${input.fit.devicesNeeded} (vLLM: \`--tensor-parallel-size ${input.fit.devicesNeeded}\`).`,
+    );
+  }
   lines.push('');
 
   if (input.fit) {
-    lines.push(`## Fit: ${input.fit.label} on ${target.label}`);
+    lines.push(`## Fit: ${input.fit.label} on ${label}`);
     lines.push('');
     for (const r of input.fit.reasons) lines.push(`- ${r}`);
     if (input.fit.memoryBasis === 'estimated')
       lines.push('- _Memory judgement is an estimate, not a measurement on this box._');
-    if (target.kind === 'registry')
+    if (target.source === 'chosen' && !target.capturedIsTarget)
       lines.push(
-        '- _The target was picked from the registry rather than probed, so platform support is inferred from its vendor._',
+        '- _The target was selected rather than probed, so platform support is inferred from its registry entry._',
       );
     lines.push('');
   }
@@ -250,9 +251,7 @@ export function generateRecipe(input: RecipeInput): string {
 
   lines.push('## Verify & contribute back');
   lines.push('');
-  lines.push(
-    `Reproduce the measurement with the atlas harness and compare${target.ssh ? ` — on \`${target.label}\`, not locally` : ''}:`,
-  );
+  lines.push(`Reproduce the measurement with the atlas harness on ${label} and compare:`);
   lines.push('');
   const args = Object.entries(record.args ?? {})
     .map(

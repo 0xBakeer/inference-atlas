@@ -9,11 +9,11 @@ import path from 'node:path';
 import { parse } from 'smol-toml';
 import { configFile, expandHome } from './data/paths.js';
 
-export interface BoxConfig {
-  /** ssh destination — an alias from ~/.ssh/config, or user@host. */
-  ssh: string | null;
-  /** Skip the probe and use this hardware registry id outright. */
+export interface TargetConfig {
+  /** Hardware registry id the user selected, or null to use whatever is detected. */
   hardware: string | null;
+  /** How many of them. */
+  count: number;
 }
 
 export interface AgentTarget {
@@ -40,8 +40,8 @@ export interface TuiConfig {
     dir: string;
   };
   agents: Record<string, AgentTarget>;
-  /** Named boxes the target picker offers besides the local machine. */
-  boxes: Record<string, BoxConfig>;
+  /** The box every verdict is judged against. Written back when the user picks one. */
+  target: TargetConfig;
 }
 
 export const DEFAULT_CONFIG: TuiConfig = {
@@ -56,7 +56,7 @@ export const DEFAULT_CONFIG: TuiConfig = {
     claude: { command: 'claude "$(cat {recipe})"', mode: 'copy' },
     opencode: { command: 'opencode run "$(cat {recipe})"', mode: 'copy' },
   },
-  boxes: {},
+  target: { hardware: null, count: 1 },
 };
 
 const TEMPLATE = `# inference-atlas TUI configuration. Every key is optional; these are the defaults.
@@ -87,14 +87,12 @@ mode = "copy"
 command = 'opencode run "$(cat {recipe})"'
 mode = "copy"
 
-# Boxes the target picker offers besides this machine, so you can judge runs against
-# the machine you actually deploy to. Press 'b' in the TUI to switch; 's' probes an ssh
-# destination on the fly. ssh is anything ssh understands (a ~/.ssh/config alias works).
-# [boxes.gpu-server]
-# ssh = "gpu-server"
-# Skip the probe entirely and pin a hardware registry id instead:
-# [boxes.rented-4090]
-# hardware = "nvidia-rtx-4090"
+# The box every verdict is judged against. The TUI detects this machine at startup and
+# asks you to pick when it cannot recognise it; press 'b' to change it at any time and
+# this section is rewritten for you. count is how many of that device you have.
+# [target]
+# hardware = "nvidia-rtx-6000-ada"
+# count = 3
 `;
 
 type Toml = Record<string, unknown>;
@@ -119,14 +117,8 @@ export function parseConfig(toml: string): TuiConfig {
     if (!command) continue;
     agents[name] = { command, mode: t['mode'] === 'run' ? 'run' : 'copy' };
   }
-  const boxes: Record<string, BoxConfig> = {};
-  for (const [name, value] of Object.entries(rec(raw['boxes']))) {
-    const b = rec(value);
-    const ssh = str(b['ssh']);
-    const hardware = str(b['hardware']);
-    if (!ssh && !hardware) continue;
-    boxes[name] = { ssh, hardware };
-  }
+  const targetRaw = rec(raw['target']);
+  const count = num(targetRaw['count']);
   const color = str(ui['color']);
   return {
     data: {
@@ -139,7 +131,10 @@ export function parseConfig(toml: string): TuiConfig {
     },
     recipes: { dir: str(rec(recipes)['dir']) ?? DEFAULT_CONFIG.recipes.dir },
     agents,
-    boxes,
+    target: {
+      hardware: str(targetRaw['hardware']),
+      count: count && count >= 1 ? Math.round(count) : 1,
+    },
   };
 }
 
@@ -161,4 +156,47 @@ export function loadConfig(env: Record<string, string | undefined> = process.env
 
 export function recipesDir(config: TuiConfig): string {
   return expandHome(config.recipes.dir);
+}
+
+/**
+ * Persist the target selection into the config file **surgically**: the `[target]` section
+ * is replaced or appended, and every other byte — including the user's comments — is left
+ * exactly as it was. Re-serialising the whole document would silently eat them.
+ */
+export function renderTargetSection(hardware: string, count: number): string {
+  return ['[target]', `hardware = "${hardware}"`, `count = ${Math.max(1, Math.round(count))}`].join(
+    '\n',
+  );
+}
+
+/** Pure text transform, so the rewrite is testable without touching a real file. */
+export function withTargetSection(toml: string, hardware: string, count: number): string {
+  const section = renderTargetSection(hardware, count);
+  // A top-level table runs until the next line that starts a table.
+  const pattern = /^[ \t]*\[target\][^\n]*\n(?:(?![ \t]*\[)[^\n]*\n?)*/m;
+  if (pattern.test(toml)) return toml.replace(pattern, `${section}\n`);
+  const base = toml.length === 0 || toml.endsWith('\n') ? toml : `${toml}\n`;
+  return `${base}${base.endsWith('\n\n') || base === '' ? '' : '\n'}${section}\n`;
+}
+
+/** Write the selection back. Best-effort: a read-only config must not break the session. */
+export function saveTarget(
+  hardware: string,
+  count: number,
+  env: Record<string, string | undefined> = process.env,
+): { ok: true; file: string } | { ok: false; error: string } {
+  const file = configFile(env);
+  try {
+    let existing = '';
+    try {
+      existing = fs.readFileSync(file, 'utf8');
+    } catch {
+      /* first write */
+    }
+    fs.mkdirSync(path.dirname(file), { recursive: true });
+    fs.writeFileSync(file, withTargetSection(existing, hardware, count));
+    return { ok: true, file };
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : String(err) };
+  }
 }

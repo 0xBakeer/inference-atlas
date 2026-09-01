@@ -18,28 +18,37 @@ import { detectColorLevel } from './canvas/color.js';
 import { loadAtlas } from './data/load.js';
 import { cacheDir, expandHome } from './data/paths.js';
 import { LocalSource, RemoteSource } from './data/source.js';
-import { loadState, saveState } from './data/state.js';
-import { localTarget, registryTarget, remoteTarget } from './hw/target.js';
+import { chooseTarget, detectTarget } from './hw/target.js';
 import { App } from './ui/App.js';
 
 interface CliArgs {
   repo: string | null;
   url: string | null;
-  box: string | null;
+  hardware: string | null;
+  count: number | null;
   sync: boolean;
   help: boolean;
 }
 
 function parseArgs(argv: string[]): CliArgs {
-  const args: CliArgs = { repo: null, url: null, box: null, sync: false, help: false };
+  const args: CliArgs = {
+    repo: null,
+    url: null,
+    hardware: null,
+    count: null,
+    sync: false,
+    help: false,
+  };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i]!;
     if (a === '--repo') args.repo = argv[++i] ?? null;
     else if (a.startsWith('--repo=')) args.repo = a.slice('--repo='.length);
     else if (a === '--url') args.url = argv[++i] ?? null;
     else if (a.startsWith('--url=')) args.url = a.slice('--url='.length);
-    else if (a === '--box') args.box = argv[++i] ?? null;
-    else if (a.startsWith('--box=')) args.box = a.slice('--box='.length);
+    else if (a === '--hardware') args.hardware = argv[++i] ?? null;
+    else if (a.startsWith('--hardware=')) args.hardware = a.slice('--hardware='.length);
+    else if (a === '--count') args.count = Number(argv[++i]);
+    else if (a.startsWith('--count=')) args.count = Number(a.slice('--count='.length));
     else if (a === '--sync') args.sync = true;
     else if (a === '--help' || a === '-h') args.help = true;
   }
@@ -51,9 +60,9 @@ and generate agent-ready install recipes. Charts included.
 
   --repo <path>   read a local checkout (no network at all)
   --url <url>     override the data URL (default: the deployed site)
-  --box <box>     target another machine: an ssh destination, a hardware
-                  registry id, or a box named in the config ('local' resets
-                  to this machine; also switchable in the TUI with 'b')
+  --hardware <id> target this hardware registry id instead of what is
+                  detected (also selectable in the TUI with 'b')
+  --count <n>     how many of that device you have (default 1)
   --sync          refresh the data cache and exit
   -h, --help      this
 
@@ -96,39 +105,20 @@ async function main(): Promise<void> {
     return;
   }
 
-  // The local box is always resolved: it is what the picker offers as "this machine",
-  // and the fallback whenever a requested target cannot be reached.
-  const local = localTarget(data.registry.hardware);
-  let target = local;
+  // Detect first — it is right often enough to be worth doing — then let the config
+  // override it, because the box you deploy to is frequently not the box you browse from.
+  const detected = detectTarget(data.registry.hardware);
+  let target = detected;
 
-  // --box wins over the remembered selection; a named box from the config resolves first.
-  const requested = args.box ?? loadState().targetId ?? null;
-  if (requested && requested !== 'local') {
-    const named = config.boxes[requested];
-    const spec = named?.ssh ?? (requested.startsWith('ssh:') ? requested.slice(4) : null);
-    const hardwareId =
-      named?.hardware ??
-      (requested.startsWith('hw:')
-        ? requested.slice(3)
-        : data.registry.hardware.some((h) => h.id === requested)
-          ? requested
-          : null);
-    if (spec) {
-      const result = remoteTarget(spec, data.registry.hardware);
-      if ('error' in result) console.error(`${result.error} — falling back to this machine`);
-      else target = result.target;
-    } else if (hardwareId) {
-      const hw = data.registry.hardware.find((h) => h.id === hardwareId);
-      if (hw) target = registryTarget(hw);
-      else console.error(`unknown hardware id '${hardwareId}' — falling back to this machine`);
-    } else if (args.box) {
-      // A bare --box that is neither configured nor a hardware id is treated as an ssh host.
-      const result = remoteTarget(args.box, data.registry.hardware);
-      if ('error' in result) console.error(`${result.error} — falling back to this machine`);
-      else target = result.target;
-    }
+  const wantedId = args.hardware ?? config.target.hardware;
+  const wantedCount = args.count ?? config.target.count;
+  if (wantedId) {
+    const hw = data.registry.hardware.find((h) => h.id === wantedId);
+    if (hw) target = chooseTarget(hw, wantedCount || 1, detected.captured);
+    else console.error(`unknown hardware id '${wantedId}' — falling back to detection`);
+  } else if (wantedCount > 1 && target.hardware) {
+    target = chooseTarget(target.hardware, wantedCount, detected.captured);
   }
-  if (args.box) saveState({ targetId: target.id });
 
   const level = config.ui.color === 'auto' ? detectColorLevel() : config.ui.color;
 

@@ -2,15 +2,17 @@ import { describe, expect, it } from 'vitest';
 import type { Hardware, IndexRow, Quant, RegistryEngine } from '@atlas/core';
 import { fixtureRow } from '@atlas/core';
 import type { CapturedHardware } from './capture.js';
-import { captureHardware, localPlatformTags, parseProbe } from './capture.js';
+import { captureHardware, localPlatformTags } from './capture.js';
 import { matchHardware } from './match.js';
 import { fitVerdict } from './fit.js';
 import type { Target } from './target.js';
 import {
+  chooseTarget,
   describeTarget,
-  registryTarget,
-  remoteTarget,
-  targetMemoryGb,
+  detectTarget,
+  servingDevices,
+  targetLabel,
+  targetMemory,
   targetPlatformTags,
 } from './target.js';
 
@@ -45,6 +47,15 @@ const hw = (over: Partial<Hardware>): Hardware =>
     ...over,
   }) as Hardware;
 
+const GPU_24GB = hw({
+  id: 'nvidia-rtx-4090',
+  vendor: 'nvidia',
+  kind: 'gpu',
+  memory_gb: 24,
+  memory_bandwidth_gbs: 1008,
+  detect: { nvidia_smi_name: ['NVIDIA GeForce RTX 4090'] },
+});
+
 const REGISTRY: Hardware[] = [
   hw({
     id: 'apple-m2-max-32gb',
@@ -65,6 +76,7 @@ const REGISTRY: Hardware[] = [
     memory_bandwidth_gbs: 273,
     detect: { nvidia_smi_name: ['NVIDIA GB10'], cpu_model: ['Cortex-X925', 'NVIDIA Grace'] },
   }),
+  GPU_24GB,
 ];
 
 describe('captureHardware', () => {
@@ -119,13 +131,12 @@ describe('fitVerdict', () => {
   const quant = (over: Partial<Quant>): Quant =>
     ({ id: 'q', model_id: 'm', format: 'gguf', bits: 4, engines: [], ...over }) as unknown as Quant;
   const row = fixtureRow() as IndexRow;
-  const targetOf = (captured: CapturedHardware, hw: Hardware | null): Target => ({
-    kind: 'local',
-    id: 'local',
-    label: hw?.id ?? captured.cpu,
-    captured,
+  const targetOf = (captured: CapturedHardware, hw: Hardware | null, count = 1): Target => ({
     hardware: hw,
-    ssh: null,
+    count,
+    source: 'detected',
+    captured,
+    capturedIsTarget: true,
   });
 
   it('rejects a linux-only engine on a Mac', () => {
@@ -189,148 +200,142 @@ describe('fitVerdict', () => {
     expect(v.reasons.join('\n')).toContain('this exact hardware');
   });
 
-  it('judges a remote ssh target, not the machine it runs on', () => {
-    const remote: Target = {
-      kind: 'remote',
-      id: 'ssh:spark',
-      label: 'spark',
-      captured: spark,
-      hardware: REGISTRY[2]!,
-      ssh: 'spark',
-    };
-    // A linux-cuda engine is wrong for this Mac but right for the remote box.
-    const v = fitVerdict({
-      row,
-      engine: engine(['linux-cuda']),
-      model: null,
-      quant: quant({ size_gb: 60 }),
-      target: remote,
-    });
-    expect(v.level).toBe('should-fit');
-    expect(v.reasons.join('\n')).toContain('spark has 128 GB');
-  });
-
-  it('says so when a hand-picked registry target only infers its platform', () => {
+  it('says so when a chosen target only infers its platform', () => {
     const v = fitVerdict({
       row,
       engine: engine(['macos-metal']),
       model: null,
       quant: quant({ size_gb: 10 }),
-      target: registryTarget(REGISTRY[2]!), // an NVIDIA box: metal cannot run there
+      target: chooseTarget(REGISTRY[2]!, 1, null), // an NVIDIA box: metal cannot run there
     });
     expect(v.level).toBe('wrong-platform');
     expect(v.reasons[0]).toContain('inferred from the registry entry');
   });
+
+  it('has no verdict at all until hardware is selected', () => {
+    const v = fitVerdict({
+      row,
+      engine: engine(['macos-metal']),
+      model: null,
+      quant: quant({ size_gb: 10 }),
+      target: {
+        hardware: null,
+        count: 1,
+        source: 'unknown',
+        captured: m2max,
+        capturedIsTarget: true,
+      },
+    });
+    expect(v.level).toBe('unknown');
+    expect(v.reasons[0]).toContain('press b');
+  });
+
+  it('pools memory across several GPUs in a host and says how many are needed', () => {
+    const v = fitVerdict({
+      row,
+      engine: engine(['linux-cuda']),
+      model: null,
+      quant: quant({ size_gb: 60 }), // 75 GB with headroom: needs 4 of the 24 GB cards
+      target: chooseTarget(GPU_24GB, 4, null),
+    });
+    expect(v.level).toBe('should-fit');
+    expect(v.devicesNeeded).toBe(4);
+    expect(v.reasons.join('\n')).toContain('pools 96 GB (24 GB × 4)');
+    expect(v.reasons.join('\n')).toContain('--tensor-parallel-size 4');
+  });
+
+  it('does not pool memory across separate machines', () => {
+    // Two DGX Sparks are two computers: a 200 GB model does not fit "256 GB".
+    const v = fitVerdict({
+      row,
+      engine: engine(['linux-cuda']),
+      model: null,
+      quant: quant({ size_gb: 200 }),
+      target: chooseTarget(REGISTRY[2]!, 2, null),
+    });
+    expect(v.level).toBe('no-fit');
+    expect(v.reasons.join('\n')).toContain('has 128 GB');
+  });
+
+  it('downgrades a run measured on more devices than the target has', () => {
+    const v = fitVerdict({
+      row: fixtureRow({
+        hardware: { id: 'nvidia-rtx-4090', count: 4 },
+        metrics: { output_tok_s: 100 },
+      }) as IndexRow,
+      engine: engine(['linux-cuda']),
+      model: null,
+      quant: quant({ size_gb: 10 }),
+      target: chooseTarget(GPU_24GB, 1, null),
+    });
+    expect(v.level).toBe('tight');
+    expect(v.reasons.join('\n')).toContain('measured on 4 devices, you have 1');
+  });
 });
 
 describe('target', () => {
-  it('derives real platform tags from a capture', () => {
-    const t = {
-      kind: 'remote',
-      id: 'ssh:x',
-      label: 'x',
+  it('derives real platform tags from the probed machine', () => {
+    expect(targetPlatformTags(detectTarget(REGISTRY, () => ''))).toBeDefined();
+    const probed: Target = {
+      hardware: REGISTRY[2]!,
+      count: 1,
+      source: 'detected',
       captured: spark,
-      hardware: null,
-      ssh: 'x',
-    } as Target;
-    expect(targetPlatformTags(t)).toEqual({ tags: ['linux-cuda', 'linux-cpu'], inferred: false });
+      capturedIsTarget: true,
+    };
+    expect(targetPlatformTags(probed)).toEqual({
+      tags: ['linux-cuda', 'linux-cpu'],
+      inferred: false,
+    });
   });
 
-  it('infers platform tags from the vendor when nothing was probed', () => {
-    expect(targetPlatformTags(registryTarget(REGISTRY[0]!))).toEqual({
+  it('infers platform tags from the vendor when the box was chosen, not probed', () => {
+    expect(targetPlatformTags(chooseTarget(REGISTRY[0]!, 1, null))).toEqual({
       tags: ['macos-metal', 'macos-cpu'],
       inferred: true,
     });
-    expect(targetPlatformTags(registryTarget(REGISTRY[2]!)).inferred).toBe(true);
   });
 
-  it('prefers the registry memory over the captured figure', () => {
-    const t = {
-      kind: 'remote',
-      id: 'ssh:x',
-      label: 'x',
-      captured: spark, // 121.6 GB visible to the OS
-      hardware: REGISTRY[2]!, // 128 GB installed
-      ssh: 'x',
-    } as Target;
-    expect(targetMemoryGb(t)).toBe(128);
+  it('labels a multi-device target', () => {
+    expect(targetLabel(chooseTarget(GPU_24GB, 3, null))).toBe('3 × x');
+    expect(targetLabel(chooseTarget(GPU_24GB, 1, null))).toBe('x');
   });
 
-  it('describes a remote target with its ssh destination', () => {
-    const t = {
-      kind: 'remote',
-      id: 'ssh:spark',
-      label: 'spark',
-      captured: spark,
-      hardware: REGISTRY[2]!,
-      ssh: 'spark',
-    } as Target;
-    expect(describeTarget(t)).toContain('NVIDIA GB10');
-    expect(describeTarget(t)).toContain('via ssh spark');
-  });
-});
-
-describe('parseProbe', () => {
-  it('reads a linux box with a GPU', () => {
-    const out = [
-      'os=Linux',
-      'arch=aarch64',
-      'cpu=Cortex-A725',
-      'cpu2=',
-      'memkb=127512345',
-      'gpu=NVIDIA GB10, 0',
-    ].join('\n');
-    const c = parseProbe(out);
-    expect(c.platform).toBe('linux');
-    expect(c.cpu).toBe('Cortex-A725');
-    expect(c.nvidiaGpus).toEqual(['NVIDIA GB10']);
-    expect(c.memoryGb).toBeCloseTo(121.6, 1);
-    expect(c.appleChip).toBeNull();
-  });
-
-  it('reads a Mac and keeps the Apple chip', () => {
-    const c = parseProbe(
-      ['os=Darwin', 'arch=arm64', 'cpu=Apple M2 Max', `membytes=${32 * 1024 ** 3}`].join('\n'),
-    );
-    expect(c.platform).toBe('darwin');
-    expect(c.appleChip).toBe('Apple M2 Max');
-    expect(c.memoryGb).toBe(32);
-  });
-
-  it('falls back to /proc/cpuinfo when lscpu said nothing', () => {
-    expect(parseProbe('os=Linux\ncpu=\ncpu2=AMD EPYC 7003').cpu).toBe('AMD EPYC 7003');
-  });
-
-  it('survives junk without throwing', () => {
-    expect(parseProbe('garbage\n\n=x').nvidiaGpus).toEqual([]);
-  });
-});
-
-describe('remoteTarget', () => {
-  it('reports a failed ssh probe instead of throwing', () => {
-    const result = remoteTarget('nowhere.invalid', REGISTRY, () => {
-      throw new Error('ssh: Could not resolve hostname nowhere.invalid\nlost connection');
+  it('pools GPU memory but not whole machines', () => {
+    expect(targetMemory(chooseTarget(GPU_24GB, 3, null))).toEqual({
+      perDeviceGb: 24,
+      usableGb: 72,
+      poolable: true,
     });
-    expect('error' in result && result.error).toContain('nowhere.invalid');
+    expect(targetMemory(chooseTarget(REGISTRY[2]!, 2, null))).toEqual({
+      perDeviceGb: 128,
+      usableGb: 128,
+      poolable: false,
+    });
   });
 
-  it('matches a probed remote box against the registry', () => {
-    const result = remoteTarget('spark', REGISTRY, () =>
-      ['os=Linux', 'arch=aarch64', 'cpu=Cortex-X925', 'memkb=127512345', 'gpu=NVIDIA GB10, 0'].join(
-        '\n',
-      ),
-    );
-    expect('target' in result).toBe(true);
-    if ('target' in result) {
-      expect(result.target.kind).toBe('remote');
-      expect(result.target.id).toBe('ssh:spark');
-      expect(result.target.hardware?.id).toBe('nvidia-gb10-dgx-spark');
-      expect(result.target.ssh).toBe('spark');
+  it('scales serving devices only where memory pools', () => {
+    expect(servingDevices(chooseTarget(GPU_24GB, 3, null))).toBe(3);
+    expect(servingDevices(chooseTarget(REGISTRY[2]!, 2, null))).toBe(1);
+  });
+
+  it('describes pooling and separateness', () => {
+    expect(describeTarget(chooseTarget(GPU_24GB, 3, null))).toContain('24 GB each → 72 GB pooled');
+    expect(describeTarget(chooseTarget(REGISTRY[2]!, 2, null))).toContain('separate machines');
+  });
+
+  it('counts detected GPUs as the device count', () => {
+    const three: CapturedHardware = {
+      ...spark,
+      nvidiaGpus: ['NVIDIA GeForce RTX 4090', 'NVIDIA GeForce RTX 4090', 'NVIDIA GeForce RTX 4090'],
+    };
+    const t = detectTarget(REGISTRY, (cmd) => {
+      if (cmd === 'nvidia-smi') return three.nvidiaGpus.map((g) => `${g}, 24564`).join('\n');
+      throw new Error('no');
+    });
+    if (process.platform === 'linux') {
+      expect(t.count).toBe(3);
+      expect(t.hardware?.id).toBe('nvidia-rtx-4090');
     }
-  });
-
-  it('rejects a box that answers ssh but reports nothing usable', () => {
-    const result = remoteTarget('empty', REGISTRY, () => '\n');
-    expect('error' in result && result.error).toContain('nothing usable');
   });
 });

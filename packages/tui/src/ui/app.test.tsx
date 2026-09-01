@@ -150,19 +150,18 @@ const captured: CapturedHardware = {
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-async function renderApp(overrides: Partial<typeof DEFAULT_CONFIG> = {}) {
+async function renderApp(options: { unknownBox?: boolean } = {}) {
   const source = new LocalSource(repo);
   const data = await loadAtlas(source);
-  const match = matchHardware(captured, data.registry.hardware);
-  const config = { ...structuredClone(DEFAULT_CONFIG), ...overrides };
+  const match = options.unknownBox ? null : matchHardware(captured, data.registry.hardware);
+  const config = structuredClone(DEFAULT_CONFIG);
   config.data.refreshMinutes = 0;
   const target: Target = {
-    kind: 'local',
-    id: 'local',
-    label: match?.hardware.id ?? captured.cpu,
-    captured,
     hardware: match?.hardware ?? null,
-    ssh: null,
+    count: 1,
+    source: match ? 'detected' : 'unknown',
+    captured,
+    capturedIsTarget: true,
   };
   return render(
     <App source={source} config={config} initialData={data} initialTarget={target} level="mono" />,
@@ -190,7 +189,7 @@ describe('App', () => {
     stdin.write('\r'); // open selected run
     await sleep(50); // record load is async
     const frame = lastFrame()!;
-    expect(frame).toContain('Fit on apple-m2-max-32gb');
+    expect(frame).toContain('Fit on Apple M2 Max 32GB');
     expect(frame).toContain('needs the fp8 kernels');
     unmount();
   });
@@ -206,30 +205,38 @@ describe('App', () => {
     unmount();
   });
 
-  it('lists boxes and switches the target to a registry entry', async () => {
+  it('opens the hardware picker with the detected box marked', async () => {
     const { stdin, lastFrame, unmount } = await renderApp();
     stdin.write('b');
     await sleep(20);
-    expect(lastFrame()).toContain('Target box');
-    expect(lastFrame()).toContain('this machine');
-    // The only registry hardware in the fixture is the Mac; add a configured box instead.
-    stdin.write('\u001b');
-    await sleep(300);
+    const frame = lastFrame()!;
+    expect(frame).toContain('Pick your hardware');
+    expect(frame).toContain('apple-m2-max-32gb');
+    expect(frame).toContain('detected');
     unmount();
   });
 
-  it('offers configured boxes and prompts for an ssh destination', async () => {
-    const { stdin, lastFrame, unmount } = await renderApp({
-      boxes: { dgx: { ssh: 'some-host', hardware: null } },
-    });
+  it('adjusts the device count with +/-', async () => {
+    const { stdin, lastFrame, unmount } = await renderApp();
     stdin.write('b');
     await sleep(20);
-    const frame = lastFrame()!;
-    expect(frame).toContain('dgx');
-    expect(frame).toContain('ssh some-host');
-    stdin.write('s');
+    stdin.write('+');
     await sleep(20);
-    expect(lastFrame()).toContain('ssh destination');
+    stdin.write('+');
+    await sleep(20);
+    expect(lastFrame()).toContain('3×');
+    stdin.write('-');
+    await sleep(20);
+    expect(lastFrame()).toContain('2×');
+    unmount();
+  });
+
+  it('asks for hardware up front when it cannot identify the machine', async () => {
+    const { lastFrame, unmount } = await renderApp({ unknownBox: true });
+    await sleep(20);
+    const frame = lastFrame()!;
+    expect(frame).toContain('Which box are you running models on?');
+    expect(frame).toContain('did not match anything in the hardware registry');
     unmount();
   });
 

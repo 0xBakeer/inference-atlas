@@ -109,9 +109,9 @@ curl -fsSL https://raw.githubusercontent.com/0xBakeer/inference-atlas/main/insta
 inference-atlas
 ```
 
-The atlas in your terminal: it identifies a **target box** — this machine, a host it probes
-over ssh, or any entry in the hardware registry — ranks every measured configuration by
-whether it would actually run there, draws the sweep curves,
+The atlas in your terminal: it identifies a **target box** — this machine, or any entry in
+the hardware registry, times however many of them you have — ranks every measured
+configuration by whether it would actually run there, draws the sweep curves,
 latency distributions, the Pareto frontier and the coverage map as terminal charts, and turns
 any run into a Markdown **install recipe** — pinned weights, install commands, the exact
 serve command, per-flag documentation, the run's gotchas, the numbers to expect, and the

@@ -25,8 +25,8 @@ fit`, `✗ wrong platform`.
   the reconstructed serve command, every flag with its registered help text and impact, the
   run's gotchas, the numbers to expect, the fit verdict for the target box, and the
   `atlas-bench` loop to verify and contribute the result back — plus the AGENTS.md rules.
-  When the target is remote the recipe says so up front: every command runs on that host,
-  not on the machine reading it.
+  The recipe names the target box up front, says whether it was detected or chosen by hand,
+  and when a model needs sharding it states across how many devices and which flag to set.
   Copy it, or hand it to a configured agent (`claude`, `opencode`, your own).
 - **Data that keeps itself fresh.** The compiled shards come from the deployed site: one
   conditional GET on `manifest.json`, and only shards whose sha256 changed are re-fetched.
@@ -36,26 +36,24 @@ fit`, `✗ wrong platform`.
 
 ## Keys
 
-`1–5` views (target · runs · pareto · coverage · boxes) · `b` switch target box ·
-`s` (in boxes) probe an ssh host · `j/k` move · `enter` open · `/` filter · `g` recipe ·
+`1–5` views (target · runs · pareto · coverage · hardware) · `b` pick hardware ·
+`+`/`-` how many devices · `j/k` move · `enter` open · `/` filter · `g` recipe ·
 `c` copy (in recipe) · `1–9` send to agent (in recipe) · `r` refresh · `?` help · `q` quit
 
 ## Configuration
 
 `~/.config/inference-atlas/config.toml` — written with commented defaults on first run:
 data URL or local repo path, refresh interval, colour mode, recipes directory, the agent
-targets `{recipe}` is substituted into, and named boxes:
+targets `{recipe}` is substituted into, and the target box:
 
 ```toml
-[boxes.dgx]
-ssh = "spark"              # probed on selection, matched against the registry
-
-[boxes.rented-4090]
-hardware = "nvidia-rtx-4090"   # no probe: judge against the registry entry
+[target]
+hardware = "nvidia-rtx-6000-ada"
+count = 3
 ```
 
-The selected box is remembered in `~/.cache/inference-atlas/state.json`, so the config file
-stays a document the TUI never rewrites.
+That section is the one thing the TUI writes back, and it rewrites _only_ that section —
+your comments and every other setting are preserved byte for byte.
 
 ## Development
 

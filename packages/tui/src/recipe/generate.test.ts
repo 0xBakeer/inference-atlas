@@ -103,12 +103,18 @@ const fit: FitVerdict = {
   reasons: ['estimate: 9.5 GB weights + 25% headroom ≈ 11.9 GB'],
   memoryBasis: 'estimated',
   decodeCeiling: 42,
+  devicesNeeded: 1,
 };
 
-const localTargetFixture: Target = {
-  kind: 'local',
-  id: 'local',
-  label: 'apple-m2-max-32gb',
+const detectedTarget: Target = {
+  hardware: {
+    id: 'apple-m2-max-32gb',
+    name: 'Apple M2 Max 32GB',
+    kind: 'soc',
+    memory_gb: 32,
+  } as never,
+  count: 1,
+  source: 'detected',
   captured: {
     platform: 'darwin',
     arch: 'arm64',
@@ -118,25 +124,20 @@ const localTargetFixture: Target = {
     memoryGb: 32,
     vramGb: null,
   },
-  hardware: { id: 'apple-m2-max-32gb', name: 'Apple M2 Max 32GB' } as never,
-  ssh: null,
+  capturedIsTarget: true,
 };
 
-const sparkTargetFixture: Target = {
-  kind: 'remote',
-  id: 'ssh:spark',
-  label: 'spark',
-  captured: {
-    platform: 'linux',
-    arch: 'arm64',
-    cpu: 'Cortex-A725',
-    appleChip: null,
-    nvidiaGpus: ['NVIDIA GB10'],
-    memoryGb: 121.6,
-    vramGb: null,
-  },
-  hardware: { id: 'nvidia-gb10-dgx-spark', name: 'NVIDIA DGX Spark' } as never,
-  ssh: 'spark',
+const chosenRig: Target = {
+  hardware: {
+    id: 'nvidia-rtx-6000-ada',
+    name: 'NVIDIA RTX 6000 Ada',
+    kind: 'gpu',
+    memory_gb: 48,
+  } as never,
+  count: 3,
+  source: 'chosen',
+  captured: null,
+  capturedIsTarget: false,
 };
 
 const input = () => ({
@@ -149,7 +150,7 @@ const input = () => ({
   workload: null,
   engineVersion,
   fit,
-  target: localTargetFixture,
+  target: detectedTarget,
   site,
 });
 
@@ -183,24 +184,30 @@ describe('generateRecipe', () => {
   });
 
   it('labels an estimated fit as an estimate', () => {
-    expect(md).toContain('~ should fit on apple-m2-max-32gb');
+    expect(md).toContain('~ should fit on Apple M2 Max 32GB');
     expect(md).toContain('estimate, not a measurement');
   });
 
-  it('names the local target and does not invent an ssh hop', () => {
-    expect(md).toContain('## Where to run this');
-    expect(md).toContain('the machine you are on');
-    expect(md).not.toContain('ssh ');
+  it('names the detected target box', () => {
+    expect(md).toContain('## The box this is for');
+    expect(md).toContain('**Apple M2 Max 32GB**');
+    expect(md).toContain('detected on the machine that generated this recipe');
+    // The verify packet uses the target's hardware id, not a placeholder.
+    expect(md).toContain('/apple-m2-max-32gb');
+    expect(md).not.toContain('<your-hardware-id>');
   });
 
-  it('tells the agent to run everything on the remote box when the target is over ssh', () => {
-    const remote = generateRecipe({ ...input(), target: sparkTargetFixture });
-    expect(remote).toContain('reachable at `ssh spark`');
-    expect(remote).toContain('runs *there*, not on the machine you are reading this on');
-    expect(remote).toContain('on `spark`, not locally');
-    // The verify packet uses the target's hardware id, not a placeholder.
-    expect(remote).toContain('/nvidia-gb10-dgx-spark');
-    expect(remote).not.toContain('<your-hardware-id>');
+  it('names a multi-device rig and flags a chosen target as unprobed', () => {
+    const rig = generateRecipe({
+      ...input(),
+      target: chosenRig,
+      fit: { ...fit, devicesNeeded: 3 },
+    });
+    expect(rig).toContain('**3 × NVIDIA RTX 6000 Ada**');
+    expect(rig).toContain('selected by hand, not probed');
+    expect(rig).toContain('sharded across **3**');
+    expect(rig).toContain('--tensor-parallel-size 3');
+    expect(rig).toContain('inferred from its registry entry');
   });
 
   it('includes the verify loop with the original workload and args', () => {

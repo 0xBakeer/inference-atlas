@@ -7,7 +7,7 @@ import { headlineMetric } from '@atlas/core';
 import type { AtlasData } from '../../data/load.js';
 import type { FitLevel } from '../../hw/fit.js';
 import type { Target } from '../../hw/target.js';
-import { describeTarget } from '../../hw/target.js';
+import { describeTarget, targetLabel } from '../../hw/target.js';
 import { COLORS, FIT_COLOR } from '../theme.js';
 import { Panel, Table } from '../widgets.js';
 
@@ -21,10 +21,10 @@ export interface HomeProps {
   width: number;
 }
 
-const KIND_NOTE: Record<Target['kind'], string> = {
-  local: 'this machine',
-  remote: 'probed over ssh',
-  registry: 'registry entry — nothing probed, platform support inferred',
+const SOURCE_NOTE: Record<Target['source'], string> = {
+  detected: 'detected on this machine',
+  chosen: 'your selection',
+  unknown: 'not identified yet',
 };
 
 export function HomeView({
@@ -39,9 +39,9 @@ export function HomeView({
   const stats = data.manifest?.counts ?? {};
   return (
     <Box flexDirection="column" gap={1}>
-      <Panel title={`Target box — ${KIND_NOTE[target.kind]}  ·  press b to change`}>
+      <Panel title={`Target box — ${SOURCE_NOTE[target.source]}  ·  press b to change`}>
         <Text>
-          <Text bold>{target.label}</Text>
+          <Text bold>{targetLabel(target)}</Text>
           <Text color={COLORS.muted}> {describeTarget(target)}</Text>
         </Text>
         {target.hardware ? (
@@ -53,11 +53,11 @@ export function HomeView({
           </Text>
         ) : (
           <Text color={COLORS.warn}>
-            not in the hardware registry — fit verdicts fall back to captured memory only
+            no hardware selected — press b to pick the box you run models on
           </Text>
         )}
       </Panel>
-      <Panel title={`Worth running on ${target.label}`} grow>
+      <Panel title={`Worth running on ${targetLabel(target)}`} grow>
         <Table
           height={height}
           width={width}
