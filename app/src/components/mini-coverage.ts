@@ -10,7 +10,7 @@ import {
 } from '../data/derive.js';
 import { watch } from '../signal.js';
 import { store } from '../store.js';
-import { fmtPct } from '../util/format.js';
+import { fmtPct } from '@atlas/core';
 import { AtlasElement } from './base.js';
 import './cell-drawer.js';
 import './heatmap.js';

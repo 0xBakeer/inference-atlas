@@ -26,9 +26,9 @@ import { href, qlist, setQuery } from '../router.js';
 import { store } from '../store.js';
 import { copyText } from '../util/clipboard.js';
 import { seriesColor } from '../util/colors.js';
-import { argsDiff, metricDelta } from '../util/diff.js';
-import { fmtPct } from '../util/format.js';
-import { blockCards, type MetricCardData } from '../util/metrics.js';
+import { argsDiff, metricDelta } from '@atlas/core';
+import { fmtPct } from '@atlas/core';
+import { blockCards, type MetricCardData } from '@atlas/core';
 import { ViewElement } from './view-base.js';
 
 @customElement('atlas-compare-view')

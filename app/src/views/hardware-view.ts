@@ -18,7 +18,7 @@ import { engineRunsOn, quantRunsOn } from '../data/derive.js';
 import { href, modelHref, navigate, qget, setQuery } from '../router.js';
 import { store } from '../store.js';
 import { matchesQuery, parseSort, serializeSort, sortRows, toggleSort } from '../util/filters.js';
-import { fmtInt, fmtNum, fmtTokS, fmtUsd } from '../util/format.js';
+import { fmtInt, fmtNum, fmtTokS, fmtUsd } from '@atlas/core';
 import { ViewElement } from './view-base.js';
 
 @customElement('atlas-hardware-view')

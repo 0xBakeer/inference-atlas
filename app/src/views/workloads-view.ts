@@ -7,7 +7,7 @@ import { runsTable } from '../components/runs-table.js';
 import { codeBlock, emptyState, kindTag, kv, skeletonLines } from '../components/ui.js';
 import { href, navigate, qget, setQuery } from '../router.js';
 import { store } from '../store.js';
-import { fmtInt } from '../util/format.js';
+import { fmtInt } from '@atlas/core';
 import { ViewElement } from './view-base.js';
 
 const KINDS = ['serving', 'sweep', 'prefill', 'longctx', 'eval'] as const;

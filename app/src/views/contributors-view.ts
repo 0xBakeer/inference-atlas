@@ -17,8 +17,8 @@ import { loginKey } from '@atlas/core';
 import { href } from '../router.js';
 import { store } from '../store.js';
 import { absDate } from '../util/dates.js';
-import { fmtInt, fmtNum } from '../util/format.js';
-import { headlineMetric } from '../util/metrics.js';
+import { fmtInt, fmtNum } from '@atlas/core';
+import { headlineMetric } from '@atlas/core';
 import { ViewElement } from './view-base.js';
 
 interface Badge {

@@ -28,8 +28,8 @@ import {
 } from '../data/derive.js';
 import { href, modelHref, qget, setQuery } from '../router.js';
 import { store } from '../store.js';
-import { fmtInt, fmtPct } from '../util/format.js';
-import { headlineMetric } from '../util/metrics.js';
+import { fmtInt, fmtPct } from '@atlas/core';
+import { headlineMetric } from '@atlas/core';
 import { ViewElement } from './view-base.js';
 
 const AXES: AxisKey[] = ['model', 'quant', 'hardware', 'engine', 'engine_minor', 'workload'];

@@ -7,8 +7,8 @@ import { customElement, property, state } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import type { HeatCell, HeatMatrix } from '../data/derive.js';
 import { heatKey } from '../data/derive.js';
-import { fmtInt, fmtPct } from '../util/format.js';
-import { METRIC_BY_KEY } from '../util/metrics.js';
+import { fmtInt, fmtPct } from '@atlas/core';
+import { METRIC_BY_KEY } from '@atlas/core';
 import { AtlasElement } from './base.js';
 import { hideTip, showTip } from './ui.js';
 

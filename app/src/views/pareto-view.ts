@@ -9,9 +9,9 @@ import type { IndexRow } from '../data/types.js';
 import { href, navigate, qget, qnum, setQuery } from '../router.js';
 import { store } from '../store.js';
 import { cssVar, vendorColor, withAlpha } from '../util/colors.js';
-import { fmtGB, fmtInt } from '../util/format.js';
-import { METRIC_BY_KEY } from '../util/metrics.js';
-import { paretoFrontier } from '../util/pareto.js';
+import { fmtGB, fmtInt } from '@atlas/core';
+import { METRIC_BY_KEY } from '@atlas/core';
+import { paretoFrontier } from '@atlas/core';
 import { ViewElement } from './view-base.js';
 
 const X_OPTS = ['ttft_p95', 'ttft_p50', 'tpot_p50', 'vram_peak_gb', 'power_avg_w'];

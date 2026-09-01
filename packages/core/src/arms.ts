@@ -4,8 +4,8 @@
  * always between arms — same silicon, one flag apart — so these helpers name each arm by
  * exactly what was changed.
  */
-import type { Args, MetricBlock, ResultRecord, SweepPoint } from '@atlas/core';
-import type { IndexRow } from '../data/types.js';
+import type { Args, MetricBlock, ResultRecord, SweepPoint } from './types.js';
+import type { IndexRow } from './shards.js';
 import { argsDiff } from './diff.js';
 
 export interface CellArm {
