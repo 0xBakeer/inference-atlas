@@ -14,14 +14,17 @@ import type { FitVerdict } from '../hw/fit.js';
 import { fitVerdict } from '../hw/fit.js';
 import type { Target } from '../hw/target.js';
 import { chooseTarget, targetLabel } from '../hw/target.js';
+import type { HardwareRequest } from '../hw/request.js';
+import { hardwareIssueUrl, proposeHardware } from '../hw/request.js';
+import { copyToClipboard, openUrl } from '../recipe/send.js';
 import { saveTarget } from '../config.js';
 import { generateRecipe, recipeFileName } from '../recipe/generate.js';
-import { agentCommand, copyToClipboard, runAgentCommand, writeRecipe } from '../recipe/send.js';
+import { agentCommand, runAgentCommand, writeRecipe } from '../recipe/send.js';
 import { COLORS } from './theme.js';
 import { KeyHints } from './widgets.js';
 import { CoverageView } from './views/coverage.js';
-import type { HardwareChoice } from './views/hardware.js';
-import { HardwareView } from './views/hardware.js';
+import type { HardwareChoice, PickerRow } from './views/hardware.js';
+import { HardwareView, isAddRow } from './views/hardware.js';
 import { DetailView } from './views/detail.js';
 import { HomeView } from './views/home.js';
 import { ParetoView } from './views/pareto.js';
@@ -75,6 +78,10 @@ export function App({
   const [selHw, setSelHw] = useState(0);
   const [counts, setCounts] = useState<Record<string, number>>({});
   const [hwStatus, setHwStatus] = useState<string | null>(null);
+  const [pendingRequest, setPendingRequest] = useState<{
+    request: HardwareRequest;
+    url: string;
+  } | null>(null);
   // No recognised hardware and nothing chosen: ask before showing verdicts nobody can trust.
   const [firstRun, setFirstRun] = useState(initialTarget.hardware === null);
   const [filter, setFilter] = useState('');
@@ -210,6 +217,29 @@ export function App({
     });
   }, [data, counts, target, initialTarget]);
 
+  /**
+   * The picker's rows. The escape hatch sits last normally, but first when nothing was
+   * recognised — that is precisely the case where the answer is "none of these".
+   */
+  const pickerRows = useMemo(
+    (): PickerRow[] =>
+      initialTarget.source === 'unknown'
+        ? [{ kind: 'add' }, ...hwChoices]
+        : [...hwChoices, { kind: 'add' }],
+    [hwChoices, initialTarget],
+  );
+
+  /** Build the registry request from what was probed, and ask before opening anything. */
+  const askToAddBox = useCallback(() => {
+    const captured = initialTarget.captured;
+    if (!captured) {
+      setHwStatus('nothing was probed on this machine, so there is nothing to propose');
+      return;
+    }
+    const request = proposeHardware(captured);
+    setPendingRequest({ request, url: hardwareIssueUrl(request, data.registry.site) });
+  }, [initialTarget, data]);
+
   const selectHardware = useCallback(
     (choice: HardwareChoice) => {
       const next = chooseTarget(choice.hardware, choice.count, initialTarget.captured);
@@ -234,6 +264,28 @@ export function App({
   }, []);
 
   useInput((input, key) => {
+    // The confirmation dialog owns the keyboard while it is up: opening a browser is an
+    // outward-facing act and must not happen on a stray keypress.
+    if (pendingRequest) {
+      if (key.escape || input === 'n' || input === 'q') setPendingRequest(null);
+      else if (key.return || input === 'y') {
+        const opened = openUrl(pendingRequest.url);
+        setHwStatus(
+          opened.ok
+            ? 'opened the registry request in your browser — nothing is sent until you submit it there'
+            : `could not open a browser (${opened.error ?? 'unknown'}) — press c to copy the link`,
+        );
+        if (opened.ok) setPendingRequest(null);
+      } else if (input === 'c') {
+        const ok = copyToClipboard(pendingRequest.url);
+        setHwStatus(
+          ok ? 'link copied to the clipboard' : 'link sent via OSC52 (terminal permitting)',
+        );
+        setPendingRequest(null);
+      }
+      return;
+    }
+
     // Filter entry swallows everything printable.
     if (filtering) {
       if (key.return || key.escape) setFiltering(false);
@@ -329,12 +381,14 @@ export function App({
       setView('runs');
       setFiltering(true);
     } else if (view === 'hardware') {
-      const choice = hwChoices[selHw];
-      if (down) setSelHw((s) => clampSel(s + 1, hwChoices.length));
-      else if (up) setSelHw((s) => clampSel(s - 1, hwChoices.length));
+      const row = pickerRows[selHw];
+      const choice = row && !isAddRow(row) ? row : null;
+      if (down) setSelHw((s) => clampSel(s + 1, pickerRows.length));
+      else if (up) setSelHw((s) => clampSel(s - 1, pickerRows.length));
       else if (choice && (input === '+' || input === '=' || key.rightArrow)) bumpCount(choice, 1);
       else if (choice && (input === '-' || input === '_' || key.leftArrow)) bumpCount(choice, -1);
       else if (key.return && choice) selectHardware(choice);
+      else if (key.return && row && isAddRow(row)) askToAddBox();
     } else if (view === 'home') {
       if (down) setSelHome((s) => clampSel(s + 1, ranked.length));
       else if (up) setSelHome((s) => clampSel(s - 1, ranked.length));
@@ -376,12 +430,18 @@ export function App({
             ['?', 'help'],
           ]
         : view === 'hardware'
-          ? [
-              ['j/k', 'move'],
-              ['+/-', 'how many'],
-              ['enter', 'use it'],
-              ...(firstRun ? [] : ([['esc', 'back']] as Array<[string, string]>)),
-            ]
+          ? pendingRequest
+            ? [
+                ['enter/y', 'open the request'],
+                ['c', 'copy the link'],
+                ['esc/n', 'cancel'],
+              ]
+            : [
+                ['j/k', 'move'],
+                ['+/-', 'how many'],
+                ['enter', 'use it'],
+                ...(firstRun ? [] : ([['esc', 'back']] as Array<[string, string]>)),
+              ]
           : [
               ['1-5', 'views'],
               ['j/k', 'move'],
@@ -439,13 +499,14 @@ export function App({
           <CoverageView grid={coverage} level={level} />
         ) : view === 'hardware' ? (
           <HardwareView
-            choices={hwChoices}
+            rows={pickerRows}
             selected={selHw}
             target={target}
             firstRun={firstRun}
             status={hwStatus}
             height={bodyHeight - 9}
             width={cols - 6}
+            pending={pendingRequest}
           />
         ) : view === 'detail' && detail ? (
           <DetailView
@@ -482,6 +543,7 @@ function HelpView(): React.JSX.Element {
     ['1 / 2 / 3 / 4 / 5', 'target · all runs · pareto · coverage · hardware'],
     ['b', 'pick the target hardware — saved to your config'],
     ['+ / - (in b)', 'how many of that device you have'],
+    ['enter on “not listed?”', 'open a pre-filled registry request for your box'],
     ['tab', 'cycle views'],
     ['j / k, arrows', 'move selection / scroll'],
     ['enter', 'open the selected run'],

@@ -4,10 +4,17 @@ import React from 'react';
 import { Box, Text } from 'ink';
 import type { Hardware } from '@atlas/core';
 import { fmtGB } from '@atlas/core';
+import type { HardwareRequest } from '../../hw/request.js';
+import { requestPreview } from '../../hw/request.js';
 import type { Target } from '../../hw/target.js';
 import { describeTarget, targetLabel } from '../../hw/target.js';
 import { COLORS } from '../theme.js';
 import { Panel, Table } from '../widgets.js';
+
+/** The trailing row: not a device, an escape hatch when none of them is yours. */
+export interface AddChoice {
+  kind: 'add';
+}
 
 export interface HardwareChoice {
   hardware: Hardware;
@@ -17,8 +24,23 @@ export interface HardwareChoice {
   detected: boolean;
 }
 
+export type PickerRow = HardwareChoice | AddChoice;
+
+/** The origin and form, without three screens of percent-encoding. */
+function shortUrl(url: string): string {
+  try {
+    const u = new URL(url);
+    const fields = [...u.searchParams.keys()].filter((k) => k !== 'template' && k !== 'title');
+    return `${u.origin}${u.pathname}?template=${u.searchParams.get('template')}\n${fields.length} fields pre-filled: ${fields.join(', ')}`;
+  } catch {
+    return url;
+  }
+}
+
+export const isAddRow = (row: PickerRow): row is AddChoice => (row as AddChoice).kind === 'add';
+
 export interface HardwareViewProps {
-  choices: HardwareChoice[];
+  rows: PickerRow[];
   selected: number;
   target: Target;
   /** Shown instead of the normal title when the TUI could not identify this machine. */
@@ -26,17 +48,47 @@ export interface HardwareViewProps {
   status: string | null;
   height: number;
   width: number;
+  /** When set, the confirmation dialog is up and owns the keyboard. */
+  pending: { request: HardwareRequest; url: string } | null;
 }
 
 export function HardwareView({
-  choices,
+  rows,
   selected,
   target,
   firstRun,
   status,
   height,
   width,
+  pending,
 }: HardwareViewProps): React.JSX.Element {
+  if (pending) {
+    return (
+      <Box flexDirection="column" gap={1}>
+        <Panel title="Add your box to the registry?" borderColor={COLORS.warn}>
+          <Text>
+            This opens the atlas issue form in your browser with the fields below already filled in
+            from what was probed on this machine. Nothing is sent until you submit the form there,
+            and you can edit every field first.
+          </Text>
+        </Panel>
+        <Panel title="What it will carry">
+          {requestPreview(pending.request).map((line, i) => (
+            <Text key={i} color={line ? COLORS.ink : COLORS.muted}>
+              {line || ' '}
+            </Text>
+          ))}
+          <Text color={COLORS.muted}>
+            Memory bandwidth and compute figures are left blank — a probe cannot know them, and the
+            plausibility checks trust whatever goes in.
+          </Text>
+        </Panel>
+        <Panel title="Where it goes">
+          <Text color={COLORS.muted}>{shortUrl(pending.url)}</Text>
+        </Panel>
+      </Box>
+    );
+  }
   return (
     <Box flexDirection="column" gap={1}>
       {firstRun ? (
@@ -77,24 +129,40 @@ export function HardwareView({
             { label: 'bandwidth', width: 12, align: 'right' },
             { label: '', width: 10 },
           ]}
-          rows={choices.map((c) => {
-            const active = target.hardware?.id === c.hardware.id && target.count === c.count;
-            const pooled = c.count > 1 && c.hardware.kind === 'gpu';
-            const mem = c.hardware.memory_gb;
+          rows={rows.map((row) => {
+            if (isAddRow(row)) {
+              return {
+                color: COLORS.counter,
+                cells: [
+                  '＋',
+                  'not listed?',
+                  'add your box to the registry',
+                  '',
+                  '',
+                  '',
+                  'opens an issue',
+                ],
+              };
+            }
+            const active = target.hardware?.id === row.hardware.id && target.count === row.count;
+            const pooled = row.count > 1 && row.hardware.kind === 'gpu';
+            const mem = row.hardware.memory_gb;
             return {
-              color: active ? COLORS.ok : c.detected ? COLORS.accent : undefined,
+              color: active ? COLORS.ok : row.detected ? COLORS.accent : undefined,
               cells: [
-                active ? '▸' : c.detected ? '·' : ' ',
-                c.hardware.id,
-                c.hardware.name,
-                c.count > 1 ? `${c.count}×` : '1',
+                active ? '▸' : row.detected ? '·' : ' ',
+                row.hardware.id,
+                row.hardware.name,
+                row.count > 1 ? `${row.count}×` : '1',
                 mem
                   ? pooled
-                    ? `${fmtGB(mem * c.count)} GB pooled`
-                    : `${fmtGB(mem)} GB${c.count > 1 ? ' each' : ''}`
+                    ? `${fmtGB(mem * row.count)} GB pooled`
+                    : `${fmtGB(mem)} GB${row.count > 1 ? ' each' : ''}`
                   : '–',
-                c.hardware.memory_bandwidth_gbs ? `${c.hardware.memory_bandwidth_gbs} GB/s` : '–',
-                c.detected ? 'detected' : c.count > 1 && !pooled ? 'separate' : '',
+                row.hardware.memory_bandwidth_gbs
+                  ? `${row.hardware.memory_bandwidth_gbs} GB/s`
+                  : '–',
+                row.detected ? 'detected' : row.count > 1 && !pooled ? 'separate' : '',
               ],
             };
           })}
@@ -103,6 +171,7 @@ export function HardwareView({
       <Text color={COLORS.muted}>
         Several GPUs in one host pool their memory when the engine shards a model across them.
         Several whole machines (Macs, Sparks) do not — a model has to fit one of them.
+        {'\n'}Not listed? The last row opens a pre-filled registry request for this box.
       </Text>
     </Box>
   );

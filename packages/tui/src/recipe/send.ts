@@ -43,6 +43,23 @@ export function copyToClipboard(text: string, out: NodeJS.WriteStream = process.
   return false;
 }
 
+/**
+ * Hand a URL to the desktop browser. Never called without the user having confirmed what
+ * the URL contains — opening a page is an outward-facing act.
+ */
+export function openUrl(url: string): { ok: boolean; error?: string } {
+  const [cmd, args]: [string, string[]] =
+    process.platform === 'darwin'
+      ? ['open', [url]]
+      : process.platform === 'win32'
+        ? ['cmd', ['/c', 'start', '', url]]
+        : ['xdg-open', [url]];
+  const res = spawnSync(cmd, args, { timeout: 5000, stdio: 'ignore' });
+  if (res.error) return { ok: false, error: res.error.message };
+  if (res.status !== 0) return { ok: false, error: `${cmd} exited ${res.status ?? '?'}` };
+  return { ok: true };
+}
+
 export function agentCommand(target: AgentTarget, recipeFile: string): string {
   // Single quotes around the path would break `$(cat {recipe})`; the path is ours (slug + dir).
   return target.command.replaceAll('{recipe}', recipeFile);

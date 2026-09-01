@@ -37,7 +37,7 @@ fit`, `✗ wrong platform`.
 ## Keys
 
 `1–5` views (target · runs · pareto · coverage · hardware) · `b` pick hardware ·
-`+`/`-` how many devices · `j/k` move · `enter` open · `/` filter · `g` recipe ·
+`+`/`-` how many devices · `enter` on “not listed?” requests your box · `j/k` move · `enter` open · `/` filter · `g` recipe ·
 `c` copy (in recipe) · `1–9` send to agent (in recipe) · `r` refresh · `?` help · `q` quit
 
 ## Configuration

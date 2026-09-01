@@ -231,6 +231,29 @@ describe('App', () => {
     unmount();
   });
 
+  it('offers a way out when no listed box is yours, and confirms before opening it', async () => {
+    const { stdin, lastFrame, unmount } = await renderApp();
+    stdin.write('b');
+    await sleep(20);
+    expect(lastFrame()).toContain('not listed?');
+    // Walk to the last row — the fixture registry has one device, so the add row is next.
+    stdin.write('j');
+    await sleep(20);
+    stdin.write('\r');
+    await sleep(30);
+    const frame = lastFrame()!;
+    expect(frame).toContain('Add your box to the registry?');
+    expect(frame).toContain('Nothing is sent until you submit');
+    // The preview shows what was probed here, and the link is visible before opening it.
+    expect(frame).toContain('apple-m2-max-32gb');
+    expect(frame).toContain('template=new-hardware.yml');
+    // Cancelling opens nothing.
+    stdin.write('n');
+    await sleep(20);
+    expect(lastFrame()).toContain('Pick your hardware');
+    unmount();
+  });
+
   it('asks for hardware up front when it cannot identify the machine', async () => {
     const { lastFrame, unmount } = await renderApp({ unknownBox: true });
     await sleep(20);
