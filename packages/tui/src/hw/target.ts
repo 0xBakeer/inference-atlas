@@ -46,13 +46,21 @@ export function targetId(target: Target): string {
 }
 
 /**
- * Detect this machine. A multi-GPU host reports one nvidia-smi line per device, so the
- * count comes out of the probe rather than being assumed to be 1.
+ * How many devices the probe found. A multi-GPU host reports one nvidia-smi line per
+ * device, so the count comes out of the probe rather than being assumed to be 1 — but only
+ * once a registry entry has been matched, since an unidentified pile of cards is not a
+ * target yet.
  */
+export function deviceCount(captured: CapturedHardware, matched: Hardware | null): number {
+  if (!matched) return 1;
+  return captured.nvidiaGpus.length > 1 ? captured.nvidiaGpus.length : 1;
+}
+
+/** Detect this machine: probe it, match it against the registry, count the devices. */
 export function detectTarget(registry: Hardware[], exec?: ExecLike): Target {
   const captured = captureHardware(exec);
   const match = matchHardware(captured, registry);
-  const count = match && captured.nvidiaGpus.length > 1 ? captured.nvidiaGpus.length : 1;
+  const count = deviceCount(captured, match?.hardware ?? null);
   return {
     hardware: match?.hardware ?? null,
     count,

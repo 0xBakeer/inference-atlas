@@ -29,12 +29,24 @@ export function matchHardware(
     if (captured.appleChip && contains(captured.appleChip, d.apple_chip)) score += 100;
     if (contains(captured.cpu, d.cpu_model)) score += 40;
     if (score === 0) continue;
-    // Memory disambiguates size variants (apple-m2-max-32gb vs -96gb): exact-ish beats far.
-    const wantMem = d.memory_gb ?? hw.memory_gb;
-    if (wantMem) {
-      const ratio = captured.memoryGb / wantMem;
+
+    /*
+     * Memory disambiguates size variants — apple-m2-max-32gb from apple-m2-max-96gb — but
+     * only when the two figures describe the same thing. On a discrete GPU `memory_gb` is
+     * VRAM, and comparing 24 GB of card against a host's 64 GB of RAM would reject the very
+     * card that matched by name. So: an explicit `detect.memory_gb` is about the host, a
+     * GPU's memory is about the card, and everything else is unified memory.
+     */
+    const [want, have] =
+      d.memory_gb != null
+        ? [d.memory_gb, captured.memoryGb]
+        : hw.kind === 'gpu'
+          ? [hw.memory_gb, captured.vramGb]
+          : [hw.memory_gb, captured.memoryGb];
+    if (want && have) {
+      const ratio = have / want;
       if (ratio > 0.85 && ratio < 1.18) score += 30;
-      else score -= 50; // right chip family, wrong memory size — probably the sibling entry
+      else score -= 50; // right family, wrong size — probably the sibling entry
     }
     candidates.push({ hardware: hw, score });
   }

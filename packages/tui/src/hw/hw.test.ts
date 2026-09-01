@@ -10,6 +10,7 @@ import {
   chooseTarget,
   describeTarget,
   detectTarget,
+  deviceCount,
   servingDevices,
   targetLabel,
   targetMemory,
@@ -110,6 +111,34 @@ describe('matchHardware', () => {
   it('matches the Spark on its GPU name despite an unlisted CPU', () => {
     expect(matchHardware(spark, REGISTRY)?.hardware.id).toBe('nvidia-gb10-dgx-spark');
   });
+  it('matches a discrete GPU by its VRAM, not the host RAM', () => {
+    // The bug this guards: `memory_gb` on a GPU entry is VRAM. Comparing a 24 GB card
+    // against a workstation's 64 GB of system memory rejected every discrete GPU.
+    const workstation: CapturedHardware = {
+      platform: 'linux',
+      arch: 'x64',
+      cpu: 'AMD Ryzen 9 7950X',
+      appleChip: null,
+      nvidiaGpus: ['NVIDIA GeForce RTX 4090'],
+      memoryGb: 64,
+      vramGb: 24,
+    };
+    expect(matchHardware(workstation, REGISTRY)?.hardware.id).toBe('nvidia-rtx-4090');
+  });
+
+  it('still matches a GPU when nvidia-smi reported no VRAM figure', () => {
+    const noVram: CapturedHardware = {
+      platform: 'linux',
+      arch: 'x64',
+      cpu: 'AMD Ryzen 9 7950X',
+      appleChip: null,
+      nvidiaGpus: ['NVIDIA GeForce RTX 4090'],
+      memoryGb: 128,
+      vramGb: null,
+    };
+    expect(matchHardware(noVram, REGISTRY)?.hardware.id).toBe('nvidia-rtx-4090');
+  });
+
   it('returns null rather than guessing', () => {
     const alien: CapturedHardware = {
       ...m2max,
@@ -324,18 +353,17 @@ describe('target', () => {
     expect(describeTarget(chooseTarget(REGISTRY[2]!, 2, null))).toContain('separate machines');
   });
 
-  it('counts detected GPUs as the device count', () => {
+  it('counts the probed GPUs once a registry entry matched', () => {
     const three: CapturedHardware = {
       ...spark,
       nvidiaGpus: ['NVIDIA GeForce RTX 4090', 'NVIDIA GeForce RTX 4090', 'NVIDIA GeForce RTX 4090'],
     };
-    const t = detectTarget(REGISTRY, (cmd) => {
-      if (cmd === 'nvidia-smi') return three.nvidiaGpus.map((g) => `${g}, 24564`).join('\n');
-      throw new Error('no');
-    });
-    if (process.platform === 'linux') {
-      expect(t.count).toBe(3);
-      expect(t.hardware?.id).toBe('nvidia-rtx-4090');
-    }
+    expect(deviceCount(three, GPU_24GB)).toBe(3);
+    expect(deviceCount({ ...three, nvidiaGpus: ['NVIDIA GeForce RTX 4090'] }, GPU_24GB)).toBe(1);
+  });
+
+  it('does not count devices on a box it could not identify', () => {
+    const three: CapturedHardware = { ...spark, nvidiaGpus: ['a', 'a', 'a'] };
+    expect(deviceCount(three, null)).toBe(1);
   });
 });
