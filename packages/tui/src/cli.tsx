@@ -18,25 +18,28 @@ import { detectColorLevel } from './canvas/color.js';
 import { loadAtlas } from './data/load.js';
 import { cacheDir, expandHome } from './data/paths.js';
 import { LocalSource, RemoteSource } from './data/source.js';
-import { captureHardware } from './hw/capture.js';
-import { matchHardware } from './hw/match.js';
+import { loadState, saveState } from './data/state.js';
+import { localTarget, registryTarget, remoteTarget } from './hw/target.js';
 import { App } from './ui/App.js';
 
 interface CliArgs {
   repo: string | null;
   url: string | null;
+  box: string | null;
   sync: boolean;
   help: boolean;
 }
 
 function parseArgs(argv: string[]): CliArgs {
-  const args: CliArgs = { repo: null, url: null, sync: false, help: false };
+  const args: CliArgs = { repo: null, url: null, box: null, sync: false, help: false };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i]!;
     if (a === '--repo') args.repo = argv[++i] ?? null;
     else if (a.startsWith('--repo=')) args.repo = a.slice('--repo='.length);
     else if (a === '--url') args.url = argv[++i] ?? null;
     else if (a.startsWith('--url=')) args.url = a.slice('--url='.length);
+    else if (a === '--box') args.box = argv[++i] ?? null;
+    else if (a.startsWith('--box=')) args.box = a.slice('--box='.length);
     else if (a === '--sync') args.sync = true;
     else if (a === '--help' || a === '-h') args.help = true;
   }
@@ -48,6 +51,8 @@ and generate agent-ready install recipes. Charts included.
 
   --repo <path>   read a local checkout (no network at all)
   --url <url>     override the data URL (default: the deployed site)
+  --box <box>     target another machine: an ssh destination, or a hardware
+                  registry id (also switchable in the TUI with 'b')
   --sync          refresh the data cache and exit
   -h, --help      this
 
@@ -90,19 +95,44 @@ async function main(): Promise<void> {
     return;
   }
 
-  const captured = captureHardware();
-  const match = matchHardware(captured, data.registry.hardware);
+  // The local box is always resolved: it is what the picker offers as "this machine",
+  // and the fallback whenever a requested target cannot be reached.
+  const local = localTarget(data.registry.hardware);
+  let target = local;
+
+  // --box wins over the remembered selection; a named box from the config resolves first.
+  const requested = args.box ?? loadState().targetId ?? null;
+  if (requested) {
+    const named = config.boxes[requested];
+    const spec = named?.ssh ?? (requested.startsWith('ssh:') ? requested.slice(4) : null);
+    const hardwareId =
+      named?.hardware ??
+      (requested.startsWith('hw:')
+        ? requested.slice(3)
+        : data.registry.hardware.some((h) => h.id === requested)
+          ? requested
+          : null);
+    if (spec) {
+      const result = remoteTarget(spec, data.registry.hardware);
+      if ('error' in result) console.error(`${result.error} — falling back to this machine`);
+      else target = result.target;
+    } else if (hardwareId) {
+      const hw = data.registry.hardware.find((h) => h.id === hardwareId);
+      if (hw) target = registryTarget(hw);
+      else console.error(`unknown hardware id '${hardwareId}' — falling back to this machine`);
+    } else if (args.box) {
+      // A bare --box that is neither configured nor a hardware id is treated as an ssh host.
+      const result = remoteTarget(args.box, data.registry.hardware);
+      if ('error' in result) console.error(`${result.error} — falling back to this machine`);
+      else target = result.target;
+    }
+  }
+  if (args.box) saveState({ targetId: target.id });
+
   const level = config.ui.color === 'auto' ? detectColorLevel() : config.ui.color;
 
   render(
-    <App
-      source={source}
-      config={config}
-      initialData={data}
-      captured={captured}
-      match={match}
-      level={level}
-    />,
+    <App source={source} config={config} initialData={data} initialTarget={target} level={level} />,
   );
 }
 

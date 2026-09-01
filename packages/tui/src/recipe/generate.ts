@@ -19,6 +19,8 @@ import type {
 } from '@atlas/core';
 import { AGENT_RULES, fmtGB, fmtMs, fmtPct, fmtTokS, fmtW, renderServeCommand } from '@atlas/core';
 import type { FitVerdict } from '../hw/fit.js';
+import type { Target } from '../hw/target.js';
+import { describeTarget } from '../hw/target.js';
 
 export interface RecipeInput {
   row: IndexRow;
@@ -31,8 +33,8 @@ export interface RecipeInput {
   /** Param table of the engine version, for per-flag help. Null when not registered. */
   engineVersion: EngineVersion | null;
   fit: FitVerdict | null;
-  /** Human name of the box the recipe targets ("this box" fit was computed for). */
-  targetLabel: string | null;
+  /** The box this recipe is for — its ssh destination becomes the "where to run" note. */
+  target: Target;
   site: SiteConfig;
 }
 
@@ -134,12 +136,35 @@ export function generateRecipe(input: RecipeInput): string {
   );
   lines.push('');
 
+  const target = input.target;
+  lines.push('## Where to run this');
+  lines.push('');
+  if (target.ssh) {
+    lines.push(
+      `**Target box: \`${target.label}\` — reachable at \`ssh ${target.ssh}\`.** Every command below runs *there*, not on the machine you are reading this on. Either open a shell first (\`ssh ${target.ssh}\`) or prefix each command with \`ssh ${target.ssh} '…'\`.`,
+    );
+  } else if (target.kind === 'local') {
+    lines.push(`**Target box: \`${target.label}\` — the machine you are on.**`);
+  } else {
+    lines.push(
+      `**Target box: \`${target.label}\`** — chosen from the hardware registry; nothing was probed, so confirm the box matches before running anything.`,
+    );
+  }
+  const described = describeTarget(target);
+  if (described) lines.push(`\n${described}`);
+  if (target.hardware) lines.push(`\nAtlas hardware id: \`${target.hardware.id}\`.`);
+  lines.push('');
+
   if (input.fit) {
-    lines.push(`## Fit: ${input.fit.label}${input.targetLabel ? ` on ${input.targetLabel}` : ''}`);
+    lines.push(`## Fit: ${input.fit.label} on ${target.label}`);
     lines.push('');
     for (const r of input.fit.reasons) lines.push(`- ${r}`);
     if (input.fit.memoryBasis === 'estimated')
       lines.push('- _Memory judgement is an estimate, not a measurement on this box._');
+    if (target.kind === 'registry')
+      lines.push(
+        '- _The target was picked from the registry rather than probed, so platform support is inferred from its vendor._',
+      );
     lines.push('');
   }
 
@@ -225,7 +250,9 @@ export function generateRecipe(input: RecipeInput): string {
 
   lines.push('## Verify & contribute back');
   lines.push('');
-  lines.push('Reproduce the measurement with the atlas harness and compare:');
+  lines.push(
+    `Reproduce the measurement with the atlas harness and compare${target.ssh ? ` — on \`${target.label}\`, not locally` : ''}:`,
+  );
   lines.push('');
   const args = Object.entries(record.args ?? {})
     .map(
@@ -233,7 +260,7 @@ export function generateRecipe(input: RecipeInput): string {
         ` \\\n  --arg ${k}=${typeof v === 'object' ? `'${JSON.stringify(v)}'` : String(v)}`,
     )
     .join('');
-  const cell = `${meta.id}@${version}/${row.model.id}/${row.model.quant_id}/<your-hardware-id>`;
+  const cell = `${meta.id}@${version}/${row.model.id}/${row.model.quant_id}/${target.hardware?.id ?? '<your-hardware-id>'}`;
   lines.push(
     fence(
       'bash',

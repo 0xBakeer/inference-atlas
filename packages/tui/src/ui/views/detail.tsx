@@ -18,6 +18,8 @@ export interface DetailProps {
   record: ResultRecord | null;
   loading: boolean;
   fit: FitVerdict | null;
+  /** Name of the box the fit was judged against — not necessarily this machine. */
+  targetLabel: string;
   width: number;
   level: ColorLevel;
 }
@@ -43,6 +45,7 @@ export function DetailView({
   record,
   loading,
   fit,
+  targetLabel,
   width,
   level,
 }: DetailProps): React.JSX.Element {
@@ -73,7 +76,7 @@ export function DetailView({
       </Panel>
 
       {fit ? (
-        <Panel title={`Fit on this box: ${fit.label}`}>
+        <Panel title={`Fit on ${targetLabel}: ${fit.label}`}>
           {fit.reasons.map((r, i) => (
             <Text key={i} color={FIT_COLOR[fit.level]}>
               • {r}

@@ -10,14 +10,17 @@ import type { AtlasData } from '../data/load.js';
 import { loadAtlas } from '../data/load.js';
 import type { DataSource } from '../data/source.js';
 import { coverageGrid, filterRows, paretoData, rankForHome } from '../derive.js';
-import type { CapturedHardware } from '../hw/capture.js';
 import type { FitVerdict } from '../hw/fit.js';
 import { fitVerdict } from '../hw/fit.js';
-import type { HardwareMatch } from '../hw/match.js';
+import type { Target } from '../hw/target.js';
+import { describeTarget, registryTarget, remoteTarget } from '../hw/target.js';
+import { saveState } from '../data/state.js';
 import { generateRecipe, recipeFileName } from '../recipe/generate.js';
 import { agentCommand, copyToClipboard, runAgentCommand, writeRecipe } from '../recipe/send.js';
 import { COLORS } from './theme.js';
 import { KeyHints } from './widgets.js';
+import type { BoxChoice } from './views/boxes.js';
+import { BoxesView } from './views/boxes.js';
 import { CoverageView } from './views/coverage.js';
 import { DetailView } from './views/detail.js';
 import { HomeView } from './views/home.js';
@@ -25,14 +28,14 @@ import { ParetoView } from './views/pareto.js';
 import { RecipeView } from './views/recipe.js';
 import { RunsView } from './views/runs.js';
 
-type View = 'home' | 'runs' | 'pareto' | 'coverage' | 'detail' | 'recipe' | 'help';
+type View = 'home' | 'runs' | 'pareto' | 'coverage' | 'boxes' | 'detail' | 'recipe' | 'help';
 
 export interface AppProps {
   source: DataSource;
   config: TuiConfig;
   initialData: AtlasData;
-  captured: CapturedHardware;
-  match: HardwareMatch | null;
+  /** The box every verdict is judged against; switchable at runtime with `b`. */
+  initialTarget: Target;
   level: ColorLevel;
 }
 
@@ -56,8 +59,7 @@ export function App({
   source,
   config,
   initialData,
-  captured,
-  match,
+  initialTarget,
   level,
 }: AppProps): React.JSX.Element {
   const { exit } = useApp();
@@ -69,6 +71,10 @@ export function App({
   const [selHome, setSelHome] = useState(0);
   const [selRuns, setSelRuns] = useState(0);
   const [selPareto, setSelPareto] = useState(0);
+  const [target, setTarget] = useState<Target>(initialTarget);
+  const [selBox, setSelBox] = useState(0);
+  const [sshPrompt, setSshPrompt] = useState<string | null>(null);
+  const [boxStatus, setBoxStatus] = useState<string | null>(null);
   const [filter, setFilter] = useState('');
   const [filtering, setFiltering] = useState(false);
   const [detail, setDetail] = useState<DetailState | null>(null);
@@ -120,11 +126,9 @@ export function App({
         engine: data.engineById(row.engine.id),
         model: data.modelById.get(row.model.id) ?? null,
         quant: data.quantById(row.model.id, row.model.quant_id),
-        measuredOn: data.hardwareById.get(row.hardware.id) ?? null,
-        localHardware: match?.hardware ?? null,
-        captured,
+        target,
       }),
-    [data, match, captured],
+    [data, target],
   );
 
   const ranked = useMemo(() => {
@@ -173,7 +177,7 @@ export function App({
         workload: data.workloadById.get(d.row.workload_id) ?? null,
         engineVersion: d.engineVersion,
         fit,
-        targetLabel: match?.hardware.id ?? `${captured.cpu} (${captured.memoryGb} GB)`,
+        target,
         site: data.registry.site,
       });
       let file: string | null = null;
@@ -186,10 +190,88 @@ export function App({
       setRecipe({ markdown, file, scroll: 0, status });
       setView('recipe');
     },
-    [data, fitFor, match, captured, config],
+    [data, fitFor, target, config],
+  );
+
+  /** Everything the picker can offer: this machine, configured boxes, the registry. */
+  const boxChoices = useMemo((): BoxChoice[] => {
+    const out: BoxChoice[] = [
+      {
+        kind: 'local',
+        id: 'local',
+        name: initialTarget.label,
+        detail: describeTarget(initialTarget),
+        hardware: initialTarget.hardware,
+        ssh: null,
+      },
+    ];
+    for (const [name, box] of Object.entries(config.boxes)) {
+      const hardware = box.hardware ? (data.hardwareById.get(box.hardware) ?? null) : null;
+      out.push({
+        kind: 'configured',
+        id: box.ssh ? `ssh:${box.ssh}` : `hw:${box.hardware}`,
+        name,
+        detail: box.ssh ? `ssh ${box.ssh} — probed on selection` : `pinned to ${box.hardware}`,
+        hardware,
+        ssh: box.ssh,
+      });
+    }
+    for (const hw of data.registry.hardware) {
+      out.push({
+        kind: 'registry',
+        id: `hw:${hw.id}`,
+        name: hw.id,
+        detail: hw.name,
+        hardware: hw,
+        ssh: null,
+      });
+    }
+    return out;
+  }, [config.boxes, data, initialTarget]);
+
+  const selectTarget = useCallback((next: Target) => {
+    setTarget(next);
+    saveState({ targetId: next.id });
+    setBoxStatus(null);
+    setSelHome(0);
+  }, []);
+
+  /** ssh probes block on the network, so they run outside render and report progress. */
+  const probeSsh = useCallback(
+    (destination: string) => {
+      setBoxStatus(`probing ${destination} over ssh…`);
+      setTimeout(() => {
+        const result = remoteTarget(destination, data.registry.hardware);
+        if ('error' in result) setBoxStatus(result.error);
+        else selectTarget(result.target);
+      }, 0);
+    },
+    [data, selectTarget],
+  );
+
+  const chooseBox = useCallback(
+    (choice: BoxChoice) => {
+      if (choice.kind === 'local') selectTarget(initialTarget);
+      else if (choice.ssh) probeSsh(choice.ssh);
+      else if (choice.hardware) selectTarget(registryTarget(choice.hardware));
+      else setBoxStatus(`${choice.name}: no ssh destination and no known hardware id`);
+    },
+    [initialTarget, probeSsh, selectTarget],
   );
 
   useInput((input, key) => {
+    // The ssh prompt swallows everything printable.
+    if (sshPrompt !== null) {
+      if (key.escape) setSshPrompt(null);
+      else if (key.return) {
+        const dest = sshPrompt.trim();
+        setSshPrompt(null);
+        if (dest) probeSsh(dest);
+      } else if (key.backspace || key.delete) setSshPrompt((s) => (s ?? '').slice(0, -1));
+      else if (input && !key.ctrl && !key.meta) setSshPrompt((s) => (s ?? '') + input);
+      return;
+    }
+
     // Filter entry swallows everything printable.
     if (filtering) {
       if (key.return || key.escape) setFiltering(false);
@@ -233,10 +315,10 @@ export function App({
       } else if (/^[1-9]$/.test(input)) {
         const names = Object.keys(config.agents);
         const name = names[Number(input) - 1];
-        const target = name ? config.agents[name] : undefined;
-        if (name && target && recipe.file) {
-          const command = agentCommand(target, recipe.file);
-          if (target.mode === 'run') {
+        const agent = name ? config.agents[name] : undefined;
+        if (name && agent && recipe.file) {
+          const command = agentCommand(agent, recipe.file);
+          if (agent.mode === 'run') {
             setRecipe({ ...recipe, status: `running ${name}…` });
             runAgentCommand(command, (result) =>
               setRecipe((r) =>
@@ -260,17 +342,33 @@ export function App({
       return;
     }
 
+    if (input === 'b') {
+      setSelBox(
+        Math.max(
+          0,
+          boxChoices.findIndex((c) => c.id === target.id),
+        ),
+      );
+      setView('boxes');
+      return;
+    }
     if (input === '1') setView('home');
     else if (input === '2') setView('runs');
     else if (input === '3') setView('pareto');
     else if (input === '4') setView('coverage');
+    else if (input === '5') setView('boxes');
     else if (key.tab) {
-      const order: View[] = ['home', 'runs', 'pareto', 'coverage'];
+      const order: View[] = ['home', 'runs', 'pareto', 'coverage', 'boxes'];
       const current = order.indexOf(view);
       setView(order[(current + 1) % order.length]!);
     } else if (input === '/') {
       setView('runs');
       setFiltering(true);
+    } else if (view === 'boxes') {
+      if (down) setSelBox((s) => clampSel(s + 1, boxChoices.length));
+      else if (up) setSelBox((s) => clampSel(s - 1, boxChoices.length));
+      else if (input === 's') setSshPrompt('');
+      else if (key.return && boxChoices[selBox]) chooseBox(boxChoices[selBox]!);
     } else if (view === 'home') {
       if (down) setSelHome((s) => clampSel(s + 1, ranked.length));
       else if (up) setSelHome((s) => clampSel(s - 1, ranked.length));
@@ -311,24 +409,32 @@ export function App({
             ['esc', 'back'],
             ['?', 'help'],
           ]
-        : [
-            ['1-4', 'views'],
-            ['j/k', 'move'],
-            ['enter', 'open'],
-            ['/', 'filter'],
-            ['g', 'recipe'],
-            ['r', 'refresh'],
-            ['q', 'quit'],
-          ];
+        : view === 'boxes'
+          ? [
+              ['j/k', 'move'],
+              ['enter', 'use this box'],
+              ['s', 'probe an ssh host'],
+              ['esc', 'back'],
+            ]
+          : [
+              ['1-5', 'views'],
+              ['j/k', 'move'],
+              ['enter', 'open'],
+              ['/', 'filter'],
+              ['b', 'box'],
+              ['g', 'recipe'],
+              ['q', 'quit'],
+            ];
 
   return (
     <Box flexDirection="column" paddingX={1}>
       <Box justifyContent="space-between">
         <Text bold color={COLORS.accent}>
           INFERENCE ATLAS{' '}
+          <Text color={COLORS.muted}>[{view === 'home' ? 'target' : view}] · box </Text>
+          <Text color={COLORS.ok}>{target.label}</Text>
           <Text color={COLORS.muted}>
-            [{view === 'home' ? '1 your box' : view}] · data @ {commit} · {syncLabel} ·{' '}
-            {source.describe()}
+            {target.ssh ? ` (ssh ${target.ssh})` : ''} · data @ {commit} · {syncLabel}
           </Text>
         </Text>
       </Box>
@@ -336,8 +442,7 @@ export function App({
         {view === 'home' ? (
           <HomeView
             data={data}
-            captured={captured}
-            match={match}
+            target={target}
             ranked={ranked}
             keyMetrics={keyMetrics}
             selected={selHome}
@@ -365,12 +470,23 @@ export function App({
           />
         ) : view === 'coverage' ? (
           <CoverageView grid={coverage} level={level} />
+        ) : view === 'boxes' ? (
+          <BoxesView
+            choices={boxChoices}
+            selected={selBox}
+            active={target}
+            height={bodyHeight - 8}
+            width={cols - 6}
+            sshPrompt={sshPrompt}
+            status={boxStatus}
+          />
         ) : view === 'detail' && detail ? (
           <DetailView
             row={detail.row}
             record={detail.record}
             loading={detail.loading}
             fit={fitFor(detail.row, detail.record)}
+            targetLabel={target.label}
             width={Math.min(cols - 6, 100)}
             level={level}
           />
@@ -396,7 +512,9 @@ export function App({
 
 function HelpView(): React.JSX.Element {
   const rows: Array<[string, string]> = [
-    ['1 / 2 / 3 / 4', 'your box · all runs · pareto · coverage'],
+    ['1 / 2 / 3 / 4 / 5', 'target · all runs · pareto · coverage · boxes'],
+    ['b', 'switch the target box (this machine, an ssh host, a registry entry)'],
+    ['s (in boxes)', 'probe a box over ssh and target it'],
     ['tab', 'cycle views'],
     ['j / k, arrows', 'move selection / scroll'],
     ['enter', 'open the selected run'],

@@ -32,3 +32,21 @@ describe('parseConfig', () => {
     expect(parseConfig('[ui]\ncolor = "neon"').ui.color).toBe('auto');
   });
 });
+
+describe('boxes', () => {
+  it('reads ssh boxes and hardware-pinned boxes', () => {
+    const c = parseConfig(
+      ['[boxes.dgx]', 'ssh = "spark"', '[boxes.rented]', 'hardware = "nvidia-rtx-4090"'].join('\n'),
+    );
+    expect(c.boxes['dgx']).toEqual({ ssh: 'spark', hardware: null });
+    expect(c.boxes['rented']).toEqual({ ssh: null, hardware: 'nvidia-rtx-4090' });
+  });
+
+  it('skips a box that declares neither ssh nor hardware', () => {
+    expect(parseConfig('[boxes.empty]\nnote = "nothing"').boxes['empty']).toBeUndefined();
+  });
+
+  it('defaults to no boxes', () => {
+    expect(parseConfig('').boxes).toEqual({});
+  });
+});

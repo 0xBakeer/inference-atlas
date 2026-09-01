@@ -1,23 +1,17 @@
 /**
- * Would this measured configuration run on the local box, and what should it expect?
+ * Would this measured configuration run on the **target** box, and what should it expect?
  *
  * The verdict is deliberately honest about its basis. The atlas so far holds only
  * unified-memory boxes, so `metrics.ram_peak_gb` is the measured footprint where it exists;
- * when it does not (or the local box differs), the fall-back is `quant.size_gb` plus
- * headroom — and the verdict then says "estimate", never "measured".
+ * when it does not, the fall-back is `quant.size_gb` plus headroom — and the verdict then
+ * says "estimate", never "measured". A target the user picked from the registry without
+ * probing it says that too, rather than pretending the platform check was real.
  */
 
-import type {
-  Hardware,
-  IndexRow,
-  Quant,
-  RegistryEngine,
-  RegistryModel,
-  ResultRecord,
-} from '@atlas/core';
+import type { IndexRow, Quant, RegistryEngine, RegistryModel, ResultRecord } from '@atlas/core';
 import { bandwidthCeiling } from '@atlas/core';
-import type { CapturedHardware } from './capture.js';
-import { localPlatformTags } from './capture.js';
+import type { Target } from './target.js';
+import { targetMemoryGb, targetPlatformTags } from './target.js';
 
 export type FitLevel =
   'recommended' | 'should-fit' | 'tight' | 'no-fit' | 'wrong-platform' | 'unknown';
@@ -30,7 +24,7 @@ export interface FitVerdict {
   reasons: string[];
   /** Whether the memory judgement is a measurement or an estimate. */
   memoryBasis: 'measured' | 'estimated' | 'none';
-  /** Decode ceiling on the local box in tok/s (bandwidth bound), when computable. */
+  /** Decode ceiling on the target in tok/s (bandwidth bound), when computable. */
   decodeCeiling: number | null;
 }
 
@@ -41,11 +35,8 @@ export interface FitInput {
   engine: RegistryEngine | null;
   model: RegistryModel | null;
   quant: Quant | null;
-  /** Registry entry the run was measured on. */
-  measuredOn: Hardware | null;
-  /** Registry entry for the local box (null = unidentified box). */
-  localHardware: Hardware | null;
-  captured: CapturedHardware;
+  /** The box being judged against. */
+  target: Target;
 }
 
 const LABEL: Record<FitLevel, string> = {
@@ -62,14 +53,15 @@ const HEADROOM_FRACTION = 0.25;
 
 export function fitVerdict(input: FitInput): FitVerdict {
   const reasons: string[] = [];
-  const { row, engine, captured } = input;
+  const { row, engine, target } = input;
 
-  // 1. Platform: does any of this engine's platforms match the local box?
+  // 1. Platform: does any of this engine's platforms match the target?
   const platforms = engine?.meta.platforms ?? [];
-  const local = localPlatformTags(captured);
-  if (platforms.length > 0 && !platforms.some((p) => local.includes(p))) {
+  const { tags, inferred } = targetPlatformTags(target);
+  if (platforms.length > 0 && tags.length > 0 && !platforms.some((p) => tags.includes(p))) {
     reasons.push(
-      `${row.engine.id} runs on ${platforms.join(', ')} — this box offers ${local.join(', ') || 'an unknown platform'}`,
+      `${row.engine.id} runs on ${platforms.join(', ')} — ${target.label} offers ${tags.join(', ')}` +
+        (inferred ? ' (inferred from the registry entry, nothing probed)' : ''),
     );
     return {
       level: 'wrong-platform',
@@ -97,7 +89,7 @@ export function fitVerdict(input: FitInput): FitVerdict {
   }
 
   // 3. Memory. Measured peak from the run when the run has one, else weights + headroom.
-  const localMem = input.localHardware?.memory_gb ?? captured.memoryGb;
+  const targetMem = targetMemoryGb(target);
   const measuredPeak =
     input.record?.metrics?.ram_peak_gb ?? input.record?.metrics?.vram_peak_gb ?? null;
   let memoryBasis: FitVerdict['memoryBasis'] = 'none';
@@ -110,43 +102,44 @@ export function fitVerdict(input: FitInput): FitVerdict {
     need = input.quant.size_gb * (1 + HEADROOM_FRACTION);
     memoryBasis = 'estimated';
     reasons.push(
-      `estimate: ${input.quant.size_gb.toFixed(1)} GB weights + ${Math.round(HEADROOM_FRACTION * 100)}% headroom ≈ ${need.toFixed(1)} GB (no measured peak for this box)`,
+      `estimate: ${input.quant.size_gb.toFixed(1)} GB weights + ${Math.round(HEADROOM_FRACTION * 100)}% headroom ≈ ${need.toFixed(1)} GB (no measured peak)`,
     );
   } else {
     reasons.push('no measured footprint and no quant size — memory fit unknown');
   }
 
   let level: FitLevel = 'unknown';
-  if (need !== null && localMem > 0) {
-    const frac = need / localMem;
-    reasons.push(`local memory ${localMem.toFixed(0)} GB → ${(frac * 100).toFixed(0)}% used`);
+  if (need !== null && targetMem !== null) {
+    const frac = need / targetMem;
+    reasons.push(
+      `${target.label} has ${targetMem.toFixed(0)} GB → ${(frac * 100).toFixed(0)}% used`,
+    );
     if (frac > 1) level = 'no-fit';
     else if (frac > 0.9) level = 'tight';
     else level = memoryBasis === 'measured' ? 'recommended' : 'should-fit';
   }
 
-  // Same box the run was measured on and it succeeded → recommended even off an estimate.
+  // The target IS the box this run was measured on: the strongest evidence there is.
   if (
     level !== 'no-fit' &&
     level !== 'unknown' &&
-    input.localHardware &&
-    input.measuredOn &&
-    input.localHardware.id === input.measuredOn.id
+    target.hardware &&
+    target.hardware.id === row.hardware.id
   ) {
-    reasons.push(`measured on this exact hardware (${input.measuredOn.id})`);
+    reasons.push(`measured on this exact hardware (${target.hardware.id})`);
     level = 'recommended';
     memoryBasis = memoryBasis === 'none' ? 'estimated' : memoryBasis;
   }
 
-  // 4. Expectation: the bandwidth-bound decode ceiling on the local box.
+  // 4. Expectation: the bandwidth-bound decode ceiling on the target.
   const decodeCeiling = bandwidthCeiling(
-    input.localHardware,
+    target.hardware,
     input.model?.model ?? null,
     input.quant,
     1, // no tolerance — this is a ceiling, not a plausibility band
   );
   if (decodeCeiling !== null) {
-    reasons.push(`bandwidth-bound decode ceiling here ≈ ${decodeCeiling.toFixed(0)} tok/s`);
+    reasons.push(`bandwidth-bound decode ceiling there ≈ ${decodeCeiling.toFixed(0)} tok/s`);
   }
 
   return { level, label: LABEL[level], reasons, memoryBasis, decodeCeiling };

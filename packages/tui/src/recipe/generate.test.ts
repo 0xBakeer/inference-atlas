@@ -9,6 +9,7 @@ import type {
 } from '@atlas/core';
 import { fixtureRow } from '@atlas/core';
 import type { FitVerdict } from '../hw/fit.js';
+import type { Target } from '../hw/target.js';
 import { generateRecipe, recipeFileName } from './generate.js';
 
 const site = {
@@ -104,6 +105,40 @@ const fit: FitVerdict = {
   decodeCeiling: 42,
 };
 
+const localTargetFixture: Target = {
+  kind: 'local',
+  id: 'local',
+  label: 'apple-m2-max-32gb',
+  captured: {
+    platform: 'darwin',
+    arch: 'arm64',
+    cpu: 'Apple M2 Max',
+    appleChip: 'Apple M2 Max',
+    nvidiaGpus: [],
+    memoryGb: 32,
+    vramGb: null,
+  },
+  hardware: { id: 'apple-m2-max-32gb', name: 'Apple M2 Max 32GB' } as never,
+  ssh: null,
+};
+
+const sparkTargetFixture: Target = {
+  kind: 'remote',
+  id: 'ssh:spark',
+  label: 'spark',
+  captured: {
+    platform: 'linux',
+    arch: 'arm64',
+    cpu: 'Cortex-A725',
+    appleChip: null,
+    nvidiaGpus: ['NVIDIA GB10'],
+    memoryGb: 121.6,
+    vramGb: null,
+  },
+  hardware: { id: 'nvidia-gb10-dgx-spark', name: 'NVIDIA DGX Spark' } as never,
+  ssh: 'spark',
+};
+
 const input = () => ({
   row: fixtureRow() as IndexRow,
   record,
@@ -114,7 +149,7 @@ const input = () => ({
   workload: null,
   engineVersion,
   fit,
-  targetLabel: 'apple-m2-max-32gb',
+  target: localTargetFixture,
   site,
 });
 
@@ -150,6 +185,22 @@ describe('generateRecipe', () => {
   it('labels an estimated fit as an estimate', () => {
     expect(md).toContain('~ should fit on apple-m2-max-32gb');
     expect(md).toContain('estimate, not a measurement');
+  });
+
+  it('names the local target and does not invent an ssh hop', () => {
+    expect(md).toContain('## Where to run this');
+    expect(md).toContain('the machine you are on');
+    expect(md).not.toContain('ssh ');
+  });
+
+  it('tells the agent to run everything on the remote box when the target is over ssh', () => {
+    const remote = generateRecipe({ ...input(), target: sparkTargetFixture });
+    expect(remote).toContain('reachable at `ssh spark`');
+    expect(remote).toContain('runs *there*, not on the machine you are reading this on');
+    expect(remote).toContain('on `spark`, not locally');
+    // The verify packet uses the target's hardware id, not a placeholder.
+    expect(remote).toContain('/nvidia-gb10-dgx-spark');
+    expect(remote).not.toContain('<your-hardware-id>');
   });
 
   it('includes the verify loop with the original workload and args', () => {

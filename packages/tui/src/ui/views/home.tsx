@@ -1,20 +1,19 @@
-/** Launch screen: your box, and what is worth running on it. */
+/** Launch screen: the target box, and what is worth running on it. */
 
 import React from 'react';
 import { Box, Text } from 'ink';
 import type { IndexRow } from '@atlas/core';
 import { headlineMetric } from '@atlas/core';
 import type { AtlasData } from '../../data/load.js';
-import type { CapturedHardware } from '../../hw/capture.js';
-import type { HardwareMatch } from '../../hw/match.js';
 import type { FitLevel } from '../../hw/fit.js';
+import type { Target } from '../../hw/target.js';
+import { describeTarget } from '../../hw/target.js';
 import { COLORS, FIT_COLOR } from '../theme.js';
 import { Panel, Table } from '../widgets.js';
 
 export interface HomeProps {
   data: AtlasData;
-  captured: CapturedHardware;
-  match: HardwareMatch | null;
+  target: Target;
   ranked: Array<{ row: IndexRow; fitLevel: FitLevel; fitLabel: string }>;
   keyMetrics: string[];
   selected: number;
@@ -22,10 +21,15 @@ export interface HomeProps {
   width: number;
 }
 
+const KIND_NOTE: Record<Target['kind'], string> = {
+  local: 'this machine',
+  remote: 'probed over ssh',
+  registry: 'registry entry — nothing probed, platform support inferred',
+};
+
 export function HomeView({
   data,
-  captured,
-  match,
+  target,
   ranked,
   keyMetrics,
   selected,
@@ -35,17 +39,16 @@ export function HomeView({
   const stats = data.manifest?.counts ?? {};
   return (
     <Box flexDirection="column" gap={1}>
-      <Panel title="Your box">
+      <Panel title={`Target box — ${KIND_NOTE[target.kind]}  ·  press b to change`}>
         <Text>
-          {captured.cpu}
-          {captured.nvidiaGpus.length > 0 ? ` · ${captured.nvidiaGpus.join(', ')}` : ''} ·{' '}
-          {captured.memoryGb} GB {captured.vramGb ? `(+${captured.vramGb} GB VRAM)` : ''}
+          <Text bold>{target.label}</Text>
+          <Text color={COLORS.muted}> {describeTarget(target)}</Text>
         </Text>
-        {match ? (
+        {target.hardware ? (
           <Text>
-            atlas id: <Text color={COLORS.ok}>{match.hardware.id}</Text>
-            {match.hardware.memory_bandwidth_gbs
-              ? `  ·  ${match.hardware.memory_bandwidth_gbs} GB/s memory bandwidth`
+            atlas id: <Text color={COLORS.ok}>{target.hardware.id}</Text>
+            {target.hardware.memory_bandwidth_gbs
+              ? `  ·  ${target.hardware.memory_bandwidth_gbs} GB/s memory bandwidth`
               : ''}
           </Text>
         ) : (
@@ -54,7 +57,7 @@ export function HomeView({
           </Text>
         )}
       </Panel>
-      <Panel title="Worth running on this box" grow>
+      <Panel title={`Worth running on ${target.label}`} grow>
         <Table
           height={height}
           width={width}

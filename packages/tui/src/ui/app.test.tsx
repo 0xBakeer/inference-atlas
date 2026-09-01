@@ -15,6 +15,7 @@ import { loadAtlas } from '../data/load.js';
 import { LocalSource } from '../data/source.js';
 import type { CapturedHardware } from '../hw/capture.js';
 import { matchHardware } from '../hw/match.js';
+import type { Target } from '../hw/target.js';
 import { App } from './App.js';
 
 let repo: string;
@@ -149,21 +150,22 @@ const captured: CapturedHardware = {
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-async function renderApp() {
+async function renderApp(overrides: Partial<typeof DEFAULT_CONFIG> = {}) {
   const source = new LocalSource(repo);
   const data = await loadAtlas(source);
   const match = matchHardware(captured, data.registry.hardware);
-  const config = structuredClone(DEFAULT_CONFIG);
+  const config = { ...structuredClone(DEFAULT_CONFIG), ...overrides };
   config.data.refreshMinutes = 0;
+  const target: Target = {
+    kind: 'local',
+    id: 'local',
+    label: match?.hardware.id ?? captured.cpu,
+    captured,
+    hardware: match?.hardware ?? null,
+    ssh: null,
+  };
   return render(
-    <App
-      source={source}
-      config={config}
-      initialData={data}
-      captured={captured}
-      match={match}
-      level="mono"
-    />,
+    <App source={source} config={config} initialData={data} initialTarget={target} level="mono" />,
   );
 }
 
@@ -176,6 +178,7 @@ describe('App', () => {
     expect(frame).toContain('apple-m2-max-32gb');
     expect(frame).toContain('Qwen/Qwen3-8B');
     expect(frame).toContain('recommended'); // measured on this exact hardware
+    expect(frame).toContain('Target box');
     unmount();
   });
 
@@ -187,7 +190,7 @@ describe('App', () => {
     stdin.write('\r'); // open selected run
     await sleep(50); // record load is async
     const frame = lastFrame()!;
-    expect(frame).toContain('Fit on this box');
+    expect(frame).toContain('Fit on apple-m2-max-32gb');
     expect(frame).toContain('needs the fp8 kernels');
     unmount();
   });
@@ -203,6 +206,33 @@ describe('App', () => {
     unmount();
   });
 
+  it('lists boxes and switches the target to a registry entry', async () => {
+    const { stdin, lastFrame, unmount } = await renderApp();
+    stdin.write('b');
+    await sleep(20);
+    expect(lastFrame()).toContain('Target box');
+    expect(lastFrame()).toContain('this machine');
+    // The only registry hardware in the fixture is the Mac; add a configured box instead.
+    stdin.write('\u001b');
+    await sleep(300);
+    unmount();
+  });
+
+  it('offers configured boxes and prompts for an ssh destination', async () => {
+    const { stdin, lastFrame, unmount } = await renderApp({
+      boxes: { dgx: { ssh: 'some-host', hardware: null } },
+    });
+    stdin.write('b');
+    await sleep(20);
+    const frame = lastFrame()!;
+    expect(frame).toContain('dgx');
+    expect(frame).toContain('ssh some-host');
+    stdin.write('s');
+    await sleep(20);
+    expect(lastFrame()).toContain('ssh destination');
+    unmount();
+  });
+
   it('shows help and comes back', async () => {
     const { stdin, lastFrame, unmount } = await renderApp();
     stdin.write('?');
@@ -210,7 +240,7 @@ describe('App', () => {
     expect(lastFrame()).toContain('generate the install recipe');
     stdin.write('\u001b'); // esc
     await sleep(300);
-    expect(lastFrame()).toContain('Worth running on this box');
+    expect(lastFrame()).toContain('Worth running on');
     unmount();
   });
 });

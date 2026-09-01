@@ -9,6 +9,13 @@ import path from 'node:path';
 import { parse } from 'smol-toml';
 import { configFile, expandHome } from './data/paths.js';
 
+export interface BoxConfig {
+  /** ssh destination — an alias from ~/.ssh/config, or user@host. */
+  ssh: string | null;
+  /** Skip the probe and use this hardware registry id outright. */
+  hardware: string | null;
+}
+
 export interface AgentTarget {
   /** Shell command; `{recipe}` is replaced with the recipe file path. */
   command: string;
@@ -33,6 +40,8 @@ export interface TuiConfig {
     dir: string;
   };
   agents: Record<string, AgentTarget>;
+  /** Named boxes the target picker offers besides the local machine. */
+  boxes: Record<string, BoxConfig>;
 }
 
 export const DEFAULT_CONFIG: TuiConfig = {
@@ -47,6 +56,7 @@ export const DEFAULT_CONFIG: TuiConfig = {
     claude: { command: 'claude "$(cat {recipe})"', mode: 'copy' },
     opencode: { command: 'opencode run "$(cat {recipe})"', mode: 'copy' },
   },
+  boxes: {},
 };
 
 const TEMPLATE = `# inference-atlas TUI configuration. Every key is optional; these are the defaults.
@@ -76,6 +86,15 @@ mode = "copy"
 [agents.opencode]
 command = 'opencode run "$(cat {recipe})"'
 mode = "copy"
+
+# Boxes the target picker offers besides this machine, so you can judge runs against
+# the machine you actually deploy to. Press 'b' in the TUI to switch; 's' probes an ssh
+# destination on the fly. ssh is anything ssh understands (a ~/.ssh/config alias works).
+# [boxes.gpu-server]
+# ssh = "gpu-server"
+# Skip the probe entirely and pin a hardware registry id instead:
+# [boxes.rented-4090]
+# hardware = "nvidia-rtx-4090"
 `;
 
 type Toml = Record<string, unknown>;
@@ -100,6 +119,14 @@ export function parseConfig(toml: string): TuiConfig {
     if (!command) continue;
     agents[name] = { command, mode: t['mode'] === 'run' ? 'run' : 'copy' };
   }
+  const boxes: Record<string, BoxConfig> = {};
+  for (const [name, value] of Object.entries(rec(raw['boxes']))) {
+    const b = rec(value);
+    const ssh = str(b['ssh']);
+    const hardware = str(b['hardware']);
+    if (!ssh && !hardware) continue;
+    boxes[name] = { ssh, hardware };
+  }
   const color = str(ui['color']);
   return {
     data: {
@@ -112,6 +139,7 @@ export function parseConfig(toml: string): TuiConfig {
     },
     recipes: { dir: str(rec(recipes)['dir']) ?? DEFAULT_CONFIG.recipes.dir },
     agents,
+    boxes,
   };
 }
 
