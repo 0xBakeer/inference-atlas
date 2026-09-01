@@ -44,6 +44,46 @@ def test_oom_beats_the_status_class() -> None:
     assert categorize_error(500, "torch.cuda.OutOfMemoryError", None) == "oom"
 
 
+#: One verbatim over-the-ceiling message per engine we have measured. `longctx` promises a
+#: point that does not fit is recorded as `context-overflow` and never omitted
+#: (`workloads/README.md`), and that promise is only kept if every engine's wording matches.
+#: An engine whose phrasing is not here silently downgrades to its status class, so add the
+#: real string when adding an engine rather than trusting the regex to generalise.
+CONTEXT_OVERFLOW_MESSAGES = {
+    "vllm": "This model's maximum context length is 8192 tokens. However, you requested "
+    "9000 tokens. Please reduce the length of the messages.",
+    "atlas": '{"error":{"message":"Prompt too long: 5152 tokens exceeds max_seq_len 2048 '
+    '(leave room for output tokens)","type":"invalid_request_error"}}',
+    "llamacpp": "the request exceeds the available context size, n_ctx = 4096",
+    "lmstudio": "The number of tokens to keep from the initial prompt is greater than the "
+    "context length. Try to load the model with a larger context length, or provide a "
+    "shorter input",
+    "sglang": "Input length 40316 exceeds the maximum allowed length 32768",
+}
+
+
+@pytest.mark.parametrize("engine", sorted(CONTEXT_OVERFLOW_MESSAGES))
+def test_context_overflow_is_recognised_per_engine(engine: str) -> None:
+    """Every engine's own over-the-ceiling wording categorises as context-overflow.
+
+    A 4xx that is really a context overflow must not fall through to ``http-4xx``: the
+    category is what the site and ``result.py``'s warning read.
+    """
+    assert categorize_error(400, CONTEXT_OVERFLOW_MESSAGES[engine], None) == "context-overflow"
+
+
+def test_context_overflow_beats_the_status_class() -> None:
+    """Atlas returns 400 for an oversized prompt; the category must still be the reason."""
+    message = "Prompt too long: 5152 tokens exceeds max_seq_len 2048"
+    assert categorize_error(400, message, None) == "context-overflow"
+
+
+def test_a_plain_bad_request_is_still_http_4xx() -> None:
+    """Widening the context patterns must not swallow unrelated 4xx failures."""
+    assert categorize_error(400, "unknown field 'temperatur'", None) == "http-4xx"
+    assert categorize_error(404, "model not found", None) == "http-4xx"
+
+
 @pytest.mark.parametrize(
     ("raw", "expected"),
     [
