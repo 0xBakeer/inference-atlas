@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "id": "eval-security-v2",
+  "name": "Cyber security eval v2",
+  "kind": "eval",
+  "description": "111 defensive cyber-security items: toy cryptography computed by the generator (Caesar/ROT13/XOR/textbook RSA/Diffie-Hellman), CIDR arithmetic computed with the stdlib ipaddress module, scenario-to-vulnerability-class identification, log-forensics questions computed from synthetic sshd excerpts and email Received chains, stable security-concept distinctions, and incident-response trap scenarios where the tempting answer (wipe the box, plug in the USB stick, approve the MFA push) is wrong. Identification, classification and computation only — no item asks for attack code.",
+  "licence": "MIT",
+  "created": "2026-09-01",
+  "files": [
+    "items.jsonl"
+  ],
+  "count": 111,
+  "generator": "datasets/_gen/gen_eval_security_v2.py",
+  "token_heuristic": "approx_tokens = ceil(sum(len(m.content) for m in messages) / 4)",
+  "provenance": "Synthetic, authored in this repository. No third-party text.",
+  "default_scorer": "mc",
+  "scoring": {
+    "answer_extraction": [
+      "Drop everything inside <think>...</think> (and an unterminated leading <think> block).",
+      "Drop markdown code fences, keeping the fenced content.",
+      "If any line matches /^\\s*(?:final answer|answer)\\s*[:\\-]\\s*(.+)$/i, take the capture of the LAST such line and use only that.",
+      "Strip surrounding whitespace, matching quotes, and a single trailing '.' or '!'."
+    ],
+    "scorers": {
+      "mc": "Multiple choice. `choices` is a list of strings; `answer` is the letter label. Accept the bare letter, 'A)', '(A)', 'A.' or the full text of the correct choice, case-insensitively.",
+      "exact": "Case-insensitive comparison after collapsing internal whitespace.",
+      "numeric": "Parse the last number in the extracted output; correct when within meta.tolerance (default 1e-6) of the key."
+    },
+    "pass_rule": "One item is correct or incorrect; there is no partial credit. accuracy = correct / total. An item whose request failed counts as incorrect AND is reported in scores.failures and metrics.requests_failed."
+  },
+  "categories": [
+    "concepts",
+    "crypto",
+    "forensics",
+    "incident_judgment",
+    "network",
+    "web_security"
+  ],
+  "difficulties": [
+    "easy",
+    "medium",
+    "hard"
+  ],
+  "counts": {
+    "by_category": {
+      "crypto": 21,
+      "network": 22,
+      "web_security": 20,
+      "incident_judgment": 12,
+      "forensics": 17,
+      "concepts": 19
+    },
+    "by_difficulty": {
+      "hard": 31,
+      "medium": 65,
+      "easy": 15
+    },
+    "by_scorer": {
+      "exact": 17,
+      "numeric": 21,
+      "mc": 73
+    },
+    "mc_letter_balance": {
+      "A": 19,
+      "B": 18,
+      "C": 18,
+      "D": 18
+    }
+  },
+  "seed": 20260915,
+  "notes": [
+    "Crypto, CIDR, log, epoch and key-count answers are computed by the generator from the same values that build the prompt, with round-trip asserts (RSA decrypts back to m, DH secrets agree, Caesar decrypts back to the plaintext).",
+    "Scenario and concept families are hand-curated under the eval-format-v1 precedent; distractors come from the same class table so every wrong option is plausible, and trap rows carry meta.trap naming the wrong answer they are built to catch.",
+    "All log excerpts use RFC 5737 documentation IPs (192.0.2.0/24, 198.51.100.0/24, 203.0.113.0/24) and invented hostnames.",
+    "Defensive scope on purpose: items ask to identify, classify, decode and compute — never to produce exploit code.",
+    "created is the date this dataset was authored; the -v2 suffix marks the second-generation (hardened) eval wave."
+  ]
+}

@@ -34,6 +34,7 @@ comparable when they saw the same bytes.
 | `eval-knowledge-v2`        | eval     |  151 |   63 KB | `gen_eval_knowledge_v2.py`     | `mc`               |
 | `eval-science-v2`          | eval     |  120 |   49 KB | `gen_eval_science_v2.py`       | `numeric`          |
 | `eval-commonsense-v2`      | eval     |  116 |   75 KB | `gen_eval_commonsense_v2.py`   | `mc`               |
+| `eval-security-v2`         | eval     |  111 |   63 KB | `gen_eval_security_v2.py`      | `mc`               |
 
 The `-v2` rows are the **second-generation eval wave** (2026-09-01): the v1
 capability evals saturated — several models score 98–100 % on knowledge, math,
@@ -42,8 +43,10 @@ reasoning, tools and format — so v2 raises the difficulty ceiling.
 ids (which stay published and immutable); `eval-science-v2` (applied
 physics/chemistry with every constant pinned in the prompt) and
 `eval-commonsense-v2` (goal-tracking traps, altered classic riddles, false
-premises, literal-text questions) are new suites, versioned `-v2` to mark the
-wave they belong to.
+premises, literal-text questions) and `eval-security-v2` (defensive cyber
+security: toy crypto, CIDR arithmetic, vulnerability classification, log
+forensics, incident-response traps) are new suites, versioned `-v2` to mark
+the wave they belong to.
 
 Licence for all of the above: **MIT**. Total, including the generator scripts:
 about 11.5 MB against a 25 MB budget, which `_gen/check.py` prints and enforces.

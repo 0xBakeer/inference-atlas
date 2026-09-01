@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "id": "eval-security-v2",
+  "name": "Cyber security eval v2",
+  "kind": "eval",
+  "description": "Runs all 111 items of eval-security-v2 at temperature 0 and reports accuracy overall, by category and by difficulty. Pinned together with the dataset: a change to either means a new -v3 id.",
+  "dataset_id": "eval-security-v2",
+  "params": {
+    "concurrency": 4,
+    "num_requests": 111,
+    "input_tokens": null,
+    "output_tokens": 4096,
+    "seed": 42,
+    "warmup_requests": 0,
+    "temperature": 0,
+    "repeat": 1,
+    "timeout_s": 300,
+    "reasoning": "default"
+  },
+  "sweep": null,
+  "eval": {
+    "suite": "security",
+    "scorer": "mc",
+    "pass_threshold": null,
+    "max_output_tokens": 4096,
+    "categories": [
+      "crypto",
+      "network",
+      "web_security",
+      "forensics",
+      "concepts",
+      "incident_judgment"
+    ],
+    "notes": "Defensive scope: identification, classification, decoding and computation only — no item asks for attack code. Crypto and CIDR rows ask for step-by-step work with a final 'Answer: <number>' line, which is why max_output_tokens is 4096. Mixed scorers per row: multiple-choice rows carry `choices` and are scored with mc, the rest with numeric or exact. Always use the row's own `scorer` field; eval.scorer is only the default."
+  },
+  "metrics_required": [
+    "accuracy",
+    "success_rate",
+    "avg_latency_ms"
+  ],
+  "immutable": true,
+  "created": "2026-09-01",
+  "supersedes": null,
+  "notes": "accuracy and avg_latency_ms live in the result's `scores` block, not in `metrics`; success_rate is the share of requests that completed at all and is independent of whether the answers were right. Part of the second-generation (-v2) eval wave; there is no security v1."
+}

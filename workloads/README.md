@@ -88,6 +88,7 @@ were right.
 | `eval-knowledge-v2`                | eval    | `eval-knowledge-v2`        | `mc`, max_out 1024, supersedes v1             |
 | `eval-science-v2`                  | eval    | `eval-science-v2`          | `numeric`, max_out 4096, new suite            |
 | `eval-commonsense-v2`              | eval    | `eval-commonsense-v2`      | mixed scorers, max_out 2048, new suite        |
+| `eval-security-v2`                 | eval    | `eval-security-v2`         | mixed scorers, max_out 4096, new suite        |
 
 ## Conventions a runner must honour
 

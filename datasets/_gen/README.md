@@ -51,6 +51,7 @@ uv run datasets/_gen/check.py
 | `gen_eval_knowledge_v2.py`     | `eval-knowledge-v2/`        | harder v2: second-tier stable facts, in-table distractors  |
 | `gen_eval_science_v2.py`       | `eval-science-v2/`          | applied physics/chemistry, constants pinned in prompts     |
 | `gen_eval_commonsense_v2.py`   | `eval-commonsense-v2/`      | goal traps + altered riddles; text_selfref rows computed   |
+| `gen_eval_security_v2.py`      | `eval-security-v2/`         | defensive security; crypto/CIDR/log answers computed       |
 
 Shared, not a generator:
 
