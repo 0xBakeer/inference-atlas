@@ -4,6 +4,7 @@ import type {
   MetricBlock,
   ResultRecord,
   SiteConfig,
+  WorkloadKind,
 } from '@atlas/core';
 import { fmtGB, fmtMs, fmtNum, fmtPct, fmtTokS, fmtW, isNum } from './format.js';
 
@@ -148,12 +149,27 @@ export function metricLabel(site: SiteConfig, key: string): string {
   return site.atlas.metrics?.find((m) => m.key === key)?.label ?? METRIC_BY_KEY[key]?.label ?? key;
 }
 
+/**
+ * Key-metric order for workload kinds where the site-wide order surfaces a misleading number.
+ *
+ * On `longctx` the model answers a needle question, and the answer is a handful of tokens:
+ * Atlas replies in 6 at every depth where SGLang replies in 83–113. `output_tok_s` is
+ * completion tokens over wall clock, so with the whole answer in one delta it collapses to
+ * roughly answer-length / TTFT — it ranks engines by how chatty they are. That reads as a
+ * 20x gap where the prefill gap is 1.7–2.4x. TTFT is the honest headline for a
+ * prefill-dominated workload, and `longctx-needle-*` already leaves `output_tok_s` out of
+ * its `metrics_required` entirely.
+ */
+const KEY_METRICS_BY_KIND: Partial<Record<WorkloadKind, string[]>> = {
+  longctx: ['ttft_p50', 'decode_tok_s_per_request', 'output_tok_s'],
+};
+
 /** Headline number for an index row: first key metric present, in site preference order. */
 export function headlineMetric(
   r: CompiledIndexRow,
   keyMetrics: string[],
 ): { def: MetricDef; value: number } | null {
-  for (const k of keyMetrics) {
+  for (const k of KEY_METRICS_BY_KIND[r.kind] ?? keyMetrics) {
     const def = METRIC_BY_KEY[k];
     if (!def) continue;
     const v = def.fromRow(r);
