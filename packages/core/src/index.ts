@@ -46,6 +46,7 @@ export { buildPacket, renderFlags, renderServeCommand, AGENT_RULES } from './pac
 export type { PacketSpec, PacketRegistry, PacketEngineEntry, PacketModelEntry } from './packet.js';
 
 export * from './shards.js';
+export * from './normalize.js';
 export * from './format.js';
 export * from './diff.js';
 export * from './pareto.js';

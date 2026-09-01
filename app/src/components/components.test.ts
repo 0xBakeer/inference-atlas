@@ -3,7 +3,7 @@ import { render } from 'lit';
 import { describe, expect, it, beforeAll } from 'vitest';
 import { buildHeatMatrix, buildLookups, possibleCells } from '../data/derive.js';
 import { fixtureRegistry, fixtureRow } from '../data/fixture.js';
-import { normalizeIndex } from '../data/normalize.js';
+import { normalizeIndex } from '@atlas/core';
 import { store } from '../store.js';
 import './heatmap.js';
 import './param-form.js';

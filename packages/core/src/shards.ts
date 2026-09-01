@@ -21,6 +21,7 @@ import type {
 export interface Manifest {
   built_at?: string | null;
   commit?: string | null;
+  commit_short?: string | null;
   counts?: Record<string, number>;
   shards?: Record<string, { sha256: string; bytes: number }>;
 }
