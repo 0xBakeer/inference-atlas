@@ -13,7 +13,7 @@
 import path from 'node:path';
 import React from 'react';
 import { render } from 'ink';
-import { loadConfig } from './config.js';
+import { loadConfig, saveTarget } from './config.js';
 import { detectColorLevel } from './canvas/color.js';
 import { loadAtlas } from './data/load.js';
 import { cacheDir, expandHome } from './data/paths.js';
@@ -118,6 +118,11 @@ async function main(): Promise<void> {
     else console.error(`unknown hardware id '${wantedId}' — falling back to detection`);
   } else if (wantedCount > 1 && target.hardware) {
     target = chooseTarget(target.hardware, wantedCount, detected.captured);
+  }
+  // A selection made on the command line is still a selection: persist it like the picker
+  // does, so the next plain `inference-atlas` remembers the box.
+  if ((args.hardware || args.count) && target.hardware) {
+    saveTarget(target.hardware.id, target.count);
   }
 
   const level = config.ui.color === 'auto' ? detectColorLevel() : config.ui.color;
