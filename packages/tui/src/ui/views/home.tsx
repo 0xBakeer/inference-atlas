@@ -1,0 +1,92 @@
+/** Launch screen: your box, and what is worth running on it. */
+
+import React from 'react';
+import { Box, Text } from 'ink';
+import type { IndexRow } from '@atlas/core';
+import { headlineMetric } from '@atlas/core';
+import type { AtlasData } from '../../data/load.js';
+import type { CapturedHardware } from '../../hw/capture.js';
+import type { HardwareMatch } from '../../hw/match.js';
+import type { FitLevel } from '../../hw/fit.js';
+import { COLORS, FIT_COLOR } from '../theme.js';
+import { Panel, Table } from '../widgets.js';
+
+export interface HomeProps {
+  data: AtlasData;
+  captured: CapturedHardware;
+  match: HardwareMatch | null;
+  ranked: Array<{ row: IndexRow; fitLevel: FitLevel; fitLabel: string }>;
+  keyMetrics: string[];
+  selected: number;
+  height: number;
+  width: number;
+}
+
+export function HomeView({
+  data,
+  captured,
+  match,
+  ranked,
+  keyMetrics,
+  selected,
+  height,
+  width,
+}: HomeProps): React.JSX.Element {
+  const stats = data.manifest?.counts ?? {};
+  return (
+    <Box flexDirection="column" gap={1}>
+      <Panel title="Your box">
+        <Text>
+          {captured.cpu}
+          {captured.nvidiaGpus.length > 0 ? ` · ${captured.nvidiaGpus.join(', ')}` : ''} ·{' '}
+          {captured.memoryGb} GB {captured.vramGb ? `(+${captured.vramGb} GB VRAM)` : ''}
+        </Text>
+        {match ? (
+          <Text>
+            atlas id: <Text color={COLORS.ok}>{match.hardware.id}</Text>
+            {match.hardware.memory_bandwidth_gbs
+              ? `  ·  ${match.hardware.memory_bandwidth_gbs} GB/s memory bandwidth`
+              : ''}
+          </Text>
+        ) : (
+          <Text color={COLORS.warn}>
+            not in the hardware registry — fit verdicts fall back to captured memory only
+          </Text>
+        )}
+      </Panel>
+      <Panel title="Worth running on this box" grow>
+        <Table
+          height={height}
+          width={width}
+          selected={selected}
+          columns={[
+            { label: 'fit', width: 15 },
+            { label: 'model', width: 30 },
+            { label: 'quant', width: 14 },
+            { label: 'engine', width: 18 },
+            { label: 'workload', width: 26 },
+            { label: 'headline', width: 16, align: 'right' },
+          ]}
+          rows={ranked.map(({ row, fitLevel, fitLabel }) => {
+            const hl = headlineMetric(row, keyMetrics);
+            return {
+              color: FIT_COLOR[fitLevel],
+              cells: [
+                fitLabel,
+                row.model.id,
+                row.model.quant_id,
+                `${row.engine.id}@${row.engine.version}`,
+                row.workload_id,
+                hl ? `${hl.def.fmt(hl.value)} ${hl.def.unit}` : '–',
+              ],
+            };
+          })}
+        />
+      </Panel>
+      <Text color={COLORS.muted}>
+        {String(stats['runs'] ?? data.index.length)} runs · {String(stats['models'] ?? '?')} models
+        · {String(stats['hardware'] ?? '?')} hardware · {String(stats['engines'] ?? '?')} engines
+      </Text>
+    </Box>
+  );
+}

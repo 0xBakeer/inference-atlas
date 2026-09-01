@@ -1,0 +1,44 @@
+{
+  "name": "@atlas/tui",
+  "version": "0.1.0",
+  "description": "Inference Atlas in the terminal: browse measured configurations, see charts, check fit against your box, and generate agent-ready install recipes.",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "inference-atlas": "./dist/cli.js",
+    "atlas-tui": "./dist/cli.js"
+  },
+  "main": "./dist/cli.js",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "core": "pnpm --filter @atlas/core run build",
+    "prestart": "pnpm run core",
+    "start": "tsx src/cli.tsx",
+    "prebuild": "pnpm run core",
+    "build": "tsc -p tsconfig.json",
+    "pretest": "pnpm run core",
+    "test": "vitest run",
+    "pretypecheck": "pnpm run core",
+    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.test.json"
+  },
+  "dependencies": {
+    "@atlas/core": "workspace:*",
+    "ink": "^7.1.1",
+    "react": "^19.2.8",
+    "smol-toml": "^1.8.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/react": "^19.2.0",
+    "ink-testing-library": "^4.0.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}

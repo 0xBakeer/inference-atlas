@@ -95,11 +95,28 @@ results/     one JSON file per measurement, owned by its contributor:
              <engine>/<owner>/<name>/<hardware>/<run_id>.json
 site/        branding, navigation, colours, scoring weights, thresholds
 packages/    @atlas/core — shared types, fingerprinting, ids, plausibility, coverage, packets
+             @atlas/tui — the terminal UI (see below)
 tools/       node CLIs: validate, build, packet, ingest
 app/         the Vite + Lit 3 site
 bench/       atlas-bench, the Python harness
 docs/        DESIGN.md (the vision) and SPEC.md (the binding contract)
 ```
+
+## The terminal UI
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/0xBakeer/inference-atlas/main/install.sh | sh
+inference-atlas
+```
+
+The atlas in your terminal: it identifies your machine against the hardware registry, ranks
+every measured configuration by whether it would actually run on it, draws the sweep curves,
+latency distributions, the Pareto frontier and the coverage map as terminal charts, and turns
+any run into a Markdown **install recipe** — pinned weights, install commands, the exact
+serve command, per-flag documentation, the run's gotchas, the numbers to expect, and the
+`atlas-bench` steps to verify and contribute your own measurement back. Data comes from the
+published shards (one conditional GET, cached, works offline); `--repo` reads a local
+checkout instead. Details: [`packages/tui/README.md`](packages/tui/README.md).
 
 ## Identifiers
 
