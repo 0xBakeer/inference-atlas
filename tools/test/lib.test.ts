@@ -262,5 +262,7 @@ describe('git helpers', () => {
     expect(loginFromEmail('1234+octocat@users.noreply.github.com')).toBe('octocat');
     expect(loginFromEmail('octocat@users.noreply.github.com')).toBe('octocat');
     expect(loginFromEmail('someone@example.com')).toBeNull();
+    // GitHub's own casing, so the credit lands on the same identity as the result file.
+    expect(loginFromEmail('95100110+AzeezIsh@users.noreply.github.com')).toBe('AzeezIsh');
   });
 });
