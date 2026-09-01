@@ -99,7 +99,7 @@ packages/    @atlas/core — shared types, fingerprinting, ids, plausibility, co
 tools/       node CLIs: validate, build, packet, ingest
 app/         the Vite + Lit 3 site
 bench/       atlas-bench, the Python harness
-docs/        DESIGN.md (the vision) and SPEC.md (the binding contract)
+docs/        DESIGN.md (the vision), SPEC.md (the binding contract), tui/ (the terminal app manual)
 ```
 
 ## The terminal UI
@@ -117,7 +117,15 @@ any run into a Markdown **install recipe** — pinned weights, install commands,
 serve command, per-flag documentation, the run's gotchas, the numbers to expect, and the
 `atlas-bench` steps to verify and contribute your own measurement back. Data comes from the
 published shards (one conditional GET, cached, works offline); `--repo` reads a local
-checkout instead. Details: [`packages/tui/README.md`](packages/tui/README.md).
+checkout instead.
+
+**Manual:** [`docs/tui/`](docs/tui/README.md) — [installation](docs/tui/installation.md) ·
+[getting started](docs/tui/getting-started.md) · [keys](docs/tui/keys.md) ·
+[views](docs/tui/views.md) · [the target box](docs/tui/target-box.md) ·
+[charts](docs/tui/charts.md) · [recipes](docs/tui/recipes.md) ·
+[configuration](docs/tui/configuration.md) · [data & syncing](docs/tui/data-and-sync.md) ·
+[CLI](docs/tui/cli.md) · [troubleshooting](docs/tui/troubleshooting.md) ·
+[development](docs/tui/development.md)
 
 ## Identifiers
 

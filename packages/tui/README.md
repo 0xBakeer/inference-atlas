@@ -10,6 +10,10 @@ inference-atlas
 
 Or from a checkout: `pnpm install && pnpm tui`.
 
+📖 **[The manual](../../docs/tui/README.md)** — installation, every view, every key, the
+target-box model, how to read the charts, recipes, configuration, the CLI, troubleshooting
+and development notes.
+
 ## What it does
 
 - **Your box, first.** On launch the TUI captures the local hardware (`system_profiler` /
@@ -56,6 +60,9 @@ That section is the one thing the TUI writes back, and it rewrites _only_ that s
 your comments and every other setting are preserved byte for byte.
 
 ## Development
+
+See [docs/tui/development.md](../../docs/tui/development.md) for the module map and testing
+notes.
 
 ```bash
 pnpm --filter @atlas/tui run start      # run from source (tsx)
