@@ -35,10 +35,16 @@ _OOM_PATTERNS = re.compile(
     r"failed to allocate|no available memory for the cache blocks|hip out of memory",
     re.IGNORECASE,
 )
+#: Engines phrase "it did not fit" differently, and the category has to survive that: a
+#: point over the served ceiling must land as ``context-overflow``, never as the status
+#: class it happened to arrive with (``workloads/README.md``). Two of these are deliberately
+#: generalised rather than engine-specific — ``exceeds (the )?max`` also covers
+#: ``exceeds max_seq_len`` (Atlas) and ``exceeds max_model_len``, and the optional ``is``
+#: covers both "prompt is too long" and "Prompt too long:".
 _CONTEXT_PATTERNS = re.compile(
     r"maximum context length|context length exceeded|longer than the maximum|"
-    r"exceeds the maximum|reduce the length|too many tokens|context window|"
-    r"n_ctx|prompt is too long|greater than the context length|"
+    r"exceeds (?:the )?max|reduce the length|too many tokens|context window|"
+    r"n_ctx|prompt (?:is )?too long|greater than the context length|"
     r"provide a shorter input",
     re.IGNORECASE,
 )
