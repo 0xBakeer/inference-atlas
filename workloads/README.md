@@ -83,6 +83,11 @@ were right.
 | `eval-multilingual-v1`             | eval    | `eval-multilingual-v1`     | `contains`, max_out 2048                      |
 | `eval-longctx-v1`                  | eval    | `eval-longctx-v1`          | `needle`, max_out 1024, c1                    |
 | `eval-format-v1`                   | eval    | `eval-format-v1`           | `exact`, max_out 256                          |
+| `eval-math-v2`                     | eval    | `eval-math-v2`             | `numeric`, max_out 4096, supersedes v1        |
+| `eval-reasoning-v2`                | eval    | `eval-reasoning-v2`        | mixed scorers, max_out 4096, supersedes v1    |
+| `eval-knowledge-v2`                | eval    | `eval-knowledge-v2`        | `mc`, max_out 1024, supersedes v1             |
+| `eval-science-v2`                  | eval    | `eval-science-v2`          | `numeric`, max_out 4096, new suite            |
+| `eval-commonsense-v2`              | eval    | `eval-commonsense-v2`      | mixed scorers, max_out 2048, new suite        |
 
 ## Conventions a runner must honour
 

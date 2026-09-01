@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "id": "eval-math-v2",
+  "name": "Mathematics eval v2",
+  "kind": "eval",
+  "description": "140 mathematics items with programmatically computed answers, superseding eval-math-v1 (which strong models saturate): three-step percentage chains, 4x4-digit products, 3x3 integer systems and composed functions, CRT residue systems, totients, divisor sums, multiplicative orders and a^b mod 100, multi-step word problems that each contain one deliberately irrelevant number, exact probabilities over exhaustively enumerated sample spaces, lattice-path and committee counting, linear recurrences, and bounded true/false claims whose verdict the generator proves by exhaustive check, with smallest-counterexample items for false claims.",
+  "licence": "MIT",
+  "created": "2026-08-23",
+  "files": [
+    "items.jsonl"
+  ],
+  "count": 140,
+  "generator": "datasets/_gen/gen_eval_math_v2.py",
+  "token_heuristic": "approx_tokens = ceil(sum(len(m.content) for m in messages) / 4)",
+  "provenance": "Synthetic, authored in this repository. No third-party text.",
+  "default_scorer": "numeric",
+  "scoring": {
+    "answer_extraction": [
+      "Drop everything inside <think>...</think> (and an unterminated leading <think> block).",
+      "Drop markdown code fences, keeping the fenced content.",
+      "If any line matches /^\\s*(?:final answer|answer)\\s*[:\\-]\\s*(.+)$/i, take the capture of the LAST such line and use only that.",
+      "Strip surrounding whitespace, matching quotes, and a single trailing '.' or '!'.",
+      "Scorers that need the untouched output (instruction, json) get the raw text as well; the instruction scorer always works on the raw output."
+    ],
+    "scorers": {
+      "numeric": "Parse the last number in the extracted output (thousands separators, a leading currency symbol and a trailing % are stripped). Correct when abs(got - float(answer)) <= max(meta.tolerance or 1e-6, 1e-9 * abs(expected)).",
+      "mc": "Multiple choice. `choices` is a list of strings; `answer` is the 0-based-letter label ('A', 'B', ...). Accept the bare letter, 'A)', '(A)', 'A.' or the full text of the correct choice, case-insensitively."
+    },
+    "pass_rule": "One item is correct or incorrect; there is no partial credit. accuracy = correct / total. An item whose request failed (timeout, 5xx, context overflow) counts as incorrect AND is reported in scores.failures and metrics.requests_failed."
+  },
+  "categories": [
+    "algebra",
+    "arithmetic",
+    "claims",
+    "combinatorics_probability",
+    "number_theory",
+    "sequences",
+    "word_problems"
+  ],
+  "difficulties": [
+    "easy",
+    "medium",
+    "hard"
+  ],
+  "counts": {
+    "by_category": {
+      "arithmetic": 20,
+      "algebra": 20,
+      "number_theory": 22,
+      "word_problems": 20,
+      "combinatorics_probability": 20,
+      "sequences": 18,
+      "claims": 20
+    },
+    "by_difficulty": {
+      "hard": 77,
+      "easy": 10,
+      "medium": 53
+    },
+    "by_scorer": {
+      "numeric": 126,
+      "mc": 14
+    }
+  },
+  "seed": 20260910,
+  "supersedes": "eval-math-v1",
+  "notes": [
+    "Every answer is derived from the generated numbers; none was typed by hand. Claim verdicts and counterexamples are brute-forced over the exact range stated in the prompt.",
+    "Word problems each contain one deliberately irrelevant number (a tank volume, a river width, a carriage count, a cousin's age); using it is the error the item is designed to catch.",
+    "Probability answers are requested to four decimal places with meta.tolerance 0.00005; other rounded decimals pin two decimal places like v1.",
+    "Hard items ask for reasoning and a final 'Answer: <number>' line. Give reasoning models enough max_tokens (the eval-math-v2 workload uses 4096).",
+    "claims rows are multiple choice (scorer mc, choices True/False with the correct letter balanced); everything else is numeric."
+  ]
+}

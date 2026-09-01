@@ -46,6 +46,11 @@ uv run datasets/_gen/check.py
 | `gen_eval_multilingual.py`     | `eval-multilingual-v1/`     | native text lives in `_multilingual.py`                    |
 | `gen_eval_longctx.py`          | `eval-longctx-v1/`          | recipes verified against `haystack-v1/build.py`            |
 | `gen_eval_format.py`           | `eval-format-v1/`           | hand-written, 30 items                                     |
+| `gen_eval_math_v2.py`          | `eval-math-v2/`             | harder v2: CRT, totients, claims brute-forced over ranges  |
+| `gen_eval_reasoning_v2.py`     | `eval-reasoning-v2/`        | harder v2: bigger search spaces, all brute-forced unique   |
+| `gen_eval_knowledge_v2.py`     | `eval-knowledge-v2/`        | harder v2: second-tier stable facts, in-table distractors  |
+| `gen_eval_science_v2.py`       | `eval-science-v2/`          | applied physics/chemistry, constants pinned in prompts     |
+| `gen_eval_commonsense_v2.py`   | `eval-commonsense-v2/`      | goal traps + altered riddles; text_selfref rows computed   |
 
 Shared, not a generator:
 

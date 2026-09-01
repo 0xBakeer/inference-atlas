@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "id": "eval-science-v2",
+  "name": "Science eval v2",
+  "kind": "eval",
+  "description": "120 applied physics and chemistry problems with programmatically computed answers: mechanics (projectiles, friction on inclines, collisions, energy chains), DC circuits (branch currents and power in mixed networks, energy cost), thermodynamics (calorimetry, phase changes, ideal gas with unit conversions), chemistry (limiting reagents, dilution chains, percent yield, gas stoichiometry), waves and optics, and half-life plus multi-hop unit conversions. Every constant a solution needs is pinned in the prompt.",
+  "licence": "MIT",
+  "created": "2026-08-23",
+  "files": [
+    "items.jsonl"
+  ],
+  "count": 120,
+  "generator": "datasets/_gen/gen_eval_science_v2.py",
+  "token_heuristic": "approx_tokens = ceil(sum(len(m.content) for m in messages) / 4)",
+  "provenance": "Synthetic, authored in this repository. No third-party text.",
+  "default_scorer": "numeric",
+  "scoring": {
+    "answer_extraction": [
+      "Drop everything inside <think>...</think> (and an unterminated leading <think> block).",
+      "Drop markdown code fences, keeping the fenced content.",
+      "If any line matches /^\\s*(?:final answer|answer)\\s*[:\\-]\\s*(.+)$/i, take the capture of the LAST such line and use only that.",
+      "Strip surrounding whitespace, matching quotes, and a single trailing '.' or '!'.",
+      "Scorers that need the untouched output (instruction, json) get the raw text as well; the instruction scorer always works on the raw output."
+    ],
+    "scorers": {
+      "numeric": "Parse the last number in the extracted output (thousands separators, a leading currency symbol and a trailing % are stripped). Correct when abs(got - float(answer)) <= max(meta.tolerance or 1e-6, 1e-9 * abs(expected))."
+    },
+    "pass_rule": "One item is correct or incorrect; there is no partial credit. accuracy = correct / total. An item whose request failed (timeout, 5xx, context overflow) counts as incorrect AND is reported in scores.failures and metrics.requests_failed."
+  },
+  "categories": [
+    "chemistry",
+    "electricity",
+    "mechanics",
+    "radioactivity_units",
+    "thermodynamics",
+    "waves_optics"
+  ],
+  "difficulties": [
+    "easy",
+    "medium",
+    "hard"
+  ],
+  "counts": {
+    "by_category": {
+      "mechanics": 20,
+      "electricity": 20,
+      "thermodynamics": 20,
+      "chemistry": 20,
+      "waves_optics": 20,
+      "radioactivity_units": 20
+    },
+    "by_difficulty": {
+      "easy": 22,
+      "hard": 51,
+      "medium": 47
+    },
+    "by_scorer": {
+      "numeric": 120
+    }
+  },
+  "seed": 20260910,
+  "notes": [
+    "Part of the -v2 eval generation: built to spread models that saturate the v1 suites. The hard items are multi-step chains, limiting-reagent traps and deliberate unit mismatches stated openly in the prompt.",
+    "Every answer is derived from the generated numbers; none was typed by hand, and each family asserts its answer through the physics before emitting a row.",
+    "All constants are pinned in the prompt (g, R, specific and latent heats, molar masses, molar volumes, sine values, the speed of sound), so an item never depends on which value of a constant the model memorised.",
+    "Hard items ask for reasoning and a final 'Answer: <number>' line. Give reasoning models enough max_tokens (the eval-science-v2 workload uses 4096).",
+    "meta.tolerance overrides the numeric scorer's default of 1e-6 where the prompt asks for a rounded decimal."
+  ]
+}
