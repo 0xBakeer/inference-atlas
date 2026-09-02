@@ -58,15 +58,21 @@ export interface CoverageGrid {
   counts: number[][];
 }
 
-/** Model × hardware run counts — the "where has anyone been" map. */
+/**
+ * Model × hardware run counts. Rows/columns come from the registry, not the index, so
+ * registered models nobody has measured yet still appear — as blanks, which is the point.
+ */
 export function coverageGrid(data: AtlasData): CoverageGrid {
-  const models = [...new Set(data.index.map((r) => r.model.id))].sort();
-  const hardware = [...new Set(data.index.map((r) => r.hardware.id))].sort();
+  const models = data.registry.models.map((m) => m.model.id).sort();
+  const hardware = data.registry.hardware.map((h) => h.id).sort();
   const counts = models.map(() => hardware.map(() => 0));
   const mi = new Map(models.map((m, i) => [m, i]));
   const hi = new Map(hardware.map((h, i) => [h, i]));
   for (const r of data.index) {
-    counts[mi.get(r.model.id)!]![hi.get(r.hardware.id)!]! += 1;
+    const m = mi.get(r.model.id);
+    const h = hi.get(r.hardware.id);
+    if (m === undefined || h === undefined) continue;
+    counts[m]![h]! += 1;
   }
   return { rowLabels: models, colLabels: hardware, counts };
 }

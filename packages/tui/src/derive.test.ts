@@ -47,18 +47,27 @@ describe('paretoData', () => {
 });
 
 describe('coverageGrid', () => {
-  it('counts runs per model × hardware', () => {
+  const registry = {
+    models: [
+      { model: { id: 'a/m1' }, quants: [] },
+      { model: { id: 'b/m2' }, quants: [] },
+      { model: { id: 'c/m3' }, quants: [] },
+    ],
+    hardware: [{ id: 'hw1' }, { id: 'hw2' }],
+  };
+  it('counts runs per model × hardware, from the grid the registry defines', () => {
     const index = [
       row({ model: { id: 'a/m1', quant_id: 'q' }, hardware: { id: 'hw1', count: 1 } }),
       row({ model: { id: 'a/m1', quant_id: 'q' }, hardware: { id: 'hw1', count: 1 } }),
       row({ model: { id: 'b/m2', quant_id: 'q' }, hardware: { id: 'hw2', count: 1 } }),
     ];
-    const grid = coverageGrid({ index } as AtlasData);
-    expect(grid.rowLabels).toEqual(['a/m1', 'b/m2']);
+    const grid = coverageGrid({ index, registry } as unknown as AtlasData);
+    expect(grid.rowLabels).toEqual(['a/m1', 'b/m2', 'c/m3']);
     expect(grid.colLabels).toEqual(['hw1', 'hw2']);
     expect(grid.counts).toEqual([
       [2, 0],
       [0, 1],
+      [0, 0],
     ]);
   });
 });
