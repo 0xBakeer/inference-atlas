@@ -61,7 +61,7 @@ The selected point is drawn as `◉` and named in the panel underneath.
 | `k` / `↑`                  | previous device                                                                             |
 | `+` / `=` / `→`            | one more of this device                                                                     |
 | `-` / `_` / `←`            | one fewer                                                                                   |
-| `enter`                    | target the highlighted device, and save it to your config                                   |
+| `enter`                    | target the highlighted device, save it to your config, and return to the target view        |
 | `enter` on **not listed?** | propose your box for the registry (asks first)                                              |
 | `esc`                      | back — unless the app has not identified your machine yet, in which case it wants an answer |
 

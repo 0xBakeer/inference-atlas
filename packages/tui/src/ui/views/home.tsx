@@ -19,6 +19,8 @@ export interface HomeProps {
   selected: number;
   height: number;
   width: number;
+  /** Outcome of the last hardware selection — the picker hands its confirmation over here. */
+  status?: string | null;
 }
 
 const SOURCE_NOTE: Record<Target['source'], string> = {
@@ -35,6 +37,7 @@ export function HomeView({
   selected,
   height,
   width,
+  status,
 }: HomeProps): React.JSX.Element {
   const stats = data.manifest?.counts ?? {};
   return (
@@ -57,6 +60,7 @@ export function HomeView({
           </Text>
         )}
       </Panel>
+      {status ? <Text color={COLORS.ok}>{status}</Text> : null}
       <Panel title={`Worth running on ${targetLabel(target)}`} grow>
         <Table
           height={height}

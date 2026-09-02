@@ -20,6 +20,7 @@ import { copyToClipboard, openUrl } from '../recipe/send.js';
 import { saveTarget } from '../config.js';
 import { generateRecipe, recipeFileName } from '../recipe/generate.js';
 import { agentCommand, runAgentCommand, writeRecipe } from '../recipe/send.js';
+import { isConfirm, isEnter, printableInput } from './keys.js';
 import { COLORS } from './theme.js';
 import { KeyHints } from './widgets.js';
 import { CoverageView } from './views/coverage.js';
@@ -240,6 +241,12 @@ export function App({
     setPendingRequest({ request, url: hardwareIssueUrl(request, data.registry.site) });
   }, [initialTarget, data]);
 
+  /**
+   * Commit a box. Picking hardware is only ever a means to an end — the point is what is
+   * worth running on it — so the selection lands on the home view with the re-ranked list
+   * already in front of you. Leaving the user parked in the picker (and only revealing the
+   * answer once they pressed esc) hid the entire result of the action they just took.
+   */
   const selectHardware = useCallback(
     (choice: HardwareChoice) => {
       const next = chooseTarget(choice.hardware, choice.count, initialTarget.captured);
@@ -252,6 +259,7 @@ export function App({
           ? `${targetLabel(next)} — saved to ${saved.file}`
           : `selected, but could not write the config: ${saved.error}`,
       );
+      setView('home');
     },
     [initialTarget],
   );
@@ -263,20 +271,51 @@ export function App({
     }));
   }, []);
 
+  /**
+   * Say yes to the registry request. A headless box — WSL above all — often has no browser
+   * this process can reach, and the old code left the dialog sitting there with an invisible
+   * error, which reads as the key having done nothing. So a failure is never the end: the
+   * link goes to the clipboard and to a file, and the dialog says where it went.
+   */
+  const openRequest = useCallback(
+    (pending: { request: HardwareRequest; url: string }) => {
+      const opened = openUrl(pending.url);
+      if (opened.ok) {
+        setHwStatus(
+          `opened the registry request in your browser${opened.via ? ` (${opened.via})` : ''} — nothing is sent until you submit it there`,
+        );
+        setPendingRequest(null);
+        return;
+      }
+      const copied = copyToClipboard(pending.url);
+      let file: string | null = null;
+      try {
+        file = writeRecipe(
+          recipesDir(config),
+          `hardware-request-${pending.request.id}.txt`,
+          `${pending.url}\n`,
+        );
+      } catch {
+        /* the clipboard is the important half; a read-only recipes dir must not swallow it */
+      }
+      setHwStatus(
+        `no browser this shell can reach (${opened.error ?? 'unknown'}). The link is ` +
+          `${copied ? 'on your clipboard' : 'in your terminal clipboard via OSC52'}` +
+          `${file ? ` and saved to ${file}` : ''} — paste it into a browser. esc closes this.`,
+      );
+    },
+    [config],
+  );
+
   useInput((input, key) => {
     // The confirmation dialog owns the keyboard while it is up: opening a browser is an
     // outward-facing act and must not happen on a stray keypress.
     if (pendingRequest) {
-      if (key.escape || input === 'n' || input === 'q') setPendingRequest(null);
-      else if (key.return || input === 'y') {
-        const opened = openUrl(pendingRequest.url);
-        setHwStatus(
-          opened.ok
-            ? 'opened the registry request in your browser — nothing is sent until you submit it there'
-            : `could not open a browser (${opened.error ?? 'unknown'}) — press c to copy the link`,
-        );
-        if (opened.ok) setPendingRequest(null);
-      } else if (input === 'c') {
+      if (key.escape || input === 'n' || input === 'N' || input === 'q') {
+        setPendingRequest(null);
+        setHwStatus(null);
+      } else if (isConfirm(input, key)) openRequest(pendingRequest);
+      else if (input === 'c') {
         const ok = copyToClipboard(pendingRequest.url);
         setHwStatus(
           ok ? 'link copied to the clipboard' : 'link sent via OSC52 (terminal permitting)',
@@ -288,9 +327,9 @@ export function App({
 
     // Filter entry swallows everything printable.
     if (filtering) {
-      if (key.return || key.escape) setFiltering(false);
+      if (isEnter(input, key) || key.escape) setFiltering(false);
       else if (key.backspace || key.delete) setFilter((f) => f.slice(0, -1));
-      else if (input && !key.ctrl && !key.meta) setFilter((f) => f + input);
+      else if (printableInput(input) && !key.ctrl && !key.meta) setFilter((f) => f + input);
       setSelRuns(0);
       return;
     }
@@ -387,22 +426,23 @@ export function App({
       else if (up) setSelHw((s) => clampSel(s - 1, pickerRows.length));
       else if (choice && (input === '+' || input === '=' || key.rightArrow)) bumpCount(choice, 1);
       else if (choice && (input === '-' || input === '_' || key.leftArrow)) bumpCount(choice, -1);
-      else if (key.return && choice) selectHardware(choice);
-      else if (key.return && row && isAddRow(row)) askToAddBox();
+      else if (isEnter(input, key) && choice) selectHardware(choice);
+      else if (isEnter(input, key) && row && isAddRow(row)) askToAddBox();
     } else if (view === 'home') {
       if (down) setSelHome((s) => clampSel(s + 1, ranked.length));
       else if (up) setSelHome((s) => clampSel(s - 1, ranked.length));
-      else if (key.return && ranked[selHome]) openDetail(ranked[selHome]!.row);
+      else if (isEnter(input, key) && ranked[selHome]) openDetail(ranked[selHome]!.row);
       else if (input === 'g' && ranked[selHome]) openDetail(ranked[selHome]!.row);
     } else if (view === 'runs') {
       if (down) setSelRuns((s) => clampSel(s + 1, filtered.length));
       else if (up) setSelRuns((s) => clampSel(s - 1, filtered.length));
-      else if (key.return && filtered[selRuns]) openDetail(filtered[selRuns]!);
+      else if (isEnter(input, key) && filtered[selRuns]) openDetail(filtered[selRuns]!);
       else if (input === 'g' && filtered[selRuns]) openDetail(filtered[selRuns]!);
     } else if (view === 'pareto') {
       if (down || key.rightArrow) setSelPareto((s) => clampSel(s + 1, pareto.points.length));
       else if (up || key.leftArrow) setSelPareto((s) => clampSel(s - 1, pareto.points.length));
-      else if (key.return && pareto.points[selPareto]) openDetail(pareto.points[selPareto]!.row);
+      else if (isEnter(input, key) && pareto.points[selPareto])
+        openDetail(pareto.points[selPareto]!.row);
     } else if (view === 'detail' && detail) {
       if (input === 'g' && detail.record) openRecipe(detail);
     }
@@ -470,6 +510,7 @@ export function App({
           <HomeView
             data={data}
             target={target}
+            status={hwStatus}
             ranked={ranked}
             keyMetrics={keyMetrics}
             selected={selHome}

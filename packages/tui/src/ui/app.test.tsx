@@ -8,19 +8,37 @@ import os from 'node:os';
 import path from 'node:path';
 import React from 'react';
 import { render } from 'ink-testing-library';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fixtureRow } from '@atlas/core';
 import { DEFAULT_CONFIG } from '../config.js';
 import { loadAtlas } from '../data/load.js';
 import { LocalSource } from '../data/source.js';
 import type { CapturedHardware } from '../hw/capture.js';
 import { matchHardware } from '../hw/match.js';
+import type * as SendModule from '../recipe/send.js';
 import type { Target } from '../hw/target.js';
 import { App } from './App.js';
 
+const outward = vi.hoisted(() => ({
+  openUrl: vi.fn<(url: string) => { ok: boolean; via?: string; error?: string }>(),
+  copyToClipboard: vi.fn<(text: string) => boolean>(),
+}));
+vi.mock('../recipe/send.js', async (importOriginal) => ({
+  ...(await importOriginal<typeof SendModule>()),
+  openUrl: (url: string) => outward.openUrl(url),
+  copyToClipboard: (text: string) => outward.copyToClipboard(text),
+}));
+
 let repo: string;
+let configHome: string;
+const savedConfigHome = process.env['XDG_CONFIG_HOME'];
 beforeEach(() => {
   repo = fs.mkdtempSync(path.join(os.tmpdir(), 'atlas-tui-app-'));
+  // Picking a box persists it; keep that off the developer's real config file.
+  configHome = fs.mkdtempSync(path.join(os.tmpdir(), 'atlas-tui-cfg-'));
+  process.env['XDG_CONFIG_HOME'] = configHome;
+  outward.openUrl.mockReset().mockReturnValue({ ok: true, via: 'open' });
+  outward.copyToClipboard.mockReset().mockReturnValue(true);
   const dataDir = path.join(repo, 'app', 'public', 'data');
   fs.mkdirSync(dataDir, { recursive: true });
   const write = (name: string, value: unknown) =>
@@ -136,6 +154,9 @@ beforeEach(() => {
 });
 afterEach(() => {
   fs.rmSync(repo, { recursive: true, force: true });
+  fs.rmSync(configHome, { recursive: true, force: true });
+  if (savedConfigHome === undefined) delete process.env['XDG_CONFIG_HOME'];
+  else process.env['XDG_CONFIG_HOME'] = savedConfigHome;
 });
 
 const captured: CapturedHardware = {
@@ -156,6 +177,7 @@ async function renderApp(options: { unknownBox?: boolean } = {}) {
   const match = options.unknownBox ? null : matchHardware(captured, data.registry.hardware);
   const config = structuredClone(DEFAULT_CONFIG);
   config.data.refreshMinutes = 0;
+  config.recipes.dir = path.join(configHome, 'recipes');
   const target: Target = {
     hardware: match?.hardware ?? null,
     count: 1,
@@ -271,6 +293,129 @@ describe('App', () => {
     stdin.write('\u001b'); // esc
     await sleep(300);
     expect(lastFrame()).toContain('Worth running on');
+    unmount();
+  });
+  /*
+   * Enter is not one byte. Ink only names `\r` "return"; a terminal that sends `\n` — which
+   * is what several WSL/ConPTY setups do — used to hit every `key.return` branch as a
+   * no-op, so the keys below simply did nothing with no error to show for it.
+   */
+  it('opens a run when Enter arrives as a line feed', async () => {
+    const { stdin, lastFrame, unmount } = await renderApp();
+    stdin.write('2');
+    await sleep(10);
+    stdin.write('\n');
+    await sleep(50);
+    expect(lastFrame()).toContain('Fit on Apple M2 Max 32GB');
+    unmount();
+  });
+
+  it('confirms the registry request when Enter arrives as a line feed', async () => {
+    const { stdin, lastFrame, unmount } = await renderApp();
+    stdin.write('b');
+    await sleep(20);
+    stdin.write('j');
+    await sleep(20);
+    stdin.write('\n');
+    await sleep(30);
+    expect(lastFrame()).toContain('Add your box to the registry?');
+    stdin.write('n'); // never open a browser from a test
+    await sleep(20);
+    unmount();
+  });
+
+  it('does not let a stray line feed leak into the filter text', async () => {
+    const { stdin, lastFrame, unmount } = await renderApp();
+    stdin.write('/');
+    await sleep(10);
+    stdin.write('Qwen');
+    await sleep(10);
+    stdin.write('\n'); // ends the filter, the way enter does
+    await sleep(10);
+    const frame = lastFrame()!;
+    expect(frame).toContain('filter: Qwen');
+    expect(frame).not.toContain('▌'); // the caret is gone: typing stopped
+    expect(frame).toContain('Qwen/Qwen3-8B'); // and the filter still matches
+    unmount();
+  });
+
+  /*
+   * Picking a box is only a means to an end. The answer lives on the home view, so the
+   * selection has to land there — it used to stay in the picker, and the re-ranked list
+   * only appeared once the user pressed esc.
+   */
+  it('lands on the home view with the ranking as soon as a box is picked', async () => {
+    const { stdin, lastFrame, unmount } = await renderApp({ unknownBox: true });
+    await sleep(20);
+    expect(lastFrame()).toContain('Which box are you running models on?');
+    stdin.write('j'); // past the "not listed?" row, which comes first for an unknown box
+    await sleep(20);
+    stdin.write('\r');
+    await sleep(30);
+    const frame = lastFrame()!;
+    expect(frame).toContain('Worth running on Apple M2 Max 32GB');
+    expect(frame).toContain('Qwen/Qwen3-8B');
+    expect(frame).toContain('saved to'); // the confirmation follows you home
+    expect(frame).not.toContain('Pick your hardware');
+    unmount();
+  });
+
+  it('remembers the picked box in the config file', async () => {
+    const { stdin, unmount } = await renderApp({ unknownBox: true });
+    await sleep(20);
+    stdin.write('j');
+    await sleep(20);
+    stdin.write('\n'); // line-feed enter again: the picker must take it too
+    await sleep(30);
+    const toml = fs.readFileSync(path.join(configHome, 'inference-atlas', 'config.toml'), 'utf8');
+    expect(toml).toContain('hardware = "apple-m2-max-32gb"');
+    unmount();
+  });
+  /*
+   * The reported WSL symptom: `xdg-open` is not installed, `openUrl` failed, and the
+   * dialog dropped the error on the floor — so enter and y both looked like dead keys.
+   */
+  it('says what happened when no browser can be reached, and keeps the link reachable', async () => {
+    outward.openUrl.mockReturnValue({ ok: false, error: 'tried xdg-open (not installed)' });
+    const { stdin, lastFrame, unmount } = await renderApp();
+    stdin.write('b');
+    await sleep(20);
+    stdin.write('j');
+    await sleep(20);
+    stdin.write('\r');
+    await sleep(30);
+    expect(lastFrame()).toContain('Add your box to the registry?');
+    stdin.write('y');
+    await sleep(40);
+    const frame = lastFrame()!;
+    expect(frame).toContain('no browser this shell can reach');
+    expect(frame).toContain('xdg-open (not installed)');
+    expect(frame).toContain('on your clipboard');
+    // The dialog stays up rather than vanishing with the link.
+    expect(frame).toContain('Add your box to the registry?');
+    expect(outward.copyToClipboard).toHaveBeenCalledWith(
+      expect.stringContaining('template=new-hardware.yml'),
+    );
+    // …and the link is on disk too, for a shell with no clipboard bridge at all.
+    const saved = fs.readdirSync(path.join(configHome, 'recipes'));
+    expect(saved.some((f) => f.startsWith('hardware-request-'))).toBe(true);
+    unmount();
+  });
+
+  it('confirms and closes when a browser does open', async () => {
+    const { stdin, lastFrame, unmount } = await renderApp();
+    stdin.write('b');
+    await sleep(20);
+    stdin.write('j');
+    await sleep(20);
+    stdin.write('\r');
+    await sleep(30);
+    stdin.write('y');
+    await sleep(40);
+    const frame = lastFrame()!;
+    expect(frame).toContain('opened the registry request in your browser (open)');
+    expect(frame).toContain('Pick your hardware'); // dialog dismissed
+    expect(outward.openUrl).toHaveBeenCalledTimes(1);
     unmount();
   });
 });
