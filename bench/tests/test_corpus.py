@@ -280,18 +280,22 @@ def _reference_output(row: EvalRow) -> str:
     return f"<think>thinking</think>\nSome working out.\n\nAnswer: {answer}"
 
 
+#: Scorers whose ``answer`` is not a string a model would type, so the blunt
+#: reference-answer check below cannot apply to them. ``code_exec`` and ``instruction``
+#: have their own tests further down; ``integrity`` has ``test_longgen_integrity.py``,
+#: because its answer is an *observation* ("no spliced token") rather than a value —
+#: there is no output that is wrong by virtue of what it says.
+NON_REFERENCE_SCORERS = ("code_exec", "instruction", "integrity")
+
+
 @pytest.mark.parametrize("dataset_id", dataset_ids("eval"))
 def test_reference_answers_score_correct(dataset_id: str) -> None:
-    """Feeding a row's own answer back must score correct; garbage must not.
-
-    ``code_exec``, ``instruction`` and the tool-calling rows have their own tests below —
-    their "answer" is not a string a model would type.
-    """
+    """Feeding a row's own answer back must score correct; garbage must not."""
     reg = registry()
     rows = [
         row
         for row in load_eval_rows(reg, dataset_id)
-        if normalize_scorer_name(row.scorer) not in ("code_exec", "instruction")
+        if normalize_scorer_name(row.scorer) not in NON_REFERENCE_SCORERS
         and not row.meta.get("tools")
     ]
     if not rows:

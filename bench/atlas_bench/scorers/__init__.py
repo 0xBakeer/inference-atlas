@@ -166,6 +166,7 @@ def get_scorer(name: str | None) -> Callable[[str, Any], ScoreResult]:
 
 from .code_exec import score_code_exec  # noqa: E402
 from .instruction import score_instruction  # noqa: E402
+from .integrity import score_integrity  # noqa: E402
 from .json_match import score_json  # noqa: E402
 from .judge import score_judge  # noqa: E402
 from .mc import score_mc  # noqa: E402
@@ -186,6 +187,10 @@ SCORERS.update(
         "json": score_json,
         "code_exec": score_code_exec,
         "instruction": score_instruction,
+        # One scorer, two spellings: `integrity` is the row vocabulary,
+        # `token-integrity` the workload one (normalized to `token_integrity`).
+        "integrity": score_integrity,
+        "token_integrity": score_integrity,
         "vision": score_vision,
         "tool_call": score_tool_call,
         "judge": score_judge,

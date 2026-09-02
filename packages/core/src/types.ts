@@ -303,7 +303,16 @@ export interface Quant {
 export type WorkloadKind = 'serving' | 'sweep' | 'prefill' | 'longctx' | 'eval' | 'agentic';
 
 export type ScorerKind =
-  'exact' | 'numeric' | 'mc' | 'contains' | 'json' | 'code-exec' | 'judge' | 'needle' | 'vision';
+  | 'exact'
+  | 'numeric'
+  | 'mc'
+  | 'contains'
+  | 'json'
+  | 'code-exec'
+  | 'judge'
+  | 'needle'
+  | 'vision'
+  | 'integrity';
 
 export type SweepAxis = 'concurrency' | 'input_tokens' | 'output_tokens' | 'num_requests';
 

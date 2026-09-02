@@ -12,29 +12,37 @@ comparable when they saw the same bytes.
 
 ## Index
 
-| id                         | kind     | rows |    size | generator                      | default scorer     |
-| -------------------------- | -------- | ---: | ------: | ------------------------------ | ------------------ |
-| `prompts-mixed-v1`         | prompts  |  600 | 3.14 MB | `gen_prompts_mixed.py`         | –                  |
-| `prompts-shared-prefix-v1` | prompts  |  100 | 2.88 MB | `gen_prompts_shared_prefix.py` | –                  |
-| `prompts-code-v1`          | prompts  |  150 |  449 KB | `gen_prompts_code.py`          | –                  |
-| `haystack-v1`              | haystack |   32 | 1007 KB | `gen_haystack.py`              | –                  |
-| `eval-math-v1`             | eval     |  130 |   40 KB | `gen_eval_math.py`             | `numeric`          |
-| `eval-reasoning-v1`        | eval     |  120 |   56 KB | `gen_eval_reasoning.py`        | `exact`            |
-| `eval-code-v1`             | eval     |  140 |  164 KB | `gen_eval_code.py`             | `code_exec`        |
-| `eval-knowledge-v1`        | eval     |  130 |   49 KB | `gen_eval_knowledge.py`        | `mc`               |
-| `eval-instruction-v1`      | eval     |  104 |   65 KB | `gen_eval_instruction.py`      | `instruction`      |
-| `eval-json-v1`             | eval     |  110 |   62 KB | `gen_eval_json.py`             | `json`             |
-| `eval-tools-v1`            | eval     |   80 |  149 KB | `gen_eval_tools.py`            | `json`             |
-| `eval-vision-v1`           | eval     |   60 |  141 KB | `gen_eval_vision.py`           | `exact` (+ images) |
-| `eval-multilingual-v1`     | eval     |   80 |   39 KB | `gen_eval_multilingual.py`     | `contains`         |
-| `eval-longctx-v1`          | eval     |  100 |  100 KB | `gen_eval_longctx.py`          | `needle`           |
-| `eval-format-v1`           | eval     |   30 |    8 KB | `gen_eval_format.py`           | `exact`            |
-| `eval-math-v2`             | eval     |  140 |   54 KB | `gen_eval_math_v2.py`          | `numeric`          |
-| `eval-reasoning-v2`        | eval     |  140 |   81 KB | `gen_eval_reasoning_v2.py`     | `exact`            |
-| `eval-knowledge-v2`        | eval     |  151 |   63 KB | `gen_eval_knowledge_v2.py`     | `mc`               |
-| `eval-science-v2`          | eval     |  120 |   49 KB | `gen_eval_science_v2.py`       | `numeric`          |
-| `eval-commonsense-v2`      | eval     |  116 |   75 KB | `gen_eval_commonsense_v2.py`   | `mc`               |
-| `eval-security-v2`         | eval     |  111 |   63 KB | `gen_eval_security_v2.py`      | `mc`               |
+| id                          | kind     | rows |    size | generator                       | default scorer     |
+| --------------------------- | -------- | ---: | ------: | ------------------------------- | ------------------ |
+| `prompts-mixed-v1`          | prompts  |  600 | 3.14 MB | `gen_prompts_mixed.py`          | –                  |
+| `prompts-shared-prefix-v1`  | prompts  |  100 | 2.88 MB | `gen_prompts_shared_prefix.py`  | –                  |
+| `prompts-code-v1`           | prompts  |  150 |  449 KB | `gen_prompts_code.py`           | –                  |
+| `haystack-v1`               | haystack |   32 | 1007 KB | `gen_haystack.py`               | –                  |
+| `eval-math-v1`              | eval     |  130 |   40 KB | `gen_eval_math.py`              | `numeric`          |
+| `eval-reasoning-v1`         | eval     |  120 |   56 KB | `gen_eval_reasoning.py`         | `exact`            |
+| `eval-code-v1`              | eval     |  140 |  164 KB | `gen_eval_code.py`              | `code_exec`        |
+| `eval-knowledge-v1`         | eval     |  130 |   49 KB | `gen_eval_knowledge.py`         | `mc`               |
+| `eval-instruction-v1`       | eval     |  104 |   65 KB | `gen_eval_instruction.py`       | `instruction`      |
+| `eval-json-v1`              | eval     |  110 |   62 KB | `gen_eval_json.py`              | `json`             |
+| `eval-tools-v1`             | eval     |   80 |  149 KB | `gen_eval_tools.py`             | `json`             |
+| `eval-vision-v1`            | eval     |   60 |  141 KB | `gen_eval_vision.py`            | `exact` (+ images) |
+| `eval-multilingual-v1`      | eval     |   80 |   39 KB | `gen_eval_multilingual.py`      | `contains`         |
+| `eval-longctx-v1`           | eval     |  100 |  100 KB | `gen_eval_longctx.py`           | `needle`           |
+| `eval-format-v1`            | eval     |   30 |    8 KB | `gen_eval_format.py`            | `exact`            |
+| `eval-math-v2`              | eval     |  140 |   54 KB | `gen_eval_math_v2.py`           | `numeric`          |
+| `eval-reasoning-v2`         | eval     |  140 |   81 KB | `gen_eval_reasoning_v2.py`      | `exact`            |
+| `eval-knowledge-v2`         | eval     |  151 |   63 KB | `gen_eval_knowledge_v2.py`      | `mc`               |
+| `eval-science-v2`           | eval     |  120 |   49 KB | `gen_eval_science_v2.py`        | `numeric`          |
+| `eval-commonsense-v2`       | eval     |  116 |   75 KB | `gen_eval_commonsense_v2.py`    | `mc`               |
+| `eval-security-v2`          | eval     |  111 |   63 KB | `gen_eval_security_v2.py`       | `mc`               |
+| `eval-longgen-integrity-v1` | eval     |   36 | 1.03 MB | `gen_eval_longgen_integrity.py` | `integrity`        |
+
+`eval-longgen-integrity-v1` (2026-09-02) is a different axis again. Every suite above
+asks a short question, so a serving build that corrupts roughly one token in several
+thousand scores 100 % on all of them: the answer ends before the defect has room to
+appear. This one asks for 36 code generations of 150 to 290 lines each and scores them
+mechanically for spliced tokens — an identifier or number welded together from two
+fragments — so `accuracy` reads as "share of long generations that came back intact".
 
 The `-v2` rows are the **second-generation eval wave** (2026-09-01): the v1
 capability evals saturated — several models score 98–100 % on knowledge, math,
@@ -161,17 +169,18 @@ Applied in this order to the raw model output, before any scorer except
    capture of the **last** such line and use only that;
 4. strip surrounding whitespace, matching quotes, and a single trailing `.` or `!`.
 
-| scorer        | `answer`                    | rule                                                                                                                                                             |
-| ------------- | --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `exact`       | string                      | case-insensitive after collapsing whitespace; `meta.answer_aliases` also accepted                                                                                |
-| `numeric`     | numeric string              | parse the last number in the output (thousands separators, leading currency symbol and trailing `%` stripped); correct within `max(meta.tolerance or 1e-6, 1e-9· | expected | )`  |
-| `mc`          | `"A"`…`"D"`                 | accept the bare letter, `A)`, `(A)`, `A.` or the full text of the correct choice                                                                                 |
-| `contains`    | `{all: [...], any: [...]}`  | casefolded substring match, no diacritic folding. An entry may be a **list of alternatives** that passes when any one is found                                   |
-| `json`        | expected value              | parse the output as JSON; `meta.match` is `subset` (default) or `exact`; arrays compare elementwise in order; numbers compare numerically                        |
-| `code_exec`   | reference solution (unused) | run `extracted_code + "\n\n" + tests` in a subprocess, no network, throwaway cwd, `meta.timeout_s` (default 10)                                                  |
-| `needle`      | string                      | casefolded substring test after removing spaces, commas and hyphens from both sides                                                                              |
-| `instruction` | rule set                    | evaluate the DSL below against the **raw** output                                                                                                                |
-| `vision`      | –                           | attach `row.image` as a base64 data URL image part next to the prompt, then apply the row's own scorer                                                           |
+| scorer        | `answer`                    | rule                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| ------------- | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `exact`       | string                      | case-insensitive after collapsing whitespace; `meta.answer_aliases` also accepted                                                                                                                                                                                                                                                                                                                                                                                                                |
+| `numeric`     | numeric string              | parse the last number in the output (thousands separators, leading currency symbol and trailing `%` stripped); correct within `max(meta.tolerance or 1e-6, 1e-9·                                                                                                                                                                                                                                                                                                                                 | expected | )`  |
+| `mc`          | `"A"`…`"D"`                 | accept the bare letter, `A)`, `(A)`, `A.` or the full text of the correct choice                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| `contains`    | `{all: [...], any: [...]}`  | casefolded substring match, no diacritic folding. An entry may be a **list of alternatives** that passes when any one is found                                                                                                                                                                                                                                                                                                                                                                   |
+| `json`        | expected value              | parse the output as JSON; `meta.match` is `subset` (default) or `exact`; arrays compare elementwise in order; numbers compare numerically                                                                                                                                                                                                                                                                                                                                                        |
+| `code_exec`   | reference solution (unused) | run `extracted_code + "\n\n" + tests` in a subprocess, no network, throwaway cwd, `meta.timeout_s` (default 10)                                                                                                                                                                                                                                                                                                                                                                                  |
+| `needle`      | string                      | casefolded substring test after removing spaces, commas and hyphens from both sides                                                                                                                                                                                                                                                                                                                                                                                                              |
+| `instruction` | rule set                    | evaluate the DSL below against the **raw** output                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| `vision`      | –                           | attach `row.image` as a base64 data URL image part next to the prompt, then apply the row's own scorer                                                                                                                                                                                                                                                                                                                                                                                           |
+| `integrity`   | `"clean"`                   | long-output token integrity, not correctness: mask strings, comments and regex literals, then flag a digit-initial token that is not a valid numeric literal (`128Pin`), an undefined identifier that is a defined name plus 2–6 lower-case letters (`carrier`+`hed`), or an undefined bare word between two numeric literals (`[6, visible, 0]`). The definition set is `meta.context_identifiers` ∪ what the output declares ∪ the JS globals. An ordinary undefined identifier is not counted |
 
 One item is correct or it is not; there is no partial credit.
 `accuracy = correct / total`. A request that failed (timeout, 5xx,
@@ -191,6 +200,27 @@ with `tool_choice: "auto"` and score **`tool_calls[0]`**:
   after stripping; numbers compare numerically.
 - `answer.tool_call = null` → correct only when the response contains no tool call
   at all. The text of the reply is not scored.
+
+### `eval-longgen-integrity-v1`
+
+Rows carry a 20–25k-character synthetic JavaScript ES-module project as the prompt plus a
+task: write one complete new module of the stated line range, importing at least six named
+exports from the project, and reply with the file contents and nothing else. `answer` is
+`"clean"` — the expected observation is "no spliced token", not a string the model types —
+and `difficulty` orders the items by requested output length (`easy` ≈ 1200 output tokens,
+`medium` ≈ 1800, `hard` ≈ 2400, recorded exactly in `meta.target_output_tokens`).
+
+`meta.context_identifiers` is every identifier the generated project defines or exports,
+computed from the generated source. The scorer needs it: without a definition set it cannot
+tell a spliced name from one the project supplied. The generic `Answer:`-line extraction
+step is **not** applied here — the output is a source file, and a line beginning `answer:`
+inside it is code.
+
+An item is correct when the generation contains no splice. That is deliberately not a
+correctness check: wrong-but-intact code scores 1.0, and the other eval suites are where
+correctness is measured. A clean run of 36 is also not proof of absence — at an observed
+rate of roughly one affected generation in five, a clean pass is a plausible outcome for an
+affected build.
 
 ### `eval-vision-v1`
 

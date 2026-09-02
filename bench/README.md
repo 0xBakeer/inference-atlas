@@ -256,8 +256,15 @@ drop `<think>…</think>` → drop code fences, keep the content → keep the ca
 Scorers: `exact` (+ `meta.answer_aliases`), `numeric` (last number, absolute tolerance from
 `meta.tolerance`), `mc`, `contains` (`{all, any}`, an entry may be a list of alternatives),
 `json` (`meta.match`, `meta.array_order`), `code-exec` (`meta.timeout_s`), `needle`,
-`instruction`, `vision`, `judge` (stub — judged items are recorded with `scored: false` until
+`instruction`, `integrity` (`meta.context_identifiers`), `vision`, `judge` (stub — judged items are recorded with `scored: false` until
 a judge model is pinned).
+
+`integrity` is the odd one out: it scores whether a long generation came back with every
+token intact, not whether it is correct. It masks strings, comments and regex literals in the
+generated code and reports only three shapes — a digit-initial token that is not a valid
+numeric literal, an undefined identifier that is a defined name plus 2-6 lower-case letters,
+and an undefined bare word between two numeric literals in a comma-separated list. Ordinary
+undefined identifiers are ordinary code errors and are not counted.
 
 `instruction` does not re-implement the rule DSL: it imports
 `datasets/eval-instruction-v1/rules.py`, the normative implementation, and evaluates it

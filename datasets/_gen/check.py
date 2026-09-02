@@ -45,7 +45,7 @@ SIZE_BUDGET_BYTES = 25 * 1024 * 1024
 KINDS = {"prompts", "eval", "images", "haystack"}
 DIFFICULTIES = {"easy", "medium", "hard"}
 SCORERS = {"exact", "numeric", "mc", "contains", "json", "code_exec", "needle", "instruction",
-           "vision", "judge"}
+           "vision", "judge", "integrity"}
 BUCKETS = {"xs": (16, 64), "s": (65, 256), "m": (257, 1024), "l": (1025, 4096),
            "xl": (4097, 16384), "xxl": (16385, 65536)}
 
