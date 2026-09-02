@@ -10,6 +10,7 @@ import { Table } from '../widgets.js';
 export interface RunsProps {
   rows: IndexRow[];
   keyMetrics: string[];
+  sortByMetric: boolean;
   filter: string;
   filtering: boolean;
   selected: number;
@@ -20,6 +21,7 @@ export interface RunsProps {
 export function RunsView({
   rows,
   keyMetrics,
+  sortByMetric,
   filter,
   filtering,
   selected,
@@ -33,6 +35,12 @@ export function RunsView({
         <Text color={filtering ? COLORS.counter : COLORS.ink}>
           {filter || (filtering ? '' : '(press / to filter)')}
           {filtering ? '▌' : ''}
+        </Text>
+        <Text color={COLORS.muted}>
+          {'  ·  '}
+          {sortByMetric
+            ? 'sorted by headline metric (s to change)'
+            : 'press s to sort by headline metric'}
         </Text>
       </Text>
       <Table

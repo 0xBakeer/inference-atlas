@@ -22,12 +22,13 @@ anywhere; **`q`** quits.
 
 ## Target and runs views
 
-| Key       | Does                                                                                         |
-| --------- | -------------------------------------------------------------------------------------------- |
-| `j` / `↓` | next row                                                                                     |
-| `k` / `↑` | previous row                                                                                 |
-| `enter`   | open the selected run                                                                        |
-| `g`       | open the selected run (the recipe needs the full record, so press `g` again once it is open) |
+| Key       | Does                                                                                                                                                                                                           |
+| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `j` / `↓` | next row                                                                                                                                                                                                       |
+| `k` / `↑` | previous row                                                                                                                                                                                                   |
+| `enter`   | open the selected run                                                                                                                                                                                          |
+| `g`       | open the selected run (the recipe needs the full record, so press `g` again once it is open)                                                                                                                   |
+| `s`       | toggle sorting by headline metric (best first). In the target view it switches between the fit-first ranking and a pure performance ranking; in the runs view between the catalogue order and headline metric. |
 
 ## Filtering (runs view)
 

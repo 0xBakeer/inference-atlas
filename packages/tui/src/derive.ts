@@ -139,11 +139,26 @@ export const FIT_ORDER: Record<FitLevel, number> = {
   'wrong-platform': 5,
 };
 
+/** Pure performance ranking: best headline metric first, rows without one last. */
+export function metricRank<T extends { row: IndexRow }>(rows: T[], keyMetrics: string[]): T[] {
+  return [...rows].sort((a, b) => {
+    const am = headlineMetric(a.row, keyMetrics);
+    const bm = headlineMetric(b.row, keyMetrics);
+    if (!am && !bm) return 0;
+    if (!am) return 1;
+    if (!bm) return -1;
+    const dir = (m: NonNullable<typeof am>) => (m.def.better === 'higher' ? -m.value : m.value);
+    return dir(am) - dir(bm);
+  });
+}
+
 /** Best runs for the home screen: fit first, then the site's headline metric. */
 export function rankForHome<T extends { row: IndexRow; fitLevel: FitLevel }>(
   rows: T[],
   keyMetrics: string[],
+  mode: 'fit' | 'metric' = 'fit',
 ): T[] {
+  if (mode === 'metric') return metricRank(rows, keyMetrics);
   return [...rows].sort((a, b) => {
     const byFit = FIT_ORDER[a.fitLevel] - FIT_ORDER[b.fitLevel];
     if (byFit !== 0) return byFit;

@@ -16,6 +16,7 @@ export interface HomeProps {
   target: Target;
   ranked: Array<{ row: IndexRow; fitLevel: FitLevel; fitLabel: string }>;
   keyMetrics: string[];
+  sortByMetric: boolean;
   selected: number;
   height: number;
   width: number;
@@ -34,6 +35,7 @@ export function HomeView({
   target,
   ranked,
   keyMetrics,
+  sortByMetric,
   selected,
   height,
   width,
@@ -61,7 +63,10 @@ export function HomeView({
         )}
       </Panel>
       {status ? <Text color={COLORS.ok}>{status}</Text> : null}
-      <Panel title={`Worth running on ${targetLabel(target)}`} grow>
+      <Panel
+        title={`Worth running on ${targetLabel(target)}  ·  sorted by ${sortByMetric ? 'headline metric' : 'fit'}  ·  press s to change`}
+        grow
+      >
         <Table
           height={height}
           width={width}
