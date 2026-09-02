@@ -100,8 +100,15 @@ def build_packet(
     hw_count: int = 1,
     repo: str | None = None,
     output_dir: str = "results",
+    request: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    """Build the packet for one cell, filling defaults from the registries."""
+    """Build the packet for one cell, filling defaults from the registries.
+
+    ``request`` is the packet's ``request`` block (SPEC §7): sampling and transport options
+    applied to every request of every workload — ``chat_template_kwargs`` is how a thinking
+    model gets its thinking switched off for an eval whose output budget would otherwise be
+    spent on reasoning tokens. Keys are validated against ``RequestOptions``.
+    """
     meta = registry.engine_meta(engine_id) or {}
     model = registry.model(model_id) or {}
     quant = registry.quant(model_id, quant_id) or {}
@@ -169,6 +176,7 @@ def build_packet(
         },
         "args": dict(args or {}),
         "workloads": list(workloads),
+        "request": _request_block(request),
         "output_dir": output_dir,
         "branch": (
             f"{branch_prefix}{engine_id}-{model_slug(model_id)}-"
@@ -180,6 +188,19 @@ def build_packet(
         ),
         "agent_rules": AGENT_RULES,
     }
+
+
+def _request_block(request: dict[str, Any] | None) -> dict[str, Any]:
+    """Validate the packet's ``request`` block and return it as JSON (defaults included)."""
+    from .spec import RequestOptions
+
+    known = set(RequestOptions.model_fields)
+    unknown = sorted(set(request or {}) - known)
+    if unknown:
+        raise ValueError(
+            f"unknown request option(s) {', '.join(unknown)}; known: {', '.join(sorted(known))}"
+        )
+    return RequestOptions(**(request or {})).model_dump(mode="json", exclude_none=False)
 
 
 def write_packet(packet: dict[str, Any], path: Path | str) -> Path:

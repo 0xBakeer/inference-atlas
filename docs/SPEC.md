@@ -274,7 +274,7 @@ GGUF quants: `"files": ["Qwen3.8-27B-Q5_K_M.gguf"]`, `"engines": ["llamacpp","ol
     "repeat": 3,
   },
   "sweep": null, // sweep kind: { "concurrency": [1,2,4,8,16,32] }
-  "eval": null, // eval kind: { "suite": "math", "scorer": "exact|mc|code-exec|json|judge|contains|needle", "pass_threshold": ... }
+  "eval": null, // eval kind: { "suite": "math", "scorer": "exact|mc|code-exec|json|judge|contains|needle|integrity", "pass_threshold": ... }
   "metrics_required": ["ttft_ms", "tpot_ms", "output_tok_s", "prefill_tok_s", "success_rate"],
   "immutable": true,
   "created": "2026-08-23",
@@ -455,7 +455,9 @@ or `--base-url` to attach to a running one), `run --spec`, `validate`, `submit`,
 Adapters per engine under `atlas_bench/engines/`. Workload runners under `atlas_bench/workloads/`:
 `serving`, `sweep`, `prefill`, `longctx`, `eval`. Scorers under `atlas_bench/scorers/`:
 `exact`, `numeric`, `mc`, `contains`, `json`, `code_exec` (subprocess, timeout, no network),
-`needle`, `vision` (same scorers; image attached as base64 data URL). Telemetry sampler:
+`needle`, `vision` (same scorers; image attached as base64 data URL), `integrity` (long-output
+token integrity: masks literals and comments, reports spliced identifiers and numbers).
+Telemetry sampler:
 `nvidia-smi --query-gpu` loop, macOS `powermetrics` if available (sudo) else `ioreg`/none, `psutil`.
 All talk goes through the OpenAI-compatible chat/completions streaming API (Ollama via its
 `/v1`). Streaming is how TTFT/ITL are measured (first token timestamp vs request start).

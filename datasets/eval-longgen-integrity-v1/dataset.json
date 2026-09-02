@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "id": "eval-longgen-integrity-v1",
+  "name": "Long-generation token integrity v1",
+  "kind": "eval",
+  "description": "36 long-output code-generation items over synthetic JavaScript ES-module projects of 20-25k characters. Each asks for one complete new module of 150 to 290 lines that imports at least six named exports from the project and contains a hand-written numeric table (16+ rows of four small integers) plus a function that calls an imported function with three numbers from each row: the array-slot and last-positional-argument shapes that carry most spliced tokens in the generations this workload was built from. The item is correct when the generation contains no spliced token — an identifier or number welded together from two fragments, which is what a decode-path defect looks like in a long output. Correctness of the code is deliberately not scored; the other eval suites measure that.",
+  "licence": "MIT",
+  "created": "2026-09-02",
+  "files": [
+    "items.jsonl"
+  ],
+  "count": 36,
+  "generator": "datasets/_gen/gen_eval_longgen_integrity.py",
+  "token_heuristic": "approx_tokens = ceil(sum(len(m.content) for m in messages) / 4)",
+  "provenance": "Synthetic, authored in this repository. No third-party text.",
+  "default_scorer": "integrity",
+  "scoring": {
+    "answer_extraction": [
+      "Drop everything inside <think>...</think> (and an unterminated leading <think> block).",
+      "Drop markdown code fences, keeping the fenced content.",
+      "If any line matches /^\\s*(?:final answer|answer)\\s*[:\\-]\\s*(.+)$/i, take the capture of the LAST such line and use only that.",
+      "Strip surrounding whitespace, matching quotes, and a single trailing '.' or '!'.",
+      "Scorers that need the untouched output (instruction, json) get the raw text as well; the instruction scorer always works on the raw output."
+    ],
+    "scorers": {
+      "integrity": "Long-output token integrity, not correctness. Mask strings, comments and regex literals in the generated code; build a definition set from meta.context_identifiers plus every name the output declares plus the JavaScript globals; report a splice when a digit-initial token is not a valid numeric literal (`128Pin`), when an undefined identifier is a defined name — down to one letter — plus 2-6 lower-case letters (`carrier` + `hed`, `z` + `hed`), when a property name the file defines is welded to a tail (`ship.bobAmporton`), when an undefined bare word or dotted fragment sits between two numeric literals in a comma-separated list (`[6, visible, 0]`, `[2, 0, .src, 4]`), or when a non-ASCII character appears in code (`[2, 0, 惯, 4]`). A welded name that recurs counts once per generation. Correct = no splice; an undefined identifier that is not one of those shapes is an ordinary code error and is not counted."
+    },
+    "pass_rule": "One item is correct or incorrect; there is no partial credit. accuracy = correct / total. An item whose request failed (timeout, 5xx, context overflow) counts as incorrect AND is reported in scores.failures and metrics.requests_failed."
+  },
+  "categories": [
+    "models",
+    "systems",
+    "ui",
+    "utils"
+  ],
+  "difficulties": [
+    "easy",
+    "medium",
+    "hard"
+  ],
+  "counts": {
+    "by_category": {
+      "models": 9,
+      "systems": 9,
+      "ui": 9,
+      "utils": 9
+    },
+    "by_difficulty": {
+      "easy": 12,
+      "medium": 12,
+      "hard": 12
+    },
+    "by_scorer": {
+      "integrity": 36
+    }
+  },
+  "seed": 20260902,
+  "counts_by_target_output_tokens": {
+    "1200": 12,
+    "1800": 12,
+    "2400": 12
+  },
+  "notes": [
+    "This suite exists because every other eval here has short answers. A serving build that corrupts roughly one token in several thousand passes all of them, because the answer ends before the defect has room to appear. Only a long, mechanical, checkable output exposes it.",
+    "accuracy = share of generations with no spliced token. A model that writes wrong but well-formed code still scores 1.0 here; a model that writes perfect code with one `carrierhed` in it scores 0 for that item.",
+    "meta.context_identifiers is the definition set the scorer starts from: every identifier the generated project defines or exports, computed from the generated source. The scorer adds everything the model's own output declares plus the JavaScript globals before deciding an identifier is undefined.",
+    "An undefined identifier is NOT by itself a failure. Models invent helper names and forget to declare them, and that is an ordinary code error, not a decode defect. Only the three splice shapes count: a numeric literal with a word glued on, an identifier that is a known name plus 2-6 lowercase letters, and a bare word standing where a number belongs between two numeric literals.",
+    "difficulty orders the items by requested output length: easy ~1200 tokens, medium ~1800, hard ~2400, recorded exactly in meta.target_output_tokens and expressed to the model as a line range.",
+    "The generic answer-extraction step that keeps the last `Answer:` line is NOT applied to these rows. The output is a source file; a line inside it that begins `answer:` is code, and truncating to it would destroy the generation the scorer exists to inspect. <think> blocks and a surrounding code fence are still stripped.",
+    "A clean run proves less than it looks. At an observed rate of roughly one affected generation in five, 36 clean items is a plausible outcome for an affected build; report the run, do not conclude the defect is absent."
+  ]
+}

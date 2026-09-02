@@ -417,6 +417,16 @@ def packet(
     hardware: str | None = typer.Option(None, "--hardware"),
     workload: list[str] = typer.Option([], "--workload", help="Workload id (repeatable)."),
     arg: list[str] = typer.Option([], "--arg", help="Engine arg as key=value (repeatable)."),
+    request: list[str] = typer.Option(
+        [],
+        "--request",
+        help=(
+            "Request option as key=value (repeatable), applied to every request of every "
+            "workload: temperature, seed, max_tokens, timeout_s, extra_body, "
+            "chat_template_kwargs, reasoning_effort. Values are JSON when parseable, e.g. "
+            "--request 'chat_template_kwargs={\"thinking\": false}'."
+        ),
+    ),
     hw_count: int = typer.Option(1, "--hw-count"),
     repo_url: str | None = typer.Option(None, "--repo-url"),
     out: Path | None = typer.Option(None, "--out", help="Write the packet here instead of stdout."),
@@ -454,18 +464,23 @@ def packet(
             "quant_id": str(quant),
             "hardware_id": hardware or "",
         }
-    built = build_packet(
-        registry,
-        engine_id=parts["engine_id"],
-        engine_version=parts["engine_version"],
-        model_id=parts["model_id"],
-        quant_id=parts["quant_id"],
-        hardware_id=hardware or parts["hardware_id"] or None,
-        workloads=list(workload),
-        args=_parse_kv(arg),
-        hw_count=hw_count,
-        repo=repo_url,
-    )
+    try:
+        built = build_packet(
+            registry,
+            engine_id=parts["engine_id"],
+            engine_version=parts["engine_version"],
+            model_id=parts["model_id"],
+            quant_id=parts["quant_id"],
+            hardware_id=hardware or parts["hardware_id"] or None,
+            workloads=list(workload),
+            args=_parse_kv(arg),
+            hw_count=hw_count,
+            repo=repo_url,
+            request=_parse_kv(request),
+        )
+    except ValueError as exc:
+        error_console.print(f"[bold red]{exc}[/]")
+        raise typer.Exit(code=2) from exc
     if out:
         write_packet(built, out)
         console.print(f"wrote {out}")

@@ -159,6 +159,18 @@ SCORERS = {
     "spaces, commas and hyphens from both sides. Meant for retrieval, not phrasing.",
     "instruction": "Evaluate the rule DSL in `answer` against the RAW output. See "
     "eval-instruction-v1/dataset.json for the rule list.",
+    "integrity": "Long-output token integrity, not correctness. Mask strings, comments and "
+    "regex literals in the generated code; build a definition set from "
+    "meta.context_identifiers plus every name the output declares plus the JavaScript "
+    "globals; report a splice when a digit-initial token is not a valid numeric literal "
+    "(`128Pin`), when an undefined identifier is a defined name — down to one letter — "
+    "plus 2-6 lower-case letters (`carrier` + `hed`, `z` + `hed`), when a property name "
+    "the file defines is welded to a tail (`ship.bobAmporton`), when an undefined bare "
+    "word or dotted fragment sits between two numeric literals in a comma-separated list "
+    "(`[6, visible, 0]`, `[2, 0, .src, 4]`), or when a non-ASCII character appears in "
+    "code (`[2, 0, 惯, 4]`). A welded name that recurs counts once per generation. "
+    "Correct = no splice; an undefined identifier that is not one of those shapes is an "
+    "ordinary code error and is not counted.",
 }
 
 

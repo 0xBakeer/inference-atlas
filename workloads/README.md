@@ -54,41 +54,42 @@ were right.
 
 ## All workloads
 
-| id                                 | kind    | dataset                    | shape                                         |
-| ---------------------------------- | ------- | -------------------------- | --------------------------------------------- |
-| `serve-single-i256-o256-v1`        | serving | `prompts-mixed-v1`         | c1, n=50, in≈256, out=256                     |
-| `serve-short-c16-i128-o128-v1`     | serving | `prompts-mixed-v1`         | c16, n=320, in≈128, out=128                   |
-| `serve-chat-c8-i1k-o256-v1`        | serving | `prompts-mixed-v1`         | c8, n=200, in≈1k, out=256                     |
-| `serve-chat-c32-i1k-o256-v1`       | serving | `prompts-mixed-v1`         | c32, n=400, in≈1k, out=256                    |
-| `serve-chat-c64-i1k-o256-v1`       | serving | `prompts-mixed-v1`         | c64, n=640, in≈1k, out=256                    |
-| `serve-long-c4-i8k-o512-v1`        | serving | `prompts-mixed-v1`         | c4, n=40, in≈8k, out=512                      |
-| `serve-code-c8-i2k-o1k-v1`         | serving | `prompts-code-v1`          | c8, n=160, in≈2k, out=1k                      |
-| `serve-prefix-c16-v1`              | serving | `prompts-shared-prefix-v1` | c16, n=200, grouped by prefix                 |
-| `sweep-parallel-1-32-i512-o256-v1` | sweep   | `prompts-mixed-v1`         | concurrency 1,2,4,8,16,32                     |
-| `sweep-parallel-1-64-i1k-o256-v1`  | sweep   | `prompts-mixed-v1`         | concurrency 1,2,4,8,16,32,64                  |
-| `prefill-8k-v1`                    | prefill | `haystack-v1`              | c1, n=10, in=8k, out=16                       |
-| `prefill-32k-v1`                   | prefill | `haystack-v1`              | c1, n=10, in=32k, out=16                      |
-| `prefill-128k-v1`                  | prefill | `haystack-v1`              | c1, n=10, in=128k, out=16                     |
-| `longctx-depth-sweep-v1`           | longctx | `haystack-v1`              | input_tokens 1k…256k, out=256, needle checked |
-| `longctx-needle-32k-v1`            | longctx | `eval-longctx-v1`          | c1, n=6, in=32k, needle scored                |
-| `longctx-needle-128k-v1`           | longctx | `eval-longctx-v1`          | c1, n=6, in=128k, needle scored               |
-| `eval-math-v1`                     | eval    | `eval-math-v1`             | `numeric`, max_out 4096                       |
-| `eval-reasoning-v1`                | eval    | `eval-reasoning-v1`        | `exact` (rows may be `mc`), max_out 2048      |
-| `eval-code-v1`                     | eval    | `eval-code-v1`             | `code-exec`, max_out 4096                     |
-| `eval-knowledge-v1`                | eval    | `eval-knowledge-v1`        | `mc`, max_out 2048                            |
-| `eval-instruction-v1`              | eval    | `eval-instruction-v1`      | `instruction`, max_out 2048                   |
-| `eval-json-v1`                     | eval    | `eval-json-v1`             | `json`, max_out 2048                          |
-| `eval-tools-v1`                    | eval    | `eval-tools-v1`            | `json` on `tool_calls[0]`, max_out 2048       |
-| `eval-vision-v1`                   | eval    | `eval-vision-v1`           | `vision`, max_out 2048                        |
-| `eval-multilingual-v1`             | eval    | `eval-multilingual-v1`     | `contains`, max_out 2048                      |
-| `eval-longctx-v1`                  | eval    | `eval-longctx-v1`          | `needle`, max_out 1024, c1                    |
-| `eval-format-v1`                   | eval    | `eval-format-v1`           | `exact`, max_out 256                          |
-| `eval-math-v2`                     | eval    | `eval-math-v2`             | `numeric`, max_out 4096, supersedes v1        |
-| `eval-reasoning-v2`                | eval    | `eval-reasoning-v2`        | mixed scorers, max_out 4096, supersedes v1    |
-| `eval-knowledge-v2`                | eval    | `eval-knowledge-v2`        | `mc`, max_out 1024, supersedes v1             |
-| `eval-science-v2`                  | eval    | `eval-science-v2`          | `numeric`, max_out 4096, new suite            |
-| `eval-commonsense-v2`              | eval    | `eval-commonsense-v2`      | mixed scorers, max_out 2048, new suite        |
-| `eval-security-v2`                 | eval    | `eval-security-v2`         | mixed scorers, max_out 4096, new suite        |
+| id                                 | kind    | dataset                     | shape                                         |
+| ---------------------------------- | ------- | --------------------------- | --------------------------------------------- |
+| `serve-single-i256-o256-v1`        | serving | `prompts-mixed-v1`          | c1, n=50, in≈256, out=256                     |
+| `serve-short-c16-i128-o128-v1`     | serving | `prompts-mixed-v1`          | c16, n=320, in≈128, out=128                   |
+| `serve-chat-c8-i1k-o256-v1`        | serving | `prompts-mixed-v1`          | c8, n=200, in≈1k, out=256                     |
+| `serve-chat-c32-i1k-o256-v1`       | serving | `prompts-mixed-v1`          | c32, n=400, in≈1k, out=256                    |
+| `serve-chat-c64-i1k-o256-v1`       | serving | `prompts-mixed-v1`          | c64, n=640, in≈1k, out=256                    |
+| `serve-long-c4-i8k-o512-v1`        | serving | `prompts-mixed-v1`          | c4, n=40, in≈8k, out=512                      |
+| `serve-code-c8-i2k-o1k-v1`         | serving | `prompts-code-v1`           | c8, n=160, in≈2k, out=1k                      |
+| `serve-prefix-c16-v1`              | serving | `prompts-shared-prefix-v1`  | c16, n=200, grouped by prefix                 |
+| `sweep-parallel-1-32-i512-o256-v1` | sweep   | `prompts-mixed-v1`          | concurrency 1,2,4,8,16,32                     |
+| `sweep-parallel-1-64-i1k-o256-v1`  | sweep   | `prompts-mixed-v1`          | concurrency 1,2,4,8,16,32,64                  |
+| `prefill-8k-v1`                    | prefill | `haystack-v1`               | c1, n=10, in=8k, out=16                       |
+| `prefill-32k-v1`                   | prefill | `haystack-v1`               | c1, n=10, in=32k, out=16                      |
+| `prefill-128k-v1`                  | prefill | `haystack-v1`               | c1, n=10, in=128k, out=16                     |
+| `longctx-depth-sweep-v1`           | longctx | `haystack-v1`               | input_tokens 1k…256k, out=256, needle checked |
+| `longctx-needle-32k-v1`            | longctx | `eval-longctx-v1`           | c1, n=6, in=32k, needle scored                |
+| `longctx-needle-128k-v1`           | longctx | `eval-longctx-v1`           | c1, n=6, in=128k, needle scored               |
+| `eval-math-v1`                     | eval    | `eval-math-v1`              | `numeric`, max_out 4096                       |
+| `eval-reasoning-v1`                | eval    | `eval-reasoning-v1`         | `exact` (rows may be `mc`), max_out 2048      |
+| `eval-code-v1`                     | eval    | `eval-code-v1`              | `code-exec`, max_out 4096                     |
+| `eval-knowledge-v1`                | eval    | `eval-knowledge-v1`         | `mc`, max_out 2048                            |
+| `eval-instruction-v1`              | eval    | `eval-instruction-v1`       | `instruction`, max_out 2048                   |
+| `eval-json-v1`                     | eval    | `eval-json-v1`              | `json`, max_out 2048                          |
+| `eval-tools-v1`                    | eval    | `eval-tools-v1`             | `json` on `tool_calls[0]`, max_out 2048       |
+| `eval-vision-v1`                   | eval    | `eval-vision-v1`            | `vision`, max_out 2048                        |
+| `eval-multilingual-v1`             | eval    | `eval-multilingual-v1`      | `contains`, max_out 2048                      |
+| `eval-longctx-v1`                  | eval    | `eval-longctx-v1`           | `needle`, max_out 1024, c1                    |
+| `eval-format-v1`                   | eval    | `eval-format-v1`            | `exact`, max_out 256                          |
+| `eval-math-v2`                     | eval    | `eval-math-v2`              | `numeric`, max_out 4096, supersedes v1        |
+| `eval-reasoning-v2`                | eval    | `eval-reasoning-v2`         | mixed scorers, max_out 4096, supersedes v1    |
+| `eval-knowledge-v2`                | eval    | `eval-knowledge-v2`         | `mc`, max_out 1024, supersedes v1             |
+| `eval-science-v2`                  | eval    | `eval-science-v2`           | `numeric`, max_out 4096, new suite            |
+| `eval-commonsense-v2`              | eval    | `eval-commonsense-v2`       | mixed scorers, max_out 2048, new suite        |
+| `eval-security-v2`                 | eval    | `eval-security-v2`          | mixed scorers, max_out 4096, new suite        |
+| `eval-longgen-integrity-v1`        | eval    | `eval-longgen-integrity-v1` | `integrity`, max_out 3000, c1, n=36           |
 
 ## Conventions a runner must honour
 
@@ -113,7 +114,14 @@ were right.
   omitted, because "did not fit" is a result.
 - **Eval concurrency does not change the score**, only the wall clock. It is 4
   everywhere except `eval-longctx-v1`, which runs at 1 to keep KV cache pressure
-  honest.
+  honest, and `eval-longgen-integrity-v1`, where concurrency 1 is part of the
+  configuration under test: batching changes the scheduler, the KV-cache layout and
+  the attention path, so a run at another concurrency measures something else.
+- **`eval-longgen-integrity-v1` scores token integrity, not correctness.** `accuracy`
+  is the share of 150-to-290-line generations that came back with no spliced token. A
+  clean run of 36 is not proof of absence: at a one-in-five per-generation rate a clean
+  pass is a plausible outcome for an affected build, so report the run rather than the
+  absence.
 - **`params.reasoning: "default"`** means "leave the engine's own default alone".
   Whatever it was, record it in the result's `args` — reasoning settings move eval
   scores and latency more than most flags.
