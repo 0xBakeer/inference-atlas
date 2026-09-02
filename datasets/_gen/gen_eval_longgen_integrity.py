@@ -604,6 +604,13 @@ It must define and export exactly these, and nothing else:
 
 {exports}
 
+It must also contain, not exported:
+
+- a constant `{table}`: an array literal of at least 16 rows, each row a four-element
+  array of small integer literals, written out in full (not produced by a loop);
+- a function that walks `{table}` and, for each row, calls one of the imported
+  functions with three of the row's numbers as separate positional arguments.
+
 Rules:
 
 - Plain ES module syntax. No third-party packages, no TypeScript, no build step.
@@ -648,6 +655,11 @@ def build_item(index: int, area: str, difficulty: str, target_tokens: int,
 
     module_name = mint.func()
     module_path = f"src/{area}/{module_name}.js"
+    # A hand-written numeric table plus a call site fed from it. In the generations that
+    # motivated this workload, most spliced tokens sat in exactly these two shapes: a
+    # number slot inside a repeated array literal, and the last positional argument of a
+    # call made from a row of one. A module with neither shape can be clean by luck.
+    table_name = mint.const()
     export_pool = sorted({name for _, names in exports for name in names})
     export_lines, export_names = _required_exports(
         rng, mint, export_pool, rng.randint(3, 6)
@@ -658,6 +670,7 @@ def build_item(index: int, area: str, difficulty: str, target_tokens: int,
         min_lines=min_lines,
         max_lines=max_lines,
         exports="\n".join(export_lines),
+        table=table_name,
     )
 
     # Computed from the finished text, never typed: every name the generator minted
@@ -683,6 +696,7 @@ def build_item(index: int, area: str, difficulty: str, target_tokens: int,
             "min_lines": min_lines,
             "max_lines": max_lines,
             "required_exports": export_names,
+            "table_constant": table_name,
             "context_files": [path for path, _ in modules],
             "context_chars": len(context),
             "approx_prompt_tokens": L.approx_tokens_from_chars(len(prompt)),
@@ -722,7 +736,11 @@ def main() -> None:
             "Long-generation token integrity v1",
             "36 long-output code-generation items over synthetic JavaScript ES-module "
             "projects of 20-25k characters. Each asks for one complete new module of 150 "
-            "to 290 lines that imports at least six named exports from the project. The "
+            "to 290 lines that imports at least six named exports from the project and "
+            "contains a hand-written numeric table (16+ rows of four small integers) plus "
+            "a function that calls an imported function with three numbers from each row: "
+            "the array-slot and last-positional-argument shapes that carry most spliced "
+            "tokens in the generations this workload was built from. The "
             "item is correct when the generation contains no spliced token — an identifier "
             "or number welded together from two fragments, which is what a decode-path "
             "defect looks like in a long output. Correctness of the code is deliberately "
