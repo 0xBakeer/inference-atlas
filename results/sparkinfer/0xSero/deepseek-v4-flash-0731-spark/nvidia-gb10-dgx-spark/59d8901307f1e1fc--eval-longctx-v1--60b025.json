@@ -1,13 +1,14 @@
 {
   "schema_version": 1,
-  "run_id": "67dc1afb8c53d91d--eval-longctx-v1--60b025",
-  "config_id": "67dc1afb8c53d91d",
+  "run_id": "59d8901307f1e1fc--eval-longctx-v1--60b025",
+  "config_id": "59d8901307f1e1fc",
   "cell_id": "6c58eafe9bc8",
   "workload_id": "eval-longctx-v1",
   "kind": "eval",
   "engine": {
     "id": "sparkinfer",
     "version": "960652b",
+    "build": "ghcr.io/0xsero/deepseek-v4-flash-0731-spark-sparkinfer@sha256:2e077489a83a0360952828051fe7f7a32c1801e5ce8436d85f7267583d614ff4",
     "commit": null,
     "container": "ghcr.io/0xsero/deepseek-v4-flash-0731-spark-sparkinfer",
     "install_method": "docker"
@@ -61,7 +62,7 @@
     "ablate": true,
     "long-prefill-token-threshold": 0
   },
-  "args_canonical": "@dtype=auto;@quant=exl3-3.0bpw;ablate=true;gpu-memory-utilization=0.95;long-prefill-token-threshold=0;max-model-len=262144;max-num-seqs=4",
+  "args_canonical": "@build=ghcr.io/0xsero/deepseek-v4-flash-0731-spark-sparkinfer@sha256:2e077489a83a0360952828051fe7f7a32c1801e5ce8436d85f7267583d614ff4;@dtype=auto;@quant=exl3-3.0bpw;ablate=true;gpu-memory-utilization=0.95;long-prefill-token-threshold=0;max-model-len=262144;max-num-seqs=4",
   "serve_command": null,
   "workload": {
     "id": "eval-longctx-v1",
@@ -1172,6 +1173,10 @@
     {
       "severity": "info",
       "text": "SparkInfer streams its thought block as delta.reasoning rather than delta.reasoning_content. A harness that reads only the two common spellings records every streaming request on this stack as an empty answer; atlas-bench counts all three since 2026-08-25."
+    },
+    {
+      "severity": "warn",
+      "text": "Long generations from this cell occasionally contain one spliced token: an identifier or number with a stray fragment glued on (`carrierhed`, `groupipse`, `128Pin`) or a number replaced by a bare word (`[6, visible, 0]`). Measured at roughly one bad token per 8,000 output tokens on 24 fixed ~1,600-token JavaScript prompts at temperature 0 (20 of 104 generations hit; same image digest, 384k-context single-sequence profile), and about one per 1,500 in a coding-agent session. The stray token is present in the sampled token_ids returned with `return_token_ids: true`, so it is upstream of the detokenizer, and decoding the ids locally with the model's tokenizer reproduces the server text exactly. Not changed by disabling speculative decoding, the refusal ablation, async scheduling, prefix caching, the FlashInfer sampler, or switching the indexer to native; the fp8 KV-cache A/B and the FlashInfer attention backend cannot be booted on this image (page-stride check 37376 < 37440; missing sparse MLA decode API). The short evals here do not see it because their outputs are short; anything that consumes 1k+ token outputs (code generation, agents) should expect it."
     }
   ],
   "derived": {
