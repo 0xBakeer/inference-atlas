@@ -15,21 +15,39 @@ wrong, which is exactly why it needs a mechanical check.
 The scorer is pure Python — no node, no subprocess — and never raises: anything it cannot
 parse is scored, not crashed on.
 
-Three splice shapes count, and only these three:
+Five splice shapes count, and only these five:
 
 ``numeric``
     a digit-initial token that is not a valid JavaScript numeric literal, e.g. ``128Pin``.
     ``0x1F``, ``0b101``, ``0o7``, ``1e-5``, ``2.5e3`` and ``10n`` are literals and pass.
 
 ``identifier``
-    a used identifier that is not defined anywhere, where some proper prefix of at least
-    three characters *is* defined and the remainder is two to six lower-case letters.
-    ``carrier`` + ``hed``, ``dirAngle`` + ``orton``.
+    a used identifier that is not defined anywhere, where some proper prefix *is* defined
+    and the remainder is two to six lower-case letters. ``carrier`` + ``hed``,
+    ``dirAngle`` + ``orton``, and ``z`` + ``hed`` when ``z`` is a declared name: the stem
+    may be a single letter, because ``position.set(x, y, zhed)`` is the commonest shape
+    the failure takes in real output.
+
+``member``
+    the same weld on a property name: ``ship.bobAmporton`` where the file itself uses
+    ``bobAmp`` as a property or object key and never ``bobAmporton``. Property access is
+    otherwise not a use of a name (``holder.carrierhed`` with no ``carrier`` property in
+    sight is data, not a splice), which is why this is its own shape with its own
+    definition set.
 
 ``word-for-number``
-    an undefined bare identifier sitting directly between two numeric literals in a
-    comma-separated list: ``[6, visible, 0]``, ``f(1, visible, 2)``.
+    an undefined bare identifier — or a dotted fragment like ``.src`` — sitting directly
+    between two numeric literals in a comma-separated list: ``[6, visible, 0]``,
+    ``f(1, visible, 2)``, ``[2, 0, .src, 4]``.
 
+``non-ascii``
+    any non-ASCII character in code (strings, comments and regex literals are masked
+    first). ``[2, 0, 惯, 4]`` is a CJK token where a number belongs. JavaScript does allow
+    Unicode identifiers, so a project that names things in a non-Latin script should not
+    use this scorer; the workloads that do are English-prompted synthetic projects.
+
+A spliced identifier or property that recurs is counted once per generation: once the
+first ``zhed`` is in the context the model copies it, and five copies are one event.
 An undefined identifier that is not one of those shapes is **not** counted. Models invent
 helper names and forget to declare them all the time; that is an ordinary code error and
 charging it here would drown the signal this suite exists for.
@@ -115,6 +133,10 @@ _VALID_NUMBER_RE = re.compile(
 #: a wrongly decoded sub-word token looks like. ``carrierList`` is a name a person wrote,
 #: ``carrierhed`` is not.
 _SPLICE_TAIL_RE = re.compile(r"^[a-z]{2,6}$")
+
+#: A run of non-ASCII characters in (masked) code. The tokenizer only knows ASCII
+#: identifiers, so these would otherwise dissolve into single-character punctuation.
+_NON_ASCII_RE = re.compile(r"[^\x00-\x7f]+")
 
 
 class Splice:
@@ -444,8 +466,9 @@ def _tokenize(code: str) -> list[tuple[str, str, int]]:
     """``(kind, text, line)`` for every identifier, number and punctuation mark.
 
     ``kind`` is ``ident`` for a bare name, ``member`` for one that follows a ``.`` (a
-    property access is not a use of a name), ``num`` for anything digit-initial, and
-    ``punct`` for a single character of anything else.
+    property access is not a use of a name), ``num`` for anything digit-initial,
+    ``non-ascii`` for a run of characters outside ASCII, and ``punct`` for a single
+    character of anything else.
     """
     tokens: list[tuple[str, str, int]] = []
     index = 0
@@ -490,6 +513,13 @@ def _tokenize(code: str) -> list[tuple[str, str, int]]:
             index = cursor
             continue
 
+        run = _NON_ASCII_RE.match(code, index)
+        if run:
+            tokens.append(("non-ascii", run.group(0), line))
+            previous_kind, previous_text = "non-ascii", run.group(0)
+            index = run.end()
+            continue
+
         tokens.append(("punct", char, line))
         previous_kind, previous_text = "punct", char
         index += 1
@@ -499,6 +529,34 @@ def _tokenize(code: str) -> list[tuple[str, str, int]]:
 # ---------------------------------------------------------------------------------- rules
 
 
+def _member_names(tokens: list[tuple[str, str, int]]) -> tuple[set[str], set[str]]:
+    """``(used, defined)`` property names: every ``.name`` access or ``name:`` key the file
+    has, and the subset the file itself defines (an object key, or a ``.name = …``
+    assignment). A name that is only ever read is used, not defined."""
+    used: set[str] = set()
+    defined: set[str] = set()
+    for position, (kind, text, _line) in enumerate(tokens):
+        following = tokens[position + 1][1] if position + 1 < len(tokens) else ""
+        after = tokens[position + 2][1] if position + 2 < len(tokens) else ""
+        if kind == "member":
+            used.add(text)
+            if following == "=" and after != "=":
+                defined.add(text)
+        elif kind == "ident" and following == ":":
+            used.add(text)
+            defined.add(text)
+    return used, defined
+
+
+def _welded_prefix(text: str, known: set[str], min_stem: int = 1) -> str | None:
+    """The known name *text* was welded onto, if it is a known name plus a splice tail."""
+    for cut in range(len(text) - 2, min_stem - 1, -1):
+        prefix = text[:cut]
+        if prefix in known and _SPLICE_TAIL_RE.match(text[cut:]):
+            return prefix
+    return None
+
+
 def find_splices(code: str, defined: set[str]) -> list[Splice]:
     """Every splice in *code*, given the set of names that are legitimately defined.
 
@@ -506,15 +564,28 @@ def find_splices(code: str, defined: set[str]) -> list[Splice]:
     code (which is what :func:`score_integrity` does) costs a pass and changes nothing.
     """
     tokens = _tokenize(mask_literals(code))
+    members, member_defs = _member_names(tokens)
     splices: list[Splice] = []
-    seen: set[tuple[str, int]] = set()
+    seen: set[tuple[str, int | None]] = set()
 
     def record(kind: str, line: int, text: str, base: str) -> None:
-        key = (text, line)
+        # A welded name recurs once the model has copied it; count the name, not the copies.
+        key = (text, None if kind in ("identifier", "member") else line)
         if key in seen:
             return
         seen.add(key)
         splices.append(Splice(kind, line, text, base))
+
+    def number_slot(position: int) -> bool:
+        """Is token *position* the sole occupant of a ``, <num> , X , <num> ,`` slot?"""
+        before, after = position - 1, position + 1
+        if before >= 1 and tokens[before][1] == "." and tokens[before - 1][1] == ",":
+            before -= 1  # `, .src ,`
+        if before < 1 or after + 1 >= len(tokens):
+            return False
+        if tokens[before][1] != "," or tokens[after][1] != ",":
+            return False
+        return tokens[before - 1][0] == "num" and tokens[after + 1][0] == "num"
 
     for position, (kind, text, line) in enumerate(tokens):
         # (a) a digit-initial token that is not a valid numeric literal.
@@ -526,28 +597,38 @@ def find_splices(code: str, defined: set[str]) -> list[Splice]:
             record("numeric", line, text, digits.group(0) if digits else text)
             continue
 
+        # (e) anything outside ASCII is not a token this code could have meant.
+        if kind == "non-ascii":
+            record("non-ascii", line, text, "<ascii>")
+            continue
+
+        # (d) a property name welded from a property name the file actually uses.
+        if kind == "member":
+            if number_slot(position):
+                record("word-for-number", line, text, "<number>")
+                continue
+            if text in member_defs or text in BUILTINS:
+                continue
+            # Property names are short words (`has`, `set`, `add`); a one- or two-letter
+            # stem would accuse every one of them, so a member weld needs a real stem.
+            prefix = _welded_prefix(text, members - {text}, min_stem=3)
+            if prefix is not None:
+                record("member", line, text, prefix)
+            continue
+
         if kind != "ident" or text in defined or text in BUILTINS:
             continue
 
-        # (b) a defined name with a short run of lower-case letters welded onto it.
-        spliced = False
-        for cut in range(len(text) - 2, 2, -1):
-            prefix = text[:cut]
-            if prefix in defined and _SPLICE_TAIL_RE.match(text[cut:]):
-                record("identifier", line, text, prefix)
-                spliced = True
-                break
-        if spliced:
+        # (c) a bare word standing where a numeric literal belongs. Checked before the
+        # weld rule: `[20, 9, forms, 8]` is a word for a number, whatever `for` + `ms` says.
+        if number_slot(position):
+            record("word-for-number", line, text, "<number>")
             continue
 
-        # (c) a bare word standing where a numeric literal belongs.
-        if position < 2 or position + 2 >= len(tokens):
-            continue
-        if tokens[position - 1][1] != "," or tokens[position + 1][1] != ",":
-            continue
-        if tokens[position - 2][0] != "num" or tokens[position + 2][0] != "num":
-            continue
-        record("word-for-number", line, text, "<number>")
+        # (b) a defined name with a short run of lower-case letters welded onto it.
+        prefix = _welded_prefix(text, defined)
+        if prefix is not None:
+            record("identifier", line, text, prefix)
 
     splices.sort(key=lambda splice: (splice.line, splice.text))
     return splices

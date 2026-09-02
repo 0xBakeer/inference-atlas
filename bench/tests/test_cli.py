@@ -320,3 +320,56 @@ def test_restamp_dry_run_changes_nothing(atlas_repo: Path) -> None:
     )
     assert result.exit_code == 0, result.stdout
     assert path.exists() and path.read_text() == before
+
+
+def test_packet_request_options_land_in_the_request_block(atlas_repo: Path, tmp_path: Path) -> None:
+    """``packet --request`` fills the packet's ``request`` block, JSON values parsed."""
+    out = tmp_path / "packet.json"
+    result = runner.invoke(
+        app,
+        [
+            "packet",
+            "--cell",
+            "vllm@0.27.1/acme/test-model-1b/fp8/test-gpu-24gb",
+            "--workload",
+            "serve-test-c2-v1",
+            "--request",
+            'chat_template_kwargs={"thinking": false, "reasoning_effort": "low"}',
+            "--request",
+            "timeout_s=900",
+            "--registry-dir",
+            str(atlas_repo),
+            "--out",
+            str(out),
+        ],
+    )
+    assert result.exit_code == 0, result.output
+    packet = json.loads(out.read_text())
+    assert packet["request"]["chat_template_kwargs"] == {
+        "thinking": False,
+        "reasoning_effort": "low",
+    }
+    assert packet["request"]["timeout_s"] == 900
+    assert packet["request"]["temperature"] == 0.0  # defaults are written out, not implied
+
+
+def test_packet_rejects_an_unknown_request_option(atlas_repo: Path, tmp_path: Path) -> None:
+    """A typo in ``--request`` fails the packet, not the run an hour later."""
+    result = runner.invoke(
+        app,
+        [
+            "packet",
+            "--cell",
+            "vllm@0.27.1/acme/test-model-1b/fp8/test-gpu-24gb",
+            "--workload",
+            "serve-test-c2-v1",
+            "--request",
+            "chat_template_kwarg={}",
+            "--registry-dir",
+            str(atlas_repo),
+            "--out",
+            str(tmp_path / "packet.json"),
+        ],
+    )
+    assert result.exit_code == 2
+    assert "unknown request option" in result.output

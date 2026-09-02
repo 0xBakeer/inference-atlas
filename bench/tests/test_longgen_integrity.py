@@ -152,6 +152,49 @@ def test_real_splices_are_flagged(kind: str, code: str, token: str) -> None:
     assert "splice_count=" in (result.detail or "")
 
 
+#: Shapes the first version of the scorer missed, taken from real generations: a
+#: single-letter stem, a welded property name, a dotted fragment in a number slot, a CJK
+#: token in a number slot. Each is what the engine's own logprobs marked as a junk pick.
+SPLICED_V2 = (
+    ("identifier", "const z = 1;\nmesh.position.set(x, y, zhed);", "zhed"),
+    ("member", "const ship = { bobAmp: 0.1 };\nconst y = t * ship.bobAmporton;", "bobAmporton"),
+    ("word-for-number", "boxes.push([2, 0, .src, 4, 1, 2]);", "src"),
+    ("non-ascii", "boxes.push([2, 0, 惯, 4, 1, 2]);", "惯"),
+    ("non-ascii", "const s = { phase: 祭, bob: 1 };", "祭"),
+)
+
+
+@pytest.mark.parametrize(("kind", "code", "token"), SPLICED_V2, ids=[c[2] for c in SPLICED_V2])
+def test_v2_splice_shapes_are_flagged(kind: str, code: str, token: str) -> None:
+    result = _score(code)
+    assert not result.correct, f"{token} was not flagged"
+    assert token in result.predicted
+
+
+def test_a_copied_splice_counts_once() -> None:
+    """After the first `zhed` the model copies it; five copies are one event."""
+    code = "const z = 1;\n" + "\n".join(f"a{n}.set(x, y, zhed);" for n in range(5))
+    result = _score(code)
+    assert not result.correct
+    assert "splice_count=1 " in (result.detail or "")
+
+
+@pytest.mark.parametrize(
+    "code",
+    [
+        "const byColor = new Map();\nconst h = 2;\nif (!byColor.has(color)) byColor.set(color, h);",
+        "const holder = {};\nconst carrier = 1;\nconst tail = holder.carrierhed;",
+        "const ship = { bobAmp: 0.1, bobAmpMax: 1 };\nconst y = ship.bobAmpMax;",
+        "const v = [1, 2.5, 3e2, 0x10, 4];",
+        "const label = '惯';\n// 惯 祭\nconst plain = 1;",
+    ],
+)
+def test_short_property_names_and_masked_unicode_are_not_flagged(code: str) -> None:
+    """`has` is not `h` + `as`; a property the file never defines is data; literals mask."""
+    result = _score(code)
+    assert result.correct, f"{code!r} was flagged: {result.predicted}"
+
+
 CLEAN = """import { group, seed, carrier } from '../models/fleet.js';
 
 const arr = [1, 2, 3, 4];
@@ -266,7 +309,8 @@ def test_fenced_and_thinking_output_is_unwrapped() -> None:
 
 def test_predicted_is_capped_for_the_result_file() -> None:
     """``scores.items[].predicted`` is 500 characters in the schema; the list fits it."""
-    code = "\n".join(f"const v{n} = carrierhed{'' if n % 2 else 'x'} + {n};" for n in range(80))
+    # Numeric splices are counted per site (a welded name would be counted once).
+    code = "\n".join(f"const v{n} = {n}Pin + {n};" for n in range(80))
     result = _score(code)
     assert not result.correct
     assert len(result.predicted) <= 500

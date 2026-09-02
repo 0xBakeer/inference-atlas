@@ -74,6 +74,14 @@ spelling `served_name` is still accepted):
 }
 ```
 
+The `request` block applies to every request of every workload in the packet: `temperature`,
+`seed`, `max_tokens`, `stop`, `timeout_s`, `extra_body`, `chat_template_kwargs`,
+`reasoning_effort`. `atlas-bench packet --request key=value` fills it (values are JSON when
+parseable, repeatable). The one that matters most: a model that thinks by default keeps
+thinking through an eval unless the packet turns it off, and an eval with an output budget
+then scores its thought block, not its answer —
+`--request 'chat_template_kwargs={"thinking": false}'` is the vLLM/SGLang spelling.
+
 ```bash
 uv run atlas-bench run --spec task.json --base-url http://localhost:1234/v1 --out ../results
 ```
