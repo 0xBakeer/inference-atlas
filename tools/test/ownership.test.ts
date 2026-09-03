@@ -160,3 +160,82 @@ describe('flags and escapes', () => {
     expect(codes(outcome)).toContain('git-diff-failed');
   });
 });
+
+/**
+ * The identity map decides who is paid registry credit, so it lives under the same rule as
+ * a result file: you may claim your own addresses and nobody else's.
+ */
+describe('the identity map', () => {
+  const IDENTITIES = 'site/identities.json';
+
+  it('lets a contributor claim their own address', () => {
+    repo.write(IDENTITIES, {
+      schema_version: 1,
+      identities: [{ login: 'bob', emails: ['bob@example.com'], verified_by: [7] }],
+    });
+    repo.commit('identities: bob claims his commit address');
+    expect(codes(check({ author: 'bob' }))).toEqual([]);
+  });
+
+  it('matches the author login case-insensitively, the way GitHub does', () => {
+    repo.write(IDENTITIES, {
+      schema_version: 1,
+      identities: [{ login: 'BoB', emails: ['bob@example.com'], verified_by: [7] }],
+    });
+    repo.commit('identities: bob claims his commit address');
+    expect(codes(check({ author: 'bob' }))).toEqual([]);
+  });
+
+  it('refuses an entry that maps somebody else’s address', () => {
+    repo.write(IDENTITIES, {
+      schema_version: 1,
+      identities: [{ login: 'carol', emails: ['carol@example.com'], verified_by: [7] }],
+    });
+    repo.commit('identities: redirecting carol’s credit');
+    expect(codes(check({ author: 'bob' }))).toContain('identity-foreign');
+  });
+
+  it('refuses adding an address to somebody else’s entry', () => {
+    repo.write(IDENTITIES, {
+      schema_version: 1,
+      identities: [{ login: 'carol', emails: ['carol@example.com'], verified_by: [7] }],
+    });
+    repo.commit('identities: carol');
+    repo.git('checkout', '-q', 'main');
+    repo.git('merge', '-q', 'contribution');
+    repo.git('checkout', '-q', '-b', 'take-over');
+    repo.write(IDENTITIES, {
+      schema_version: 1,
+      identities: [
+        { login: 'carol', emails: ['carol@example.com', 'bob@example.com'], verified_by: [7] },
+      ],
+    });
+    repo.commit('identities: quietly adding my address to carol');
+    expect(codes(check({ author: 'bob' }))).toContain('identity-foreign');
+  });
+
+  it('refuses deleting somebody else’s entry', () => {
+    repo.write(IDENTITIES, {
+      schema_version: 1,
+      identities: [{ login: 'carol', emails: ['carol@example.com'], verified_by: [7] }],
+    });
+    repo.commit('identities: carol');
+    repo.git('checkout', '-q', 'main');
+    repo.git('merge', '-q', 'contribution');
+    repo.git('checkout', '-q', '-b', 'delete-carol');
+    repo.write(IDENTITIES, { schema_version: 1, identities: [] });
+    repo.commit('identities: removing carol');
+    expect(codes(check({ author: 'bob' }))).toContain('identity-foreign');
+  });
+
+  it('lets a maintainer seed the map with the override label', () => {
+    repo.write(IDENTITIES, {
+      schema_version: 1,
+      identities: [{ login: 'carol', emails: ['carol@example.com'], verified_by: [7] }],
+    });
+    repo.commit('identities: seeding the map');
+    const outcome = check({ author: 'bob', allowOverride: true });
+    expect(codes(outcome)).not.toContain('identity-foreign');
+    expect(codes(outcome, 'warn')).toContain('ownership-override');
+  });
+});

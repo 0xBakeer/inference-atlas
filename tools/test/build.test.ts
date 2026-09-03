@@ -501,3 +501,65 @@ describe('contributor ids for contributions merged from forks', () => {
     await expect(resolveContributorIds(join(out, 'no-such-dir'))).resolves.toBeUndefined();
   });
 });
+
+/**
+ * Registry credit. A registry file has no `provenance.github_login`, so who added it can
+ * only come from the commit — and until the identity map existed, only a GitHub noreply
+ * address said anything, which meant most contributors were paid nothing for widening the
+ * registry.
+ */
+describe('registry credit', () => {
+  const addHardware = (author: string, subject: string) => {
+    repo.write('hardware/test-device-1.json', {
+      schema_version: 1,
+      id: 'test-device-1',
+      name: 'Test Device 1',
+      vendor: 'other',
+      kind: 'gpu',
+      memory_gb: 24,
+    });
+    repo.commit(subject, author);
+  };
+
+  const creditFor = (id: string): string | undefined => {
+    const outcome = buildData({ root: repo.root, out });
+    expect(outcome.ok).toBe(true);
+    return read<Array<{ login: string; breakdown: Record<string, number> }>>('contributors.json')
+      .filter((c) => (c.breakdown.registry_hardware ?? 0) > 0)
+      .map((c) => c.login)
+      .find((login) => login.toLowerCase() === id.toLowerCase());
+  };
+
+  it('credits a noreply address without needing the map at all', () => {
+    repo.initGit('seed: registries');
+    addHardware('Zoe <9+zoe@users.noreply.github.com>', 'hardware: a test device (#51)');
+    expect(creditFor('zoe')).toBe('zoe');
+  });
+
+  it('credits an ordinary address once the map claims it', () => {
+    repo.write('site/identities.json', {
+      schema_version: 1,
+      identities: [{ login: 'Yara', emails: ['yara@example.com'], verified_by: [52] }],
+    });
+    repo.initGit('seed: registries');
+    addHardware('Yara <yara@example.com>', 'hardware: a test device (#52)');
+    expect(creditFor('Yara')).toBe('Yara');
+  });
+
+  it('credits nobody for an address the map does not know', () => {
+    repo.initGit('seed: registries');
+    addHardware('Xena <xena@example.com>', 'hardware: a test device (#53)');
+    expect(creditFor('xena')).toBeUndefined();
+  });
+
+  it('never lets the map override the login GitHub wrote into the address', () => {
+    repo.write('site/identities.json', {
+      schema_version: 1,
+      identities: [{ login: 'thief', emails: ['9+zoe@users.noreply.github.com'] }],
+    });
+    repo.initGit('seed: registries');
+    addHardware('Zoe <9+zoe@users.noreply.github.com>', 'hardware: a test device (#54)');
+    expect(creditFor('zoe')).toBe('zoe');
+    expect(creditFor('thief')).toBeUndefined();
+  });
+});

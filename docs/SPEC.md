@@ -402,11 +402,18 @@ On every PR:
 5. Plausibility: `output_tok_s_per_request <= memory_bandwidth_gbs / weight_gb * 1.5` (MoE uses active weights), `vram_peak_gb <= memory_gb`, non-negative latencies, `success_rate ∈ [0,1]`, `requests_ok + requests_failed == requests_total`.
 6. Duplicate `run_id` → fail. Same `cell_id+config_id+workload_id` with metric deviation > 25 % from the median of existing → warning + `needs-review` label comment.
 7. Resolve login → numeric user id via `api.github.com/users/<login>` (CI token) and write it into the file in a bot commit on the PR branch (or fail if the login does not exist).
+8. **Identity map ownership:** a PR that changes `site/identities.json` may only add, modify or remove the entry whose `login` equals the PR author. Registry credit is paid on that file, so editing somebody else's entry is editing who gets their points. (Same `maintainer-override` escape as rule 3.)
 
 On `main` build (`build-pages.yml`): `tools/build` stamps `provenance.commit` (the commit that
 added the file, from `git log --diff-filter=A --format=%H -- <path>`) and `provenance.pr`
 (parsed from that commit's message `(#123)`) into the compiled data — the raw files stay as
 the author committed them.
+
+Registry files (`hardware/`, `engines/`, `models/`, `workloads/`) carry no
+`provenance.github_login`, so their contributor comes from the author address of the commit
+that added them: GitHub's `…@users.noreply.github.com` form spells the login directly, and
+`site/identities.json` maps the ordinary addresses people actually commit with. An address in
+neither is credited to nobody. See decision 25.
 
 ## 6. Compiled data for the app (`tools/build` → `app/public/data/`)
 
@@ -692,3 +699,37 @@ or where reality disagreed with it. Each one is binding until superseded here.
     filename is the run id. Restamping is idempotent, refuses to replace a build already
     recorded unless forced, and never touches `cell_id`: a build is a property of the
     configuration, not of the cell the configuration sits in.
+
+25. **Registry credit resolves an address through a claimed identity, never through a
+    display name (2026-09-03).** A result file names its own contributor and validate checks
+    that name against the pull request author, so results are attributable by construction.
+    A registry file — a device, a model, a quant, a workload — has no such field: the only
+    identity in its history is the author address of the commit that added it. Only GitHub's
+    `…@users.noreply.github.com` form spells a login, and guessing one from a display name
+    would put somebody else's points on an account, so anything else was credited to nobody.
+
+    That was not a corner case. Of the five addresses that have added registry files to this
+    repository, one is a noreply address. The other four — 179 files between them, including
+    every piece of hardware, every model and every quant seeded by the maintainer — earned
+    nothing at all, and the first outside contributor to add a device did not appear on the
+    leaderboard at any position.
+
+    `site/identities.json` maps author address → login. Three properties keep it from
+    becoming the guess it replaces. The **noreply form always wins**, so a map entry can
+    never redirect an address GitHub has already spoken for. An **address belongs to exactly
+    one login**, checked across the whole file. And a **pull request may only touch the entry
+    for its own author** (§5.8), which makes the map self-service without making it a way to
+    take somebody else's credit — the same rule result files have always lived under, moved
+    from the file to the entry.
+
+    Entries carry `verified_by`: the pull requests whose author GitHub recorded as that
+    login and whose commits carried that address. `resolve-identities` proposes entries from
+    exactly that evidence — it reads the `(#123)` in each adding commit, asks the API who
+    opened it, and writes the pair down — so filling the map is mechanical rather than a
+    matter of recognising names. The build never makes that call: it reads the committed
+    file, which keeps the compiled data deterministic and offline.
+
+    Two things this deliberately does not do. It does not backfill `provenance` in result
+    files, which already have a better answer. And it does not credit an unclaimed address:
+    an unattributable commit stays unattributed, because crediting a plausible neighbour is
+    worse than crediting nobody.

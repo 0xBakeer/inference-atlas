@@ -26,6 +26,8 @@ import type {
   Workload,
 } from '@atlas/core';
 import type { Reporter } from './report.js';
+import type { IdentityMap } from './identities.js';
+import { IDENTITIES_PATH } from './identities.js';
 import { Schemas, schemaFor } from './schemas.js';
 
 export interface EngineEntry {
@@ -55,6 +57,8 @@ export interface Repo {
   datasets: Map<string, Dataset>;
   results: LoadedResult[];
   site: SiteConfig | null;
+  /** `site/identities.json`, when the repository keeps one. */
+  identities: IdentityMap | null;
   schemas: Schemas;
   /** Every `.json` file seen under the registry directories, whether or not it validated. */
   seen: string[];
@@ -406,6 +410,12 @@ export function loadRepo(root: string, reporter: Reporter, schemas?: Schemas): R
   const sitePath = join(root, 'site/config.json');
   if (existsSync(sitePath)) site = load<SiteConfig>(sitePath);
 
+  /* ---------------------------------------------------------------- identities */
+
+  let identities: IdentityMap | null = null;
+  const identitiesPath = join(root, IDENTITIES_PATH);
+  if (existsSync(identitiesPath)) identities = load<IdentityMap>(identitiesPath);
+
   /* -------------------------------------------------------------------- results */
 
   const results: LoadedResult[] = [];
@@ -415,7 +425,19 @@ export function loadRepo(root: string, reporter: Reporter, schemas?: Schemas): R
     results.push({ path: relPath(root, path), data });
   }
 
-  return { root, hardware, engines, models, workloads, datasets, results, site, schemas: sc, seen };
+  return {
+    root,
+    hardware,
+    engines,
+    models,
+    workloads,
+    datasets,
+    results,
+    site,
+    identities,
+    schemas: sc,
+    seen,
+  };
 }
 
 /** Every quant in the registry as a flat list — the enumeration gaps and stats both need. */
