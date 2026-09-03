@@ -12,12 +12,37 @@ import { ChartLines, Panel } from '../widgets.js';
 const LABEL_WIDTH = 28;
 const CELL_WIDTH = 3;
 
+/**
+ * Pack the numbered hardware key into as few lines as the width allows. One id per line
+ * reads fine for the handful of devices that carry runs, but the grid is drawn from the
+ * whole registry — twenty of them would push the grid itself off the top of the screen.
+ */
+export function legendLines(labels: string[], width: number): string[] {
+  if (labels.length === 0) return [];
+  const entries = labels.map((h, i) => `${i + 1} = ${h}`);
+  const cell = Math.max(...entries.map((e) => e.length)) + 2;
+  const perLine = Math.max(1, Math.floor(Math.max(width, cell) / cell));
+  const lines: string[] = [];
+  for (let i = 0; i < entries.length; i += perLine) {
+    lines.push(
+      entries
+        .slice(i, i + perLine)
+        .map((e) => e.padEnd(cell))
+        .join('')
+        .trimEnd(),
+    );
+  }
+  return lines;
+}
+
 export interface CoverageProps {
   grid: CoverageGrid;
   level: ColorLevel;
+  /** Terminal width available to the panel — decides how tightly the key packs. */
+  width: number;
 }
 
-export function CoverageView({ grid, level }: CoverageProps): React.JSX.Element {
+export function CoverageView({ grid, level, width }: CoverageProps): React.JSX.Element {
   const max = Math.max(1, ...grid.counts.flat());
   const colorFor = (count: number): string | null =>
     count === 0 ? null : ramp(HEAT_RAMP, 0.25 + 0.75 * (count / max));
@@ -47,9 +72,9 @@ export function CoverageView({ grid, level }: CoverageProps): React.JSX.Element 
         <ChartLines lines={lines} />
       </Panel>
       <Box flexDirection="column">
-        {grid.colLabels.map((h, i) => (
-          <Text key={h} color={COLORS.muted}>
-            {i + 1} = {h}
+        {legendLines(grid.colLabels, width).map((line) => (
+          <Text key={line} color={COLORS.muted}>
+            {line}
           </Text>
         ))}
         <Text color={COLORS.muted}>

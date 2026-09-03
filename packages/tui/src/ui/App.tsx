@@ -553,7 +553,7 @@ export function App({
             level={level}
           />
         ) : view === 'coverage' ? (
-          <CoverageView grid={coverage} level={level} />
+          <CoverageView grid={coverage} level={level} width={cols - 6} />
         ) : view === 'hardware' ? (
           <HardwareView
             rows={pickerRows}
