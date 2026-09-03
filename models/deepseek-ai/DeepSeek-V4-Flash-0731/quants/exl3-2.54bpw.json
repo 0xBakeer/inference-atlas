@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "id": "exl3-2.54bpw",
+  "model_id": "deepseek-ai/DeepSeek-V4-Flash-0731",
+  "format": "exl3",
+  "bits": 2.54,
+  "hf_id": "anoane/DeepSeek-V4-Flash-0731-exl3-2.54bpw",
+  "revision": "91cf8b7e3cde8833c291bd513590d3fced5e566f",
+  "size_gb": 98.2,
+  "engines": [
+    "exllamav3"
+  ],
+  "source": "community",
+  "calibration": "Per-layer uniform EXL3 trellis: one bit-width per layer chosen by measured usage-weighted quantization hardness (20 layers at K2, 23 at K3; expert bitrate 2.5349). The MTP draft head is quantized in place, so the pack serves the dspark drafter without a separate draft model.",
+  "links": {
+    "hf": "https://huggingface.co/anoane/DeepSeek-V4-Flash-0731-exl3-2.54bpw",
+    "recipe": "https://github.com/0xBakeer/deepseek-v4-flash-spark"
+  },
+  "notes": "The middle rung of a three-pack ladder (2.72 per-expert hybrid / 2.54 uniform / 2.32 uniform) sized for a single 96 GB card. Loads on stock exllamav3 in principle (uniform per-layer widths), but the quantizer's own serving notes target the anemone fork. The GB10 rows here were served by the recipe at https://github.com/0xBakeer/deepseek-v4-flash-spark (v0.1.0): exllamav3-anemone c6d2e3e with an aarch64 patch, TabbyAPI 4a4f9f4 with a unified-memory patch, a chat template ported 1:1 from DeepSeek's reference encoder (the pack ships a reconstructed chat_template.jinja that ignores thinking=false), and the served config - also published as the container image ghcr.io/0xbakeer/deepseek-v4-flash-spark. size_gb is the repository payload (98,244,745,467 bytes) including the 13 safetensors shards; the card's 'on disk' figure of 92 GB is GiB."
+}
