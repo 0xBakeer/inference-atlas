@@ -49,7 +49,8 @@ information.
 ## Choosing a box
 
 Press **`b`**. The list is every hardware entry in the registry, the detected one first and
-marked. `+` / `-` set how many devices. `enter` selects.
+marked. `+` / `-` set how many devices. `enter` selects — and drops you back on the target
+view, with everything re-ranked against the box you just chose.
 
 Your choice is written to `~/.config/inference-atlas/config.toml`:
 

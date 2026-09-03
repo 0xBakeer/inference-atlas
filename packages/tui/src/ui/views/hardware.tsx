@@ -86,6 +86,9 @@ export function HardwareView({
         <Panel title="Where it goes">
           <Text color={COLORS.muted}>{shortUrl(pending.url)}</Text>
         </Panel>
+        {status ? (
+          <Text color={status.startsWith('no browser') ? COLORS.warn : COLORS.ok}>{status}</Text>
+        ) : null}
       </Box>
     );
   }

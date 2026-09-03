@@ -88,6 +88,13 @@ the installed memory does not match what the registry expects. Just pick the rig
 Detection counts `nvidia-smi` lines. If some cards are hidden by `CUDA_VISIBLE_DEVICES`, or
 you are targeting a machine other than this one, set it by hand with `+`/`-` in the picker.
 
+### The `+` key adjusts the count but `enter` does not select
+
+Fixed in current versions. Some terminals — several WSL and ConPTY setups among them, and a
+few multiplexers — send a line feed for Enter where others send a carriage return, and the
+app used to recognise only the latter. Every Enter now works. If you are on an older build,
+`inference-atlas --hardware <id> --count <n>` sets the same thing from the command line.
+
 ### Every verdict says "wrong platform"
 
 Your target's platform does not match the engines you are looking at — a Metal engine
@@ -152,6 +159,8 @@ sudo apt install xclip        # X11
 sudo apt install wl-clipboard # Wayland
 ```
 
+Under WSL the app uses `clip.exe`, which is always there — nothing to install.
+
 Over ssh, OSC 52 needs your local terminal to permit clipboard writes — many do by default,
 some need it enabled.
 
@@ -175,6 +184,20 @@ Only `--repo` mode reads local files, and only after the shards are built:
 ```bash
 pnpm build:data && inference-atlas --repo .
 ```
+
+## Adding your box to the registry
+
+### `enter` / `y` on "not listed?" does nothing
+
+Fixed in current versions. Confirming opens your browser at a pre-filled issue form, and on
+a shell with no browser it can reach — WSL without `wslu`, a headless server, a container —
+the failure was invisible.
+
+The app now tries `wslview` and `powershell.exe Start-Process` on WSL, then `$BROWSER`,
+`xdg-open`, `gio open` and `sensible-browser`. If none of them works it says so, puts the
+link on your clipboard, and writes it to
+`<recipes dir>/hardware-request-<id>.txt` — open that from any machine and submit the form
+there. Nothing is ever sent without you submitting it yourself.
 
 ## Starting over
 
