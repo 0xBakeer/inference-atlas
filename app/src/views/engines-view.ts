@@ -119,7 +119,9 @@ export class AtlasEnginesView extends ViewElement {
     const runs = store.index.value
       .filter((r) => r.engine.id === id)
       .sort((a, b) =>
-        (b.provenance.submitted_at ?? '').localeCompare(a.provenance.submitted_at ?? ''),
+        (b.provenance.submitted_at ?? b.provenance.started_at ?? '').localeCompare(
+          a.provenance.submitted_at ?? a.provenance.started_at ?? '',
+        ),
       );
     const { p, c } = this.covOf(id);
     const versions = e.versions;

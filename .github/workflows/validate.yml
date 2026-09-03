@@ -192,7 +192,9 @@ jobs:
         run: |
           BASE="origin/${{ github.event.pull_request.base.ref }}"
           git fetch --no-tags origin +refs/heads/${{ github.event.pull_request.base.ref }}:refs/remotes/origin/${{ github.event.pull_request.base.ref }}
-          CHANGED=$(git diff --name-only --diff-filter=AM "$BASE"...HEAD -- results/ | tr '\n' ' ')
+          # --no-renames: a row rewritten in the same pull request that drops a sibling can
+          # look like a rename to git, and a rename is neither A nor M.
+          CHANGED=$(git diff --name-only --no-renames --diff-filter=AM "$BASE"...HEAD -- results/ | tr '\n' ' ')
           if [ -z "$CHANGED" ]; then echo "no result files changed"; exit 0; fi
           pnpm --filter @atlas/tools exec tsx src/resolve-user.ts --changed $CHANGED
 

@@ -369,6 +369,7 @@ describe('determinism and provenance', () => {
   it('stamps the commit and pull request number from git history', () => {
     repo.initGit('seed: registries');
     const carol = makeResult(repo, { login: 'carol', startedAt: '2026-08-05T10:00:00Z' });
+    carol.provenance.submitted_at = null; // what atlas-bench writes
     const path = repo.writeResult(carol);
     repo.commit('results: carol on a 4090 (#42)');
     const head = repo.git('rev-parse', 'HEAD').trim();
@@ -382,17 +383,36 @@ describe('determinism and provenance', () => {
     expect(compiled.provenance.commit).toBe(head);
     expect(compiled.provenance.commit_short).toBe(head.slice(0, 7));
     expect(compiled.provenance.pr).toBe(42);
-    expect(typeof compiled.provenance.merged_at).toBe('string');
+    expect(compiled.provenance.merged_at).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/);
+    // A submitted_at the contributor left null is the adding commit's date, so the
+    // timeline and the scoring order have something to sort on.
+    expect(compiled.provenance.submitted_at).toBe(compiled.provenance.merged_at);
 
     // The raw file is never rewritten: the stamp exists only in the compiled copy.
     const raw = repo.read<{ provenance: Record<string, unknown> }>(path);
     expect(raw.provenance.commit).toBeNull();
     expect(raw.provenance.pr).toBeNull();
+    expect(raw.provenance.submitted_at ?? null).toBeNull();
 
     const row = read<BuiltIndexRow[]>('index.json').find((r) => r.run_id === carol.run_id)!;
     expect(row.provenance.commit).toBe(head);
     expect(row.provenance.pr).toBe(42);
+    expect(row.provenance.submitted_at).toBe(compiled.provenance.merged_at);
     expect(read<{ git: boolean }>('manifest.json').git).toBe(true);
+  });
+
+  it('keeps a submitted_at the contributor wrote', () => {
+    repo.initGit('seed: registries');
+    const erin = makeResult(repo, { login: 'erin', startedAt: '2026-08-07T10:00:00Z' });
+    erin.provenance.submitted_at = '2026-08-07T12:00:00Z';
+    const path = repo.writeResult(erin);
+    repo.commit('results: erin (#43)');
+    expect(buildData({ root: repo.root, out }).ok).toBe(true);
+    const compiled = read<{ provenance: Record<string, unknown> }>(
+      `runs/${path.replace(/^results\//, '')}`,
+    );
+    expect(compiled.provenance.submitted_at).toBe('2026-08-07T12:00:00Z');
+    expect(compiled.provenance.submitted_at).not.toBe(compiled.provenance.merged_at);
   });
 
   it('understands a merge-commit subject as well as a squash subject', () => {

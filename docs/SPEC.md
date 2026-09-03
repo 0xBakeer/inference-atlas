@@ -372,6 +372,7 @@ Eval rows: `{ "id", "category", "difficulty", "prompt"|"messages", "answer", "sc
     "github_login": "khaledbakeer", "github_user_id": null,    // user_id resolved by CI, left null by contributor
     "started_at": "2026-08-23T10:00:00Z", "finished_at": "...", "submitted_at": "...",
     "commit": null, "pr": null,                                  // stamped by build from git history; contributor leaves null
+                                                                 // submitted_at may also be left null: the build fills it from the commit that added the file
     "method": "atlas-bench|manual|issue-form|agent",
     "agent": { "name": "claude-code", "model": "claude-fable-5" } | null,
     "notes": "Ambient 22C, box otherwise idle, embed engine resident (10 GiB)."
