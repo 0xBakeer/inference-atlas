@@ -1,0 +1,380 @@
+{
+  "schema_version": 1,
+  "run_id": "dd53cef04c0fec3c--prefill-32k-v1--3f496a",
+  "config_id": "dd53cef04c0fec3c",
+  "cell_id": "7b7ca8936123",
+  "workload_id": "prefill-32k-v1",
+  "kind": "prefill",
+  "engine": {
+    "id": "sglang",
+    "version": "0.0.0.dev0+qwen38.27b.g561c8f3",
+    "commit": null,
+    "build": "github.com/pangoleen/qwen3.8-27b-dgx-spark-dflash2@bac473f",
+    "container": "qwen38-27b-sglang-dflash2-sm121:0.3.0 (built from lmsysorg/sglang:qwen38-27b@sha256:3c0abdf41ef22de9d7a859dc16ed71eae69452e36c91f071a25e60c85a6d1fc6 + the recipe python overlay)",
+    "install_method": "docker"
+  },
+  "model": {
+    "id": "Qwen/Qwen3.8-27B",
+    "quant_id": "nvfp4-fp4-lmhead",
+    "hf_id": "Qwen/Qwen3.8-27B",
+    "revision": "554ebba9b5f1b79dc11246341960360e6ef05ef4",
+    "dtype": "auto",
+    "local_path": null
+  },
+  "hardware": {
+    "id": "nvidia-gb10-dgx-spark",
+    "count": 1,
+    "driver": "580.173.02",
+    "cuda": "13.0",
+    "host": {
+      "cpu": "Cortex-A725",
+      "cpu_cores": 20,
+      "ram_gb": 121.6,
+      "os": "Ubuntu 24.04.4 LTS",
+      "kernel": "6.17.0-1029-nvidia",
+      "arch": "aarch64"
+    },
+    "fingerprint": "sha256:52ea2bdd513719724db88c162b6cc2c9fb4e5b67e02dbe41b9de00687acefb91",
+    "captured": {
+      "nvidia_smi": {
+        "driver": "580.173.02",
+        "cuda": "13.0",
+        "products": [
+          "NVIDIA GB10"
+        ],
+        "fb_memory_total_mib": 0
+      },
+      "lscpu": {
+        "architecture": "aarch64",
+        "cpus": "20",
+        "vendor_id": "ARM",
+        "model_name": "Cortex-A725",
+        "cores_per_socket": "10",
+        "sockets": "1",
+        "cpu_max_mhz": "2808.0000"
+      }
+    }
+  },
+  "args": {
+    "context-length": 262144,
+    "mem-fraction-static": 0.65,
+    "attention-backend": "flashinfer",
+    "kv-cache-dtype": "bfloat16",
+    "chunked-prefill-size": 2048,
+    "mamba-ssm-dtype": "bfloat16",
+    "mamba-radix-cache-strategy": "extra_buffer",
+    "page-size": 1,
+    "mamba-full-memory-ratio": 11.93,
+    "reasoning-parser": "qwen3",
+    "tool-call-parser": "qwen3_coder",
+    "default-chat-template-kwargs": {
+      "enable_thinking": false,
+      "preserve_thinking": false
+    },
+    "max-running-requests": 4,
+    "enable-metrics": true,
+    "disable-prefill-cuda-graph": true,
+    "speculative-algorithm": "DFLASH",
+    "speculative-draft-model-path": "maurienne-ai/Qwen3.8-27B-DFlash2-NVFP4-RTNcal",
+    "speculative-draft-model-revision": "bd7a934213c47a9e7ef69eef36bb3325f47fd1f1",
+    "speculative-num-draft-tokens": 16,
+    "speculative-draft-attention-backend": "flashinfer",
+    "speculative-draft-model-quantization": "modelopt_fp4",
+    "trust-remote-code": true,
+    "revision": "554ebba9b5f1b79dc11246341960360e6ef05ef4"
+  },
+  "args_canonical": "@build=github.com/pangoleen/qwen3.8-27b-dgx-spark-dflash2@bac473f;@dtype=auto;@quant=nvfp4-fp4-lmhead;attention-backend=flashinfer;chunked-prefill-size=2048;context-length=262144;default-chat-template-kwargs={\"enable_thinking\":false,\"preserve_thinking\":false};disable-prefill-cuda-graph=true;enable-metrics=true;kv-cache-dtype=bfloat16;mamba-full-memory-ratio=11.93;mamba-radix-cache-strategy=extra_buffer;mamba-ssm-dtype=bfloat16;max-running-requests=4;mem-fraction-static=0.65;page-size=1;reasoning-parser=qwen3;speculative-algorithm=DFLASH;speculative-draft-attention-backend=flashinfer;speculative-draft-model-path=maurienne-ai/Qwen3.8-27B-DFlash2-NVFP4-RTNcal;speculative-draft-model-quantization=modelopt_fp4;speculative-draft-model-revision=bd7a934213c47a9e7ef69eef36bb3325f47fd1f1;speculative-num-draft-tokens=16;tool-call-parser=qwen3_coder;trust-remote-code=true",
+  "serve_command": null,
+  "workload": {
+    "id": "prefill-32k-v1",
+    "resolved_params": {
+      "concurrency": 1,
+      "num_requests": 10,
+      "input_tokens": 32768,
+      "output_tokens": 16,
+      "warmup_requests": 1,
+      "prompts_padded": false,
+      "needle_check": false,
+      "timeout_s": 900,
+      "seed": 42
+    }
+  },
+  "metrics": {
+    "requests_total": 10,
+    "requests_ok": 10,
+    "requests_failed": 0,
+    "success_rate": 1,
+    "duration_s": 63.036,
+    "input_tokens_total": 402931,
+    "output_tokens_total": 57,
+    "output_tok_s": 0.904,
+    "total_tok_s": 6393.012,
+    "req_s": 0.159,
+    "prefill_tok_s": 6634.657,
+    "ttft_ms": {
+      "mean": 6073.125,
+      "p50": 336.946,
+      "p90": 19498.866,
+      "p95": 19502.813,
+      "p99": 19505.971,
+      "min": 313.687,
+      "max": 19506.76
+    },
+    "tpot_ms": {
+      "mean": 49.543,
+      "p50": 46.385,
+      "p90": 57.768,
+      "p95": 58.114,
+      "p99": 58.391,
+      "min": 45.409,
+      "max": 58.46
+    },
+    "itl_ms": {
+      "mean": 114.847,
+      "p50": 115.117,
+      "p90": 117.378,
+      "p95": 118.21,
+      "p99": 119.031,
+      "min": 111.242,
+      "max": 119.236
+    },
+    "e2e_ms": {
+      "mean": 6303.488,
+      "p50": 567.018,
+      "p90": 19731.655,
+      "p95": 19736.127,
+      "p99": 19739.705,
+      "min": 541.356,
+      "max": 19740.599
+    },
+    "decode_tok_s_per_request": {
+      "mean": 20.41,
+      "p50": 21.559,
+      "p90": 21.968,
+      "p95": 21.995,
+      "p99": 22.017,
+      "min": 17.106,
+      "max": 22.022
+    },
+    "vram_peak_gb": null,
+    "ram_peak_gb": 85.051,
+    "kv_cache_tokens": null,
+    "power_avg_w": 86.09,
+    "power_peak_w": 94.37,
+    "energy_wh": 1.9858,
+    "gpu_util_avg_pct": 93.64,
+    "temp_max_c": 83,
+    "thermal_throttle_detected": false
+  },
+  "failures": [],
+  "conditions": {
+    "dedicated": true,
+    "detail": "Only the recipe's SGLang container (sglang38-dflash2) was resident; nothing else used the GPU.",
+    "isolation_check": "docker ps → sglang38-dflash2 dgx-exporter ; nvidia-smi compute apps → 2; load1 at start 1.33"
+  },
+  "gotchas": [
+    {
+      "severity": "info",
+      "text": "Ten requests reuse the same prompt, and SGLang's radix cache serves requests 2-10 from the cached prefix (TTFT p50 337 ms), so the aggregate prefill_tok_s (6635) is cache-inflated. The cold single-request rate is the first request: 40,293 tokens in 19.5 s = ~2,070 tok/s. Decode figures on this row come from 5-6 output tokens per request and are not meaningful."
+    },
+    {
+      "severity": "info",
+      "link": "https://github.com/pangoleen/qwen3.8-27b-dgx-spark-dflash2",
+      "text": "Served with the pangoleen DGX Spark DFlash2 recipe at master bac473f, exactly as its serve.sh defaults (no flag changed): target RadixArk/Qwen3.8-27B-NVFP4 554ebba9, DFlash2 drafter maurienne-ai/Qwen3.8-27B-DFlash2-NVFP4-RTNcal bd7a9342 with 16 draft tokens, bf16 KV and mamba state, context 262144, mem-fraction 0.65, max-running 4, prefill CUDA graph disabled, FlashInfer autotune with the recipe-shipped tactic cache mounted, container pinned to cpuset 5-9,15-19. The image qwen38-27b-sglang-dflash2-sm121:0.3.0 was built on the host from the pinned base lmsysorg/sglang:qwen38-27b@sha256:3c0abdf4 plus the recipe's python overlay; engine.build names the recipe commit because the SGLang dev version string alone does not describe the served build."
+    },
+    {
+      "severity": "info",
+      "text": "Thinking is OFF in every row: the recipe passes --default-chat-template-kwargs {\"enable_thinking\": false, \"preserve_thinking\": false} and the packets send no override. Rows from thinking-on configurations of this model are a different config_id and are not decode-comparable with these."
+    },
+    {
+      "severity": "info",
+      "text": "Offline reproduction note: SGLang resolves the DFlash drafter's config through the speculative-algorithm alias hook without the pinned --speculative-draft-model-revision, so a HuggingFace cache filled by a revision-pinned download (which writes the snapshot but no refs/main) fails the offline lookup and the container crash-loops at startup. Writing refs/main with the pinned snapshot sha for both the target and the drafter repositories fixes it; the served snapshots are still the pinned revisions."
+    }
+  ],
+  "derived": {
+    "cost_per_1m_output_tokens_usd": null,
+    "tokens_per_watt": 0.0105,
+    "tok_s_per_gb_bandwidth": 0.074762,
+    "bandwidth_efficiency": 1.638781,
+    "memory_headroom_gb": null
+  },
+  "raw": {
+    "harness": "atlas-bench",
+    "harness_version": "0.1.0",
+    "sha256": "0ec0e0ab54c4dc356eda7e2305875e7481a0b82a07cec67ac0ac99948344c48c",
+    "payload_path": null,
+    "payload": {
+      "requests": [
+        {
+          "id": "prefill-w00000",
+          "prompt_id": "hay-32k-d10",
+          "warmup": true,
+          "status": "ok",
+          "ttft_ms": 19260.133,
+          "e2e_ms": 19489.238,
+          "prompt_tokens": 40186,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00000",
+          "prompt_id": "hay-32k-d10",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 320.121,
+          "e2e_ms": 552.859,
+          "prompt_tokens": 40186,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00001",
+          "prompt_id": "hay-32k-multi",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 19506.76,
+          "e2e_ms": 19740.599,
+          "prompt_tokens": 40425,
+          "completion_tokens": 5,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00002",
+          "prompt_id": "hay-32k-d50",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 19438.835,
+          "e2e_ms": 19669.211,
+          "prompt_tokens": 40233,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00003",
+          "prompt_id": "hay-32k-d90",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 19497.988,
+          "e2e_ms": 19730.661,
+          "prompt_tokens": 40316,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00004",
+          "prompt_id": "hay-32k-d10",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 316.736,
+          "e2e_ms": 543.781,
+          "prompt_tokens": 40186,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00005",
+          "prompt_id": "hay-32k-multi",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 339.143,
+          "e2e_ms": 568.522,
+          "prompt_tokens": 40425,
+          "completion_tokens": 5,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00006",
+          "prompt_id": "hay-32k-d50",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 342.492,
+          "e2e_ms": 570.472,
+          "prompt_tokens": 40233,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00007",
+          "prompt_id": "hay-32k-d90",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 320.733,
+          "e2e_ms": 551.906,
+          "prompt_tokens": 40316,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00008",
+          "prompt_id": "hay-32k-d10",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 313.687,
+          "e2e_ms": 541.356,
+          "prompt_tokens": 40186,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00009",
+          "prompt_id": "hay-32k-multi",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 334.749,
+          "e2e_ms": 565.514,
+          "prompt_tokens": 40425,
+          "completion_tokens": 5,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        }
+      ],
+      "engine_endpoint": {
+        "attached": true,
+        "base_url": "http://127.0.0.1:8003/v1",
+        "served_model_id": "qwen3.8-27b",
+        "advertised_models": [
+          "qwen3.8-27b"
+        ]
+      }
+    },
+    "truncated": false
+  },
+  "provenance": {
+    "github_login": "0xBakeer",
+    "github_user_id": null,
+    "started_at": "2026-09-03T06:45:24Z",
+    "finished_at": "2026-09-03T06:46:47Z",
+    "submitted_at": null,
+    "commit": null,
+    "pr": null,
+    "method": "atlas-bench",
+    "agent": null,
+    "notes": "Served with the pangoleen DGX Spark DFlash2 recipe (https://github.com/pangoleen/qwen3.8-27b-dgx-spark-dflash2, master bac473f, image tag 0.3.0) exactly as its serve.sh defaults: target RadixArk/Qwen3.8-27B-NVFP4 at revision 554ebba9, DFlash2 speculative decoding with the NVFP4 drafter maurienne-ai/Qwen3.8-27B-DFlash2-NVFP4-RTNcal at revision bd7a9342 (16 draft tokens, flashinfer draft attention, modelopt_fp4), bf16 KV and mamba state, context 262144, mem-fraction 0.65, chunked prefill 2048, max-running 4, prefill CUDA graph disabled, FlashInfer autotune ON with the recipe-shipped tactic cache mounted, container pinned to cpuset 5-9,15-19. Thinking is OFF via --default-chat-template-kwargs (enable_thinking false), the recipe default. Server started with the recipe serve.sh; harness attached over HTTP with the bearer key. Single request at a time on every row here."
+  },
+  "verification": {
+    "level": "self-reported",
+    "reproduced_by": [],
+    "flags": []
+  }
+}
