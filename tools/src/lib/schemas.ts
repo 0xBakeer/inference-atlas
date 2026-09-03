@@ -22,7 +22,8 @@ export type SchemaName =
   | 'workload'
   | 'dataset'
   | 'result'
-  | 'site';
+  | 'site'
+  | 'identities';
 
 const SCHEMA_BASE = 'https://inference-atlas.dev/schemas';
 
@@ -42,6 +43,7 @@ const RULES: Array<{ pattern: RegExp; name: SchemaName }> = [
   { pattern: /^datasets\/[^/]+\/dataset\.json$/, name: 'dataset' },
   { pattern: /^results\/[^/]+\/[^/]+\/[^/]+\/[^/]+\/[^/]+\.json$/, name: 'result' },
   { pattern: /^site\/config\.json$/, name: 'site' },
+  { pattern: /^site\/identities\.json$/, name: 'identities' },
 ];
 
 /** Directories whose unmapped `.json` files are an error rather than none of our business. */

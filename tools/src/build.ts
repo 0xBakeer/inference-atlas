@@ -44,7 +44,8 @@ import { resolveUsers } from './resolve-user.js';
 import type { ResolveOptions } from './resolve-user.js';
 import { checkDataset } from './lib/datasets.js';
 import type { DatasetStats } from './lib/datasets.js';
-import { addCommits, headCommit, isGitRepo, loginFromEmail, parsePr } from './lib/git.js';
+import { addCommits, headCommit, isGitRepo, parsePr } from './lib/git.js';
+import { indexIdentities, resolveLogin } from './lib/identities.js';
 import type { GitCommit } from './lib/git.js';
 import { computeGaps, possibleCells } from './lib/gaps.js';
 import type { WantedRequest } from './lib/gaps.js';
@@ -467,9 +468,11 @@ function datasetMeta(dataset: Dataset, stats: DatasetStats | undefined) {
  * Who registered each piece of the registry, from the commit that added its file.
  *
  * `computeScores` credits new hardware, models, engines, quants and workloads, but a
- * registry file carries no `github_login` — the only identity in git history is the author
- * email, and only GitHub's `…@users.noreply.github.com` form contains a login. Anything
- * else is skipped rather than guessed (see `loginFromEmail`).
+ * registry file carries no `github_login` — the only identity in its history is the author
+ * address of the commit that added it. GitHub's `…@users.noreply.github.com` form spells
+ * the login; an ordinary address does not, and `site/identities.json` is where a person
+ * says which addresses are theirs (`resolveLogin`). An address in neither is skipped
+ * rather than guessed: crediting a plausible neighbour is worse than crediting nobody.
  */
 function registryCredits(root: string, repo: Repo): RegistryCredits {
   const paths: Array<[keyof RegistryCredits, string, string]> = [];
@@ -487,11 +490,12 @@ function registryCredits(root: string, repo: Repo): RegistryCredits {
     root,
     paths.map(([, , path]) => path),
   );
+  const index = indexIdentities(repo.identities);
   const credits: RegistryCredits = {};
   for (const [kind, id, path] of paths) {
     const commit = commits.get(path);
     if (!commit) continue;
-    const login = loginFromEmail(commit.email);
+    const login = resolveLogin(commit.email, index);
     if (!login) continue;
     const bucket = (credits[kind] ??= {});
     bucket[id] = login;

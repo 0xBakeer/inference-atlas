@@ -28,6 +28,7 @@ import { checkResult } from './lib/check-result.js';
 import { checkDataset } from './lib/datasets.js';
 import { changedFiles as gitChangedFiles, isGitRepo } from './lib/git.js';
 import { buildIndexRow } from './lib/index-row.js';
+import { checkIdentities } from './lib/identities.js';
 import { checkOwnership } from './lib/ownership.js';
 import { loadRepo } from './lib/repo.js';
 import { REPO_ROOT } from './lib/root.js';
@@ -122,6 +123,10 @@ export function validateRepo(options: ValidateOptions): ValidateOutcome {
   /* --------------------------------------------------------------- datasets */
 
   for (const dataset of repo.datasets.values()) checkDataset(root, dataset, reporter);
+
+  /* ------------------------------------------------------------- identities */
+
+  if (repo.identities) checkIdentities(repo.identities, reporter);
 
   /* ---------------------------------------------------------------- results */
 

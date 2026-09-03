@@ -141,6 +141,18 @@ find out which, do not paper over it.
 Adding hardware, a model, a quantization or an engine is a PR that adds a file. It is never a
 code change. All of these live under CC-BY-4.0 (see `DATA_LICENSE`).
 
+**Getting the credit for it.** A registry file carries no login, so the leaderboard reads the
+author address of the commit that added it. A GitHub noreply address
+(`1234+you@users.noreply.github.com`) already spells your login and needs nothing further. If
+you commit under your own address, add it to `site/identities.json` in the same pull request:
+
+```json
+{ "login": "your-login", "emails": ["you@yourdomain.com"], "verified_by": [123] }
+```
+
+`verified_by` is the pull request the mapping can be checked against — this one will do. You
+may only add or change the entry for your own login; validate rejects anything else.
+
 ### New hardware — `hardware/<id>.json`
 
 - `id`: lowercase kebab-case, vendor first: `nvidia-rtx-5090`, `amd-mi300x`,
