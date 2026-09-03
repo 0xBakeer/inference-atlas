@@ -10,7 +10,8 @@
  *
  * 1. **Provenance stamping.** `provenance.commit` and `provenance.pr` are derived from
  *    `git log --diff-filter=A` — the commit that *added* the file — and written only into
- *    the compiled copy. The raw file in `results/` is never rewritten, so what a
+ *    the compiled copy, and a `submitted_at` the contributor left null is filled from the
+ *    same commit: the file arriving on main is the submission. The raw file in `results/` is never rewritten, so what a
  *    contributor committed stays exactly what they committed and the stamp cannot be typed
  *    by hand (SPEC §5, last paragraph).
  * 2. **Overlay merging.** `engines/<id>/overlay.json` carries the hand-curated grouping and
@@ -60,7 +61,11 @@ import type { WrittenFile } from './lib/write.js';
 
 const DEFAULT_OUT = 'app/public/data';
 
-/** Provenance as it appears in the compiled data: the three git-derived fields added. */
+/**
+ * Provenance as it appears in the compiled data: the git-derived fields added, and
+ * `submitted_at` filled from the adding commit when the contributor left it null, so every
+ * sort on submission order (timeline, latest results, scoring) has a date to work with.
+ */
 export interface StampedProvenance extends Provenance {
   commit_short: string | null;
   /** Author date of the commit that added the file — when the measurement became public. */
@@ -159,12 +164,16 @@ export function buildData(options: BuildOptions): BuildOutcome {
 
   const stampProvenance = (result: ResultRecord, path: string): StampedProvenance => {
     const commit = stamps.get(path) ?? null;
+    // Author dates come with whatever offset the author's clock had; the app sorts these as
+    // strings, so they are normalised to UTC like every other timestamp in a result.
+    const merged = commit ? utcIso(commit.date) : null;
     return {
       ...result.provenance,
       commit: commit?.commit ?? null,
       commit_short: commit?.commit_short ?? null,
       pr: commit ? parsePr(commit.subject) : null,
-      merged_at: commit?.date ?? null,
+      merged_at: merged,
+      submitted_at: result.provenance.submitted_at ?? merged,
     };
   };
 
@@ -501,6 +510,12 @@ function registryCredits(root: string, repo: Repo): RegistryCredits {
     bucket[id] = login;
   }
   return credits;
+}
+
+/** `2026-09-03T02:12:33-07:00` → `2026-09-03T09:12:33Z`; an unparseable date is kept as is. */
+function utcIso(date: string): string {
+  const ms = Date.parse(date);
+  return Number.isNaN(ms) ? date : new Date(ms).toISOString().replace(/\.\d{3}Z$/, 'Z');
 }
 
 /* ------------------------------------------------- fork contributor user ids */

@@ -191,7 +191,9 @@ export class AtlasContributorsView extends ViewElement {
     const runs = store.index.value
       .filter((r) => loginKey(r.provenance.login) === key)
       .sort((a, b) =>
-        (b.provenance.submitted_at ?? '').localeCompare(a.provenance.submitted_at ?? ''),
+        (b.provenance.submitted_at ?? b.provenance.started_at ?? '').localeCompare(
+          a.provenance.submitted_at ?? a.provenance.started_at ?? '',
+        ),
       );
     if (!c && runs.length === 0) {
       return html`<div class="page">
