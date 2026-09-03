@@ -9,7 +9,7 @@ import type { ColorLevel } from '../canvas/color.js';
 import type { AtlasData } from '../data/load.js';
 import { loadAtlas } from '../data/load.js';
 import type { DataSource } from '../data/source.js';
-import { coverageGrid, filterRows, paretoData, rankForHome } from '../derive.js';
+import { coverageGrid, filterRows, metricRank, paretoData, rankForHome } from '../derive.js';
 import type { FitVerdict } from '../hw/fit.js';
 import { fitVerdict } from '../hw/fit.js';
 import type { Target } from '../hw/target.js';
@@ -87,6 +87,7 @@ export function App({
   const [firstRun, setFirstRun] = useState(initialTarget.hardware === null);
   const [filter, setFilter] = useState('');
   const [filtering, setFiltering] = useState(false);
+  const [sortByMetric, setSortByMetric] = useState(false);
   const [detail, setDetail] = useState<DetailState | null>(null);
   const [recipe, setRecipe] = useState<RecipeState | null>(null);
   const [, bump] = useState(0);
@@ -147,10 +148,17 @@ export function App({
       const fit = fitFor(row);
       return { row, fitLevel: fit.level, fitLabel: fit.label };
     });
-    return rankForHome(withFits, keyMetrics);
-  }, [data, fitFor, keyMetrics]);
+    return rankForHome(withFits, keyMetrics, sortByMetric ? 'metric' : 'fit');
+  }, [data, fitFor, keyMetrics, sortByMetric]);
 
-  const filtered = useMemo(() => filterRows(data.index, filter), [data, filter]);
+  const filtered = useMemo(() => {
+    const rows = filterRows(data.index, filter);
+    if (!sortByMetric) return rows;
+    return metricRank(
+      rows.map((row) => ({ row })),
+      keyMetrics,
+    ).map((x) => x.row);
+  }, [data, filter, keyMetrics, sortByMetric]);
   const pareto = useMemo(() => paretoData(data.index), [data]);
   const coverage = useMemo(() => coverageGrid(data), [data]);
 
@@ -431,12 +439,18 @@ export function App({
     } else if (view === 'home') {
       if (down) setSelHome((s) => clampSel(s + 1, ranked.length));
       else if (up) setSelHome((s) => clampSel(s - 1, ranked.length));
-      else if (isEnter(input, key) && ranked[selHome]) openDetail(ranked[selHome]!.row);
+      else if (input === 's') {
+        setSortByMetric((v) => !v);
+        setSelHome(0);
+      } else if (isEnter(input, key) && ranked[selHome]) openDetail(ranked[selHome]!.row);
       else if (input === 'g' && ranked[selHome]) openDetail(ranked[selHome]!.row);
     } else if (view === 'runs') {
       if (down) setSelRuns((s) => clampSel(s + 1, filtered.length));
       else if (up) setSelRuns((s) => clampSel(s - 1, filtered.length));
-      else if (isEnter(input, key) && filtered[selRuns]) openDetail(filtered[selRuns]!);
+      else if (input === 's') {
+        setSortByMetric((v) => !v);
+        setSelRuns(0);
+      } else if (isEnter(input, key) && filtered[selRuns]) openDetail(filtered[selRuns]!);
       else if (input === 'g' && filtered[selRuns]) openDetail(filtered[selRuns]!);
     } else if (view === 'pareto') {
       if (down || key.rightArrow) setSelPareto((s) => clampSel(s + 1, pareto.points.length));
@@ -513,6 +527,7 @@ export function App({
             status={hwStatus}
             ranked={ranked}
             keyMetrics={keyMetrics}
+            sortByMetric={sortByMetric}
             selected={selHome}
             height={bodyHeight - 8}
             width={cols - 6}
@@ -521,6 +536,7 @@ export function App({
           <RunsView
             rows={filtered}
             keyMetrics={keyMetrics}
+            sortByMetric={sortByMetric}
             filter={filter}
             filtering={filtering}
             selected={selRuns}
@@ -537,7 +553,7 @@ export function App({
             level={level}
           />
         ) : view === 'coverage' ? (
-          <CoverageView grid={coverage} level={level} />
+          <CoverageView grid={coverage} level={level} width={cols - 6} />
         ) : view === 'hardware' ? (
           <HardwareView
             rows={pickerRows}
@@ -589,6 +605,7 @@ function HelpView(): React.JSX.Element {
     ['j / k, arrows', 'move selection / scroll'],
     ['enter', 'open the selected run'],
     ['/', 'filter runs (esc to stop typing)'],
+    ['s', 'sort the target or runs list by headline metric (press again for fit/order)'],
     ['g', 'generate the install recipe for the selected run'],
     ['c (in recipe)', 'copy the markdown'],
     ['1-9 (in recipe)', 'send to a configured agent'],

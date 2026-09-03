@@ -1,7 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import type { IndexRow, ResultRecord } from '@atlas/core';
 import { fixtureRow } from '@atlas/core';
-import { coverageGrid, filterRows, paretoData, rankForHome, sweepChartData } from './derive.js';
+import {
+  coverageGrid,
+  filterRows,
+  metricRank,
+  paretoData,
+  rankForHome,
+  sweepChartData,
+} from './derive.js';
 import type { AtlasData } from './data/load.js';
 
 const row = (over: Parameters<typeof fixtureRow>[0]): IndexRow => fixtureRow(over) as IndexRow;
@@ -40,18 +47,27 @@ describe('paretoData', () => {
 });
 
 describe('coverageGrid', () => {
-  it('counts runs per model × hardware', () => {
+  const registry = {
+    models: [
+      { model: { id: 'a/m1' }, quants: [] },
+      { model: { id: 'b/m2' }, quants: [] },
+      { model: { id: 'c/m3' }, quants: [] },
+    ],
+    hardware: [{ id: 'hw1' }, { id: 'hw2' }],
+  };
+  it('counts runs per model × hardware, from the grid the registry defines', () => {
     const index = [
       row({ model: { id: 'a/m1', quant_id: 'q' }, hardware: { id: 'hw1', count: 1 } }),
       row({ model: { id: 'a/m1', quant_id: 'q' }, hardware: { id: 'hw1', count: 1 } }),
       row({ model: { id: 'b/m2', quant_id: 'q' }, hardware: { id: 'hw2', count: 1 } }),
     ];
-    const grid = coverageGrid({ index } as AtlasData);
-    expect(grid.rowLabels).toEqual(['a/m1', 'b/m2']);
+    const grid = coverageGrid({ index, registry } as unknown as AtlasData);
+    expect(grid.rowLabels).toEqual(['a/m1', 'b/m2', 'c/m3']);
     expect(grid.colLabels).toEqual(['hw1', 'hw2']);
     expect(grid.counts).toEqual([
       [2, 0],
       [0, 1],
+      [0, 0],
     ]);
   });
 });
@@ -117,5 +133,39 @@ describe('rankForHome', () => {
     ];
     const ranked = rankForHome(rows, ['output_tok_s']);
     expect(ranked.map((r) => r.row.run_id)).toEqual(['fast-fit', 'slow-fit', 'fast-nofit']);
+  });
+
+  it('metric mode ranks purely by the headline metric, best first', () => {
+    const rows = [
+      {
+        row: row({ run_id: 'slow-fit', metrics: { output_tok_s: 10 } }),
+        fitLevel: 'recommended' as const,
+      },
+      {
+        row: row({ run_id: 'fast-nofit', metrics: { output_tok_s: 500 } }),
+        fitLevel: 'no-fit' as const,
+      },
+      {
+        row: row({ run_id: 'fast-fit', metrics: { output_tok_s: 100 } }),
+        fitLevel: 'recommended' as const,
+      },
+    ];
+    const ranked = rankForHome(rows, ['output_tok_s'], 'metric');
+    expect(ranked.map((r) => r.row.run_id)).toEqual(['fast-nofit', 'fast-fit', 'slow-fit']);
+  });
+
+  it('metric mode only respects the direction the metric declares', () => {
+    const rows = [
+      {
+        row: row({ run_id: 'slow-ttft', metrics: { ttft_p50: 50 } }),
+        fitLevel: 'recommended' as const,
+      },
+      {
+        row: row({ run_id: 'fast-ttft', metrics: { ttft_p50: 500 } }),
+        fitLevel: 'no-fit' as const,
+      },
+    ];
+    const ranked = metricRank(rows, ['ttft_p50']);
+    expect(ranked.map((r) => r.row.run_id)).toEqual(['slow-ttft', 'fast-ttft']);
   });
 });
