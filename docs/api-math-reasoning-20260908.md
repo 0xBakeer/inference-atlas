@@ -142,10 +142,9 @@ of the private gateway.
 Questions, keys, workloads and scorers are credited to **Inference Atlas contributors**,
 Copyright (c) 2026, at the pinned source linked above. This report and its outcome CSV are
 contributed by `plotarmordev` under
-[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/), subject to the contributor's
-publication authorization. The export is a reduced presentation of original measurements,
-not changed grades. No source snapshot, full question corpus, model weights, or full
-responses are redistributed.
+[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The export is a reduced
+presentation of original measurements, not changed grades. No source snapshot, full
+question corpus, model weights, or full responses are redistributed.
 
 The repository's [DATA_LICENSE](../DATA_LICENSE) covers repository-authored datasets and
 measurements under CC BY 4.0; both pinned dataset manifests separately declare MIT.
