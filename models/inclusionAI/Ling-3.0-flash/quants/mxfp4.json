@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "id": "mxfp4",
+  "model_id": "inclusionAI/Ling-3.0-flash",
+  "format": "mxfp4",
+  "bits": 4.3,
+  "hf_id": "inclusionAI/Ling-3.0-flash-fp4",
+  "revision": null,
+  "size_gb": 66.0,
+  "engines": [
+    "sglang",
+    "vllm"
+  ],
+  "source": "official",
+  "calibration": "Ant Group's official release. Routed experts are MXFP4 (e2m1 weights, e8m0 scales, group size 32, requantised from the FP8 block-128 source); attention, the shared expert, the router, embeddings and lm_head stay FP8 e4m3 block-128 (quantization_config in config.json). The model card publishes per-quant accuracy: GPQA-diamond 83.68, IFBench 73.87, SciCode 38.43, ArcPrize 68.06 (BF16 84.97 / 74.49 / 41.24 / 68.75).",
+  "links": {
+    "hf": "https://huggingface.co/inclusionAI/Ling-3.0-flash-fp4",
+    "recipe": "https://github.com/inclusionAI/ling-cookbook/tree/main/guide/local-deploy/ling-3.0-flash"
+  },
+  "notes": "Mixed-precision pack, not uniformly 4-bit: bits is an effective figure (127B of 124B-class parameters sit in the MXFP4 experts; the FP8 remainder and the e8m0 scales lift the average). 24 safetensors shards, 66 GB on disk. Served on a single DGX Spark by SGLang with --moe-runner-backend flashinfer_mxfp4 or humming; the checkpoint does not auto-select an MXFP4 MoE backend. Pairs with the inclusionAI/Ling-3.0-flash-dspark drafter (1.36B, BF16), a speculative draft model passed as an engine argument rather than a quantization of this model."
+}

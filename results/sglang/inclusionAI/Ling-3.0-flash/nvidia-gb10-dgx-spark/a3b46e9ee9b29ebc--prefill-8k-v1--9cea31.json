@@ -1,0 +1,362 @@
+{
+  "schema_version": 1,
+  "run_id": "a3b46e9ee9b29ebc--prefill-8k-v1--9cea31",
+  "config_id": "a3b46e9ee9b29ebc",
+  "cell_id": "4ab17fea2273",
+  "workload_id": "prefill-8k-v1",
+  "kind": "prefill",
+  "engine": {
+    "id": "sglang",
+    "version": "0.0.0.dev1+g079d40460",
+    "commit": null,
+    "build": "github.com/inclusionAI/sglang@079d404",
+    "container": "lmsysorg/sglang:v0.0.0.dev1+g079d40460-cu126",
+    "install_method": "source"
+  },
+  "model": {
+    "id": "inclusionAI/Ling-3.0-flash",
+    "quant_id": "mxfp4",
+    "hf_id": "inclusionAI/Ling-3.0-flash",
+    "revision": null,
+    "dtype": "auto",
+    "local_path": null
+  },
+  "hardware": {
+    "id": "nvidia-gb10-dgx-spark",
+    "count": 1,
+    "driver": "580.173.02",
+    "cuda": "13.0",
+    "host": {
+      "cpu": "Cortex-A725",
+      "cpu_cores": 20,
+      "ram_gb": 121.6,
+      "os": "Ubuntu 24.04.4 LTS",
+      "kernel": "6.17.0-1029-nvidia",
+      "arch": "aarch64"
+    },
+    "fingerprint": "sha256:52ea2bdd513719724db88c162b6cc2c9fb4e5b67e02dbe41b9de00687acefb91",
+    "captured": {
+      "nvidia_smi": {
+        "driver": "580.173.02",
+        "cuda": "13.0",
+        "products": [
+          "NVIDIA GB10"
+        ],
+        "fb_memory_total_mib": 0
+      },
+      "lscpu": {
+        "architecture": "aarch64",
+        "cpus": "20",
+        "vendor_id": "ARM",
+        "model_name": "Cortex-A725",
+        "cores_per_socket": "10",
+        "sockets": "1",
+        "cpu_max_mhz": "2808.0000"
+      }
+    }
+  },
+  "args": {
+    "moe-runner-backend": "humming",
+    "speculative-algorithm": "DSPARK",
+    "speculative-draft-model-path": "inclusionAI/Ling-3.0-flash-dspark",
+    "enable-linear-replayssm-spec": true,
+    "linear-replayssm-cache-len": 32,
+    "mem-fraction-static": 0.75,
+    "max-running-requests": 1,
+    "max-mamba-cache-size": 64,
+    "chunked-prefill-size": 8192,
+    "max-prefill-tokens": 16384,
+    "page-size": 64,
+    "attention-backend": "flashinfer",
+    "fp8-gemm-backend": "cutlass",
+    "flashinfer-mxfp4-moe-precision": "default",
+    "disable-shared-experts-fusion": true,
+    "cuda-graph-backend-decode": "full",
+    "cuda-graph-max-bs-decode": 1,
+    "cuda-graph-backend-prefill": "disabled",
+    "reasoning-parser": "deepseek-r1",
+    "tool-call-parser": "qwen25",
+    "trust-remote-code": true,
+    "fp8-lm-head": "online",
+    "default-chat-template-kwargs": {
+      "enable_thinking": true
+    }
+  },
+  "args_canonical": "@build=github.com/inclusionai/sglang@079d404;@dtype=auto;@quant=mxfp4;attention-backend=flashinfer;chunked-prefill-size=8192;cuda-graph-backend-decode=full;cuda-graph-backend-prefill=disabled;cuda-graph-max-bs-decode=1;default-chat-template-kwargs={\"enable_thinking\":true};disable-shared-experts-fusion=true;enable-linear-replayssm-spec=true;fp8-gemm-backend=cutlass;fp8-lm-head=online;linear-replayssm-cache-len=32;max-mamba-cache-size=64;max-running-requests=1;mem-fraction-static=0.75;moe-runner-backend=humming;page-size=64;reasoning-parser=deepseek-r1;speculative-algorithm=DSPARK;speculative-draft-model-path=inclusionAI/Ling-3.0-flash-dspark;tool-call-parser=qwen25;trust-remote-code=true",
+  "serve_command": null,
+  "workload": {
+    "id": "prefill-8k-v1",
+    "resolved_params": {
+      "concurrency": 1,
+      "num_requests": 10,
+      "input_tokens": 8192,
+      "output_tokens": 16,
+      "warmup_requests": 1,
+      "prompts_padded": false,
+      "needle_check": false,
+      "timeout_s": 900,
+      "seed": 42
+    }
+  },
+  "metrics": {
+    "requests_total": 10,
+    "requests_ok": 10,
+    "requests_failed": 0,
+    "success_rate": 1,
+    "duration_s": 11.31,
+    "input_tokens_total": 101997,
+    "output_tokens_total": 160,
+    "output_tok_s": 14.147,
+    "total_tok_s": 9032.547,
+    "req_s": 0.884,
+    "prefill_tok_s": 10887.499,
+    "ttft_ms": {
+      "mean": 936.827,
+      "p50": 190.229,
+      "p90": 2674.327,
+      "p95": 2759.391,
+      "p99": 2827.442,
+      "min": 139.944,
+      "max": 2844.454
+    },
+    "tpot_ms": {
+      "mean": 12.939,
+      "p50": 13.158,
+      "p90": 16.874,
+      "p95": 17.047,
+      "p99": 17.185,
+      "min": 8.829,
+      "max": 17.219
+    },
+    "itl_ms": {
+      "mean": 49.606,
+      "p50": 64.055,
+      "p90": 73.071,
+      "p95": 74.469,
+      "p99": 84.969,
+      "min": 0.021,
+      "max": 89.726
+    },
+    "e2e_ms": {
+      "mean": 1130.907,
+      "p50": 399.351,
+      "p90": 2822.151,
+      "p95": 2962.446,
+      "p99": 3074.683,
+      "min": 337.032,
+      "max": 3102.742
+    },
+    "decode_tok_s_per_request": {
+      "mean": 81.142,
+      "p50": 75.997,
+      "p90": 110.92,
+      "p95": 112.09,
+      "p99": 113.026,
+      "min": 58.075,
+      "max": 113.26
+    },
+    "vram_peak_gb": null,
+    "ram_peak_gb": 98.186,
+    "kv_cache_tokens": null,
+    "power_avg_w": 60.76,
+    "power_peak_w": 73.21,
+    "energy_wh": 0.2407,
+    "gpu_util_avg_pct": 95.93,
+    "temp_max_c": 74,
+    "thermal_throttle_detected": false
+  },
+  "failures": [],
+  "conditions": null,
+  "gotchas": [
+    {
+      "severity": "info",
+      "text": "No engine version file for sglang@0.0.0.dev1+g079d40460; no defaults could be dropped from the canonical config."
+    }
+  ],
+  "derived": {
+    "cost_per_1m_output_tokens_usd": null,
+    "tokens_per_watt": 0.2328,
+    "tok_s_per_gb_bandwidth": 0.297223,
+    "bandwidth_efficiency": 0.806818,
+    "memory_headroom_gb": null
+  },
+  "raw": {
+    "harness": "atlas-bench",
+    "harness_version": "0.1.0",
+    "sha256": "c0c727a1383663d0845df46f5442485fb63081305e04c61aab13f2df45944f8f",
+    "payload_path": null,
+    "payload": {
+      "requests": [
+        {
+          "id": "prefill-w00000",
+          "prompt_id": "hay-8k-d10",
+          "warmup": true,
+          "status": "ok",
+          "ttft_ms": 2992.422,
+          "e2e_ms": 3213.948,
+          "prompt_tokens": 10251,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00000",
+          "prompt_id": "hay-8k-d10",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 175.172,
+          "e2e_ms": 395.755,
+          "prompt_tokens": 10251,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00001",
+          "prompt_id": "hay-8k-multi",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 2844.454,
+          "e2e_ms": 3102.742,
+          "prompt_tokens": 10198,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00002",
+          "prompt_id": "hay-8k-d50",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 2655.424,
+          "e2e_ms": 2790.974,
+          "prompt_tokens": 10157,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00003",
+          "prompt_id": "hay-8k-d90",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 2633.001,
+          "e2e_ms": 2788.074,
+          "prompt_tokens": 10168,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00004",
+          "prompt_id": "hay-8k-d10",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 139.944,
+          "e2e_ms": 337.032,
+          "prompt_tokens": 10251,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00005",
+          "prompt_id": "hay-8k-multi",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 170.36,
+          "e2e_ms": 361.686,
+          "prompt_tokens": 10198,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00006",
+          "prompt_id": "hay-8k-d50",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 205.285,
+          "e2e_ms": 402.947,
+          "prompt_tokens": 10157,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00007",
+          "prompt_id": "hay-8k-d90",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 218.115,
+          "e2e_ms": 350.554,
+          "prompt_tokens": 10168,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00008",
+          "prompt_id": "hay-8k-d10",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 159.448,
+          "e2e_ms": 359.708,
+          "prompt_tokens": 10251,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00009",
+          "prompt_id": "hay-8k-multi",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 167.065,
+          "e2e_ms": 419.599,
+          "prompt_tokens": 10198,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        }
+      ],
+      "engine_endpoint": {
+        "attached": true,
+        "base_url": "http://127.0.0.1:8000/v1",
+        "served_model_id": "ling-3.0-flash",
+        "advertised_models": [
+          "ling-3.0-flash"
+        ]
+      }
+    },
+    "truncated": false
+  },
+  "provenance": {
+    "github_login": "0xBakeer",
+    "github_user_id": 17404809,
+    "started_at": "2026-09-09T21:32:24Z",
+    "finished_at": "2026-09-09T21:32:40Z",
+    "submitted_at": null,
+    "commit": null,
+    "pr": null,
+    "method": "atlas-bench",
+    "agent": null,
+    "notes": "Served with the ling3-flash-dgx-spark recipe (49b6c9c), PROFILE=humming-dspark, thinking on (server default via --default-chat-template-kwargs): inclusionAI/Ling-3.0-flash-fp4 (MXFP4 routed experts, FP8 attention/shared/router) with --moe-runner-backend humming, online FP8 LM head (SGLANG_ENABLE_FP8_LM_HEAD=1), DSpark speculative decoding with inclusionAI/Ling-3.0-flash-dspark and the KDA ReplaySSM exact fold (--enable-linear-replayssm-spec, ring 32), context 262144 native (no YaRN), mem-fraction 0.75, max-running 1, page 64, decode cuda graph bs 1, prefill cuda graph disabled, FlashInfer autotune off with precompiled CUTLASS MXFP4 kernels. Single request at a time on every row."
+  },
+  "verification": {
+    "level": "self-reported",
+    "reproduced_by": [],
+    "flags": []
+  }
+}
