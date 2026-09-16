@@ -1,0 +1,1059 @@
+{
+  "schema_version": 1,
+  "run_id": "b9daf792fa8de18c--eval-multilingual-v1--5f12ab",
+  "config_id": "b9daf792fa8de18c",
+  "cell_id": "7b7ca8936123",
+  "workload_id": "eval-multilingual-v1",
+  "kind": "eval",
+  "engine": {
+    "id": "sglang",
+    "version": "0.0.0.dev0+qwen38.27b.g561c8f3",
+    "commit": null,
+    "build": "github.com/hasso5703/dgx-spark-qwen38@f01c798",
+    "container": "qwen38-dflash2:v1.2.3 (built by the recipe installer from the pinned base lmsysorg/sglang@sha256:febfb971c7352570fc445c466ebd6ffc9d896024958e544a60f2137fd85856b1 plus 8 sha256-verified overlay files)",
+    "install_method": "docker"
+  },
+  "model": {
+    "id": "Qwen/Qwen3.8-27B",
+    "quant_id": "nvfp4-fp4-lmhead",
+    "hf_id": "Qwen/Qwen3.8-27B",
+    "revision": "52d1adc5f38aa5ebf099c29ed7025ba34cfbb854",
+    "dtype": "auto",
+    "local_path": null
+  },
+  "hardware": {
+    "id": "nvidia-gb10-dgx-spark",
+    "count": 1,
+    "driver": "580.173.02",
+    "cuda": "13.0",
+    "host": {
+      "cpu": "Cortex-A725",
+      "cpu_cores": 20,
+      "ram_gb": 121.6,
+      "os": "Ubuntu 24.04.4 LTS",
+      "kernel": "6.17.0-1029-nvidia",
+      "arch": "aarch64"
+    },
+    "fingerprint": "sha256:52ea2bdd513719724db88c162b6cc2c9fb4e5b67e02dbe41b9de00687acefb91",
+    "captured": {
+      "nvidia_smi": {
+        "driver": "580.173.02",
+        "cuda": "13.0",
+        "products": [
+          "NVIDIA GB10"
+        ],
+        "fb_memory_total_mib": 0
+      },
+      "lscpu": {
+        "architecture": "aarch64",
+        "cpus": "20",
+        "vendor_id": "ARM",
+        "model_name": "Cortex-A725",
+        "cores_per_socket": "10",
+        "sockets": "1",
+        "cpu_max_mhz": "2808.0000"
+      }
+    }
+  },
+  "args": {
+    "trust-remote-code": true,
+    "revision": "52d1adc5f38aa5ebf099c29ed7025ba34cfbb854",
+    "tp-size": 1,
+    "mem-fraction-static": 0.5,
+    "attention-backend": "flashinfer",
+    "chunked-prefill-size": 8192,
+    "disable-prefill-cuda-graph": true,
+    "cuda-graph-max-bs": 8,
+    "disable-flashinfer-autotune": true,
+    "speculative-algorithm": "DFLASH",
+    "speculative-draft-model-path": "maurienne-ai/Qwen3.8-27B-DFlash2-NVFP4-RTNcal",
+    "speculative-draft-model-revision": "bd7a934213c47a9e7ef69eef36bb3325f47fd1f1",
+    "speculative-num-draft-tokens": 16,
+    "speculative-draft-model-quantization": "modelopt_fp4",
+    "mamba-radix-cache-strategy": "extra_buffer",
+    "mamba-ssm-dtype": "bfloat16",
+    "max-mamba-cache-size": 96,
+    "max-running-requests": 8,
+    "enable-torch-compile": true,
+    "torch-compile-max-bs": 4,
+    "num-continuous-decode-steps": 2,
+    "reasoning-parser": "qwen3",
+    "tool-call-parser": "qwen3_coder",
+    "chat-template": "/out/chat-template-sglang.jinja",
+    "sleep-on-idle": true,
+    "enable-metrics": true
+  },
+  "args_canonical": "@build=github.com/hasso5703/dgx-spark-qwen38@f01c798;@dtype=auto;@quant=nvfp4-fp4-lmhead;attention-backend=flashinfer;chat-template=/out/chat-template-sglang.jinja;chunked-prefill-size=8192;cuda-graph-max-bs=8;disable-flashinfer-autotune=true;disable-prefill-cuda-graph=true;enable-metrics=true;enable-torch-compile=true;mamba-radix-cache-strategy=extra_buffer;mamba-ssm-dtype=bfloat16;max-mamba-cache-size=96;max-running-requests=8;mem-fraction-static=0.5;num-continuous-decode-steps=2;reasoning-parser=qwen3;sleep-on-idle=true;speculative-algorithm=DFLASH;speculative-draft-model-path=maurienne-ai/Qwen3.8-27B-DFlash2-NVFP4-RTNcal;speculative-draft-model-quantization=modelopt_fp4;speculative-draft-model-revision=bd7a934213c47a9e7ef69eef36bb3325f47fd1f1;speculative-num-draft-tokens=16;tool-call-parser=qwen3_coder;torch-compile-max-bs=4;trust-remote-code=true",
+  "serve_command": null,
+  "workload": {
+    "id": "eval-multilingual-v1",
+    "resolved_params": {
+      "dataset_id": "eval-multilingual-v1",
+      "suite": "multilingual",
+      "scorer": "contains",
+      "items": 80,
+      "concurrency": 4,
+      "max_output_tokens": 2048,
+      "timeout_s": 300,
+      "temperature": 0,
+      "reasoning": "default",
+      "dataset_categories": null,
+      "dataset_target_tokens": null,
+      "pass_threshold": null,
+      "seed": 42
+    }
+  },
+  "metrics": {
+    "requests_total": 80,
+    "requests_ok": 80,
+    "requests_failed": 0,
+    "success_rate": 1,
+    "duration_s": 59.6,
+    "input_tokens_total": 11923,
+    "output_tokens_total": 6875,
+    "e2e_ms": {
+      "mean": 2950.375,
+      "p50": 2473.19,
+      "p90": 5018.639,
+      "p95": 6030.798,
+      "p99": 9423.837,
+      "min": 1283.122,
+      "max": 11207.774
+    },
+    "vram_peak_gb": null,
+    "ram_peak_gb": 75.756,
+    "power_avg_w": 45.62,
+    "power_peak_w": 51.68,
+    "energy_wh": 0.7529,
+    "gpu_util_avg_pct": 94,
+    "temp_max_c": 71,
+    "thermal_throttle_detected": false
+  },
+  "scores": {
+    "suite": "multilingual",
+    "total": 80,
+    "correct": 76,
+    "accuracy": 0.95,
+    "success_rate": 1,
+    "by_category": {
+      "comprehension": {
+        "total": 20,
+        "correct": 20
+      },
+      "translate_from": {
+        "total": 16,
+        "correct": 15
+      },
+      "translate_to": {
+        "total": 24,
+        "correct": 21
+      },
+      "word_problem": {
+        "total": 20,
+        "correct": 20
+      }
+    },
+    "by_difficulty": {
+      "medium": {
+        "total": 80,
+        "correct": 76
+      }
+    },
+    "avg_output_tokens": 85.94,
+    "avg_latency_ms": 2950.38,
+    "failures": 0,
+    "items": [
+      {
+        "id": "lang-0001",
+        "correct": false,
+        "predicted": "Die Station ist am Sonntag geschlossen.",
+        "expected": "{'all': ['bahnhof', 'sonntag', ['geschlossen', 'zu']]}",
+        "latency_ms": 2296.951,
+        "output_tokens": 68,
+        "category": "translate_to",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0002",
+        "correct": false,
+        "predicted": "La station est fermée le dimanche.",
+        "expected": "{'all': ['gare', 'dimanche', ['fermée', 'fermee', 'fermé', 'ferme']]}",
+        "latency_ms": 1935.325,
+        "output_tokens": 61,
+        "category": "translate_to",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0003",
+        "correct": true,
+        "predicted": "La estación está cerrada el domingo.",
+        "expected": "{'all': [['estación', 'estacion'], 'domingo', ['cerrada', 'cerrado']]}",
+        "latency_ms": 2071.973,
+        "output_tokens": 65,
+        "category": "translate_to",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0004",
+        "correct": true,
+        "predicted": "Vorrei un caffè senza zucchero, per favore.",
+        "expected": "{'all': [['caffè', 'caffe'], 'zucchero', 'senza']}",
+        "latency_ms": 3073.452,
+        "output_tokens": 81,
+        "category": "translate_to",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0005",
+        "correct": true,
+        "predicted": "Eu gostaria de um café sem açúcar, por favor.",
+        "expected": "{'all': [['café', 'cafe'], ['açúcar', 'acucar'], 'sem']}",
+        "latency_ms": 2755.979,
+        "output_tokens": 65,
+        "category": "translate_to",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0006",
+        "correct": true,
+        "predicted": "Şekersiz bir kahve istiyorum, lütfen.",
+        "expected": "{'all': ['kahve', ['şeker', 'seker']]}",
+        "latency_ms": 6095.566,
+        "output_tokens": 183,
+        "category": "translate_to",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0007",
+        "correct": false,
+        "predicted": "Die Besprechung beginnt um halb vier.",
+        "expected": "{'all': [['besprechung', 'sitzung', 'treffen', 'meeting'], 'halb', 'drei']}",
+        "latency_ms": 5871.464,
+        "output_tokens": 181,
+        "category": "translate_to",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0008",
+        "correct": true,
+        "predicted": "La réunion commence à trois heures et demie.",
+        "expected": "{'all': [['réunion', 'reunion'], 'trois', ['demie', 'heure']]}",
+        "latency_ms": 1975.614,
+        "output_tokens": 61,
+        "category": "translate_to",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0009",
+        "correct": true,
+        "predicted": "يبدأ الاجتماع في الثالثة والنصف.",
+        "expected": "{'all': [['الاجتماع', 'اجتماع'], ['الثالثة', 'ثلاث'], ['النصف', 'نصف']]}",
+        "latency_ms": 3836.89,
+        "output_tokens": 120,
+        "category": "translate_to",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0010",
+        "correct": true,
+        "predicted": "¿Dónde está la farmacia más cercana?",
+        "expected": "{'all': ['farmacia', ['dónde', 'donde'], ['cercana', 'cerca', 'próxima', 'proxima']]}",
+        "latency_ms": 1496.168,
+        "output_tokens": 55,
+        "category": "translate_to",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0011",
+        "correct": true,
+        "predicted": "最近的药店在哪里？",
+        "expected": "{'all': [['药店', '药房'], ['哪里', '在哪', '哪儿']]}",
+        "latency_ms": 1622.907,
+        "output_tokens": 50,
+        "category": "translate_to",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0012",
+        "correct": true,
+        "predicted": "一番近い薬局はどこですか？",
+        "expected": "{'all': ['薬局', ['どこ', '何処']]}",
+        "latency_ms": 2408.155,
+        "output_tokens": 56,
+        "category": "translate_to",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0013",
+        "correct": true,
+        "predicted": "Mein Zug hatte zwanzig Minuten Verspätung.",
+        "expected": "{'all': ['zug', 'zwanzig', ['minuten', 'verspätung', 'verspatung', 'verspätet']]}",
+        "latency_ms": 2406.959,
+        "output_tokens": 72,
+        "category": "translate_to",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0014",
+        "correct": true,
+        "predicted": "電車は20分遅れました。",
+        "expected": "{'all': [['電車', '列車'], ['20', '二十'], ['遅れ', '遅延']]}",
+        "latency_ms": 5135.98,
+        "output_tokens": 131,
+        "category": "translate_to",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0015",
+        "correct": true,
+        "predicted": "Trenim yirmi dakika gecikti.",
+        "expected": "{'all': ['tren', 'yirmi', ['dakika', 'gecik']]}",
+        "latency_ms": 8949.626,
+        "output_tokens": 194,
+        "category": "translate_to",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0016",
+        "correct": true,
+        "predicted": "Veuillez m'envoyer la facture par e-mail.",
+        "expected": "{'all': ['facture', ['e-mail', 'email', 'courriel'], ['envoy', 'adress']]}",
+        "latency_ms": 3932.83,
+        "output_tokens": 117,
+        "category": "translate_to",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0017",
+        "correct": true,
+        "predicted": "Por favor, envie-me a fatura por e-mail.",
+        "expected": "{'all': [['fatura', 'factura'], ['e-mail', 'email'], ['envi', 'mand']]}",
+        "latency_ms": 4442.567,
+        "output_tokens": 135,
+        "category": "translate_to",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0018",
+        "correct": true,
+        "predicted": "الرجاء إرسال الفاتورة عبر البريد الإلكتروني.",
+        "expected": "{'all': [['الفاتورة', 'فاتورة'], 'البريد', ['أرسل', 'ارسل', 'إرسال', 'ارسال']]}",
+        "latency_ms": 6027.389,
+        "output_tokens": 173,
+        "category": "translate_to",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0019",
+        "correct": true,
+        "predicted": "La biblioteca apre più tardi il martedì.",
+        "expected": "{'all': ['biblioteca', ['martedì', 'martedi'], ['apre', 'tardi']]}",
+        "latency_ms": 3480.52,
+        "output_tokens": 105,
+        "category": "translate_to",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0020",
+        "correct": true,
+        "predicted": "图书馆周二开馆时间较晚。",
+        "expected": "{'all': ['图书馆', ['周二', '星期二'], ['晚', '迟']]}",
+        "latency_ms": 5655.981,
+        "output_tokens": 165,
+        "category": "translate_to",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0021",
+        "correct": true,
+        "predicted": "Die Bibliothek öffnet dienstags später.",
+        "expected": "{'all': ['bibliothek', ['dienstag', 'dienstags'], ['später', 'spater', 'spät']]}",
+        "latency_ms": 4822.678,
+        "output_tokens": 132,
+        "category": "translate_to",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0022",
+        "correct": true,
+        "predicted": "Necesitamos dos sillas más para la sala de reuniones.",
+        "expected": "{'all': [['sillas', 'silla'], 'dos', ['sala', 'reunión', 'reunion']]}",
+        "latency_ms": 2686.436,
+        "output_tokens": 82,
+        "category": "translate_to",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0023",
+        "correct": true,
+        "predicted": "نحتاج إلى كرسيين إضافيين لقاعة الاجتماعات.",
+        "expected": "{'all': [['كرسي', 'كراسي', 'كرسيين'], ['اجتماع', 'الاجتماع'], ['غرفة', 'قاعة']]}",
+        "latency_ms": 3323.507,
+        "output_tokens": 79,
+        "category": "translate_to",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0024",
+        "correct": true,
+        "predicted": "会議室に椅子があと2脚必要です。",
+        "expected": "{'all': ['椅子', ['2', '二', 'ふた'], ['会議', 'ミーティング']]}",
+        "latency_ms": 2782.405,
+        "output_tokens": 64,
+        "category": "translate_to",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0025",
+        "correct": true,
+        "predicted": "The train departs from platform four today.",
+        "expected": "{'all': ['train', ['platform', 'track'], ['four', '4']]}",
+        "latency_ms": 5005.602,
+        "output_tokens": 156,
+        "category": "translate_from",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0026",
+        "correct": true,
+        "predicted": "The library is closed on Sunday.",
+        "expected": "{'all': ['library', 'sunday', ['closed', 'shut']]}",
+        "latency_ms": 2085.64,
+        "output_tokens": 58,
+        "category": "translate_from",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0027",
+        "correct": true,
+        "predicted": "The market opens at eight in the morning.",
+        "expected": "{'all': ['market', ['open'], ['eight', '8']]}",
+        "latency_ms": 2085.88,
+        "output_tokens": 61,
+        "category": "translate_from",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0028",
+        "correct": true,
+        "predicted": "I would like to book a table for four people.",
+        "expected": "{'all': [['book', 'reserve'], 'table', ['four', '4']]}",
+        "latency_ms": 2361.101,
+        "output_tokens": 70,
+        "category": "translate_from",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0029",
+        "correct": true,
+        "predicted": "The meeting has been postponed until Thursday.",
+        "expected": "{'all': ['meeting', ['postponed', 'moved', 'delayed', 'put off'], 'thursday']}",
+        "latency_ms": 1910.081,
+        "output_tokens": 61,
+        "category": "translate_from",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0030",
+        "correct": true,
+        "predicted": "The elevator has been out of service since yesterday.",
+        "expected": "{'all': [['lift', 'elevator'], ['out of service', 'out of order', 'not working', 'broken'], 'yesterday']}",
+        "latency_ms": 2067.035,
+        "output_tokens": 65,
+        "category": "translate_from",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0031",
+        "correct": true,
+        "predicted": "The nine o'clock train is ten minutes late.",
+        "expected": "{'all': ['train', ['late', 'delay'], ['ten', '10']]}",
+        "latency_ms": 2604.678,
+        "output_tokens": 65,
+        "category": "translate_from",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0032",
+        "correct": true,
+        "predicted": "The store closes at seven in the evening.",
+        "expected": "{'all': [['shop', 'store'], 'close', ['seven', '7']]}",
+        "latency_ms": 3086.957,
+        "output_tokens": 82,
+        "category": "translate_from",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0033",
+        "correct": true,
+        "predicted": "The meeting was postponed to Friday.",
+        "expected": "{'all': ['meeting', ['postponed', 'moved', 'delayed', 'put off'], 'friday']}",
+        "latency_ms": 1853.3,
+        "output_tokens": 57,
+        "category": "translate_from",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0034",
+        "correct": true,
+        "predicted": "The train departs from platform two.",
+        "expected": "{'all': ['train', ['platform', 'track'], ['two', '2']]}",
+        "latency_ms": 2097.398,
+        "output_tokens": 59,
+        "category": "translate_from",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0035",
+        "correct": true,
+        "predicted": "The museum will close its doors at five o'clock.",
+        "expected": "{'all': ['museum', ['close', 'shut'], ['five', '5']]}",
+        "latency_ms": 2832.724,
+        "output_tokens": 99,
+        "category": "translate_from",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0036",
+        "correct": true,
+        "predicted": "There has been no hot water in the apartment since yesterday.",
+        "expected": "{'all': [['hot water', 'no hot water'], ['flat', 'apartment'], 'yesterday']}",
+        "latency_ms": 2101.562,
+        "output_tokens": 71,
+        "category": "translate_from",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0037",
+        "correct": true,
+        "predicted": "This store is not open on Mondays.",
+        "expected": "{'all': [['shop', 'store'], 'monday', ['closed', 'not open', 'does not open']]}",
+        "latency_ms": 2606.513,
+        "output_tokens": 57,
+        "category": "translate_from",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0038",
+        "correct": false,
+        "predicted": "The meeting has been moved to 3 p.m.",
+        "expected": "{'all': ['meeting', ['three', '3'], ['afternoon', 'pm']]}",
+        "latency_ms": 1842.09,
+        "output_tokens": 56,
+        "category": "translate_from",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0039",
+        "correct": true,
+        "predicted": "This train does not stop at the next station.",
+        "expected": "{'all': ['train', ['stop'], ['next station', 'next stop']]}",
+        "latency_ms": 3312.561,
+        "output_tokens": 101,
+        "category": "translate_from",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0040",
+        "correct": true,
+        "predicted": "The meeting was postponed to Wednesday.",
+        "expected": "{'all': ['meeting', 'wednesday', ['postponed', 'moved', 'delayed', 'put off']]}",
+        "latency_ms": 3090.111,
+        "output_tokens": 75,
+        "category": "translate_from",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0041",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 11207.774,
+        "output_tokens": 288,
+        "category": "comprehension",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0042",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 2188.075,
+        "output_tokens": 63,
+        "category": "comprehension",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0043",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 3787.748,
+        "output_tokens": 118,
+        "category": "comprehension",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0044",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 2742.596,
+        "output_tokens": 112,
+        "category": "comprehension",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0045",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 2973.198,
+        "output_tokens": 112,
+        "category": "comprehension",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0046",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 2538.224,
+        "output_tokens": 59,
+        "category": "comprehension",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0047",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 4191.219,
+        "output_tokens": 114,
+        "category": "comprehension",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0048",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 2856.054,
+        "output_tokens": 123,
+        "category": "comprehension",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0049",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 2545.486,
+        "output_tokens": 72,
+        "category": "comprehension",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0050",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 3149.438,
+        "output_tokens": 85,
+        "category": "comprehension",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0051",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 2122.061,
+        "output_tokens": 59,
+        "category": "comprehension",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0052",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 6710.927,
+        "output_tokens": 225,
+        "category": "comprehension",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0053",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 3877.18,
+        "output_tokens": 91,
+        "category": "comprehension",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0054",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 4033.103,
+        "output_tokens": 94,
+        "category": "comprehension",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0055",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 2201.951,
+        "output_tokens": 87,
+        "category": "comprehension",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0056",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 3064.106,
+        "output_tokens": 105,
+        "category": "comprehension",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0057",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 3215.285,
+        "output_tokens": 97,
+        "category": "comprehension",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0058",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 3192.599,
+        "output_tokens": 116,
+        "category": "comprehension",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0059",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 2761.941,
+        "output_tokens": 93,
+        "category": "comprehension",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0060",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 2103.539,
+        "output_tokens": 70,
+        "category": "comprehension",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0061",
+        "correct": true,
+        "predicted": "108",
+        "expected": "108",
+        "latency_ms": 1720.512,
+        "output_tokens": 50,
+        "category": "word_problem",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0062",
+        "correct": true,
+        "predicted": "78",
+        "expected": "78",
+        "latency_ms": 1425.315,
+        "output_tokens": 42,
+        "category": "word_problem",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0063",
+        "correct": true,
+        "predicted": "832",
+        "expected": "832",
+        "latency_ms": 1926.083,
+        "output_tokens": 52,
+        "category": "word_problem",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0064",
+        "correct": true,
+        "predicted": "48",
+        "expected": "48",
+        "latency_ms": 1424.89,
+        "output_tokens": 40,
+        "category": "word_problem",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0065",
+        "correct": true,
+        "predicted": "306",
+        "expected": "306",
+        "latency_ms": 1787.261,
+        "output_tokens": 52,
+        "category": "word_problem",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0066",
+        "correct": true,
+        "predicted": "264",
+        "expected": "264",
+        "latency_ms": 1543.785,
+        "output_tokens": 45,
+        "category": "word_problem",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0067",
+        "correct": true,
+        "predicted": "602",
+        "expected": "602",
+        "latency_ms": 1545,
+        "output_tokens": 52,
+        "category": "word_problem",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0068",
+        "correct": true,
+        "predicted": "816",
+        "expected": "816",
+        "latency_ms": 1319.325,
+        "output_tokens": 47,
+        "category": "word_problem",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0069",
+        "correct": true,
+        "predicted": "319",
+        "expected": "319",
+        "latency_ms": 2997.966,
+        "output_tokens": 70,
+        "category": "word_problem",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0070",
+        "correct": true,
+        "predicted": "264",
+        "expected": "264",
+        "latency_ms": 1407.348,
+        "output_tokens": 45,
+        "category": "word_problem",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0071",
+        "correct": true,
+        "predicted": "133",
+        "expected": "133",
+        "latency_ms": 2297.74,
+        "output_tokens": 68,
+        "category": "word_problem",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0072",
+        "correct": true,
+        "predicted": "430",
+        "expected": "430",
+        "latency_ms": 1542.259,
+        "output_tokens": 48,
+        "category": "word_problem",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0073",
+        "correct": true,
+        "predicted": "119",
+        "expected": "119",
+        "latency_ms": 1897.424,
+        "output_tokens": 47,
+        "category": "word_problem",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0074",
+        "correct": true,
+        "predicted": "48",
+        "expected": "48",
+        "latency_ms": 1639.08,
+        "output_tokens": 42,
+        "category": "word_problem",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0075",
+        "correct": true,
+        "predicted": "69",
+        "expected": "69",
+        "latency_ms": 1860.134,
+        "output_tokens": 46,
+        "category": "word_problem",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0076",
+        "correct": true,
+        "predicted": "928",
+        "expected": "928",
+        "latency_ms": 2041.772,
+        "output_tokens": 47,
+        "category": "word_problem",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0077",
+        "correct": true,
+        "predicted": "110",
+        "expected": "110",
+        "latency_ms": 1823.32,
+        "output_tokens": 58,
+        "category": "word_problem",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0078",
+        "correct": true,
+        "predicted": "162",
+        "expected": "162",
+        "latency_ms": 1768.918,
+        "output_tokens": 58,
+        "category": "word_problem",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0079",
+        "correct": true,
+        "predicted": "243",
+        "expected": "243",
+        "latency_ms": 1285.715,
+        "output_tokens": 47,
+        "category": "word_problem",
+        "difficulty": "medium"
+      },
+      {
+        "id": "lang-0080",
+        "correct": true,
+        "predicted": "228",
+        "expected": "228",
+        "latency_ms": 1283.122,
+        "output_tokens": 48,
+        "category": "word_problem",
+        "difficulty": "medium"
+      }
+    ]
+  },
+  "failures": [],
+  "conditions": {
+    "dedicated": true,
+    "detail": "Only the recipe's own SGLang container (qwen38-sglang-run) was resident; nothing else used the GPU.",
+    "isolation_check": "docker ps -> qwen38-sglang-run dgx-exporter ; nvidia-smi compute apps -> 2; load1 at start 0.77"
+  },
+  "gotchas": [
+    {
+      "severity": "info",
+      "text": "Boot lottery: this boot allocated a KV pool of 383,883 tokens (target cache torch.float8_e4m3fn, K 5.86 GB + V 5.86 GB; the DFlash2 draft cache is bf16 at the same token count, K 3.66 GB + V 3.66 GB), with mem-fraction-static 0.50 and the native 262144 window. The recipe documents that this number moves from boot to boot, so read it out of the server log of the boot a number belongs to instead of assuming it."
+    },
+    {
+      "severity": "info",
+      "text": "The quant registry entry nvfp4-fp4-lmhead pins RadixArk/Qwen3.8-27B-NVFP4 at revision 554ebba9, which is what an earlier run on this cell served. This recipe pins 52d1adc, and that is what model.revision and the revision arg record here. The quantization scheme is unchanged between the two: hf_quant_config.json at 52d1adc still declares MIXED_PRECISION over 401 quantized layers, NVFP4 group-16 on lm_head and on the MLP triplets, FP8 on the attention projections, mtp excluded, and kv_cache_quant_algo FP8."
+    },
+    {
+      "severity": "info",
+      "text": "kv-cache-dtype is left at auto and resolves to fp8_e4m3 from the checkpoint's kv_cache_quant_algo, so no flag is needed for the NVFP4 target. Qwen's own FP8 release carries no such declaration and needs --kv-cache-dtype fp8_e4m3 or the pool halves."
+    },
+    {
+      "severity": "info",
+      "text": "The 27B lane does not serve the official lmsysorg/sglang:dev-qwen38-27b-dflash2 image. The recipe installer builds qwen38-dflash2:v1.2.3 on the host from the pinned base digest lmsysorg/sglang@sha256:febfb971 plus eight sha256-verified overlay files, because the official image predates the fused Qwen3.5 RoPE mrope fix. engine.version still reports the base image's 0.0.0.dev0+qwen38.27b.g561c8f3, so engine.build names the recipe commit to tell this build apart from another recipe that starts from the same base."
+    },
+    {
+      "severity": "info",
+      "text": "Speculative decoding is DFLASH with 16 draft tokens from maurienne-ai/Qwen3.8-27B-DFlash2-NVFP4-RTNcal at bd7a9342, quantized modelopt_fp4. --speculative-token-map is a flash-lane option in v1.13 and is not used on the 27B lane, so speculative_token_map is None in the served args."
+    },
+    {
+      "severity": "info",
+      "text": "A pinned revision download leaves no refs/main in the HF cache, and an SGLang build that resolves the draft config without the revision then fails offline. That did not happen here: the recipe resolves the snapshot path itself and the server log says it found the local snapshot and skipped the download for both target and draft."
+    },
+    {
+      "severity": "info",
+      "text": "The server runs with --sleep-on-idle, so the first request after an idle gap pays a wake-up on top of the usual cold-start cost. Every workload here ran after a warm-up request on a server that had already answered."
+    },
+    {
+      "severity": "info",
+      "text": "Speed rows force thinking off per request with chat_template_kwargs enable_thinking false. Eval rows use the served default, which in v1.13 is thinking on at the recipe's own lean reasoning-effort level (74 words in the chat template, the level the recipe added and made the default)."
+    },
+    {
+      "severity": "info",
+      "text": "Brought up with the recipe's documented foreground path: CONTEXT_MODE=native ./install.sh --no-service --no-opencode, then ./run.sh. run.sh issues the same docker run and the same server flags as the systemd unit, so the numbers describe the unit's configuration, without installing systemd units, a keepalive proxy or the cockpit on the box."
+    }
+  ],
+  "derived": {
+    "cost_per_1m_output_tokens_usd": null,
+    "tokens_per_watt": null,
+    "tok_s_per_gb_bandwidth": null,
+    "bandwidth_efficiency": null,
+    "memory_headroom_gb": null
+  },
+  "raw": {
+    "harness": "atlas-bench",
+    "harness_version": "0.1.0",
+    "sha256": "970f2f1ad2d7ffabd776a534940e1b4448ac8a28ec9226293e76c0fff7023da4",
+    "payload_path": null,
+    "payload": {
+      "scorer": "contains",
+      "scorers_used": [
+        "contains",
+        "mc",
+        "numeric"
+      ],
+      "engine_endpoint": {
+        "attached": true,
+        "base_url": "http://127.0.0.1:30000/v1",
+        "served_model_id": "qwen3.8-27b",
+        "advertised_models": [
+          "qwen3.8-27b"
+        ]
+      }
+    },
+    "truncated": false
+  },
+  "provenance": {
+    "github_login": "0xBakeer",
+    "github_user_id": 17404809,
+    "started_at": "2026-09-16T09:21:36Z",
+    "finished_at": "2026-09-16T09:22:36Z",
+    "submitted_at": null,
+    "commit": null,
+    "pr": null,
+    "method": "atlas-bench",
+    "agent": null,
+    "notes": "Served with the hasso5703 DGX Spark Qwen3.8 recipe (https://github.com/hasso5703/dgx-spark-qwen38, main f01c798, v1.13.0), 27B lane, target \"stock\", brought up with its documented foreground path: CONTEXT_MODE=native ./install.sh --no-service --no-opencode followed by ./run.sh, which issues the same docker run and the same server flags as the systemd unit. Target RadixArk/Qwen3.8-27B-NVFP4 at revision 52d1adc5, DFlash2 speculative decoding with the calibrated NVFP4 drafter maurienne-ai/Qwen3.8-27B-DFlash2-NVFP4-RTNcal at revision bd7a9342 and 16 draft tokens, mem-fraction-static 0.50, chunked prefill 8192, FlashInfer attention with autotune disabled for determinism, torch.compile on up to batch 4, CUDA graph max batch 8, prefill CUDA graph off, mamba radix cache extra_buffer with bf16 SSM state, max-running-requests 8, sleep-on-idle, and the recipe-patched chat template whose default reasoning effort is the recipe-added \"lean\" level. KV cache dtype is left at auto, which resolves to fp8_e4m3 from the checkpoint kv_cache_quant_algo, and the context window is the native 262144. The speed rows force thinking off per request (chat_template_kwargs enable_thinking false); the eval rows use the served default, which is thinking on at lean effort. Serving image built on the host by the recipe installer from the pinned base digest plus eight sha256-verified overlay files. The harness attached over HTTP on 127.0.0.1:30000 with the bearer key."
+  },
+  "verification": {
+    "level": "self-reported",
+    "reproduced_by": [],
+    "flags": []
+  }
+}
