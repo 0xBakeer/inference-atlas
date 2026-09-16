@@ -1,0 +1,551 @@
+{
+  "schema_version": 1,
+  "run_id": "828c73f114adfb7e--eval-format-v1--886586",
+  "config_id": "828c73f114adfb7e",
+  "cell_id": "aefd407f2560",
+  "workload_id": "eval-format-v1",
+  "kind": "eval",
+  "engine": {
+    "id": "vllm",
+    "version": "0.27.1",
+    "commit": "6e448d0ea9bf3d88d898b65449ca6dc2aec170ac",
+    "container": "vllm/vllm-openai:v0.27.1-aarch64 (repo digest sha256:1c8e60a0841b333c700488cb029d3664807249da0c071e862191b00fe34b228c, image id 2c211a1273b4, created 2026-08-11; official release image, vLLM 0.27.1 at 6e448d0ea, torch 2.13.0+cu130, FlashInfer 0.6.16.post3, transformers 5.15.0)",
+    "install_method": "docker"
+  },
+  "model": {
+    "id": "Qwen/Qwen3.8-27B",
+    "quant_id": "nvfp4-unsloth",
+    "hf_id": "Qwen/Qwen3.8-27B",
+    "revision": "f0b7c9e722f5565102fff8481c99e4d86ae099c7",
+    "dtype": "auto",
+    "local_path": null
+  },
+  "hardware": {
+    "id": "nvidia-gb10-dgx-spark",
+    "count": 1,
+    "driver": "580.173.02",
+    "cuda": "13.0",
+    "host": {
+      "cpu": "Cortex-A725",
+      "cpu_cores": 20,
+      "ram_gb": 121.6,
+      "os": "Ubuntu 24.04.4 LTS",
+      "kernel": "6.17.0-1029-nvidia",
+      "arch": "aarch64"
+    },
+    "fingerprint": "sha256:52ea2bdd513719724db88c162b6cc2c9fb4e5b67e02dbe41b9de00687acefb91",
+    "captured": {
+      "nvidia_smi": {
+        "driver": "580.173.02",
+        "cuda": "13.0",
+        "products": [
+          "NVIDIA GB10"
+        ],
+        "fb_memory_total_mib": 0.0
+      },
+      "lscpu": {
+        "architecture": "aarch64",
+        "cpus": "20",
+        "vendor_id": "ARM",
+        "model_name": "Cortex-A725",
+        "cores_per_socket": "10",
+        "sockets": "1",
+        "cpu_max_mhz": "2808.0000"
+      }
+    }
+  },
+  "args": {
+    "max-model-len": 262144,
+    "max-num-seqs": 8,
+    "gpu-memory-utilization": 0.82,
+    "enable-prefix-caching": true,
+    "limit-mm-per-prompt": {
+      "image": 4,
+      "video": 0
+    },
+    "reasoning-parser": "qwen3",
+    "enable-auto-tool-choice": true,
+    "tool-call-parser": "qwen3_xml",
+    "enable-flashinfer-autotune": true,
+    "speculative-config": {
+      "method": "mtp",
+      "num_speculative_tokens": 3,
+      "model": "unsloth/Qwen3.8-27B-NVFP4"
+    }
+  },
+  "args_canonical": "@dtype=auto;@quant=nvfp4-unsloth;enable-auto-tool-choice=true;enable-flashinfer-autotune=true;enable-prefix-caching=true;gpu-memory-utilization=0.82;limit-mm-per-prompt={\"image\":4,\"video\":0};max-model-len=262144;max-num-seqs=8;reasoning-parser=qwen3;speculative-config={\"method\":\"mtp\",\"model\":\"unsloth/Qwen3.8-27B-NVFP4\",\"num_speculative_tokens\":3};tool-call-parser=qwen3_xml",
+  "serve_command": null,
+  "workload": {
+    "id": "eval-format-v1",
+    "resolved_params": {
+      "dataset_id": "eval-format-v1",
+      "suite": "format",
+      "scorer": "exact",
+      "items": 30,
+      "concurrency": 4,
+      "max_output_tokens": 256,
+      "timeout_s": 300.0,
+      "temperature": 0,
+      "reasoning": "default",
+      "dataset_categories": null,
+      "dataset_target_tokens": null,
+      "pass_threshold": null,
+      "seed": 42
+    }
+  },
+  "metrics": {
+    "requests_total": 30,
+    "requests_ok": 30,
+    "requests_failed": 0,
+    "success_rate": 1.0,
+    "duration_s": 19.99,
+    "input_tokens_total": 2094,
+    "output_tokens_total": 1510,
+    "e2e_ms": {
+      "mean": 2473.992,
+      "p50": 2303.153,
+      "p90": 3431.982,
+      "p95": 3483.858,
+      "p99": 3888.973,
+      "min": 1806.051,
+      "max": 4053.388
+    },
+    "vram_peak_gb": null,
+    "ram_peak_gb": 106.514,
+    "power_avg_w": 39.08,
+    "power_peak_w": 45.74,
+    "energy_wh": 0.2136,
+    "gpu_util_avg_pct": 90.0,
+    "temp_max_c": 76.0,
+    "thermal_throttle_detected": false
+  },
+  "scores": {
+    "suite": "format",
+    "total": 30,
+    "correct": 29,
+    "accuracy": 0.966667,
+    "success_rate": 1.0,
+    "by_category": {
+      "boolean": {
+        "total": 4,
+        "correct": 4
+      },
+      "number_only": {
+        "total": 8,
+        "correct": 7
+      },
+      "one_word": {
+        "total": 8,
+        "correct": 8
+      },
+      "pattern": {
+        "total": 3,
+        "correct": 3
+      },
+      "token": {
+        "total": 7,
+        "correct": 7
+      }
+    },
+    "by_difficulty": {
+      "easy": {
+        "total": 12,
+        "correct": 11
+      },
+      "hard": {
+        "total": 3,
+        "correct": 3
+      },
+      "medium": {
+        "total": 15,
+        "correct": 15
+      }
+    },
+    "avg_output_tokens": 50.33,
+    "avg_latency_ms": 2473.99,
+    "failures": 0,
+    "items": [
+      {
+        "id": "fmt-0001",
+        "correct": true,
+        "predicted": "42",
+        "expected": "42",
+        "latency_ms": 1945.902,
+        "output_tokens": 44,
+        "category": "number_only",
+        "difficulty": "easy"
+      },
+      {
+        "id": "fmt-0002",
+        "correct": true,
+        "predicted": "25",
+        "expected": "25",
+        "latency_ms": 2097.186,
+        "output_tokens": 37,
+        "category": "number_only",
+        "difficulty": "easy"
+      },
+      {
+        "id": "fmt-0003",
+        "correct": true,
+        "predicted": "8",
+        "expected": "8",
+        "latency_ms": 1815.212,
+        "output_tokens": 39,
+        "category": "number_only",
+        "difficulty": "easy"
+      },
+      {
+        "id": "fmt-0004",
+        "correct": false,
+        "predicted": "42\n\n\n42",
+        "expected": "42",
+        "latency_ms": 2544.155,
+        "output_tokens": 49,
+        "category": "number_only",
+        "difficulty": "easy"
+      },
+      {
+        "id": "fmt-0005",
+        "correct": true,
+        "predicted": "9",
+        "expected": "9",
+        "latency_ms": 3480.704,
+        "output_tokens": 84,
+        "category": "number_only",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0006",
+        "correct": true,
+        "predicted": "30",
+        "expected": "30",
+        "latency_ms": 1966.01,
+        "output_tokens": 42,
+        "category": "number_only",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0007",
+        "correct": true,
+        "predicted": "13",
+        "expected": "13",
+        "latency_ms": 2099.627,
+        "output_tokens": 42,
+        "category": "number_only",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0008",
+        "correct": true,
+        "predicted": "150",
+        "expected": "150",
+        "latency_ms": 3042.05,
+        "output_tokens": 59,
+        "category": "number_only",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0009",
+        "correct": true,
+        "predicted": "OK",
+        "expected": "OK",
+        "latency_ms": 1806.051,
+        "output_tokens": 31,
+        "category": "one_word",
+        "difficulty": "easy"
+      },
+      {
+        "id": "fmt-0010",
+        "correct": true,
+        "predicted": "Tokyo",
+        "expected": "Tokyo",
+        "latency_ms": 1827.364,
+        "output_tokens": 35,
+        "category": "one_word",
+        "difficulty": "easy"
+      },
+      {
+        "id": "fmt-0011",
+        "correct": true,
+        "predicted": "Green",
+        "expected": "green",
+        "latency_ms": 2660.441,
+        "output_tokens": 47,
+        "category": "one_word",
+        "difficulty": "easy"
+      },
+      {
+        "id": "fmt-0012",
+        "correct": true,
+        "predicted": "Cold",
+        "expected": "cold",
+        "latency_ms": 2369.961,
+        "output_tokens": 44,
+        "category": "one_word",
+        "difficulty": "easy"
+      },
+      {
+        "id": "fmt-0013",
+        "correct": true,
+        "predicted": "mice",
+        "expected": "mice",
+        "latency_ms": 1811.284,
+        "output_tokens": 39,
+        "category": "one_word",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0014",
+        "correct": true,
+        "predicted": "salta",
+        "expected": "salta",
+        "latency_ms": 2791.405,
+        "output_tokens": 50,
+        "category": "one_word",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0015",
+        "correct": true,
+        "predicted": "jumps",
+        "expected": "jumps",
+        "latency_ms": 3486.439,
+        "output_tokens": 66,
+        "category": "one_word",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0016",
+        "correct": true,
+        "predicted": "inf",
+        "expected": "inf",
+        "latency_ms": 3059.072,
+        "output_tokens": 64,
+        "category": "one_word",
+        "difficulty": "hard"
+      },
+      {
+        "id": "fmt-0017",
+        "correct": true,
+        "predicted": "Fe",
+        "expected": "Fe",
+        "latency_ms": 2224.863,
+        "output_tokens": 41,
+        "category": "token",
+        "difficulty": "easy"
+      },
+      {
+        "id": "fmt-0018",
+        "correct": true,
+        "predicted": "DE",
+        "expected": "DE",
+        "latency_ms": 2923.04,
+        "output_tokens": 59,
+        "category": "token",
+        "difficulty": "easy"
+      },
+      {
+        "id": "fmt-0019",
+        "correct": true,
+        "predicted": "ja",
+        "expected": "ja",
+        "latency_ms": 2662.003,
+        "output_tokens": 56,
+        "category": "token",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0020",
+        "correct": true,
+        "predicted": "s",
+        "expected": "s",
+        "latency_ms": 2119.818,
+        "output_tokens": 46,
+        "category": "token",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0021",
+        "correct": true,
+        "predicted": "ff",
+        "expected": "ff",
+        "latency_ms": 2832.841,
+        "output_tokens": 60,
+        "category": "token",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0022",
+        "correct": true,
+        "predicted": "IX",
+        "expected": "IX",
+        "latency_ms": 1821.766,
+        "output_tokens": 36,
+        "category": "token",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0023",
+        "correct": true,
+        "predicted": "l",
+        "expected": "l",
+        "latency_ms": 2236.346,
+        "output_tokens": 43,
+        "category": "token",
+        "difficulty": "hard"
+      },
+      {
+        "id": "fmt-0024",
+        "correct": true,
+        "predicted": "Yes",
+        "expected": "yes",
+        "latency_ms": 1812.36,
+        "output_tokens": 30,
+        "category": "boolean",
+        "difficulty": "easy"
+      },
+      {
+        "id": "fmt-0025",
+        "correct": true,
+        "predicted": "true",
+        "expected": "true",
+        "latency_ms": 2505.406,
+        "output_tokens": 47,
+        "category": "boolean",
+        "difficulty": "easy"
+      },
+      {
+        "id": "fmt-0026",
+        "correct": true,
+        "predicted": "yes",
+        "expected": "yes",
+        "latency_ms": 2085.748,
+        "output_tokens": 46,
+        "category": "boolean",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0027",
+        "correct": true,
+        "predicted": "false",
+        "expected": "false",
+        "latency_ms": 2653.554,
+        "output_tokens": 54,
+        "category": "boolean",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0028",
+        "correct": true,
+        "predicted": "2026-03-01",
+        "expected": "2026-03-01",
+        "latency_ms": 3426.568,
+        "output_tokens": 78,
+        "category": "pattern",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0029",
+        "correct": true,
+        "predicted": "00:15",
+        "expected": "00:15",
+        "latency_ms": 4053.388,
+        "output_tokens": 99,
+        "category": "pattern",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0030",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 2059.187,
+        "output_tokens": 43,
+        "category": "pattern",
+        "difficulty": "hard"
+      }
+    ]
+  },
+  "failures": [],
+  "conditions": {
+    "dedicated": true,
+    "detail": "Only the recipe's own vLLM container was resident; nothing else used the GPU.",
+    "isolation_check": "docker ps -> mirrdhyn-vllm dgx-exporter ; nvidia-smi compute apps -> 1; load1 at start 0.37"
+  },
+  "gotchas": [
+    {
+      "severity": "info",
+      "text": "Engine build: the gist builds vLLM 0.27.1 from source against CUDA 13.2 and does not publish the build. These rows ran the official release image vllm/vllm-openai:v0.27.1-aarch64, repo digest sha256:1c8e60a0841b333c700488cb029d3664807249da0c071e862191b00fe34b228c, which is the same v0.27.1 tag (6e448d0ea) built against CUDA 13.0 with torch arch list up to sm_120. The gist environment (CUTE_DSL_ARCH=sm_121a, FLASHINFER_CUDA_ARCH_LIST=12.1a) was set as written."
+    },
+    {
+      "severity": "info",
+      "text": "max-num-seqs is 8, so serve-short-c16 queues half of its 16 streams. With 3 speculative tokens vLLM also caps max_num_scheduled_tokens at 2048 and warns that this may be suboptimal, so long prompts prefill in 2,048-token chunks."
+    },
+    {
+      "severity": "info",
+      "text": "KV cache dtype is not set (auto), but unsloth/Qwen3.8-27B-NVFP4 carries a static per-tensor 8-bit float kv_cache_scheme, and FlashInfer resolved kv_cache_dtype float8_e4m3fn. This boot allocated 72.79 GiB of KV cache, 2,054,681 tokens, 7.84x concurrency at 262144; the gist reports 2,032,714 tokens for the same settings. The attention block size is 1,600 tokens and the mamba prefix cache runs in align mode."
+    },
+    {
+      "severity": "info",
+      "text": "Speculative decoding with FlashInfer attention cannot use full CUDA graphs: vLLM logs that FULL_AND_PIECEWISE is not supported with spec-decode for this backend and falls back to cudagraph_mode PIECEWISE."
+    },
+    {
+      "severity": "info",
+      "text": "The target is not pinned by the gist, which loads a local path. The snapshot served was unsloth/Qwen3.8-27B-NVFP4 main f0b7c9e7 (2026-09-08). The MTP drafter is the head bundled in the same checkpoint (model_mtp.safetensors, one layer); vLLM shares the target embedding and lm_head with it."
+    },
+    {
+      "severity": "info",
+      "text": "vLLM reads generation_config.json from the target and overrides its own sampling defaults with temperature 1.0, top_k 20, top_p 0.95. Every request here sets temperature 0 and seed 42."
+    },
+    {
+      "severity": "info",
+      "text": "Speed rows force thinking off per request with chat_template_kwargs enable_thinking false. Eval rows use the served default, thinking on at full length; the gist sets no reasoning level on the server."
+    }
+  ],
+  "derived": {
+    "cost_per_1m_output_tokens_usd": null,
+    "tokens_per_watt": null,
+    "tok_s_per_gb_bandwidth": null,
+    "bandwidth_efficiency": null,
+    "memory_headroom_gb": null
+  },
+  "raw": {
+    "harness": "atlas-bench",
+    "harness_version": "0.1.0",
+    "sha256": "dc210a7ba2b9a44d95b66e01a79e5ff343993920618aad2624d42059d0b4a134",
+    "payload_path": null,
+    "payload": {
+      "scorer": "exact",
+      "scorers_used": [
+        "exact"
+      ],
+      "engine_endpoint": {
+        "attached": true,
+        "base_url": "http://127.0.0.1:8888/v1",
+        "served_model_id": "qwen3.8-27b",
+        "advertised_models": [
+          "qwen3.8-27b"
+        ]
+      }
+    },
+    "truncated": false
+  },
+  "provenance": {
+    "github_login": "0xBakeer",
+    "github_user_id": null,
+    "started_at": "2026-09-16T22:20:03Z",
+    "finished_at": "2026-09-16T22:20:23Z",
+    "submitted_at": null,
+    "commit": null,
+    "pr": null,
+    "method": "atlas-bench",
+    "agent": null,
+    "notes": "Served with the single-node launch from the GitHub gist \"Qwen3.8-27B-NVFP4 + MTP-3 on a single DGX Spark\" by Mirrdhyn (https://gist.github.com/Mirrdhyn/d476d17723c9d68eac72f03ec9447f2b, revision ee1ffa6b of 2026-08-17). The gist builds vLLM 0.27.1 from source against CUDA 13.2; these rows ran the official vllm/vllm-openai:v0.27.1-aarch64 release image instead (repo digest sha256:1c8e60a0, vLLM 0.27.1 at 6e448d0ea, torch 2.13.0+cu130, FlashInfer 0.6.16.post3, transformers 5.15.0). Flags as in the gist: target unsloth/Qwen3.8-27B-NVFP4 from a local snapshot (main f0b7c9e7), MTP speculative decoding with 3 tokens from the MTP head bundled in the same checkpoint, max-model-len 262144, max-num-seqs 8, gpu-memory-utilization 0.82, prefix caching on, 4 images and 0 videos per prompt, reasoning parser qwen3, tool parser qwen3_xml with auto tool choice, FlashInfer autotune on, tensor-parallel-size 1. Environment as in the gist: CUTE_DSL_ARCH=sm_121a, FLASHINFER_CUDA_ARCH_LIST=12.1a, FLASHINFER_DISABLE_VERSION_CHECK=1, PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True, VLLM_USE_FLASHINFER_SAMPLER=1. Only the port (8888 instead of 8000) and the usage-stats opt-outs VLLM_NO_USAGE_STATS=1 and DO_NOT_TRACK=1 were added. vLLM chose the FlashInfer attention backend, an fp8_e4m3 KV cache from the checkpoint kv_cache_scheme and FlashInferCutlassNvFp4LinearKernel for the NVFP4 layers. The chat template comes from the target repository, so the served default is thinking on: the speed rows force thinking off per request with chat_template_kwargs enable_thinking false, the eval rows use that served default. The server runs without an API key; the harness attached over HTTP on 127.0.0.1:8888 and sent a bearer header the server ignores."
+  },
+  "verification": {
+    "level": "self-reported",
+    "reproduced_by": [],
+    "flags": []
+  }
+}
