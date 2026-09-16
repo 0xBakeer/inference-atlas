@@ -1,0 +1,390 @@
+{
+  "schema_version": 1,
+  "run_id": "e8badcd0986cd3d8--prefill-32k-v1--ce6ae5",
+  "config_id": "e8badcd0986cd3d8",
+  "cell_id": "aefd407f2560",
+  "workload_id": "prefill-32k-v1",
+  "kind": "prefill",
+  "engine": {
+    "id": "vllm",
+    "version": "0.27.2rc1.dev88+gaa3100357.d20260814",
+    "commit": "aa3100357322995b201d5348c5490596a7bd70a9",
+    "container": "eugr/spark-vllm:nightly-20260814 (repo digest sha256:ab89584706575a7af48a3d5a2a92bc48a5432781fb87925a181d8bb5eab4f5d3, image id a0cb301789ef, built 2026-08-14 from vllm main aa3100357; pulled as published, no local build)",
+    "install_method": "docker"
+  },
+  "model": {
+    "id": "Qwen/Qwen3.8-27B",
+    "quant_id": "nvfp4-unsloth",
+    "hf_id": "Qwen/Qwen3.8-27B",
+    "revision": "f0b7c9e722f5565102fff8481c99e4d86ae099c7",
+    "dtype": "auto",
+    "local_path": null
+  },
+  "hardware": {
+    "id": "nvidia-gb10-dgx-spark",
+    "count": 1,
+    "driver": "580.173.02",
+    "cuda": "13.0",
+    "host": {
+      "cpu": "Cortex-A725",
+      "cpu_cores": 20,
+      "ram_gb": 121.6,
+      "os": "Ubuntu 24.04.4 LTS",
+      "kernel": "6.17.0-1029-nvidia",
+      "arch": "aarch64"
+    },
+    "fingerprint": "sha256:52ea2bdd513719724db88c162b6cc2c9fb4e5b67e02dbe41b9de00687acefb91",
+    "captured": {
+      "nvidia_smi": {
+        "driver": "580.173.02",
+        "cuda": "13.0",
+        "products": [
+          "NVIDIA GB10"
+        ],
+        "fb_memory_total_mib": 0
+      },
+      "lscpu": {
+        "architecture": "aarch64",
+        "cpus": "20",
+        "vendor_id": "ARM",
+        "model_name": "Cortex-A725",
+        "cores_per_socket": "10",
+        "sockets": "1",
+        "cpu_max_mhz": "2808.0000"
+      }
+    }
+  },
+  "args": {
+    "max-model-len": 262144,
+    "gpu-memory-utilization": 0.85,
+    "max-num-batched-tokens": 16384,
+    "enable-prefix-caching": true,
+    "reasoning-parser": "qwen3",
+    "tool-call-parser": "qwen3_xml",
+    "enable-auto-tool-choice": true,
+    "limit-mm-per-prompt": {
+      "image": 2,
+      "video": 0
+    },
+    "speculative-config": {
+      "method": "dspark",
+      "model": "Doopeworld/Qwen3.8-27B-DSpark-vLLM",
+      "num_speculative_tokens": 14,
+      "draft_sample_method": "probabilistic"
+    }
+  },
+  "args_canonical": "@dtype=auto;@quant=nvfp4-unsloth;enable-auto-tool-choice=true;enable-prefix-caching=true;gpu-memory-utilization=0.85;limit-mm-per-prompt={\"image\":2,\"video\":0};max-model-len=262144;max-num-batched-tokens=16384;reasoning-parser=qwen3;speculative-config={\"draft_sample_method\":\"probabilistic\",\"method\":\"dspark\",\"model\":\"Doopeworld/Qwen3.8-27B-DSpark-vLLM\",\"num_speculative_tokens\":14};tool-call-parser=qwen3_xml",
+  "serve_command": null,
+  "workload": {
+    "id": "prefill-32k-v1",
+    "resolved_params": {
+      "concurrency": 1,
+      "num_requests": 10,
+      "input_tokens": 32768,
+      "output_tokens": 16,
+      "warmup_requests": 1,
+      "prompts_padded": false,
+      "needle_check": false,
+      "timeout_s": 900,
+      "seed": 42
+    }
+  },
+  "metrics": {
+    "requests_total": 10,
+    "requests_ok": 10,
+    "requests_failed": 0,
+    "success_rate": 1,
+    "duration_s": 130.88,
+    "input_tokens_total": 402931,
+    "output_tokens_total": 57,
+    "output_tok_s": 0.436,
+    "total_tok_s": 3079.065,
+    "req_s": 0.076,
+    "prefill_tok_s": 3129.662,
+    "ttft_ms": {
+      "mean": 12874.586,
+      "p50": 2229.613,
+      "p90": 37310.984,
+      "p95": 37390.358,
+      "p99": 37453.857,
+      "min": 1957.475,
+      "max": 37469.732
+    },
+    "tpot_ms": {
+      "mean": 48.585,
+      "p50": 24.905,
+      "p90": 100.624,
+      "p95": 100.967,
+      "p99": 101.241,
+      "min": 17.948,
+      "max": 101.31
+    },
+    "itl_ms": {
+      "mean": 130.87,
+      "p50": 122.598,
+      "p90": 145.038,
+      "p95": 182.869,
+      "p99": 227.154,
+      "min": 89.145,
+      "max": 238.226
+    },
+    "e2e_ms": {
+      "mean": 13087.833,
+      "p50": 2561.974,
+      "p90": 37460.176,
+      "p95": 37654.848,
+      "p99": 37810.585,
+      "min": 2078.184,
+      "max": 37849.52
+    },
+    "decode_tok_s_per_request": {
+      "mean": 30.971,
+      "p50": 40.152,
+      "p90": 42.851,
+      "p95": 49.284,
+      "p99": 54.43,
+      "min": 9.871,
+      "max": 55.717
+    },
+    "vram_peak_gb": null,
+    "ram_peak_gb": 120.713,
+    "kv_cache_tokens": null,
+    "power_avg_w": 60.27,
+    "power_peak_w": 87.95,
+    "energy_wh": 3.0073,
+    "gpu_util_avg_pct": 93.82,
+    "temp_max_c": 80,
+    "thermal_throttle_detected": false
+  },
+  "failures": [],
+  "conditions": {
+    "dedicated": true,
+    "detail": "Only the recipe's own vLLM container was resident; nothing else used the GPU.",
+    "isolation_check": "docker ps -> qwen38-dspark-vllm dgx-exporter ; nvidia-smi compute apps -> 1; load1 at start 0.43"
+  },
+  "gotchas": [
+    {
+      "severity": "info",
+      "text": "Image: the recipe boot script defaults to spark-vllm:qwen38, which its run log describes as eugr/spark-vllm:latest of 2026-08-14 with ffmpeg 6.1.1 added, and which is not published. These rows ran on eugr/spark-vllm:nightly-20260814, repo digest sha256:ab89584706575a7af48a3d5a2a92bc48a5432781fb87925a181d8bb5eab4f5d3, image id a0cb301789ef, the id the recipe run log records for eugr/spark-vllm:latest. Its build-metadata.yaml names vllm-project/vllm main aa3100357 with no extra pull requests. ffmpeg is absent; it matters only for video and image input."
+    },
+    {
+      "severity": "info",
+      "text": "Boot lottery: this boot allocated 72.47 GiB of KV cache, 1,250,962 tokens, 4.77x concurrency at 262144, with gpu-memory-utilization 0.85 and 114.83 of 121.63 GiB free at startup. The recipe README reports 1,161,326 tokens (4.43x) for the same settings on its machine. vLLM padded the KV groups with 2 and 4 layers and warns the second may waste up to 25 per cent of that group."
+    },
+    {
+      "severity": "info",
+      "text": "KV cache dtype is not set by the recipe (kv-cache-dtype auto), but unsloth/Qwen3.8-27B-NVFP4 carries a static per-tensor 8-bit float kv_cache_scheme in its quantization_config, and FlashInfer resolved kv_cache_dtype float8_e4m3fn with the xqa decode backend. The recipe omits --attention-backend on purpose; vLLM picked FLASHINFER out of FLASHINFER and TRITON_ATTN, and FlashInfer serves the draft model non-causal attention."
+    },
+    {
+      "severity": "info",
+      "text": "Neither the target nor the drafter is pinned. unsloth/Qwen3.8-27B-NVFP4 resolved to main f0b7c9e7 (2026-09-08). The recipe run log names snapshot a767244, which no longer exists in the repository history after the 2026-08-15 super-squash; every file except README.md has the same content hash at 16b6615a (the squash), 57926bac and f0b7c9e7. Doopeworld/Qwen3.8-27B-DSpark-vLLM resolved to ebaa0919 (2026-08-16), its only upload: 5 layers, bf16, block_size 7, 2.6 GB."
+    },
+    {
+      "severity": "info",
+      "text": "DSpark runs with 14 speculative tokens against a drafter whose config says block_size 7, and probabilistic draft sampling. During the pre-run sanity requests (thinking on and off, greedy, 64 + 512 + 512 tokens) vLLM counted 339 drafts, 4,746 draft tokens and 757 accepted, 16 per cent, a mean acceptance length of 3.2 tokens per step; positions 9 to 14 accepted almost nothing on prose-like output. The README 75 to 78 tok/s is a 3,000-token edit that copies code already in the prompt, where it reports 68 per cent acceptance."
+    },
+    {
+      "severity": "info",
+      "text": "vLLM reads generation_config.json from the target and overrides its own sampling defaults with temperature 1.0, top_k 20, top_p 0.95. Every request here sets temperature 0 and seed 42."
+    },
+    {
+      "severity": "info",
+      "text": "Speed rows force thinking off per request with chat_template_kwargs enable_thinking false. Eval rows use the served default, which is thinking on at full length, because the chat template comes from the target repository unmodified; the recipe sets no reasoning level of its own."
+    },
+    {
+      "severity": "info",
+      "text": "The server runs without an API key and uses host networking on port 8888, the script default. The script also passes VLLM_USE_FLASHINFER_MOE_FP4=0, which this vLLM build logs as an unknown environment variable, and VLLM_MARLIN_USE_ATOMIC_ADD=1."
+    },
+    {
+      "severity": "info",
+      "text": "Boot took 11 minutes from docker run to the first answered request: 160 s to load the 22 GB target from a cold page cache, about 2.5 minutes of FlashInfer fp4_gemm autotuning, 50 s of torch.compile and 99 s of CUDA graph capture (51 piecewise and 33 full sizes up to 512 tokens, plus 34 DSpark sizes)."
+    }
+  ],
+  "derived": {
+    "cost_per_1m_output_tokens_usd": null,
+    "tokens_per_watt": 0.0072,
+    "tok_s_per_gb_bandwidth": 0.113447,
+    "bandwidth_efficiency": 2.656926,
+    "memory_headroom_gb": null
+  },
+  "raw": {
+    "harness": "atlas-bench",
+    "harness_version": "0.1.0",
+    "sha256": "04f35fcb46a57a6e8e56c073683cba99b69f2bc6316f37397ea76d3e34d6c49f",
+    "payload_path": null,
+    "payload": {
+      "requests": [
+        {
+          "id": "prefill-w00000",
+          "prompt_id": "hay-32k-d10",
+          "warmup": true,
+          "status": "ok",
+          "ttft_ms": 50250.564,
+          "e2e_ms": 50320.801,
+          "prompt_tokens": 40186,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00000",
+          "prompt_id": "hay-32k-d10",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 2060.324,
+          "e2e_ms": 2150.064,
+          "prompt_tokens": 40186,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00001",
+          "prompt_id": "hay-32k-multi",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 37469.732,
+          "e2e_ms": 37849.52,
+          "prompt_tokens": 40425,
+          "completion_tokens": 5,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00002",
+          "prompt_id": "hay-32k-d50",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 37293.345,
+          "e2e_ms": 37416.916,
+          "prompt_tokens": 40233,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00003",
+          "prompt_id": "hay-32k-d90",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 37262.673,
+          "e2e_ms": 37387.374,
+          "prompt_tokens": 40316,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00004",
+          "prompt_id": "hay-32k-d10",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 1958.928,
+          "e2e_ms": 2083.279,
+          "prompt_tokens": 40186,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00005",
+          "prompt_id": "hay-32k-multi",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 2161.435,
+          "e2e_ms": 2566.675,
+          "prompt_tokens": 40425,
+          "completion_tokens": 5,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00006",
+          "prompt_id": "hay-32k-d50",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 4129.08,
+          "e2e_ms": 4367.858,
+          "prompt_tokens": 40233,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00007",
+          "prompt_id": "hay-32k-d90",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 2297.791,
+          "e2e_ms": 2421.188,
+          "prompt_tokens": 40316,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00008",
+          "prompt_id": "hay-32k-d10",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 1957.475,
+          "e2e_ms": 2078.184,
+          "prompt_tokens": 40186,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00009",
+          "prompt_id": "hay-32k-multi",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 2155.08,
+          "e2e_ms": 2557.273,
+          "prompt_tokens": 40425,
+          "completion_tokens": 5,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        }
+      ],
+      "engine_endpoint": {
+        "attached": true,
+        "base_url": "http://127.0.0.1:8888/v1",
+        "served_model_id": "qwen3.8-27b",
+        "advertised_models": [
+          "unsloth27b",
+          "qwen3.8-27b"
+        ]
+      }
+    },
+    "truncated": false
+  },
+  "provenance": {
+    "github_login": "0xBakeer",
+    "github_user_id": 17404809,
+    "started_at": "2026-09-16T20:10:23Z",
+    "finished_at": "2026-09-16T20:13:25Z",
+    "submitted_at": null,
+    "commit": null,
+    "pr": null,
+    "method": "atlas-bench",
+    "agent": null,
+    "notes": "Served with the \"Edit-heavy coding-solo - DSpark k=14\" recipe from hiceron/spark-qwen38-27b (https://github.com/hiceron/spark-qwen38-27b, main d097a95), started with its own command GMU=0.85 K=14 ./scripts/boot-bakeer-dspark.sh and the script unmodified. The script defaults IMAGE to spark-vllm:qwen38, a local image the recipe describes as eugr/spark-vllm:latest of 2026-08-14 plus ffmpeg; that image is not published, so IMAGE was set to eugr/spark-vllm:nightly-20260814 (repo digest sha256:ab895847, image id a0cb301789ef, the same id the recipe run log records for eugr/spark-vllm:latest), which reports vLLM 0.27.2rc1.dev88+gaa3100357.d20260814, transformers 5.15.0, FlashInfer 0.6.18 and torch 2.13.0+cu130. ffmpeg is only needed for video and image input, and these rows send text. Target unsloth/Qwen3.8-27B-NVFP4 with no revision pin, resolved to main f0b7c9e7; DSpark speculative decoding against Doopeworld/Qwen3.8-27B-DSpark-vLLM (5 layers, bf16, resolved to ebaa0919) with 14 speculative tokens and probabilistic draft sampling; gpu-memory-utilization 0.85, max-num-batched-tokens 16384, prefix caching on, the native 262144 window, reasoning parser qwen3, tool parser qwen3_xml with auto tool choice, 2 images and 0 videos per prompt, environment VLLM_MARLIN_USE_ATOMIC_ADD=1 and VLLM_USE_FLASHINFER_MOE_FP4=0, host network, port 8888 (the script default). Attention backend, KV cache dtype and max-num-seqs are left to vLLM, which chose FlashInfer and an fp8_e4m3 KV cache from the checkpoint kv_cache_scheme. The chat template comes from the target repository, so the served default is thinking on: the speed rows force thinking off per request with chat_template_kwargs enable_thinking false, the eval rows use that served default. The server runs without an API key; the harness attached over HTTP on 127.0.0.1:8888 and sent a bearer header the server ignores."
+  },
+  "verification": {
+    "level": "self-reported",
+    "reproduced_by": [],
+    "flags": []
+  }
+}

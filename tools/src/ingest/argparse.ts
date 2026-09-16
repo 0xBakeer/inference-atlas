@@ -52,9 +52,26 @@ export function normalizeName(raw: string): string {
   return raw.trim().toLowerCase().replace(/^-+/, '').replace(/_/g, '-');
 }
 
-/** Longest `--long-form` wins as the canonical name; everything else becomes an alias. */
+/**
+ * Longest `--long-form` wins as the canonical name; everything else becomes an alias.
+ *
+ * A `BooleanOptionalAction` registers `--x` and `--no-x` for one destination. The `--no-x`
+ * form sets the opposite value, so it is neither the name nor an alias: as the name (it is
+ * the longer string) it would turn `x=true` into `no-x=true`, and as an alias it would map a
+ * value onto the wrong polarity.
+ */
 function nameAndAliases(action: ArgparseAction): { name: string; aliases: string[] } | null {
-  const options = action.option_strings.filter((o) => o !== '-h' && o !== '--help');
+  const negations =
+    action.class === 'BooleanOptionalAction'
+      ? new Set(
+          action.option_strings
+            .filter((o) => o.startsWith('--no-'))
+            .filter((o) => action.option_strings.includes(`--${o.slice('--no-'.length)}`)),
+        )
+      : new Set<string>();
+  const options = action.option_strings.filter(
+    (o) => o !== '-h' && o !== '--help' && !negations.has(o),
+  );
   if (options.length === 0) {
     // A positional (vLLM's `model_tag`): the destination is the only name it has.
     return action.dest ? { name: normalizeName(action.dest), aliases: [] } : null;
