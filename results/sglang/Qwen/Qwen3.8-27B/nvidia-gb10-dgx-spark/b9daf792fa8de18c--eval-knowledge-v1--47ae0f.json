@@ -1,0 +1,1573 @@
+{
+  "schema_version": 1,
+  "run_id": "b9daf792fa8de18c--eval-knowledge-v1--47ae0f",
+  "config_id": "b9daf792fa8de18c",
+  "cell_id": "7b7ca8936123",
+  "workload_id": "eval-knowledge-v1",
+  "kind": "eval",
+  "engine": {
+    "id": "sglang",
+    "version": "0.0.0.dev0+qwen38.27b.g561c8f3",
+    "commit": null,
+    "build": "github.com/hasso5703/dgx-spark-qwen38@f01c798",
+    "container": "qwen38-dflash2:v1.2.3 (built by the recipe installer from the pinned base lmsysorg/sglang@sha256:febfb971c7352570fc445c466ebd6ffc9d896024958e544a60f2137fd85856b1 plus 8 sha256-verified overlay files)",
+    "install_method": "docker"
+  },
+  "model": {
+    "id": "Qwen/Qwen3.8-27B",
+    "quant_id": "nvfp4-fp4-lmhead",
+    "hf_id": "Qwen/Qwen3.8-27B",
+    "revision": "52d1adc5f38aa5ebf099c29ed7025ba34cfbb854",
+    "dtype": "auto",
+    "local_path": null
+  },
+  "hardware": {
+    "id": "nvidia-gb10-dgx-spark",
+    "count": 1,
+    "driver": "580.173.02",
+    "cuda": "13.0",
+    "host": {
+      "cpu": "Cortex-A725",
+      "cpu_cores": 20,
+      "ram_gb": 121.6,
+      "os": "Ubuntu 24.04.4 LTS",
+      "kernel": "6.17.0-1029-nvidia",
+      "arch": "aarch64"
+    },
+    "fingerprint": "sha256:52ea2bdd513719724db88c162b6cc2c9fb4e5b67e02dbe41b9de00687acefb91",
+    "captured": {
+      "nvidia_smi": {
+        "driver": "580.173.02",
+        "cuda": "13.0",
+        "products": [
+          "NVIDIA GB10"
+        ],
+        "fb_memory_total_mib": 0.0
+      },
+      "lscpu": {
+        "architecture": "aarch64",
+        "cpus": "20",
+        "vendor_id": "ARM",
+        "model_name": "Cortex-A725",
+        "cores_per_socket": "10",
+        "sockets": "1",
+        "cpu_max_mhz": "2808.0000"
+      }
+    }
+  },
+  "args": {
+    "trust-remote-code": true,
+    "revision": "52d1adc5f38aa5ebf099c29ed7025ba34cfbb854",
+    "tp-size": 1,
+    "mem-fraction-static": 0.5,
+    "attention-backend": "flashinfer",
+    "chunked-prefill-size": 8192,
+    "disable-prefill-cuda-graph": true,
+    "cuda-graph-max-bs": 8,
+    "disable-flashinfer-autotune": true,
+    "speculative-algorithm": "DFLASH",
+    "speculative-draft-model-path": "maurienne-ai/Qwen3.8-27B-DFlash2-NVFP4-RTNcal",
+    "speculative-draft-model-revision": "bd7a934213c47a9e7ef69eef36bb3325f47fd1f1",
+    "speculative-num-draft-tokens": 16,
+    "speculative-draft-model-quantization": "modelopt_fp4",
+    "mamba-radix-cache-strategy": "extra_buffer",
+    "mamba-ssm-dtype": "bfloat16",
+    "max-mamba-cache-size": 96,
+    "max-running-requests": 8,
+    "enable-torch-compile": true,
+    "torch-compile-max-bs": 4,
+    "num-continuous-decode-steps": 2,
+    "reasoning-parser": "qwen3",
+    "tool-call-parser": "qwen3_coder",
+    "chat-template": "/out/chat-template-sglang.jinja",
+    "sleep-on-idle": true,
+    "enable-metrics": true
+  },
+  "args_canonical": "@build=github.com/hasso5703/dgx-spark-qwen38@f01c798;@dtype=auto;@quant=nvfp4-fp4-lmhead;attention-backend=flashinfer;chat-template=/out/chat-template-sglang.jinja;chunked-prefill-size=8192;cuda-graph-max-bs=8;disable-flashinfer-autotune=true;disable-prefill-cuda-graph=true;enable-metrics=true;enable-torch-compile=true;mamba-radix-cache-strategy=extra_buffer;mamba-ssm-dtype=bfloat16;max-mamba-cache-size=96;max-running-requests=8;mem-fraction-static=0.5;num-continuous-decode-steps=2;reasoning-parser=qwen3;sleep-on-idle=true;speculative-algorithm=DFLASH;speculative-draft-model-path=maurienne-ai/Qwen3.8-27B-DFlash2-NVFP4-RTNcal;speculative-draft-model-quantization=modelopt_fp4;speculative-draft-model-revision=bd7a934213c47a9e7ef69eef36bb3325f47fd1f1;speculative-num-draft-tokens=16;tool-call-parser=qwen3_coder;torch-compile-max-bs=4;trust-remote-code=true",
+  "serve_command": null,
+  "workload": {
+    "id": "eval-knowledge-v1",
+    "resolved_params": {
+      "dataset_id": "eval-knowledge-v1",
+      "suite": "knowledge",
+      "scorer": "mc",
+      "items": 130,
+      "concurrency": 4,
+      "max_output_tokens": 2048,
+      "timeout_s": 300.0,
+      "temperature": 0,
+      "reasoning": "default",
+      "dataset_categories": null,
+      "dataset_target_tokens": null,
+      "pass_threshold": null,
+      "seed": 42
+    }
+  },
+  "metrics": {
+    "requests_total": 130,
+    "requests_ok": 130,
+    "requests_failed": 0,
+    "success_rate": 1.0,
+    "duration_s": 56.109,
+    "input_tokens_total": 20291,
+    "output_tokens_total": 6420,
+    "e2e_ms": {
+      "mean": 1707.366,
+      "p50": 1454.6,
+      "p90": 2587.184,
+      "p95": 3412.696,
+      "p99": 5226.861,
+      "min": 788.496,
+      "max": 6020.009
+    },
+    "vram_peak_gb": null,
+    "ram_peak_gb": 75.772,
+    "power_avg_w": 46.27,
+    "power_peak_w": 48.78,
+    "energy_wh": 0.7252,
+    "gpu_util_avg_pct": 93.02,
+    "temp_max_c": 71.0,
+    "thermal_throttle_detected": false
+  },
+  "scores": {
+    "suite": "knowledge",
+    "total": 130,
+    "correct": 130,
+    "accuracy": 1.0,
+    "success_rate": 1.0,
+    "by_category": {
+      "cs_basics": {
+        "total": 42,
+        "correct": 42
+      },
+      "definitions": {
+        "total": 12,
+        "correct": 12
+      },
+      "geography": {
+        "total": 20,
+        "correct": 20
+      },
+      "history": {
+        "total": 10,
+        "correct": 10
+      },
+      "science": {
+        "total": 26,
+        "correct": 26
+      },
+      "units": {
+        "total": 20,
+        "correct": 20
+      }
+    },
+    "by_difficulty": {
+      "easy": {
+        "total": 26,
+        "correct": 26
+      },
+      "hard": {
+        "total": 19,
+        "correct": 19
+      },
+      "medium": {
+        "total": 85,
+        "correct": 85
+      }
+    },
+    "avg_output_tokens": 49.38,
+    "avg_latency_ms": 1707.37,
+    "failures": 0,
+    "items": [
+      {
+        "id": "know-0001",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 2012.247,
+        "output_tokens": 47,
+        "category": "geography",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0002",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 1354.949,
+        "output_tokens": 40,
+        "category": "geography",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0003",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 832.777,
+        "output_tokens": 20,
+        "category": "units",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0004",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 1354.497,
+        "output_tokens": 45,
+        "category": "geography",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0005",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 2571.445,
+        "output_tokens": 118,
+        "category": "cs_basics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0006",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 1017.077,
+        "output_tokens": 31,
+        "category": "geography",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0007",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 3007.576,
+        "output_tokens": 73,
+        "category": "science",
+        "difficulty": "easy"
+      },
+      {
+        "id": "know-0008",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 1021.746,
+        "output_tokens": 33,
+        "category": "geography",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0009",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 1032.788,
+        "output_tokens": 36,
+        "category": "geography",
+        "difficulty": "easy"
+      },
+      {
+        "id": "know-0010",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 4222.197,
+        "output_tokens": 141,
+        "category": "cs_basics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0011",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 4603.691,
+        "output_tokens": 236,
+        "category": "cs_basics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0012",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 1317.476,
+        "output_tokens": 45,
+        "category": "science",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0013",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 1025.077,
+        "output_tokens": 32,
+        "category": "units",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0014",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 1458.15,
+        "output_tokens": 30,
+        "category": "science",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0015",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 2234.703,
+        "output_tokens": 61,
+        "category": "geography",
+        "difficulty": "easy"
+      },
+      {
+        "id": "know-0016",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 2622.318,
+        "output_tokens": 57,
+        "category": "definitions",
+        "difficulty": "hard"
+      },
+      {
+        "id": "know-0017",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 1683.866,
+        "output_tokens": 46,
+        "category": "science",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0018",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 1180.798,
+        "output_tokens": 27,
+        "category": "science",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0019",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 1704.795,
+        "output_tokens": 53,
+        "category": "science",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0020",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 1511.607,
+        "output_tokens": 31,
+        "category": "units",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0021",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 2040.597,
+        "output_tokens": 34,
+        "category": "units",
+        "difficulty": "hard"
+      },
+      {
+        "id": "know-0022",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 1136.867,
+        "output_tokens": 32,
+        "category": "cs_basics",
+        "difficulty": "easy"
+      },
+      {
+        "id": "know-0023",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 1269.989,
+        "output_tokens": 33,
+        "category": "history",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0024",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 1128.996,
+        "output_tokens": 32,
+        "category": "units",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0025",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 1403.734,
+        "output_tokens": 34,
+        "category": "cs_basics",
+        "difficulty": "easy"
+      },
+      {
+        "id": "know-0026",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 1743.501,
+        "output_tokens": 28,
+        "category": "history",
+        "difficulty": "easy"
+      },
+      {
+        "id": "know-0027",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 874.505,
+        "output_tokens": 20,
+        "category": "units",
+        "difficulty": "easy"
+      },
+      {
+        "id": "know-0028",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 877.8,
+        "output_tokens": 21,
+        "category": "history",
+        "difficulty": "easy"
+      },
+      {
+        "id": "know-0029",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 1233.81,
+        "output_tokens": 36,
+        "category": "definitions",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0030",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 1627.11,
+        "output_tokens": 66,
+        "category": "geography",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0031",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 1539.176,
+        "output_tokens": 56,
+        "category": "science",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0032",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 2537.449,
+        "output_tokens": 57,
+        "category": "cs_basics",
+        "difficulty": "hard"
+      },
+      {
+        "id": "know-0033",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 1435.896,
+        "output_tokens": 42,
+        "category": "cs_basics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0034",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 1041.485,
+        "output_tokens": 24,
+        "category": "science",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0035",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 1125.767,
+        "output_tokens": 46,
+        "category": "geography",
+        "difficulty": "hard"
+      },
+      {
+        "id": "know-0036",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 2226.762,
+        "output_tokens": 64,
+        "category": "geography",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0037",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 965.774,
+        "output_tokens": 20,
+        "category": "units",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0038",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 1274.426,
+        "output_tokens": 56,
+        "category": "cs_basics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0039",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 1254.9,
+        "output_tokens": 32,
+        "category": "cs_basics",
+        "difficulty": "easy"
+      },
+      {
+        "id": "know-0040",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 1360.26,
+        "output_tokens": 40,
+        "category": "definitions",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0041",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 1637.801,
+        "output_tokens": 33,
+        "category": "cs_basics",
+        "difficulty": "easy"
+      },
+      {
+        "id": "know-0042",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 1640.953,
+        "output_tokens": 29,
+        "category": "units",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0043",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 1892.791,
+        "output_tokens": 35,
+        "category": "science",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0044",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 1169.768,
+        "output_tokens": 34,
+        "category": "history",
+        "difficulty": "easy"
+      },
+      {
+        "id": "know-0045",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 1642.753,
+        "output_tokens": 59,
+        "category": "cs_basics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0046",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 1142.575,
+        "output_tokens": 30,
+        "category": "units",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0047",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 1499.939,
+        "output_tokens": 46,
+        "category": "cs_basics",
+        "difficulty": "hard"
+      },
+      {
+        "id": "know-0048",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 2836.875,
+        "output_tokens": 87,
+        "category": "history",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0049",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 2539.687,
+        "output_tokens": 60,
+        "category": "science",
+        "difficulty": "hard"
+      },
+      {
+        "id": "know-0050",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 1509.985,
+        "output_tokens": 37,
+        "category": "cs_basics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0051",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 927.823,
+        "output_tokens": 40,
+        "category": "history",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0052",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 1489.076,
+        "output_tokens": 34,
+        "category": "cs_basics",
+        "difficulty": "easy"
+      },
+      {
+        "id": "know-0053",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 2074.413,
+        "output_tokens": 64,
+        "category": "units",
+        "difficulty": "easy"
+      },
+      {
+        "id": "know-0054",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 2583.28,
+        "output_tokens": 60,
+        "category": "science",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0055",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 1319.152,
+        "output_tokens": 32,
+        "category": "cs_basics",
+        "difficulty": "easy"
+      },
+      {
+        "id": "know-0056",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 1988.791,
+        "output_tokens": 93,
+        "category": "cs_basics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0057",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 1177.271,
+        "output_tokens": 33,
+        "category": "definitions",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0058",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 1533.232,
+        "output_tokens": 27,
+        "category": "geography",
+        "difficulty": "easy"
+      },
+      {
+        "id": "know-0059",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 1278.117,
+        "output_tokens": 34,
+        "category": "geography",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0060",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 1140.485,
+        "output_tokens": 27,
+        "category": "science",
+        "difficulty": "easy"
+      },
+      {
+        "id": "know-0061",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 1006.408,
+        "output_tokens": 25,
+        "category": "cs_basics",
+        "difficulty": "easy"
+      },
+      {
+        "id": "know-0062",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 1145.453,
+        "output_tokens": 34,
+        "category": "units",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0063",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 1420.349,
+        "output_tokens": 26,
+        "category": "science",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0064",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 1556.962,
+        "output_tokens": 43,
+        "category": "geography",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0065",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 4492.038,
+        "output_tokens": 210,
+        "category": "cs_basics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0066",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 1556.233,
+        "output_tokens": 25,
+        "category": "science",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0067",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 2038.164,
+        "output_tokens": 35,
+        "category": "definitions",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0068",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 1143.11,
+        "output_tokens": 40,
+        "category": "units",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0069",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 880.953,
+        "output_tokens": 18,
+        "category": "geography",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0070",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 1411.356,
+        "output_tokens": 39,
+        "category": "cs_basics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0071",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 1696.345,
+        "output_tokens": 36,
+        "category": "cs_basics",
+        "difficulty": "hard"
+      },
+      {
+        "id": "know-0072",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 1308.199,
+        "output_tokens": 51,
+        "category": "science",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0073",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 1161.546,
+        "output_tokens": 33,
+        "category": "units",
+        "difficulty": "easy"
+      },
+      {
+        "id": "know-0074",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 1573.287,
+        "output_tokens": 38,
+        "category": "cs_basics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0075",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 2352.991,
+        "output_tokens": 63,
+        "category": "geography",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0076",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 1296.395,
+        "output_tokens": 45,
+        "category": "history",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0077",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 928.067,
+        "output_tokens": 25,
+        "category": "geography",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0078",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 1194.219,
+        "output_tokens": 25,
+        "category": "geography",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0079",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 2291.844,
+        "output_tokens": 63,
+        "category": "science",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0080",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 1536.936,
+        "output_tokens": 69,
+        "category": "cs_basics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0081",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 985.848,
+        "output_tokens": 18,
+        "category": "science",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0082",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 1237.742,
+        "output_tokens": 32,
+        "category": "history",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0083",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 2697.78,
+        "output_tokens": 60,
+        "category": "units",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0084",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 1050.527,
+        "output_tokens": 32,
+        "category": "units",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0085",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 1307.828,
+        "output_tokens": 32,
+        "category": "science",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0086",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 2079.924,
+        "output_tokens": 47,
+        "category": "definitions",
+        "difficulty": "hard"
+      },
+      {
+        "id": "know-0087",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 788.496,
+        "output_tokens": 19,
+        "category": "geography",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0088",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 5095.202,
+        "output_tokens": 225,
+        "category": "cs_basics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0089",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 2330.076,
+        "output_tokens": 57,
+        "category": "cs_basics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0090",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 1320.926,
+        "output_tokens": 40,
+        "category": "science",
+        "difficulty": "easy"
+      },
+      {
+        "id": "know-0091",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 1837.75,
+        "output_tokens": 67,
+        "category": "cs_basics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0092",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 6020.009,
+        "output_tokens": 137,
+        "category": "cs_basics",
+        "difficulty": "hard"
+      },
+      {
+        "id": "know-0093",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 1179.319,
+        "output_tokens": 27,
+        "category": "units",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0094",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 1553.763,
+        "output_tokens": 45,
+        "category": "science",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0095",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 3580.892,
+        "output_tokens": 126,
+        "category": "cs_basics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0096",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 1295.33,
+        "output_tokens": 35,
+        "category": "science",
+        "difficulty": "easy"
+      },
+      {
+        "id": "know-0097",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 2274.476,
+        "output_tokens": 75,
+        "category": "science",
+        "difficulty": "easy"
+      },
+      {
+        "id": "know-0098",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 2135.609,
+        "output_tokens": 50,
+        "category": "definitions",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0099",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 1105.786,
+        "output_tokens": 20,
+        "category": "units",
+        "difficulty": "easy"
+      },
+      {
+        "id": "know-0100",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 968.011,
+        "output_tokens": 18,
+        "category": "science",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0101",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 5280.638,
+        "output_tokens": 177,
+        "category": "definitions",
+        "difficulty": "hard"
+      },
+      {
+        "id": "know-0102",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 1780.63,
+        "output_tokens": 44,
+        "category": "cs_basics",
+        "difficulty": "hard"
+      },
+      {
+        "id": "know-0103",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 1418.642,
+        "output_tokens": 45,
+        "category": "cs_basics",
+        "difficulty": "hard"
+      },
+      {
+        "id": "know-0104",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 1051.682,
+        "output_tokens": 44,
+        "category": "cs_basics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0105",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 1920.618,
+        "output_tokens": 56,
+        "category": "cs_basics",
+        "difficulty": "hard"
+      },
+      {
+        "id": "know-0106",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 1041.638,
+        "output_tokens": 24,
+        "category": "cs_basics",
+        "difficulty": "easy"
+      },
+      {
+        "id": "know-0107",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 1690.875,
+        "output_tokens": 51,
+        "category": "cs_basics",
+        "difficulty": "hard"
+      },
+      {
+        "id": "know-0108",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 1558.137,
+        "output_tokens": 30,
+        "category": "cs_basics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0109",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 2719.782,
+        "output_tokens": 109,
+        "category": "units",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0110",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 1426.895,
+        "output_tokens": 33,
+        "category": "cs_basics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0111",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 1451.051,
+        "output_tokens": 48,
+        "category": "history",
+        "difficulty": "hard"
+      },
+      {
+        "id": "know-0112",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 1940.558,
+        "output_tokens": 34,
+        "category": "cs_basics",
+        "difficulty": "easy"
+      },
+      {
+        "id": "know-0113",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 789.097,
+        "output_tokens": 18,
+        "category": "geography",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0114",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 1642.646,
+        "output_tokens": 31,
+        "category": "geography",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0115",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 873.054,
+        "output_tokens": 29,
+        "category": "definitions",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0116",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 1278.23,
+        "output_tokens": 30,
+        "category": "units",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0117",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 3207.124,
+        "output_tokens": 148,
+        "category": "cs_basics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0118",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 1705.026,
+        "output_tokens": 42,
+        "category": "cs_basics",
+        "difficulty": "hard"
+      },
+      {
+        "id": "know-0119",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 1974.704,
+        "output_tokens": 60,
+        "category": "cs_basics",
+        "difficulty": "hard"
+      },
+      {
+        "id": "know-0120",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 1347.518,
+        "output_tokens": 39,
+        "category": "cs_basics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0121",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 1123.399,
+        "output_tokens": 25,
+        "category": "history",
+        "difficulty": "hard"
+      },
+      {
+        "id": "know-0122",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 1469.408,
+        "output_tokens": 36,
+        "category": "science",
+        "difficulty": "easy"
+      },
+      {
+        "id": "know-0123",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 1644.206,
+        "output_tokens": 29,
+        "category": "science",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0124",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 1907.494,
+        "output_tokens": 44,
+        "category": "definitions",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0125",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 1176.642,
+        "output_tokens": 27,
+        "category": "science",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0126",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 1940.507,
+        "output_tokens": 71,
+        "category": "units",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0127",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 1139.595,
+        "output_tokens": 22,
+        "category": "cs_basics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0128",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 1003.491,
+        "output_tokens": 25,
+        "category": "cs_basics",
+        "difficulty": "easy"
+      },
+      {
+        "id": "know-0129",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 1562.564,
+        "output_tokens": 40,
+        "category": "definitions",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know-0130",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 1162.206,
+        "output_tokens": 35,
+        "category": "definitions",
+        "difficulty": "hard"
+      }
+    ]
+  },
+  "failures": [],
+  "conditions": {
+    "dedicated": true,
+    "detail": "Only the recipe's own SGLang container (qwen38-sglang-run) was resident; nothing else used the GPU.",
+    "isolation_check": "docker ps -> qwen38-sglang-run dgx-exporter ; nvidia-smi compute apps -> 2; load1 at start 0.77"
+  },
+  "gotchas": [
+    {
+      "severity": "info",
+      "text": "Boot lottery: this boot allocated a KV pool of 383,883 tokens (target cache torch.float8_e4m3fn, K 5.86 GB + V 5.86 GB; the DFlash2 draft cache is bf16 at the same token count, K 3.66 GB + V 3.66 GB), with mem-fraction-static 0.50 and the native 262144 window. The recipe documents that this number moves from boot to boot, so read it out of the server log of the boot a number belongs to instead of assuming it."
+    },
+    {
+      "severity": "info",
+      "text": "The quant registry entry nvfp4-fp4-lmhead pins RadixArk/Qwen3.8-27B-NVFP4 at revision 554ebba9, which is what an earlier run on this cell served. This recipe pins 52d1adc, and that is what model.revision and the revision arg record here. The quantization scheme is unchanged between the two: hf_quant_config.json at 52d1adc still declares MIXED_PRECISION over 401 quantized layers, NVFP4 group-16 on lm_head and on the MLP triplets, FP8 on the attention projections, mtp excluded, and kv_cache_quant_algo FP8."
+    },
+    {
+      "severity": "info",
+      "text": "kv-cache-dtype is left at auto and resolves to fp8_e4m3 from the checkpoint's kv_cache_quant_algo, so no flag is needed for the NVFP4 target. Qwen's own FP8 release carries no such declaration and needs --kv-cache-dtype fp8_e4m3 or the pool halves."
+    },
+    {
+      "severity": "info",
+      "text": "The 27B lane does not serve the official lmsysorg/sglang:dev-qwen38-27b-dflash2 image. The recipe installer builds qwen38-dflash2:v1.2.3 on the host from the pinned base digest lmsysorg/sglang@sha256:febfb971 plus eight sha256-verified overlay files, because the official image predates the fused Qwen3.5 RoPE mrope fix. engine.version still reports the base image's 0.0.0.dev0+qwen38.27b.g561c8f3, so engine.build names the recipe commit to tell this build apart from another recipe that starts from the same base."
+    },
+    {
+      "severity": "info",
+      "text": "Speculative decoding is DFLASH with 16 draft tokens from maurienne-ai/Qwen3.8-27B-DFlash2-NVFP4-RTNcal at bd7a9342, quantized modelopt_fp4. --speculative-token-map is a flash-lane option in v1.13 and is not used on the 27B lane, so speculative_token_map is None in the served args."
+    },
+    {
+      "severity": "info",
+      "text": "A pinned revision download leaves no refs/main in the HF cache, and an SGLang build that resolves the draft config without the revision then fails offline. That did not happen here: the recipe resolves the snapshot path itself and the server log says it found the local snapshot and skipped the download for both target and draft."
+    },
+    {
+      "severity": "info",
+      "text": "The server runs with --sleep-on-idle, so the first request after an idle gap pays a wake-up on top of the usual cold-start cost. Every workload here ran after a warm-up request on a server that had already answered."
+    },
+    {
+      "severity": "info",
+      "text": "Speed rows force thinking off per request with chat_template_kwargs enable_thinking false. Eval rows use the served default, which in v1.13 is thinking on at the recipe's own lean reasoning-effort level (74 words in the chat template, the level the recipe added and made the default)."
+    },
+    {
+      "severity": "info",
+      "text": "Brought up with the recipe's documented foreground path: CONTEXT_MODE=native ./install.sh --no-service --no-opencode, then ./run.sh. run.sh issues the same docker run and the same server flags as the systemd unit, so the numbers describe the unit's configuration, without installing systemd units, a keepalive proxy or the cockpit on the box."
+    }
+  ],
+  "derived": {
+    "cost_per_1m_output_tokens_usd": null,
+    "tokens_per_watt": null,
+    "tok_s_per_gb_bandwidth": null,
+    "bandwidth_efficiency": null,
+    "memory_headroom_gb": null
+  },
+  "raw": {
+    "harness": "atlas-bench",
+    "harness_version": "0.1.0",
+    "sha256": "87d0cc60a42f9c4358f9d16c7e4f2053eab45d65a1c680c745c38d020e33e169",
+    "payload_path": null,
+    "payload": {
+      "scorer": "mc",
+      "scorers_used": [
+        "mc"
+      ],
+      "engine_endpoint": {
+        "attached": true,
+        "base_url": "http://127.0.0.1:30000/v1",
+        "served_model_id": "qwen3.8-27b",
+        "advertised_models": [
+          "qwen3.8-27b"
+        ]
+      }
+    },
+    "truncated": false
+  },
+  "provenance": {
+    "github_login": "0xBakeer",
+    "github_user_id": null,
+    "started_at": "2026-09-16T09:07:54Z",
+    "finished_at": "2026-09-16T09:08:50Z",
+    "submitted_at": null,
+    "commit": null,
+    "pr": null,
+    "method": "atlas-bench",
+    "agent": null,
+    "notes": "Served with the hasso5703 DGX Spark Qwen3.8 recipe (https://github.com/hasso5703/dgx-spark-qwen38, main f01c798, v1.13.0), 27B lane, target \"stock\", brought up with its documented foreground path: CONTEXT_MODE=native ./install.sh --no-service --no-opencode followed by ./run.sh, which issues the same docker run and the same server flags as the systemd unit. Target RadixArk/Qwen3.8-27B-NVFP4 at revision 52d1adc5, DFlash2 speculative decoding with the calibrated NVFP4 drafter maurienne-ai/Qwen3.8-27B-DFlash2-NVFP4-RTNcal at revision bd7a9342 and 16 draft tokens, mem-fraction-static 0.50, chunked prefill 8192, FlashInfer attention with autotune disabled for determinism, torch.compile on up to batch 4, CUDA graph max batch 8, prefill CUDA graph off, mamba radix cache extra_buffer with bf16 SSM state, max-running-requests 8, sleep-on-idle, and the recipe-patched chat template whose default reasoning effort is the recipe-added \"lean\" level. KV cache dtype is left at auto, which resolves to fp8_e4m3 from the checkpoint kv_cache_quant_algo, and the context window is the native 262144. The speed rows force thinking off per request (chat_template_kwargs enable_thinking false); the eval rows use the served default, which is thinking on at lean effort. Serving image built on the host by the recipe installer from the pinned base digest plus eight sha256-verified overlay files. The harness attached over HTTP on 127.0.0.1:30000 with the bearer key."
+  },
+  "verification": {
+    "level": "self-reported",
+    "reproduced_by": [],
+    "flags": []
+  }
+}
