@@ -1,0 +1,400 @@
+{
+  "schema_version": 1,
+  "run_id": "f826f7718e03fe19--prefill-8k-v1--fd5683",
+  "config_id": "f826f7718e03fe19",
+  "cell_id": "9b8e9d20cb36",
+  "workload_id": "prefill-8k-v1",
+  "kind": "prefill",
+  "engine": {
+    "id": "sglang",
+    "version": "0.0.0.dev0+qwen38.27b.g561c8f3",
+    "commit": null,
+    "build": "registry.cordata.ai/spark-cluster/sglang-qwen38-27b-dflash2@sha256:2686b3308e8e180060ff22eff2e5c77941a1513bd04c8adf7d6a2898cca18151",
+    "container": "registry.cordata.ai/spark-cluster/sglang-qwen38-27b-dflash2:latest (OpenZeka image, pulled as published, repo digest sha256:2686b3308e8e180060ff22eff2e5c77941a1513bd04c8adf7d6a2898cca18151, created 2026-08-25; no local build)",
+    "install_method": "docker"
+  },
+  "model": {
+    "id": "Qwen/Qwen3.8-27B",
+    "quant_id": "nvfp4-bf16-lmhead",
+    "hf_id": "Qwen/Qwen3.8-27B",
+    "revision": "009632fef96dd349150baa780c984e62e70e91fe",
+    "dtype": "auto",
+    "local_path": null
+  },
+  "hardware": {
+    "id": "nvidia-gb10-dgx-spark",
+    "count": 1,
+    "driver": "580.173.02",
+    "cuda": "13.0",
+    "host": {
+      "cpu": "Cortex-A725",
+      "cpu_cores": 20,
+      "ram_gb": 121.6,
+      "os": "Ubuntu 24.04.4 LTS",
+      "kernel": "6.17.0-1029-nvidia",
+      "arch": "aarch64"
+    },
+    "fingerprint": "sha256:52ea2bdd513719724db88c162b6cc2c9fb4e5b67e02dbe41b9de00687acefb91",
+    "captured": {
+      "nvidia_smi": {
+        "driver": "580.173.02",
+        "cuda": "13.0",
+        "products": [
+          "NVIDIA GB10"
+        ],
+        "fb_memory_total_mib": 0.0
+      },
+      "lscpu": {
+        "architecture": "aarch64",
+        "cpus": "20",
+        "vendor_id": "ARM",
+        "model_name": "Cortex-A725",
+        "cores_per_socket": "10",
+        "sockets": "1",
+        "cpu_max_mhz": "2808.0000"
+      }
+    }
+  },
+  "args": {
+    "trust-remote-code": true,
+    "tp-size": 1,
+    "context-length": 262144,
+    "mem-fraction-static": 0.5,
+    "attention-backend": "flashinfer",
+    "chunked-prefill-size": 8192,
+    "disable-prefill-cuda-graph": true,
+    "kv-cache-dtype": "fp8_e4m3",
+    "mamba-ssm-dtype": "bfloat16",
+    "mamba-full-memory-ratio": 4.21,
+    "mamba-radix-cache-strategy": "extra_buffer",
+    "max-mamba-cache-size": 64,
+    "max-running-requests": 16,
+    "speculative-algorithm": "DFLASH",
+    "speculative-draft-model-path": "z-lab/Qwen3.8-27B-DFlash2",
+    "speculative-draft-model-revision": "50307d4c4cde6860d4eee73e2547cd786fe8e8a4",
+    "speculative-num-draft-tokens": 8,
+    "reasoning-parser": "qwen3",
+    "tool-call-parser": "qwen3_coder",
+    "sampling-defaults": "model",
+    "enable-metrics": true,
+    "enable-cache-report": true,
+    "stream-interval": 1
+  },
+  "args_canonical": "@build=registry.cordata.ai/spark-cluster/sglang-qwen38-27b-dflash2@sha256:2686b3308e8e180060ff22eff2e5c77941a1513bd04c8adf7d6a2898cca18151;@dtype=auto;@quant=nvfp4-bf16-lmhead;attention-backend=flashinfer;chunked-prefill-size=8192;context-length=262144;disable-prefill-cuda-graph=true;enable-cache-report=true;enable-metrics=true;kv-cache-dtype=fp8_e4m3;mamba-full-memory-ratio=4.21;mamba-radix-cache-strategy=extra_buffer;mamba-ssm-dtype=bfloat16;max-mamba-cache-size=64;max-running-requests=16;mem-fraction-static=0.5;reasoning-parser=qwen3;speculative-algorithm=DFLASH;speculative-draft-model-path=z-lab/Qwen3.8-27B-DFlash2;speculative-draft-model-revision=50307d4c4cde6860d4eee73e2547cd786fe8e8a4;speculative-num-draft-tokens=8;tool-call-parser=qwen3_coder;trust-remote-code=true",
+  "serve_command": null,
+  "workload": {
+    "id": "prefill-8k-v1",
+    "resolved_params": {
+      "concurrency": 1,
+      "num_requests": 10,
+      "input_tokens": 8192,
+      "output_tokens": 16,
+      "warmup_requests": 1,
+      "prompts_padded": false,
+      "needle_check": false,
+      "timeout_s": 900.0,
+      "seed": 42
+    }
+  },
+  "metrics": {
+    "requests_total": 10,
+    "requests_ok": 10,
+    "requests_failed": 0,
+    "success_rate": 1.0,
+    "duration_s": 19.579,
+    "input_tokens_total": 101562,
+    "output_tokens_total": 57,
+    "output_tok_s": 2.911,
+    "total_tok_s": 5190.13,
+    "req_s": 0.511,
+    "prefill_tok_s": 5876.504,
+    "ttft_ms": {
+      "mean": 1728.272,
+      "p50": 259.438,
+      "p90": 5179.577,
+      "p95": 5184.284,
+      "p99": 5188.05,
+      "min": 241.24,
+      "max": 5188.991
+    },
+    "tpot_ms": {
+      "mean": 49.722,
+      "p50": 51.321,
+      "p90": 63.316,
+      "p95": 63.643,
+      "p99": 63.904,
+      "min": 25.286,
+      "max": 63.97
+    },
+    "itl_ms": {
+      "mean": 126.972,
+      "p50": 127.846,
+      "p90": 129.358,
+      "p95": 129.699,
+      "p99": 129.963,
+      "min": 123.543,
+      "max": 130.029
+    },
+    "e2e_ms": {
+      "mean": 1957.841,
+      "p50": 515.817,
+      "p90": 5393.261,
+      "p95": 5419.066,
+      "p99": 5439.709,
+      "min": 367.669,
+      "max": 5444.87
+    },
+    "decode_tok_s_per_request": {
+      "mean": 22.342,
+      "p50": 19.487,
+      "p90": 38.918,
+      "p95": 39.233,
+      "p99": 39.485,
+      "min": 15.632,
+      "max": 39.548
+    },
+    "vram_peak_gb": null,
+    "ram_peak_gb": 70.81,
+    "kv_cache_tokens": null,
+    "power_avg_w": 64.37,
+    "power_peak_w": 76.99,
+    "energy_wh": 0.4483,
+    "gpu_util_avg_pct": 92.0,
+    "temp_max_c": 75.0,
+    "thermal_throttle_detected": false
+  },
+  "failures": [],
+  "conditions": {
+    "dedicated": true,
+    "detail": "Only the recipe's own SGLang container (started by sparkrun) was resident; nothing else used the GPU.",
+    "isolation_check": "docker ps -> sparkrun_f13a744a5471d4ea_49960de5880e_solo dgx-exporter ; nvidia-smi compute apps -> 2; load1 at start 1.08"
+  },
+  "gotchas": [
+    {
+      "severity": "info",
+      "text": "Boot lottery: this boot allocated a KV pool of 462,813 tokens (target cache torch.float8_e4m3fn, K 7.06 GB + V 7.06 GB; the DFlash2 draft cache is fp8 at the same token count, K 2.21 GB + V 2.21 GB), with mem-fraction-static 0.50 and the native 262144 window, leaving 53.55 GB free after CUDA-graph capture. The boot log printed in the recipe post shows 460,797 tokens for the same file, so read the number out of the log of the boot a result belongs to."
+    },
+    {
+      "severity": "info",
+      "text": "The recipe asks for --max-running-requests 16 but sizes the mamba state pool at 64 slots, and SGLang needs 5 slots per request, so the server logs max_running_requests is capped to 12 and captures verify CUDA graphs only up to batch 12. The serve-short-c16 row therefore queues 4 of its 16 streams. The recipe post shows the same clamp line in its own log."
+    },
+    {
+      "severity": "info",
+      "text": "The recipe names its image by the latest tag only. This run pulled repo digest sha256:2686b3308e8e180060ff22eff2e5c77941a1513bd04c8adf7d6a2898cca18151 (created 2026-08-25), which reports SGLang 0.0.0.dev0+qwen38.27b.g561c8f3, the same version string other builds on this cell report, so engine.build records the digest to tell this image apart."
+    },
+    {
+      "severity": "info",
+      "text": "The recipe passes no --revision for the target. It resolved to RadixArk/Qwen3.8-27B-NVFP4-BF16-LMHead main 009632fe (committed 2026-08-24, the last commit before the recipe was published), 22 files, 23,772,921,363 bytes. Its hf_quant_config.json declares MIXED_PRECISION over 400 quantized layers, 192 NVFP4 group-16 and 208 FP8, with lm_head absent from the list and so left in BF16, mtp excluded, and kv_cache_quant_algo FP8. A later push to main would change what this recipe serves."
+    },
+    {
+      "severity": "info",
+      "text": "sparkrun starts the container first (privileged because of --rootful, host network, host IPC, 32 GB shm, the host Hugging Face cache mounted at /cache/huggingface) and then runs the serve command through docker exec, so docker logs shows only the CUDA banner. The server log comes from sparkrun logs with the cluster id. sparkrun logs with the recipe file failed with No running workload matches intent on this launch, which carried a --port override; the cluster id works."
+    },
+    {
+      "severity": "info",
+      "text": "Draft is z-lab/Qwen3.8-27B-DFlash2 at 50307d4c, loaded unquantized (speculative_draft_model_quantization None, 3.51 GB) with 8 draft tokens and block_size 8; SGLang overrides speculative_num_steps to 1 for DFLASH."
+    },
+    {
+      "severity": "info",
+      "text": "FlashInfer autotune is left on and torch.compile is off, as the recipe ships. Autotune picks kernels per boot, so a second boot of the same file can land on different numbers."
+    },
+    {
+      "severity": "info",
+      "text": "The server runs with no API key and with sleep_on_idle false, so there is no idle wake-up cost. Every workload still ran after a warm-up request on an already-answering server."
+    },
+    {
+      "severity": "info",
+      "text": "Speed rows force thinking off per request with chat_template_kwargs enable_thinking false. Eval rows use the served default, which is thinking on at full length, because the chat template comes from the target repository unmodified and sampling-defaults is model; the requests still set temperature 0 and seed 42."
+    },
+    {
+      "severity": "info",
+      "text": "sparkrun 0.3.4 ships with anonymous telemetry enabled by default. It was switched off with sparkrun setup telemetry --disable before the launch; that setting does not reach the engine."
+    }
+  ],
+  "derived": {
+    "cost_per_1m_output_tokens_usd": null,
+    "tokens_per_watt": 0.0452,
+    "tok_s_per_gb_bandwidth": 0.081839,
+    "bandwidth_efficiency": 1.945309,
+    "memory_headroom_gb": null
+  },
+  "raw": {
+    "harness": "atlas-bench",
+    "harness_version": "0.1.0",
+    "sha256": "02d6c37021c5a42c41306a02f8a16692c065c43cd21645b758bfbe50af4111e8",
+    "payload_path": null,
+    "payload": {
+      "requests": [
+        {
+          "id": "prefill-w00000",
+          "prompt_id": "hay-8k-d10",
+          "warmup": true,
+          "status": "ok",
+          "ttft_ms": 5135.873,
+          "e2e_ms": 5397.136,
+          "prompt_tokens": 10208,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00000",
+          "prompt_id": "hay-8k-d10",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 246.119,
+          "e2e_ms": 500.128,
+          "prompt_tokens": 10208,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00001",
+          "prompt_id": "hay-8k-multi",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 5188.991,
+          "e2e_ms": 5444.87,
+          "prompt_tokens": 10154,
+          "completion_tokens": 5,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00002",
+          "prompt_id": "hay-8k-d50",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 5133.99,
+          "e2e_ms": 5387.527,
+          "prompt_tokens": 10103,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00003",
+          "prompt_id": "hay-8k-d90",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 5178.531,
+          "e2e_ms": 5307.239,
+          "prompt_tokens": 10135,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00004",
+          "prompt_id": "hay-8k-d10",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 246.877,
+          "e2e_ms": 506.079,
+          "prompt_tokens": 10208,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00005",
+          "prompt_id": "hay-8k-multi",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 270.905,
+          "e2e_ms": 523.879,
+          "prompt_tokens": 10154,
+          "completion_tokens": 5,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00006",
+          "prompt_id": "hay-8k-d50",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 247.971,
+          "e2e_ms": 507.754,
+          "prompt_tokens": 10103,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00007",
+          "prompt_id": "hay-8k-d90",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 241.24,
+          "e2e_ms": 367.669,
+          "prompt_tokens": 10135,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00008",
+          "prompt_id": "hay-8k-d10",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 242.941,
+          "e2e_ms": 495.359,
+          "prompt_tokens": 10208,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00009",
+          "prompt_id": "hay-8k-multi",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 285.159,
+          "e2e_ms": 537.908,
+          "prompt_tokens": 10154,
+          "completion_tokens": 5,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        }
+      ],
+      "engine_endpoint": {
+        "attached": true,
+        "base_url": "http://127.0.0.1:8888/v1",
+        "served_model_id": "qwen3.8-27b",
+        "advertised_models": [
+          "qwen3.8-27b"
+        ]
+      }
+    },
+    "truncated": false
+  },
+  "provenance": {
+    "github_login": "0xBakeer",
+    "github_user_id": null,
+    "started_at": "2026-09-16T15:33:34Z",
+    "finished_at": "2026-09-16T15:34:00Z",
+    "submitted_at": null,
+    "commit": null,
+    "pr": null,
+    "method": "atlas-bench",
+    "agent": null,
+    "notes": "Served with the OpenZeka DGX Spark recipe for Qwen3.8-27B (blog post \"Qwen3.8-27B on DGX Spark - 48 tok/s\", https://blog.openzeka.com/en/qwen3-8-27b-on-dgx-spark-48-tok-s/, published 2026-08-25), whose sparkrun recipe file qwen38-27b-dflash2.yaml was saved verbatim from the post and launched with the command given in the post, sparkrun 0.3.4 run qwen38-27b-dflash2.yaml --rootful --no-follow --no-rm, plus --hosts localhost because no default sparkrun cluster exists on this machine and --port 8888 instead of 8000. Image registry.cordata.ai/spark-cluster/sglang-qwen38-27b-dflash2:latest as published (repo digest sha256:2686b330, created 2026-08-25, SGLang 0.0.0.dev0+qwen38.27b.g561c8f3, torch 2.13.0+cu130). Target RadixArk/Qwen3.8-27B-NVFP4-BF16-LMHead at main 009632fe (the recipe pins no revision), DFlash2 speculative decoding against z-lab/Qwen3.8-27B-DFlash2 at revision 50307d4c, unquantized, with 8 draft tokens, mem-fraction-static 0.50, KV cache fp8_e4m3, bf16 mamba SSM state with mamba-full-memory-ratio 4.21 and 64 state slots, mamba radix cache extra_buffer, max-running-requests 16 (capped to 12 by the server), FlashInfer attention with autotune left on, chunked prefill 8192, prefill CUDA graph off, torch.compile off, stream-interval 1, sampling-defaults model and the native 262144 context window. The chat template comes from the target repository, so the served default is thinking on: the speed rows force thinking off per request with chat_template_kwargs enable_thinking false, the eval rows use that served default. The server runs without an API key; the harness attached over HTTP on 127.0.0.1:8888 and sent a bearer header the server ignores."
+  },
+  "verification": {
+    "level": "self-reported",
+    "reproduced_by": [],
+    "flags": []
+  }
+}
