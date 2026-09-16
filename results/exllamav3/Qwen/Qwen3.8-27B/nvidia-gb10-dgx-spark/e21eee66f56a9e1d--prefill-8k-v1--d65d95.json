@@ -1,0 +1,372 @@
+{
+  "schema_version": 1,
+  "run_id": "e21eee66f56a9e1d--prefill-8k-v1--d65d95",
+  "config_id": "e21eee66f56a9e1d",
+  "cell_id": "a75453281b67",
+  "workload_id": "prefill-8k-v1",
+  "kind": "prefill",
+  "engine": {
+    "id": "exllamav3",
+    "version": "1.5.0-dflash2",
+    "commit": "fork:r0b0tlab/exllamav3@30846b89fc1d855c96b88f1caa6bd0ada15327b7",
+    "build": "github.com/r0b0tlab/qwen38-exl3-dflash2@b22a33c0fc2070593fae48d23a5e4bacdcf7c928",
+    "container": null,
+    "install_method": "source"
+  },
+  "model": {
+    "id": "Qwen/Qwen3.8-27B",
+    "quant_id": "exl3-4.00bpw",
+    "hf_id": "Qwen/Qwen3.8-27B",
+    "revision": "59fa383744558d1e18ba9de8afb2d1ff951ca4cf",
+    "dtype": "auto",
+    "local_path": null
+  },
+  "hardware": {
+    "id": "nvidia-gb10-dgx-spark",
+    "count": 1,
+    "driver": "580.173.02",
+    "cuda": "13.0",
+    "host": {
+      "cpu": "Cortex-A725",
+      "cpu_cores": 20,
+      "ram_gb": 121.6,
+      "os": "Ubuntu 24.04.4 LTS",
+      "kernel": "6.17.0-1029-nvidia",
+      "arch": "aarch64"
+    },
+    "fingerprint": "sha256:52ea2bdd513719724db88c162b6cc2c9fb4e5b67e02dbe41b9de00687acefb91",
+    "captured": {
+      "nvidia_smi": {
+        "driver": "580.173.02",
+        "cuda": "13.0",
+        "products": [
+          "NVIDIA GB10"
+        ],
+        "fb_memory_total_mib": 0.0
+      },
+      "lscpu": {
+        "architecture": "aarch64",
+        "cpus": "20",
+        "vendor_id": "ARM",
+        "model_name": "Cortex-A725",
+        "cores_per_socket": "10",
+        "sockets": "1",
+        "cpu_max_mhz": "2808.0000"
+      }
+    }
+  },
+  "args": {
+    "max-seq-len": 262144,
+    "cache-size": 270336,
+    "cache-quant": 3,
+    "draft-mode": "model",
+    "draft-model": "r0b0tlab/Qwen3.8-27B-DFlash2-EXL3-4.00bpw@26d05425557ef614e1f9761c61dbeebda7270122",
+    "draft-cache-quant": 3,
+    "max-batch-size": 16,
+    "max-chunk-size": 2048,
+    "reasoning": true,
+    "tool-format": "qwen3_coder"
+  },
+  "args_canonical": "@build=github.com/r0b0tlab/qwen38-exl3-dflash2@b22a33c0fc2070593fae48d23a5e4bacdcf7c928;@dtype=auto;@quant=exl3-4.00bpw;cache-quant=3;cache-size=270336;draft-cache-quant=3;draft-model=r0b0tlab/Qwen3.8-27B-DFlash2-EXL3-4.00bpw@26d05425557ef614e1f9761c61dbeebda7270122;max-batch-size=16;max-seq-len=262144;reasoning=true;tool-format=qwen3_coder",
+  "serve_command": null,
+  "workload": {
+    "id": "prefill-8k-v1",
+    "resolved_params": {
+      "concurrency": 1,
+      "num_requests": 10,
+      "input_tokens": 8192,
+      "output_tokens": 16,
+      "warmup_requests": 1,
+      "prompts_padded": false,
+      "needle_check": false,
+      "timeout_s": 900.0,
+      "seed": 42
+    }
+  },
+  "metrics": {
+    "requests_total": 10,
+    "requests_ok": 10,
+    "requests_failed": 0,
+    "success_rate": 1.0,
+    "duration_s": 42.121,
+    "input_tokens_total": 101562,
+    "output_tokens_total": 57,
+    "output_tok_s": 1.353,
+    "total_tok_s": 2412.541,
+    "req_s": 0.237,
+    "prefill_tok_s": 2411.439,
+    "ttft_ms": {
+      "mean": 4211.676,
+      "p50": 908.198,
+      "p90": 11672.34,
+      "p95": 12418.308,
+      "p99": 13015.082,
+      "min": 727.046,
+      "max": 13164.276
+    },
+    "tpot_ms": null,
+    "itl_ms": {
+      "mean": 0.095,
+      "p50": 0.083,
+      "p90": 0.089,
+      "p95": 0.186,
+      "p99": 0.264,
+      "min": 0.031,
+      "max": 0.283
+    },
+    "e2e_ms": {
+      "mean": 4212.082,
+      "p50": 908.611,
+      "p90": 11672.668,
+      "p95": 12418.678,
+      "p99": 13015.487,
+      "min": 727.431,
+      "max": 13164.689
+    },
+    "decode_tok_s_per_request": null,
+    "vram_peak_gb": null,
+    "ram_peak_gb": 52.296,
+    "kv_cache_tokens": null,
+    "power_avg_w": 79.26,
+    "power_peak_w": 92.19,
+    "energy_wh": 1.1936,
+    "gpu_util_avg_pct": 85.71,
+    "temp_max_c": 83.0,
+    "thermal_throttle_detected": false
+  },
+  "failures": [],
+  "conditions": {
+    "dedicated": true,
+    "detail": "Only the TabbyAPI server running the recipe's ExLlamaV3 fork was resident; nothing else used the GPU.",
+    "isolation_check": "docker ps -> dgx-exporter ; nvidia-smi compute apps -> 1; load1 at start 1.40"
+  },
+  "gotchas": [
+    {
+      "severity": "info",
+      "text": "The recipe has no streaming OpenAI server. Its scripts/serve_openai.py is non-streaming, runs one request at a time and does not parse tool calls, so it cannot produce TTFT or inter-token rows and would turn every concurrent row into a queue. These rows were served through TabbyAPI 53da791 with the recipe engine, weights and cache settings. TabbyAPI decides batching (max_batch_size 16), prefix caching, reasoning and tool-call parsing, which the recipe does not specify."
+    },
+    {
+      "severity": "info",
+      "text": "Concurrency: the recipe measured 1, 2 and 4 concurrent sequences on the 3090 and says each extra sequence costs about 1.2 GiB of recurrent verify history, which is why the 3090 fits one sequence at the full 262k window. On 121 GB of unified memory 16 slots fit, so max_batch_size is 16 here, a setting the recipe never ran. Host memory in use after load was about 45 GB."
+    },
+    {
+      "severity": "info",
+      "text": "The recipe is built for x86. Its container installs the upstream exllamav3 1.5.0 cu128 x86_64 wheel and overlays the fork's Python sources, and there is no aarch64 wheel. On the GB10 the fork was compiled from source for compute capability 12.1; the AVX2 and AVX-512 CPU kernels (CPU MoE offload, CPU all-reduce) are x86-only and were excluded and stubbed, and the two spin-wait loops use the ARM yield instruction. Neither path runs for a single-GPU dense model."
+    },
+    {
+      "severity": "info",
+      "text": "DFlash2 is not a switch: the fork generator takes the DFlash2 propose and q-aware verify path whenever the attached draft model is a DFlash2DraftModel, so TabbyAPI draft_mode model pointed at the drafter directory is the whole configuration. Before the rows, streamed greedy answers to five GSM8K test questions at max 512 tokens averaged 5.2 to 5.9 tokens per streamed chunk and 58 to 65 tok/s decode, against the recipe's 5.47 mean acceptance length and 152.4 tok/s on the RTX 3090."
+    },
+    {
+      "severity": "info",
+      "text": "TabbyAPI draft_cache_mode accepts only FP16, Q8, Q6 or Q4 in its config model, while the recipe runs the drafter cache at 3 bits like the target. The field type was changed to the same pattern cache_mode already accepts (k_bits,v_bits), so draft_cache_mode 3,3 reaches the same Cache constructor the recipe script calls."
+    },
+    {
+      "severity": "info",
+      "text": "Speed rows force thinking off per request with chat_template_kwargs enable_thinking false. Eval rows use the served default, which is thinking on at full length, because the chat template comes from the target repository unmodified; the requests still set temperature 0 and seed 42. The recipe sets no reasoning level of its own."
+    },
+    {
+      "severity": "info",
+      "text": "TabbyAPI returned no usage block on non-streaming completions here, so the eval rows carry no output token counts (output_tokens_total 0, avg_output_tokens null). The server log has them: mean output per item was 47 tokens on format and knowledge, 112 on multilingual, 141 on json, 147 on tools and 260 on instruction, the longest single answer 910 tokens, and no eval request stopped at its max_tokens cap."
+    },
+    {
+      "severity": "warn",
+      "text": "Concurrency collapses on this stack. Per-request decode falls from 33.4 tok/s mean at concurrency 1 to 7.3 at c8 (chat, 1k in) and 4.2 at c16 (128 in), so aggregate output is 24.8, 46.9 and 51.9 tok/s and the c16 row took 36 minutes. The server log puts the draft acceptance at 28 to 33 percent of drafted tokens in all three rows, so the drop comes from the cost of each batched verify step (ITL p50 95, 361 and 681 ms), not from the drafter guessing worse."
+    },
+    {
+      "severity": "warn",
+      "text": "Most of the concurrent TTFT is spent outside the generator. For the c16 requests TabbyAPI logs queue plus prefill at 0.51 s p50 (the generator's own clock, from enqueue to first token), while the harness measured 6.65 s p50 to the first streamed content; for c8 chat the pair is 1.84 s against 5.68 s. The gap is time inside the TabbyAPI process before the job reaches the generator or before its first chunk is sent. Request handling and the generator loop share one Python process, which is a likely cause but was not isolated."
+    },
+    {
+      "severity": "info",
+      "text": "Short prefills pay a fixed cost. Cold 10k-token prompts prefill at 790 to 907 tok/s, but on the serve-single requests (144 to 323 prompt tokens, nothing cached) the server reports 1.85 s p50 to first token, range 0.51 to 4.87 s, and a fully cached 10k prompt that re-prefills its last 119 to 224 tokens still takes 0.48 to 0.65 s. That is why serve-single has TTFT p50 1,610 ms for 256 input tokens."
+    }
+  ],
+  "derived": {
+    "cost_per_1m_output_tokens_usd": null,
+    "tokens_per_watt": 0.0171,
+    "tok_s_per_gb_bandwidth": 0.004956,
+    "bandwidth_efficiency": null,
+    "memory_headroom_gb": null
+  },
+  "raw": {
+    "harness": "atlas-bench",
+    "harness_version": "0.1.0",
+    "sha256": "83204ea5bfa30b98f9b5cf5aa135173225f6c108f5d6f77451ac3ad3584d7e17",
+    "payload_path": null,
+    "payload": {
+      "requests": [
+        {
+          "id": "prefill-w00000",
+          "prompt_id": "hay-8k-d10",
+          "warmup": true,
+          "status": "ok",
+          "ttft_ms": 11482.417,
+          "e2e_ms": 11482.845,
+          "prompt_tokens": 10208,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00000",
+          "prompt_id": "hay-8k-d10",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 887.892,
+          "e2e_ms": 888.275,
+          "prompt_tokens": 10208,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00001",
+          "prompt_id": "hay-8k-multi",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 13164.276,
+          "e2e_ms": 13164.689,
+          "prompt_tokens": 10154,
+          "completion_tokens": 5,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00002",
+          "prompt_id": "hay-8k-d50",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 11454.709,
+          "e2e_ms": 11455.089,
+          "prompt_tokens": 10103,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00003",
+          "prompt_id": "hay-8k-d90",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 11506.57,
+          "e2e_ms": 11506.887,
+          "prompt_tokens": 10135,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00004",
+          "prompt_id": "hay-8k-d10",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 884.997,
+          "e2e_ms": 885.366,
+          "prompt_tokens": 10208,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00005",
+          "prompt_id": "hay-8k-multi",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 928.504,
+          "e2e_ms": 928.948,
+          "prompt_tokens": 10154,
+          "completion_tokens": 5,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00006",
+          "prompt_id": "hay-8k-d50",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 727.046,
+          "e2e_ms": 727.431,
+          "prompt_tokens": 10103,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00007",
+          "prompt_id": "hay-8k-d90",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 737.431,
+          "e2e_ms": 737.747,
+          "prompt_tokens": 10135,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00008",
+          "prompt_id": "hay-8k-d10",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 887.623,
+          "e2e_ms": 887.992,
+          "prompt_tokens": 10208,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00009",
+          "prompt_id": "hay-8k-multi",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 937.717,
+          "e2e_ms": 938.397,
+          "prompt_tokens": 10154,
+          "completion_tokens": 5,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        }
+      ],
+      "engine_endpoint": {
+        "attached": true,
+        "base_url": "http://127.0.0.1:8888/v1",
+        "served_model_id": "qwen38-27b-exl3",
+        "advertised_models": [
+          "qwen38-27b-exl3",
+          "dflash2-exl3"
+        ]
+      }
+    },
+    "truncated": false
+  },
+  "provenance": {
+    "github_login": "0xBakeer",
+    "github_user_id": null,
+    "started_at": "2026-09-16T18:03:25Z",
+    "finished_at": "2026-09-16T18:04:19Z",
+    "submitted_at": null,
+    "commit": null,
+    "pr": null,
+    "method": "atlas-bench",
+    "agent": null,
+    "notes": "Served with the r0b0tlab Qwen3.8-27B EXL3 + DFlash2 recipe (https://github.com/r0b0tlab/qwen38-exl3-dflash2, main b22a33c), which is written for a 24 GB RTX 3090 on x86. Engine: the recipe fork github.com/r0b0tlab/exllamav3 branch dflash2-pathway at 30846b8 (upstream v1.5.0 plus the DFlash2 drafter), built from source on the GB10 with torch 2.11.0+cu130, CUDA 13.0 and TORCH_CUDA_ARCH_LIST 12.1, with the x86-only CPU sources excluded and stubbed (no GPU kernel touched). Weights: target r0b0tlab/Qwen3.8-27B-EXL3-4.00bpw at 59fa3837 and drafter r0b0tlab/Qwen3.8-27B-DFlash2-EXL3-4.00bpw at 26d05425. Engine settings follow the recipe serve script scripts/serve_openai.py: 262144-token window, paged cache of 270336 tokens, 3-bit K and V cache for both target and drafter, target recurrent history sized to the draft window, and the draft window left at the drafter default of 7 tokens (block_size 8 minus one); the generator picks the DFlash2 propose and verify path by itself from the drafter architecture. The HTTP front is not the recipe: its serve_openai.py answers non-streaming requests one at a time with no tool parsing, so the server here is TabbyAPI 53da791 (theroyallab/tabbyAPI main) with draft_mode model, max_batch_size 16, chunk_size 2048, sysmem_recurrent_cache 4096 MB, reasoning parser on and tool_format qwen3_coder, plus a one-line change that lets draft_cache_mode take the 3,3 form. The chat template is the one in the target repository, so the served default is thinking on: speed rows force thinking off per request with chat_template_kwargs enable_thinking false, eval rows use the served default. No API key; the harness attached over HTTP on 127.0.0.1:8888."
+  },
+  "verification": {
+    "level": "self-reported",
+    "reproduced_by": [],
+    "flags": []
+  }
+}
