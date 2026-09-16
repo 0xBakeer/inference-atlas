@@ -1,0 +1,1469 @@
+{
+  "schema_version": 1,
+  "run_id": "e8badcd0986cd3d8--eval-reasoning-v1--5d297a",
+  "config_id": "e8badcd0986cd3d8",
+  "cell_id": "aefd407f2560",
+  "workload_id": "eval-reasoning-v1",
+  "kind": "eval",
+  "engine": {
+    "id": "vllm",
+    "version": "0.27.2rc1.dev88+gaa3100357.d20260814",
+    "commit": "aa3100357322995b201d5348c5490596a7bd70a9",
+    "container": "eugr/spark-vllm:nightly-20260814 (repo digest sha256:ab89584706575a7af48a3d5a2a92bc48a5432781fb87925a181d8bb5eab4f5d3, image id a0cb301789ef, built 2026-08-14 from vllm main aa3100357; pulled as published, no local build)",
+    "install_method": "docker"
+  },
+  "model": {
+    "id": "Qwen/Qwen3.8-27B",
+    "quant_id": "nvfp4-unsloth",
+    "hf_id": "Qwen/Qwen3.8-27B",
+    "revision": "f0b7c9e722f5565102fff8481c99e4d86ae099c7",
+    "dtype": "auto",
+    "local_path": null
+  },
+  "hardware": {
+    "id": "nvidia-gb10-dgx-spark",
+    "count": 1,
+    "driver": "580.173.02",
+    "cuda": "13.0",
+    "host": {
+      "cpu": "Cortex-A725",
+      "cpu_cores": 20,
+      "ram_gb": 121.6,
+      "os": "Ubuntu 24.04.4 LTS",
+      "kernel": "6.17.0-1029-nvidia",
+      "arch": "aarch64"
+    },
+    "fingerprint": "sha256:52ea2bdd513719724db88c162b6cc2c9fb4e5b67e02dbe41b9de00687acefb91",
+    "captured": {
+      "nvidia_smi": {
+        "driver": "580.173.02",
+        "cuda": "13.0",
+        "products": [
+          "NVIDIA GB10"
+        ],
+        "fb_memory_total_mib": 0.0
+      },
+      "lscpu": {
+        "architecture": "aarch64",
+        "cpus": "20",
+        "vendor_id": "ARM",
+        "model_name": "Cortex-A725",
+        "cores_per_socket": "10",
+        "sockets": "1",
+        "cpu_max_mhz": "2808.0000"
+      }
+    }
+  },
+  "args": {
+    "max-model-len": 262144,
+    "gpu-memory-utilization": 0.85,
+    "max-num-batched-tokens": 16384,
+    "enable-prefix-caching": true,
+    "reasoning-parser": "qwen3",
+    "tool-call-parser": "qwen3_xml",
+    "enable-auto-tool-choice": true,
+    "limit-mm-per-prompt": {
+      "image": 2,
+      "video": 0
+    },
+    "speculative-config": {
+      "method": "dspark",
+      "model": "Doopeworld/Qwen3.8-27B-DSpark-vLLM",
+      "num_speculative_tokens": 14,
+      "draft_sample_method": "probabilistic"
+    }
+  },
+  "args_canonical": "@dtype=auto;@quant=nvfp4-unsloth;enable-auto-tool-choice=true;enable-prefix-caching=true;gpu-memory-utilization=0.85;limit-mm-per-prompt={\"image\":2,\"video\":0};max-model-len=262144;max-num-batched-tokens=16384;reasoning-parser=qwen3;speculative-config={\"draft_sample_method\":\"probabilistic\",\"method\":\"dspark\",\"model\":\"Doopeworld/Qwen3.8-27B-DSpark-vLLM\",\"num_speculative_tokens\":14};tool-call-parser=qwen3_xml",
+  "serve_command": null,
+  "workload": {
+    "id": "eval-reasoning-v1",
+    "resolved_params": {
+      "dataset_id": "eval-reasoning-v1",
+      "suite": "reasoning",
+      "scorer": "exact",
+      "items": 120,
+      "concurrency": 4,
+      "max_output_tokens": 2048,
+      "timeout_s": 300.0,
+      "temperature": 0,
+      "reasoning": "default",
+      "dataset_categories": null,
+      "dataset_target_tokens": null,
+      "pass_threshold": null,
+      "seed": 42
+    }
+  },
+  "metrics": {
+    "requests_total": 120,
+    "requests_ok": 120,
+    "requests_failed": 0,
+    "success_rate": 1.0,
+    "duration_s": 488.607,
+    "input_tokens_total": 15394,
+    "output_tokens_total": 34202,
+    "e2e_ms": {
+      "mean": 16183.124,
+      "p50": 9712.691,
+      "p90": 27371.813,
+      "p95": 38480.982,
+      "p99": 108488.279,
+      "min": 2785.53,
+      "max": 127707.9
+    },
+    "vram_peak_gb": null,
+    "ram_peak_gb": 120.223,
+    "power_avg_w": 44.13,
+    "power_peak_w": 53.31,
+    "energy_wh": 5.9941,
+    "gpu_util_avg_pct": 95.62,
+    "temp_max_c": 72.0,
+    "thermal_throttle_detected": false
+  },
+  "scores": {
+    "suite": "reasoning",
+    "total": 120,
+    "correct": 117,
+    "accuracy": 0.975,
+    "success_rate": 1.0,
+    "by_category": {
+      "counting": {
+        "total": 20,
+        "correct": 20
+      },
+      "datetime": {
+        "total": 18,
+        "correct": 16
+      },
+      "deduction": {
+        "total": 15,
+        "correct": 15
+      },
+      "ordering": {
+        "total": 18,
+        "correct": 18
+      },
+      "spatial": {
+        "total": 15,
+        "correct": 15
+      },
+      "syllogism": {
+        "total": 18,
+        "correct": 18
+      },
+      "truth_liar": {
+        "total": 16,
+        "correct": 15
+      }
+    },
+    "by_difficulty": {
+      "easy": {
+        "total": 31,
+        "correct": 31
+      },
+      "hard": {
+        "total": 39,
+        "correct": 38
+      },
+      "medium": {
+        "total": 50,
+        "correct": 48
+      }
+    },
+    "avg_output_tokens": 285.02,
+    "avg_latency_ms": 16183.12,
+    "failures": 0,
+    "items": [
+      {
+        "id": "reason-0001",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 9443.611,
+        "output_tokens": 138,
+        "category": "syllogism",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0002",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 13564.259,
+        "output_tokens": 181,
+        "category": "syllogism",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0003",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 3688.185,
+        "output_tokens": 65,
+        "category": "syllogism",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0004",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 4738.819,
+        "output_tokens": 67,
+        "category": "syllogism",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0005",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 4667.574,
+        "output_tokens": 49,
+        "category": "syllogism",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0006",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 7772.102,
+        "output_tokens": 96,
+        "category": "syllogism",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0007",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 55927.838,
+        "output_tokens": 809,
+        "category": "syllogism",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0008",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 5344.017,
+        "output_tokens": 81,
+        "category": "syllogism",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0009",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 9579.097,
+        "output_tokens": 123,
+        "category": "syllogism",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0010",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 10790.068,
+        "output_tokens": 172,
+        "category": "syllogism",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0011",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 3135.457,
+        "output_tokens": 64,
+        "category": "syllogism",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0012",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 12675.765,
+        "output_tokens": 196,
+        "category": "syllogism",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0013",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 110944.76,
+        "output_tokens": 1565,
+        "category": "syllogism",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0014",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 9029.505,
+        "output_tokens": 145,
+        "category": "syllogism",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0015",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 2785.53,
+        "output_tokens": 50,
+        "category": "syllogism",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0016",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 5060.267,
+        "output_tokens": 83,
+        "category": "syllogism",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0017",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 92338.614,
+        "output_tokens": 1395,
+        "category": "syllogism",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0018",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 5879.297,
+        "output_tokens": 99,
+        "category": "syllogism",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0019",
+        "correct": true,
+        "predicted": "Hana",
+        "expected": "Hana",
+        "latency_ms": 16811.978,
+        "output_tokens": 329,
+        "category": "ordering",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0020",
+        "correct": true,
+        "predicted": "Fenna",
+        "expected": "Fenna",
+        "latency_ms": 17575.127,
+        "output_tokens": 372,
+        "category": "ordering",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0021",
+        "correct": true,
+        "predicted": "Cai",
+        "expected": "Cai",
+        "latency_ms": 9722.083,
+        "output_tokens": 199,
+        "category": "ordering",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0022",
+        "correct": true,
+        "predicted": "Dita",
+        "expected": "Dita",
+        "latency_ms": 16321.1,
+        "output_tokens": 251,
+        "category": "ordering",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0023",
+        "correct": true,
+        "predicted": "Fenna",
+        "expected": "Fenna",
+        "latency_ms": 27591.284,
+        "output_tokens": 501,
+        "category": "ordering",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0024",
+        "correct": true,
+        "predicted": "Lars",
+        "expected": "Lars",
+        "latency_ms": 17374.398,
+        "output_tokens": 273,
+        "category": "ordering",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0025",
+        "correct": true,
+        "predicted": "Ivo",
+        "expected": "Ivo",
+        "latency_ms": 10608.988,
+        "output_tokens": 210,
+        "category": "ordering",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0026",
+        "correct": true,
+        "predicted": "Fenna",
+        "expected": "Fenna",
+        "latency_ms": 16088.224,
+        "output_tokens": 282,
+        "category": "ordering",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0027",
+        "correct": true,
+        "predicted": "Kira",
+        "expected": "Kira",
+        "latency_ms": 18564.757,
+        "output_tokens": 317,
+        "category": "ordering",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0028",
+        "correct": true,
+        "predicted": "Hana",
+        "expected": "Hana",
+        "latency_ms": 19520.51,
+        "output_tokens": 446,
+        "category": "ordering",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0029",
+        "correct": true,
+        "predicted": "Emre",
+        "expected": "Emre",
+        "latency_ms": 14104.56,
+        "output_tokens": 291,
+        "category": "ordering",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0030",
+        "correct": true,
+        "predicted": "Emre",
+        "expected": "Emre",
+        "latency_ms": 27347.427,
+        "output_tokens": 517,
+        "category": "ordering",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0031",
+        "correct": true,
+        "predicted": "Ivo",
+        "expected": "Ivo",
+        "latency_ms": 25717.048,
+        "output_tokens": 508,
+        "category": "ordering",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0032",
+        "correct": true,
+        "predicted": "Cai",
+        "expected": "Cai",
+        "latency_ms": 15113.059,
+        "output_tokens": 301,
+        "category": "ordering",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0033",
+        "correct": true,
+        "predicted": "Hana",
+        "expected": "Hana",
+        "latency_ms": 12341.981,
+        "output_tokens": 281,
+        "category": "ordering",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0034",
+        "correct": true,
+        "predicted": "Ada",
+        "expected": "Ada",
+        "latency_ms": 24738.877,
+        "output_tokens": 504,
+        "category": "ordering",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0035",
+        "correct": true,
+        "predicted": "Gus",
+        "expected": "Gus",
+        "latency_ms": 9406.97,
+        "output_tokens": 155,
+        "category": "ordering",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0036",
+        "correct": true,
+        "predicted": "Hana",
+        "expected": "Hana",
+        "latency_ms": 17539.923,
+        "output_tokens": 360,
+        "category": "ordering",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0037",
+        "correct": true,
+        "predicted": "Juno",
+        "expected": "Juno",
+        "latency_ms": 17083.621,
+        "output_tokens": 351,
+        "category": "truth_liar",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0038",
+        "correct": false,
+        "predicted": "",
+        "expected": "Dita, Juno",
+        "latency_ms": 127707.9,
+        "output_tokens": 2048,
+        "category": "truth_liar",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0039",
+        "correct": true,
+        "predicted": "Ada",
+        "expected": "Ada",
+        "latency_ms": 22930.788,
+        "output_tokens": 368,
+        "category": "truth_liar",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0040",
+        "correct": true,
+        "predicted": "0",
+        "expected": "0",
+        "latency_ms": 26056.722,
+        "output_tokens": 416,
+        "category": "truth_liar",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0041",
+        "correct": true,
+        "predicted": "1",
+        "expected": "1",
+        "latency_ms": 37327.534,
+        "output_tokens": 631,
+        "category": "truth_liar",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0042",
+        "correct": true,
+        "predicted": "1",
+        "expected": "1",
+        "latency_ms": 24662.307,
+        "output_tokens": 449,
+        "category": "truth_liar",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0043",
+        "correct": true,
+        "predicted": "0",
+        "expected": "0",
+        "latency_ms": 25694.898,
+        "output_tokens": 395,
+        "category": "truth_liar",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0044",
+        "correct": true,
+        "predicted": "1",
+        "expected": "1",
+        "latency_ms": 26914.157,
+        "output_tokens": 394,
+        "category": "truth_liar",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0045",
+        "correct": true,
+        "predicted": "1",
+        "expected": "1",
+        "latency_ms": 25016.881,
+        "output_tokens": 449,
+        "category": "truth_liar",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0046",
+        "correct": true,
+        "predicted": "1",
+        "expected": "1",
+        "latency_ms": 19624.721,
+        "output_tokens": 297,
+        "category": "truth_liar",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0047",
+        "correct": true,
+        "predicted": "1",
+        "expected": "1",
+        "latency_ms": 19960.28,
+        "output_tokens": 314,
+        "category": "truth_liar",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0048",
+        "correct": true,
+        "predicted": "2",
+        "expected": "2",
+        "latency_ms": 24660.453,
+        "output_tokens": 381,
+        "category": "truth_liar",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0049",
+        "correct": true,
+        "predicted": "0",
+        "expected": "0",
+        "latency_ms": 22253.126,
+        "output_tokens": 387,
+        "category": "truth_liar",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0050",
+        "correct": true,
+        "predicted": "Bo",
+        "expected": "Bo",
+        "latency_ms": 37712.252,
+        "output_tokens": 575,
+        "category": "truth_liar",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0051",
+        "correct": true,
+        "predicted": "Ada, Gus",
+        "expected": "Ada, Gus",
+        "latency_ms": 19635.571,
+        "output_tokens": 324,
+        "category": "truth_liar",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0052",
+        "correct": true,
+        "predicted": "Cai",
+        "expected": "Cai",
+        "latency_ms": 25725.326,
+        "output_tokens": 447,
+        "category": "truth_liar",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0053",
+        "correct": true,
+        "predicted": "3024",
+        "expected": "3024",
+        "latency_ms": 3968.1,
+        "output_tokens": 82,
+        "category": "counting",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0054",
+        "correct": true,
+        "predicted": "119",
+        "expected": "119",
+        "latency_ms": 3462.723,
+        "output_tokens": 78,
+        "category": "counting",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0055",
+        "correct": true,
+        "predicted": "210",
+        "expected": "210",
+        "latency_ms": 3808.884,
+        "output_tokens": 80,
+        "category": "counting",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0056",
+        "correct": true,
+        "predicted": "276",
+        "expected": "276",
+        "latency_ms": 4167.543,
+        "output_tokens": 62,
+        "category": "counting",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0057",
+        "correct": true,
+        "predicted": "504",
+        "expected": "504",
+        "latency_ms": 3972.372,
+        "output_tokens": 80,
+        "category": "counting",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0058",
+        "correct": true,
+        "predicted": "15",
+        "expected": "15",
+        "latency_ms": 2932.819,
+        "output_tokens": 67,
+        "category": "counting",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0059",
+        "correct": true,
+        "predicted": "60",
+        "expected": "60",
+        "latency_ms": 6752.44,
+        "output_tokens": 137,
+        "category": "counting",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0060",
+        "correct": true,
+        "predicted": "170",
+        "expected": "170",
+        "latency_ms": 3113.254,
+        "output_tokens": 74,
+        "category": "counting",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0061",
+        "correct": true,
+        "predicted": "60",
+        "expected": "60",
+        "latency_ms": 9352.108,
+        "output_tokens": 154,
+        "category": "counting",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0062",
+        "correct": true,
+        "predicted": "58",
+        "expected": "58",
+        "latency_ms": 8863.053,
+        "output_tokens": 126,
+        "category": "counting",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0063",
+        "correct": true,
+        "predicted": "35",
+        "expected": "35",
+        "latency_ms": 3115.028,
+        "output_tokens": 67,
+        "category": "counting",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0064",
+        "correct": true,
+        "predicted": "45",
+        "expected": "45",
+        "latency_ms": 4494.762,
+        "output_tokens": 66,
+        "category": "counting",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0065",
+        "correct": true,
+        "predicted": "703",
+        "expected": "703",
+        "latency_ms": 5586.412,
+        "output_tokens": 85,
+        "category": "counting",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0066",
+        "correct": true,
+        "predicted": "72",
+        "expected": "72",
+        "latency_ms": 10080.825,
+        "output_tokens": 230,
+        "category": "counting",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0067",
+        "correct": true,
+        "predicted": "1287",
+        "expected": "1287",
+        "latency_ms": 8345.994,
+        "output_tokens": 198,
+        "category": "counting",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0068",
+        "correct": true,
+        "predicted": "87",
+        "expected": "87",
+        "latency_ms": 9703.298,
+        "output_tokens": 228,
+        "category": "counting",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0069",
+        "correct": true,
+        "predicted": "20",
+        "expected": "20",
+        "latency_ms": 3453.667,
+        "output_tokens": 70,
+        "category": "counting",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0070",
+        "correct": true,
+        "predicted": "330",
+        "expected": "330",
+        "latency_ms": 6755.513,
+        "output_tokens": 167,
+        "category": "counting",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0071",
+        "correct": true,
+        "predicted": "210",
+        "expected": "210",
+        "latency_ms": 3806.69,
+        "output_tokens": 59,
+        "category": "counting",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0072",
+        "correct": true,
+        "predicted": "720",
+        "expected": "720",
+        "latency_ms": 3289.773,
+        "output_tokens": 77,
+        "category": "counting",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0073",
+        "correct": true,
+        "predicted": "Tuesday",
+        "expected": "Tuesday",
+        "latency_ms": 14698.675,
+        "output_tokens": 253,
+        "category": "datetime",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0074",
+        "correct": true,
+        "predicted": "2014-01-13",
+        "expected": "2014-01-13",
+        "latency_ms": 23687.123,
+        "output_tokens": 413,
+        "category": "datetime",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0075",
+        "correct": true,
+        "predicted": "4",
+        "expected": "4",
+        "latency_ms": 12960.714,
+        "output_tokens": 310,
+        "category": "datetime",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0076",
+        "correct": true,
+        "predicted": "22:00",
+        "expected": "22:00",
+        "latency_ms": 6224.488,
+        "output_tokens": 112,
+        "category": "datetime",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0077",
+        "correct": false,
+        "predicted": "4",
+        "expected": "5",
+        "latency_ms": 21315.973,
+        "output_tokens": 396,
+        "category": "datetime",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0078",
+        "correct": true,
+        "predicted": "04:00",
+        "expected": "04:00",
+        "latency_ms": 5046.683,
+        "output_tokens": 111,
+        "category": "datetime",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0079",
+        "correct": true,
+        "predicted": "18:45",
+        "expected": "18:45",
+        "latency_ms": 4537.861,
+        "output_tokens": 81,
+        "category": "datetime",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0080",
+        "correct": true,
+        "predicted": "4",
+        "expected": "4",
+        "latency_ms": 53086.85,
+        "output_tokens": 882,
+        "category": "datetime",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0081",
+        "correct": false,
+        "predicted": "",
+        "expected": "Monday",
+        "latency_ms": 98015.91,
+        "output_tokens": 2048,
+        "category": "datetime",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0082",
+        "correct": true,
+        "predicted": "Monday",
+        "expected": "Monday",
+        "latency_ms": 13371.229,
+        "output_tokens": 225,
+        "category": "datetime",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0083",
+        "correct": true,
+        "predicted": "07:00",
+        "expected": "07:00",
+        "latency_ms": 5875.575,
+        "output_tokens": 97,
+        "category": "datetime",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0084",
+        "correct": true,
+        "predicted": "07:40",
+        "expected": "07:40",
+        "latency_ms": 2953.381,
+        "output_tokens": 59,
+        "category": "datetime",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0085",
+        "correct": true,
+        "predicted": "2022-11-25",
+        "expected": "2022-11-25",
+        "latency_ms": 25556.956,
+        "output_tokens": 543,
+        "category": "datetime",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0086",
+        "correct": true,
+        "predicted": "2037-01-26",
+        "expected": "2037-01-26",
+        "latency_ms": 28825.301,
+        "output_tokens": 505,
+        "category": "datetime",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0087",
+        "correct": true,
+        "predicted": "05:15",
+        "expected": "05:15",
+        "latency_ms": 5183.351,
+        "output_tokens": 81,
+        "category": "datetime",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0088",
+        "correct": true,
+        "predicted": "859",
+        "expected": "859",
+        "latency_ms": 28838.405,
+        "output_tokens": 596,
+        "category": "datetime",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0089",
+        "correct": true,
+        "predicted": "2010-05-19",
+        "expected": "2010-05-19",
+        "latency_ms": 15595.409,
+        "output_tokens": 277,
+        "category": "datetime",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0090",
+        "correct": true,
+        "predicted": "4",
+        "expected": "4",
+        "latency_ms": 15592.523,
+        "output_tokens": 301,
+        "category": "datetime",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0091",
+        "correct": true,
+        "predicted": "north",
+        "expected": "north",
+        "latency_ms": 4524.445,
+        "output_tokens": 79,
+        "category": "spatial",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0092",
+        "correct": true,
+        "predicted": "9",
+        "expected": "9",
+        "latency_ms": 28805.75,
+        "output_tokens": 530,
+        "category": "spatial",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0093",
+        "correct": true,
+        "predicted": "Ada",
+        "expected": "Ada",
+        "latency_ms": 4528.584,
+        "output_tokens": 87,
+        "category": "spatial",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0094",
+        "correct": true,
+        "predicted": "Cai",
+        "expected": "Cai",
+        "latency_ms": 5852.991,
+        "output_tokens": 106,
+        "category": "spatial",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0095",
+        "correct": true,
+        "predicted": "north",
+        "expected": "north",
+        "latency_ms": 5223.185,
+        "output_tokens": 53,
+        "category": "spatial",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0096",
+        "correct": true,
+        "predicted": "Hana",
+        "expected": "Hana",
+        "latency_ms": 5703.275,
+        "output_tokens": 78,
+        "category": "spatial",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0097",
+        "correct": true,
+        "predicted": "east",
+        "expected": "east",
+        "latency_ms": 3725.812,
+        "output_tokens": 48,
+        "category": "spatial",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0098",
+        "correct": true,
+        "predicted": "Dita",
+        "expected": "Dita",
+        "latency_ms": 4531.612,
+        "output_tokens": 100,
+        "category": "spatial",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0099",
+        "correct": true,
+        "predicted": "Lars",
+        "expected": "Lars",
+        "latency_ms": 4154.461,
+        "output_tokens": 79,
+        "category": "spatial",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0100",
+        "correct": true,
+        "predicted": "Ada",
+        "expected": "Ada",
+        "latency_ms": 4349.354,
+        "output_tokens": 86,
+        "category": "spatial",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0101",
+        "correct": true,
+        "predicted": "east",
+        "expected": "east",
+        "latency_ms": 10467.269,
+        "output_tokens": 157,
+        "category": "spatial",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0102",
+        "correct": true,
+        "predicted": "Gus",
+        "expected": "Gus",
+        "latency_ms": 6433.672,
+        "output_tokens": 127,
+        "category": "spatial",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0103",
+        "correct": true,
+        "predicted": "20",
+        "expected": "20",
+        "latency_ms": 25661.077,
+        "output_tokens": 473,
+        "category": "spatial",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0104",
+        "correct": true,
+        "predicted": "Kira",
+        "expected": "Kira",
+        "latency_ms": 5280.324,
+        "output_tokens": 109,
+        "category": "spatial",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0105",
+        "correct": true,
+        "predicted": "Cai",
+        "expected": "Cai",
+        "latency_ms": 5327.488,
+        "output_tokens": 98,
+        "category": "spatial",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0106",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 9384.298,
+        "output_tokens": 183,
+        "category": "deduction",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0107",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 9151.281,
+        "output_tokens": 170,
+        "category": "deduction",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0108",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 9469.242,
+        "output_tokens": 211,
+        "category": "deduction",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0109",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 7505.071,
+        "output_tokens": 150,
+        "category": "deduction",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0110",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 11936.124,
+        "output_tokens": 177,
+        "category": "deduction",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0111",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 12106.997,
+        "output_tokens": 209,
+        "category": "deduction",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0112",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 9856.365,
+        "output_tokens": 154,
+        "category": "deduction",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0113",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 7738.751,
+        "output_tokens": 156,
+        "category": "deduction",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0114",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 7426.917,
+        "output_tokens": 138,
+        "category": "deduction",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0115",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 9940.148,
+        "output_tokens": 175,
+        "category": "deduction",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0116",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 8841.204,
+        "output_tokens": 194,
+        "category": "deduction",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0117",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 9248.833,
+        "output_tokens": 219,
+        "category": "deduction",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0118",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 10211.685,
+        "output_tokens": 209,
+        "category": "deduction",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0119",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 8399.046,
+        "output_tokens": 221,
+        "category": "deduction",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0120",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 8978.405,
+        "output_tokens": 248,
+        "category": "deduction",
+        "difficulty": "hard"
+      }
+    ]
+  },
+  "failures": [],
+  "conditions": {
+    "dedicated": true,
+    "detail": "Only the recipe's own vLLM container was resident; nothing else used the GPU.",
+    "isolation_check": "docker ps -> qwen38-dspark-vllm dgx-exporter ; nvidia-smi compute apps -> 1; load1 at start 0.43"
+  },
+  "gotchas": [
+    {
+      "severity": "info",
+      "text": "Image: the recipe boot script defaults to spark-vllm:qwen38, which its run log describes as eugr/spark-vllm:latest of 2026-08-14 with ffmpeg 6.1.1 added, and which is not published. These rows ran on eugr/spark-vllm:nightly-20260814, repo digest sha256:ab89584706575a7af48a3d5a2a92bc48a5432781fb87925a181d8bb5eab4f5d3, image id a0cb301789ef, the id the recipe run log records for eugr/spark-vllm:latest. Its build-metadata.yaml names vllm-project/vllm main aa3100357 with no extra pull requests. ffmpeg is absent; it matters only for video and image input."
+    },
+    {
+      "severity": "info",
+      "text": "Boot lottery: this boot allocated 72.47 GiB of KV cache, 1,250,962 tokens, 4.77x concurrency at 262144, with gpu-memory-utilization 0.85 and 114.83 of 121.63 GiB free at startup. The recipe README reports 1,161,326 tokens (4.43x) for the same settings on its machine. vLLM padded the KV groups with 2 and 4 layers and warns the second may waste up to 25 per cent of that group."
+    },
+    {
+      "severity": "info",
+      "text": "KV cache dtype is not set by the recipe (kv-cache-dtype auto), but unsloth/Qwen3.8-27B-NVFP4 carries a static per-tensor 8-bit float kv_cache_scheme in its quantization_config, and FlashInfer resolved kv_cache_dtype float8_e4m3fn with the xqa decode backend. The recipe omits --attention-backend on purpose; vLLM picked FLASHINFER out of FLASHINFER and TRITON_ATTN, and FlashInfer serves the draft model non-causal attention."
+    },
+    {
+      "severity": "info",
+      "text": "Neither the target nor the drafter is pinned. unsloth/Qwen3.8-27B-NVFP4 resolved to main f0b7c9e7 (2026-09-08). The recipe run log names snapshot a767244, which no longer exists in the repository history after the 2026-08-15 super-squash; every file except README.md has the same content hash at 16b6615a (the squash), 57926bac and f0b7c9e7. Doopeworld/Qwen3.8-27B-DSpark-vLLM resolved to ebaa0919 (2026-08-16), its only upload: 5 layers, bf16, block_size 7, 2.6 GB."
+    },
+    {
+      "severity": "info",
+      "text": "DSpark runs with 14 speculative tokens against a drafter whose config says block_size 7, and probabilistic draft sampling. During the pre-run sanity requests (thinking on and off, greedy, 64 + 512 + 512 tokens) vLLM counted 339 drafts, 4,746 draft tokens and 757 accepted, 16 per cent, a mean acceptance length of 3.2 tokens per step; positions 9 to 14 accepted almost nothing on prose-like output. The README 75 to 78 tok/s is a 3,000-token edit that copies code already in the prompt, where it reports 68 per cent acceptance."
+    },
+    {
+      "severity": "info",
+      "text": "vLLM reads generation_config.json from the target and overrides its own sampling defaults with temperature 1.0, top_k 20, top_p 0.95. Every request here sets temperature 0 and seed 42."
+    },
+    {
+      "severity": "info",
+      "text": "Speed rows force thinking off per request with chat_template_kwargs enable_thinking false. Eval rows use the served default, which is thinking on at full length, because the chat template comes from the target repository unmodified; the recipe sets no reasoning level of its own."
+    },
+    {
+      "severity": "info",
+      "text": "The server runs without an API key and uses host networking on port 8888, the script default. The script also passes VLLM_USE_FLASHINFER_MOE_FP4=0, which this vLLM build logs as an unknown environment variable, and VLLM_MARLIN_USE_ATOMIC_ADD=1."
+    },
+    {
+      "severity": "info",
+      "text": "Boot took 11 minutes from docker run to the first answered request: 160 s to load the 22 GB target from a cold page cache, about 2.5 minutes of FlashInfer fp4_gemm autotuning, 50 s of torch.compile and 99 s of CUDA graph capture (51 piecewise and 33 full sizes up to 512 tokens, plus 34 DSpark sizes)."
+    }
+  ],
+  "derived": {
+    "cost_per_1m_output_tokens_usd": null,
+    "tokens_per_watt": null,
+    "tok_s_per_gb_bandwidth": null,
+    "bandwidth_efficiency": null,
+    "memory_headroom_gb": null
+  },
+  "raw": {
+    "harness": "atlas-bench",
+    "harness_version": "0.1.0",
+    "sha256": "fcb4af910d746d5942b8d43ccfb2cf4ab5e18b5575076897d9d9fbd50daef3b5",
+    "payload_path": null,
+    "payload": {
+      "scorer": "exact",
+      "scorers_used": [
+        "exact",
+        "mc"
+      ],
+      "engine_endpoint": {
+        "attached": true,
+        "base_url": "http://127.0.0.1:8888/v1",
+        "served_model_id": "qwen3.8-27b",
+        "advertised_models": [
+          "unsloth27b",
+          "qwen3.8-27b"
+        ]
+      }
+    },
+    "truncated": false
+  },
+  "provenance": {
+    "github_login": "0xBakeer",
+    "github_user_id": null,
+    "started_at": "2026-09-16T20:36:07Z",
+    "finished_at": "2026-09-16T20:44:16Z",
+    "submitted_at": null,
+    "commit": null,
+    "pr": null,
+    "method": "atlas-bench",
+    "agent": null,
+    "notes": "Served with the \"Edit-heavy coding-solo - DSpark k=14\" recipe from hiceron/spark-qwen38-27b (https://github.com/hiceron/spark-qwen38-27b, main d097a95), started with its own command GMU=0.85 K=14 ./scripts/boot-bakeer-dspark.sh and the script unmodified. The script defaults IMAGE to spark-vllm:qwen38, a local image the recipe describes as eugr/spark-vllm:latest of 2026-08-14 plus ffmpeg; that image is not published, so IMAGE was set to eugr/spark-vllm:nightly-20260814 (repo digest sha256:ab895847, image id a0cb301789ef, the same id the recipe run log records for eugr/spark-vllm:latest), which reports vLLM 0.27.2rc1.dev88+gaa3100357.d20260814, transformers 5.15.0, FlashInfer 0.6.18 and torch 2.13.0+cu130. ffmpeg is only needed for video and image input, and these rows send text. Target unsloth/Qwen3.8-27B-NVFP4 with no revision pin, resolved to main f0b7c9e7; DSpark speculative decoding against Doopeworld/Qwen3.8-27B-DSpark-vLLM (5 layers, bf16, resolved to ebaa0919) with 14 speculative tokens and probabilistic draft sampling; gpu-memory-utilization 0.85, max-num-batched-tokens 16384, prefix caching on, the native 262144 window, reasoning parser qwen3, tool parser qwen3_xml with auto tool choice, 2 images and 0 videos per prompt, environment VLLM_MARLIN_USE_ATOMIC_ADD=1 and VLLM_USE_FLASHINFER_MOE_FP4=0, host network, port 8888 (the script default). Attention backend, KV cache dtype and max-num-seqs are left to vLLM, which chose FlashInfer and an fp8_e4m3 KV cache from the checkpoint kv_cache_scheme. The chat template comes from the target repository, so the served default is thinking on: the speed rows force thinking off per request with chat_template_kwargs enable_thinking false, the eval rows use that served default. The server runs without an API key; the harness attached over HTTP on 127.0.0.1:8888 and sent a bearer header the server ignores."
+  },
+  "verification": {
+    "level": "self-reported",
+    "reproduced_by": [],
+    "flags": []
+  }
+}

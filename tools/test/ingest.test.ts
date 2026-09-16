@@ -58,6 +58,10 @@ describe('argparse dumps', () => {
     const prefix = byName(params, 'enable-prefix-caching')!;
     expect(prefix.type).toBe('bool');
     expect(prefix.default).toBeNull();
+    // BooleanOptionalAction also registers --no-enable-prefix-caching, the negation: it must
+    // not become the name (it is the longer string) or an alias (it sets the opposite value).
+    expect(byName(params, 'no-enable-prefix-caching')).toBeUndefined();
+    expect(prefix.aliases ?? []).not.toContain('--no-enable-prefix-caching');
   });
 
   it('carries a positional over under its destination name', () => {

@@ -1,0 +1,1013 @@
+{
+  "schema_version": 1,
+  "run_id": "e8badcd0986cd3d8--serve-single-i256-o256-v1--151369",
+  "config_id": "e8badcd0986cd3d8",
+  "cell_id": "aefd407f2560",
+  "workload_id": "serve-single-i256-o256-v1",
+  "kind": "serving",
+  "engine": {
+    "id": "vllm",
+    "version": "0.27.2rc1.dev88+gaa3100357.d20260814",
+    "commit": "aa3100357322995b201d5348c5490596a7bd70a9",
+    "container": "eugr/spark-vllm:nightly-20260814 (repo digest sha256:ab89584706575a7af48a3d5a2a92bc48a5432781fb87925a181d8bb5eab4f5d3, image id a0cb301789ef, built 2026-08-14 from vllm main aa3100357; pulled as published, no local build)",
+    "install_method": "docker"
+  },
+  "model": {
+    "id": "Qwen/Qwen3.8-27B",
+    "quant_id": "nvfp4-unsloth",
+    "hf_id": "Qwen/Qwen3.8-27B",
+    "revision": "f0b7c9e722f5565102fff8481c99e4d86ae099c7",
+    "dtype": "auto",
+    "local_path": null
+  },
+  "hardware": {
+    "id": "nvidia-gb10-dgx-spark",
+    "count": 1,
+    "driver": "580.173.02",
+    "cuda": "13.0",
+    "host": {
+      "cpu": "Cortex-A725",
+      "cpu_cores": 20,
+      "ram_gb": 121.6,
+      "os": "Ubuntu 24.04.4 LTS",
+      "kernel": "6.17.0-1029-nvidia",
+      "arch": "aarch64"
+    },
+    "fingerprint": "sha256:52ea2bdd513719724db88c162b6cc2c9fb4e5b67e02dbe41b9de00687acefb91",
+    "captured": {
+      "nvidia_smi": {
+        "driver": "580.173.02",
+        "cuda": "13.0",
+        "products": [
+          "NVIDIA GB10"
+        ],
+        "fb_memory_total_mib": 0.0
+      },
+      "lscpu": {
+        "architecture": "aarch64",
+        "cpus": "20",
+        "vendor_id": "ARM",
+        "model_name": "Cortex-A725",
+        "cores_per_socket": "10",
+        "sockets": "1",
+        "cpu_max_mhz": "2808.0000"
+      }
+    }
+  },
+  "args": {
+    "max-model-len": 262144,
+    "gpu-memory-utilization": 0.85,
+    "max-num-batched-tokens": 16384,
+    "enable-prefix-caching": true,
+    "reasoning-parser": "qwen3",
+    "tool-call-parser": "qwen3_xml",
+    "enable-auto-tool-choice": true,
+    "limit-mm-per-prompt": {
+      "image": 2,
+      "video": 0
+    },
+    "speculative-config": {
+      "method": "dspark",
+      "model": "Doopeworld/Qwen3.8-27B-DSpark-vLLM",
+      "num_speculative_tokens": 14,
+      "draft_sample_method": "probabilistic"
+    }
+  },
+  "args_canonical": "@dtype=auto;@quant=nvfp4-unsloth;enable-auto-tool-choice=true;enable-prefix-caching=true;gpu-memory-utilization=0.85;limit-mm-per-prompt={\"image\":2,\"video\":0};max-model-len=262144;max-num-batched-tokens=16384;reasoning-parser=qwen3;speculative-config={\"draft_sample_method\":\"probabilistic\",\"method\":\"dspark\",\"model\":\"Doopeworld/Qwen3.8-27B-DSpark-vLLM\",\"num_speculative_tokens\":14};tool-call-parser=qwen3_xml",
+  "serve_command": null,
+  "workload": {
+    "id": "serve-single-i256-o256-v1",
+    "resolved_params": {
+      "concurrency": 1,
+      "num_requests": 50,
+      "input_tokens": 256,
+      "output_tokens": 256,
+      "warmup_requests": 3,
+      "repeat": 1,
+      "seed": 42,
+      "temperature": 0,
+      "timeout_s": 300.0,
+      "dataset_buckets": [
+        "s",
+        "m"
+      ],
+      "group_by": null,
+      "warmup_per_group": null,
+      "shuffle": null
+    }
+  },
+  "metrics": {
+    "requests_total": 50,
+    "requests_ok": 50,
+    "requests_failed": 0,
+    "success_rate": 1.0,
+    "duration_s": 578.74,
+    "input_tokens_total": 11762,
+    "output_tokens_total": 9154,
+    "output_tok_s": 15.817,
+    "total_tok_s": 36.141,
+    "req_s": 0.086,
+    "prefill_tok_s": 668.415,
+    "ttft_ms": {
+      "mean": 351.937,
+      "p50": 334.413,
+      "p90": 417.7,
+      "p95": 446.212,
+      "p99": 631.476,
+      "min": 279.228,
+      "max": 702.017
+    },
+    "tpot_ms": {
+      "mean": 63.478,
+      "p50": 65.903,
+      "p90": 74.474,
+      "p95": 77.82,
+      "p99": 81.111,
+      "min": 22.507,
+      "max": 83.181
+    },
+    "itl_ms": {
+      "mean": 131.189,
+      "p50": 128.008,
+      "p90": 131.949,
+      "p95": 169.239,
+      "p99": 179.056,
+      "min": 125.627,
+      "max": 198.649
+    },
+    "e2e_ms": {
+      "mean": 11574.712,
+      "p50": 11358.595,
+      "p90": 15263.13,
+      "p95": 16062.795,
+      "p99": 16418.651,
+      "min": 1290.216,
+      "max": 16452.022
+    },
+    "decode_tok_s_per_request": {
+      "mean": 16.514,
+      "p50": 15.175,
+      "p90": 20.473,
+      "p95": 21.664,
+      "p99": 34.658,
+      "min": 12.022,
+      "max": 44.43
+    },
+    "vram_peak_gb": null,
+    "ram_peak_gb": 116.296,
+    "kv_cache_tokens": null,
+    "power_avg_w": 35.07,
+    "power_peak_w": 42.1,
+    "energy_wh": 5.9412,
+    "gpu_util_avg_pct": 95.36,
+    "temp_max_c": 67.0,
+    "thermal_throttle_detected": false
+  },
+  "failures": [],
+  "conditions": {
+    "dedicated": true,
+    "detail": "Only the recipe's own vLLM container was resident; nothing else used the GPU.",
+    "isolation_check": "docker ps -> qwen38-dspark-vllm dgx-exporter ; nvidia-smi compute apps -> 1; load1 at start 0.43"
+  },
+  "gotchas": [
+    {
+      "severity": "info",
+      "text": "Image: the recipe boot script defaults to spark-vllm:qwen38, which its run log describes as eugr/spark-vllm:latest of 2026-08-14 with ffmpeg 6.1.1 added, and which is not published. These rows ran on eugr/spark-vllm:nightly-20260814, repo digest sha256:ab89584706575a7af48a3d5a2a92bc48a5432781fb87925a181d8bb5eab4f5d3, image id a0cb301789ef, the id the recipe run log records for eugr/spark-vllm:latest. Its build-metadata.yaml names vllm-project/vllm main aa3100357 with no extra pull requests. ffmpeg is absent; it matters only for video and image input."
+    },
+    {
+      "severity": "info",
+      "text": "Boot lottery: this boot allocated 72.47 GiB of KV cache, 1,250,962 tokens, 4.77x concurrency at 262144, with gpu-memory-utilization 0.85 and 114.83 of 121.63 GiB free at startup. The recipe README reports 1,161,326 tokens (4.43x) for the same settings on its machine. vLLM padded the KV groups with 2 and 4 layers and warns the second may waste up to 25 per cent of that group."
+    },
+    {
+      "severity": "info",
+      "text": "KV cache dtype is not set by the recipe (kv-cache-dtype auto), but unsloth/Qwen3.8-27B-NVFP4 carries a static per-tensor 8-bit float kv_cache_scheme in its quantization_config, and FlashInfer resolved kv_cache_dtype float8_e4m3fn with the xqa decode backend. The recipe omits --attention-backend on purpose; vLLM picked FLASHINFER out of FLASHINFER and TRITON_ATTN, and FlashInfer serves the draft model non-causal attention."
+    },
+    {
+      "severity": "info",
+      "text": "Neither the target nor the drafter is pinned. unsloth/Qwen3.8-27B-NVFP4 resolved to main f0b7c9e7 (2026-09-08). The recipe run log names snapshot a767244, which no longer exists in the repository history after the 2026-08-15 super-squash; every file except README.md has the same content hash at 16b6615a (the squash), 57926bac and f0b7c9e7. Doopeworld/Qwen3.8-27B-DSpark-vLLM resolved to ebaa0919 (2026-08-16), its only upload: 5 layers, bf16, block_size 7, 2.6 GB."
+    },
+    {
+      "severity": "info",
+      "text": "DSpark runs with 14 speculative tokens against a drafter whose config says block_size 7, and probabilistic draft sampling. During the pre-run sanity requests (thinking on and off, greedy, 64 + 512 + 512 tokens) vLLM counted 339 drafts, 4,746 draft tokens and 757 accepted, 16 per cent, a mean acceptance length of 3.2 tokens per step; positions 9 to 14 accepted almost nothing on prose-like output. The README 75 to 78 tok/s is a 3,000-token edit that copies code already in the prompt, where it reports 68 per cent acceptance."
+    },
+    {
+      "severity": "info",
+      "text": "vLLM reads generation_config.json from the target and overrides its own sampling defaults with temperature 1.0, top_k 20, top_p 0.95. Every request here sets temperature 0 and seed 42."
+    },
+    {
+      "severity": "info",
+      "text": "Speed rows force thinking off per request with chat_template_kwargs enable_thinking false. Eval rows use the served default, which is thinking on at full length, because the chat template comes from the target repository unmodified; the recipe sets no reasoning level of its own."
+    },
+    {
+      "severity": "info",
+      "text": "The server runs without an API key and uses host networking on port 8888, the script default. The script also passes VLLM_USE_FLASHINFER_MOE_FP4=0, which this vLLM build logs as an unknown environment variable, and VLLM_MARLIN_USE_ATOMIC_ADD=1."
+    },
+    {
+      "severity": "info",
+      "text": "Boot took 11 minutes from docker run to the first answered request: 160 s to load the 22 GB target from a cold page cache, about 2.5 minutes of FlashInfer fp4_gemm autotuning, 50 s of torch.compile and 99 s of CUDA graph capture (51 piecewise and 33 full sizes up to 512 tokens, plus 34 DSpark sizes)."
+    }
+  ],
+  "derived": {
+    "cost_per_1m_output_tokens_usd": null,
+    "tokens_per_watt": 0.451,
+    "tok_s_per_gb_bandwidth": 0.060491,
+    "bandwidth_efficiency": 1.416696,
+    "memory_headroom_gb": null
+  },
+  "raw": {
+    "harness": "atlas-bench",
+    "harness_version": "0.1.0",
+    "sha256": "db0dca4cfaaa7110c683b122d7b32d588ad3c653e503d91f5fd948585a7c2580",
+    "payload_path": null,
+    "payload": {
+      "iterations": [
+        {
+          "requests_total": 50,
+          "requests_ok": 50,
+          "requests_failed": 0,
+          "success_rate": 1.0,
+          "duration_s": 578.74,
+          "input_tokens_total": 11762,
+          "output_tokens_total": 9154,
+          "output_tok_s": 15.817,
+          "total_tok_s": 36.141,
+          "req_s": 0.086,
+          "prefill_tok_s": 668.415,
+          "ttft_ms": {
+            "mean": 351.937,
+            "p50": 334.413,
+            "p90": 417.7,
+            "p95": 446.212,
+            "p99": 631.476,
+            "min": 279.228,
+            "max": 702.017
+          },
+          "tpot_ms": {
+            "mean": 63.478,
+            "p50": 65.903,
+            "p90": 74.474,
+            "p95": 77.82,
+            "p99": 81.111,
+            "min": 22.507,
+            "max": 83.181
+          },
+          "itl_ms": {
+            "mean": 131.189,
+            "p50": 128.008,
+            "p90": 131.949,
+            "p95": 169.239,
+            "p99": 179.056,
+            "min": 125.627,
+            "max": 198.649
+          },
+          "e2e_ms": {
+            "mean": 11574.712,
+            "p50": 11358.595,
+            "p90": 15263.13,
+            "p95": 16062.795,
+            "p99": 16418.651,
+            "min": 1290.216,
+            "max": 16452.022
+          },
+          "decode_tok_s_per_request": {
+            "mean": 16.514,
+            "p50": 15.175,
+            "p90": 20.473,
+            "p95": 21.664,
+            "p99": 34.658,
+            "min": 12.022,
+            "max": 44.43
+          },
+          "vram_peak_gb": null,
+          "ram_peak_gb": 116.296,
+          "kv_cache_tokens": null,
+          "power_avg_w": 35.07,
+          "power_peak_w": 42.1,
+          "energy_wh": 5.9412,
+          "gpu_util_avg_pct": 95.36,
+          "temp_max_c": 67.0,
+          "thermal_throttle_detected": false
+        }
+      ],
+      "selected_iteration": 0,
+      "requests": [
+        {
+          "id": "i0-w00000",
+          "prompt_id": "mix-0204",
+          "warmup": true,
+          "status": "ok",
+          "ttft_ms": 390.548,
+          "e2e_ms": 12247.844,
+          "prompt_tokens": 283,
+          "completion_tokens": 187,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "i0-w00001",
+          "prompt_id": "mix-0255",
+          "warmup": true,
+          "status": "ok",
+          "ttft_ms": 318.227,
+          "e2e_ms": 8988.28,
+          "prompt_tokens": 253,
+          "completion_tokens": 131,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "i0-w00002",
+          "prompt_id": "mix-0196",
+          "warmup": true,
+          "status": "ok",
+          "ttft_ms": 410.85,
+          "e2e_ms": 10348.44,
+          "prompt_tokens": 264,
+          "completion_tokens": 184,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "i0-r00000",
+          "prompt_id": "mix-0204",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 558.055,
+          "e2e_ms": 12728.725,
+          "prompt_tokens": 283,
+          "completion_tokens": 187,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "i0-r00001",
+          "prompt_id": "mix-0255",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 323.384,
+          "e2e_ms": 9005.154,
+          "prompt_tokens": 253,
+          "completion_tokens": 131,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "i0-r00002",
+          "prompt_id": "mix-0196",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 337.161,
+          "e2e_ms": 10052.719,
+          "prompt_tokens": 264,
+          "completion_tokens": 184,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "i0-r00003",
+          "prompt_id": "mix-0218",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 281.831,
+          "e2e_ms": 11360.98,
+          "prompt_tokens": 158,
+          "completion_tokens": 248,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "i0-r00004",
+          "prompt_id": "mix-0200",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 288.961,
+          "e2e_ms": 14741.872,
+          "prompt_tokens": 185,
+          "completion_tokens": 256,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "i0-r00005",
+          "prompt_id": "mix-0194",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 334.967,
+          "e2e_ms": 8155.797,
+          "prompt_tokens": 267,
+          "completion_tokens": 113,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "i0-r00006",
+          "prompt_id": "mix-0287",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 324.502,
+          "e2e_ms": 13231.914,
+          "prompt_tokens": 260,
+          "completion_tokens": 192,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "i0-r00007",
+          "prompt_id": "mix-0248",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 280.255,
+          "e2e_ms": 12953.257,
+          "prompt_tokens": 159,
+          "completion_tokens": 256,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "i0-r00008",
+          "prompt_id": "mix-0169",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 412.737,
+          "e2e_ms": 8988.556,
+          "prompt_tokens": 263,
+          "completion_tokens": 114,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "i0-r00009",
+          "prompt_id": "mix-0153",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 331.922,
+          "e2e_ms": 12718.601,
+          "prompt_tokens": 268,
+          "completion_tokens": 256,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "i0-r00010",
+          "prompt_id": "mix-0147",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 397.148,
+          "e2e_ms": 11039.017,
+          "prompt_tokens": 257,
+          "completion_tokens": 152,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "i0-r00011",
+          "prompt_id": "mix-0206",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 333.513,
+          "e2e_ms": 11875.816,
+          "prompt_tokens": 288,
+          "completion_tokens": 172,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "i0-r00012",
+          "prompt_id": "mix-0146",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 283.897,
+          "e2e_ms": 16383.918,
+          "prompt_tokens": 172,
+          "completion_tokens": 256,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "i0-r00013",
+          "prompt_id": "mix-0221",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 302.604,
+          "e2e_ms": 15191.34,
+          "prompt_tokens": 160,
+          "completion_tokens": 256,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "i0-r00014",
+          "prompt_id": "mix-0241",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 336.834,
+          "e2e_ms": 9653.056,
+          "prompt_tokens": 249,
+          "completion_tokens": 113,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "i0-r00015",
+          "prompt_id": "mix-0158",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 334.735,
+          "e2e_ms": 13815.914,
+          "prompt_tokens": 263,
+          "completion_tokens": 209,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "i0-r00016",
+          "prompt_id": "mix-0144",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 284.041,
+          "e2e_ms": 14284.389,
+          "prompt_tokens": 161,
+          "completion_tokens": 256,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "i0-r00017",
+          "prompt_id": "mix-0148",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 451.82,
+          "e2e_ms": 10558.018,
+          "prompt_tokens": 280,
+          "completion_tokens": 129,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "i0-r00018",
+          "prompt_id": "mix-0293",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 418.393,
+          "e2e_ms": 11720.85,
+          "prompt_tokens": 267,
+          "completion_tokens": 175,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "i0-r00019",
+          "prompt_id": "mix-0250",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 286.286,
+          "e2e_ms": 15972.143,
+          "prompt_tokens": 168,
+          "completion_tokens": 256,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "i0-r00020",
+          "prompt_id": "mix-0288",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 702.017,
+          "e2e_ms": 11116.037,
+          "prompt_tokens": 267,
+          "completion_tokens": 256,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "i0-r00021",
+          "prompt_id": "mix-0190",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 351.739,
+          "e2e_ms": 10630.73,
+          "prompt_tokens": 266,
+          "completion_tokens": 151,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "i0-r00022",
+          "prompt_id": "mix-0223",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 295.629,
+          "e2e_ms": 9035.205,
+          "prompt_tokens": 243,
+          "completion_tokens": 120,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "i0-r00023",
+          "prompt_id": "mix-0167",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 356.015,
+          "e2e_ms": 9680.738,
+          "prompt_tokens": 258,
+          "completion_tokens": 123,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "i0-r00024",
+          "prompt_id": "mix-0224",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 318.599,
+          "e2e_ms": 12781.446,
+          "prompt_tokens": 254,
+          "completion_tokens": 256,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "i0-r00025",
+          "prompt_id": "mix-0180",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 334.091,
+          "e2e_ms": 9586.985,
+          "prompt_tokens": 263,
+          "completion_tokens": 143,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "i0-r00026",
+          "prompt_id": "mix-0142",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 328.322,
+          "e2e_ms": 14797.493,
+          "prompt_tokens": 261,
+          "completion_tokens": 219,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "i0-r00027",
+          "prompt_id": "mix-0178",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 331.579,
+          "e2e_ms": 5598.892,
+          "prompt_tokens": 272,
+          "completion_tokens": 73,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "i0-r00028",
+          "prompt_id": "mix-0186",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 328.376,
+          "e2e_ms": 8686.672,
+          "prompt_tokens": 276,
+          "completion_tokens": 116,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "i0-r00029",
+          "prompt_id": "mix-0164",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 417.623,
+          "e2e_ms": 8772.532,
+          "prompt_tokens": 273,
+          "completion_tokens": 122,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "i0-r00030",
+          "prompt_id": "mix-0203",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 347.796,
+          "e2e_ms": 11356.21,
+          "prompt_tokens": 259,
+          "completion_tokens": 158,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "i0-r00031",
+          "prompt_id": "mix-0159",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 415.76,
+          "e2e_ms": 11725.438,
+          "prompt_tokens": 265,
+          "completion_tokens": 187,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "i0-r00032",
+          "prompt_id": "mix-0170",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 439.359,
+          "e2e_ms": 10458.619,
+          "prompt_tokens": 267,
+          "completion_tokens": 147,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "i0-r00033",
+          "prompt_id": "mix-0160",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 379.79,
+          "e2e_ms": 14891.594,
+          "prompt_tokens": 257,
+          "completion_tokens": 208,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "i0-r00034",
+          "prompt_id": "mix-0174",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 363.222,
+          "e2e_ms": 15909.243,
+          "prompt_tokens": 165,
+          "completion_tokens": 256,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "i0-r00035",
+          "prompt_id": "mix-0213",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 328.429,
+          "e2e_ms": 11080.616,
+          "prompt_tokens": 243,
+          "completion_tokens": 147,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "i0-r00036",
+          "prompt_id": "mix-0228",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 331.554,
+          "e2e_ms": 7911.336,
+          "prompt_tokens": 267,
+          "completion_tokens": 97,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "i0-r00037",
+          "prompt_id": "mix-0211",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 389.925,
+          "e2e_ms": 1290.216,
+          "prompt_tokens": 177,
+          "completion_tokens": 41,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "i0-r00038",
+          "prompt_id": "mix-0219",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 295.896,
+          "e2e_ms": 9288.122,
+          "prompt_tokens": 243,
+          "completion_tokens": 122,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "i0-r00039",
+          "prompt_id": "mix-0388",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 378.962,
+          "e2e_ms": 16136.965,
+          "prompt_tokens": 323,
+          "completion_tokens": 256,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "i0-r00040",
+          "prompt_id": "mix-0205",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 370.22,
+          "e2e_ms": 14637.852,
+          "prompt_tokens": 196,
+          "completion_tokens": 256,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "i0-r00041",
+          "prompt_id": "mix-0227",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 345.293,
+          "e2e_ms": 12166.692,
+          "prompt_tokens": 260,
+          "completion_tokens": 171,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "i0-r00042",
+          "prompt_id": "mix-0225",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 279.228,
+          "e2e_ms": 11169.774,
+          "prompt_tokens": 144,
+          "completion_tokens": 209,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "i0-r00043",
+          "prompt_id": "mix-0254",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 352.737,
+          "e2e_ms": 14866.309,
+          "prompt_tokens": 149,
+          "completion_tokens": 256,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "i0-r00044",
+          "prompt_id": "mix-0246",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 291.91,
+          "e2e_ms": 13814.468,
+          "prompt_tokens": 158,
+          "completion_tokens": 256,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "i0-r00045",
+          "prompt_id": "mix-0173",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 354.235,
+          "e2e_ms": 9308.081,
+          "prompt_tokens": 259,
+          "completion_tokens": 125,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "i0-r00046",
+          "prompt_id": "mix-0181",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 329.834,
+          "e2e_ms": 10350.56,
+          "prompt_tokens": 267,
+          "completion_tokens": 149,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "i0-r00047",
+          "prompt_id": "mix-0197",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 286.022,
+          "e2e_ms": 12490.87,
+          "prompt_tokens": 187,
+          "completion_tokens": 256,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "i0-r00048",
+          "prompt_id": "mix-0242",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 301.096,
+          "e2e_ms": 16452.022,
+          "prompt_tokens": 154,
+          "completion_tokens": 256,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "i0-r00049",
+          "prompt_id": "mix-0177",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 348.546,
+          "e2e_ms": 8311.846,
+          "prompt_tokens": 264,
+          "completion_tokens": 111,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        }
+      ],
+      "engine_endpoint": {
+        "attached": true,
+        "base_url": "http://127.0.0.1:8888/v1",
+        "served_model_id": "qwen3.8-27b",
+        "advertised_models": [
+          "unsloth27b",
+          "qwen3.8-27b"
+        ]
+      }
+    },
+    "truncated": false
+  },
+  "provenance": {
+    "github_login": "0xBakeer",
+    "github_user_id": null,
+    "started_at": "2026-09-16T19:03:23Z",
+    "finished_at": "2026-09-16T19:13:34Z",
+    "submitted_at": null,
+    "commit": null,
+    "pr": null,
+    "method": "atlas-bench",
+    "agent": null,
+    "notes": "Served with the \"Edit-heavy coding-solo - DSpark k=14\" recipe from hiceron/spark-qwen38-27b (https://github.com/hiceron/spark-qwen38-27b, main d097a95), started with its own command GMU=0.85 K=14 ./scripts/boot-bakeer-dspark.sh and the script unmodified. The script defaults IMAGE to spark-vllm:qwen38, a local image the recipe describes as eugr/spark-vllm:latest of 2026-08-14 plus ffmpeg; that image is not published, so IMAGE was set to eugr/spark-vllm:nightly-20260814 (repo digest sha256:ab895847, image id a0cb301789ef, the same id the recipe run log records for eugr/spark-vllm:latest), which reports vLLM 0.27.2rc1.dev88+gaa3100357.d20260814, transformers 5.15.0, FlashInfer 0.6.18 and torch 2.13.0+cu130. ffmpeg is only needed for video and image input, and these rows send text. Target unsloth/Qwen3.8-27B-NVFP4 with no revision pin, resolved to main f0b7c9e7; DSpark speculative decoding against Doopeworld/Qwen3.8-27B-DSpark-vLLM (5 layers, bf16, resolved to ebaa0919) with 14 speculative tokens and probabilistic draft sampling; gpu-memory-utilization 0.85, max-num-batched-tokens 16384, prefix caching on, the native 262144 window, reasoning parser qwen3, tool parser qwen3_xml with auto tool choice, 2 images and 0 videos per prompt, environment VLLM_MARLIN_USE_ATOMIC_ADD=1 and VLLM_USE_FLASHINFER_MOE_FP4=0, host network, port 8888 (the script default). Attention backend, KV cache dtype and max-num-seqs are left to vLLM, which chose FlashInfer and an fp8_e4m3 KV cache from the checkpoint kv_cache_scheme. The chat template comes from the target repository, so the served default is thinking on: the speed rows force thinking off per request with chat_template_kwargs enable_thinking false, the eval rows use that served default. The server runs without an API key; the harness attached over HTTP on 127.0.0.1:8888 and sent a bearer header the server ignores."
+  },
+  "verification": {
+    "level": "self-reported",
+    "reproduced_by": [],
+    "flags": []
+  }
+}
