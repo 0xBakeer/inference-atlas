@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "id": "comfyui",
+  "name": "ComfyUI",
+  "repo": "https://github.com/comfyanonymous/ComfyUI",
+  "docs": "https://docs.comfy.org",
+  "description": "A graph-based diffusion workflow engine with its own model loaders, including the rotation-preconditioned int8 and w4a8 weights Comfy-Org publishes for this model. It is a product rather than an API server: the harness drives it through its HTTP API against a fixed workflow, and what is measured is that workflow, not a general serving path.",
+  "api": "custom",
+  "default_port": 8188,
+  "platforms": [
+    "linux-cuda",
+    "linux-rocm",
+    "macos-metal",
+    "windows-cuda"
+  ],
+  "quant_formats": [
+    "bf16",
+    "fp16",
+    "fp8",
+    "int8",
+    "int4",
+    "gguf"
+  ],
+  "install": [
+    {
+      "method": "source",
+      "command": "git clone https://github.com/comfyanonymous/ComfyUI && pip install -r requirements.txt",
+      "arch": [
+        "x86_64",
+        "aarch64"
+      ]
+    },
+    {
+      "method": "app",
+      "url": "https://www.comfy.org/download"
+    }
+  ],
+  "serve": {
+    "command_template": "python main.py --listen {host} --port {port} {flags}",
+    "model_ref": "local_path",
+    "flag_style": "--{name} {value}",
+    "bool_style": "--{name}",
+    "notes": "Models are selected inside the workflow, not on the command line, so the workflow JSON is part of the configuration: record which nodes and which files it loaded in args and attach the workflow to the result's raw payload."
+  },
+  "health": {
+    "path": "/system_stats",
+    "models_path": null
+  },
+  "bench_harness": "atlas-bench",
+  "drop_params": [
+    "listen",
+    "host",
+    "port",
+    "output-directory",
+    "input-directory",
+    "temp-directory",
+    "base-directory"
+  ],
+  "param_aliases": {},
+  "version_source": {
+    "kind": "github-releases",
+    "tag_prefix": "v"
+  },
+  "versions_available": [],
+  "links": {
+    "weights": "https://huggingface.co/Comfy-Org/Qwen-Image-2.1"
+  },
+  "notes": "The only lane that can load the int8-convrot and w4a8-te weights today, which is the reason it is registered at all. Its timings include workflow overhead a server does not have; say so in provenance.notes rather than comparing them to an HTTP lane without a caveat. versions_available is empty on purpose. A version file has to carry that build's real flags and their real defaults (AGENTS.md), and a wrong default silently merges two configurations into one fingerprint. Nobody has installed this engine for this model yet, so the first run that does reads `--help` on the actual build and adds the version file in the same pull request as its numbers."
+}

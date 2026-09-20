@@ -243,7 +243,10 @@ export class AtlasView extends ViewElement {
       ${selectField(
         'Workload kind',
         qget(q, 'kind'),
-        ['serving', 'sweep', 'prefill', 'longctx', 'eval'].map((k) => ({ value: k, label: k })),
+        ['serving', 'sweep', 'prefill', 'longctx', 'eval', 'image'].map((k) => ({
+          value: k,
+          label: k,
+        })),
         (v) => setQuery({ kind: v }),
         { allLabel: 'All kinds', small: true },
       )}

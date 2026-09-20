@@ -40,6 +40,30 @@ describe('headlineMetric', () => {
     expect(headlineMetric(row, KEY_METRICS)?.def.key).toBe('output_tok_s');
   });
 
+  // An image run has no tokens at all, so every token metric on it is null and the site
+  // order would fall through to success rate — a number that is 1.0 on every lane that did
+  // not crash, and therefore ranks nothing.
+  it('headlines seconds per image on an image run', () => {
+    const row = fixtureRow({
+      workload_id: 't2i-single-1k-40s-v1',
+      kind: 'image',
+      metrics: { s_per_image_p50: 12.4, success_rate: 1, vram_peak_gb: 41.2 },
+    });
+    const hl = headlineMetric(row, KEY_METRICS);
+    expect(hl?.def.key).toBe('s_per_image_p50');
+    expect(hl?.value).toBe(12.4);
+    expect(hl?.def.better).toBe('lower');
+  });
+
+  it('falls to peak memory on an image run that reported no timing', () => {
+    const row = fixtureRow({
+      workload_id: 't2i-single-2k-40s-v1',
+      kind: 'image',
+      metrics: { success_rate: 1, vram_peak_gb: 41.2 },
+    });
+    expect(headlineMetric(row, KEY_METRICS)?.def.key).toBe('vram_peak_gb');
+  });
+
   it('leaves serving runs on the site order', () => {
     const row = fixtureRow({ metrics: { output_tok_s: 120.5, ttft_p50: 80 } });
     expect(headlineMetric(row, KEY_METRICS)?.def.key).toBe('output_tok_s');

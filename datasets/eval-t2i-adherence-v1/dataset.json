@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "id": "eval-t2i-adherence-v1",
+  "name": "Prompt-adherence eval v1",
+  "kind": "eval",
+  "description": "Twenty text-to-image prompts scored for how well the picture matches the request: text signage, people and hands, product materials and composition constraints, landscapes at 1K and native 2K, and transparent stickers. Scored with CLIPScore against the short form of each prompt.",
+  "licence": "MIT",
+  "created": "2026-09-20",
+  "files": [
+    "items.jsonl"
+  ],
+  "count": 20,
+  "generator": "datasets/_gen/gen_t2i.py",
+  "token_heuristic": "approx_tokens = ceil(sum(len(m.content) for m in messages) / 4)",
+  "provenance": "Synthetic, authored in this repository. No third-party text.",
+  "default_scorer": "clip",
+  "scoring": {
+    "answer_extraction": [
+      "Drop everything inside <think>...</think> (and an unterminated leading <think> block).",
+      "Drop markdown code fences, keeping the fenced content.",
+      "If any line matches /^\\s*(?:final answer|answer)\\s*[:\\-]\\s*(.+)$/i, take the capture of the LAST such line and use only that.",
+      "Strip surrounding whitespace, matching quotes, and a single trailing '.' or '!'.",
+      "Scorers that need the untouched output (instruction, json) get the raw text as well; the instruction scorer always works on the raw output."
+    ],
+    "scorers": {
+      "clip": "Image suites only. CLIPScore = 100 * max(cosine(image embedding, text embedding), 0) with `answer` as the text. Correct when the score clears the workload's pass_threshold. A relative measure: it separates right subject from wrong subject and says nothing about two lanes a point apart."
+    },
+    "pass_rule": "One item is correct or incorrect; there is no partial credit. accuracy = correct / total. An item whose request failed (timeout, 5xx, context overflow) counts as incorrect AND is reported in scores.failures and metrics.requests_failed."
+  },
+  "categories": [
+    "portrait",
+    "product",
+    "rgba",
+    "scene",
+    "text"
+  ],
+  "difficulties": [
+    "easy",
+    "medium",
+    "hard"
+  ],
+  "counts": {
+    "by_category": {
+      "text": 6,
+      "portrait": 4,
+      "product": 4,
+      "scene": 3,
+      "rgba": 3
+    },
+    "by_difficulty": {
+      "easy": 6,
+      "medium": 9,
+      "hard": 5
+    },
+    "by_scorer": {
+      "clip": 20
+    }
+  },
+  "render": {
+    "sizes_px": [
+      [
+        768,
+        1376
+      ],
+      [
+        1024,
+        1024
+      ],
+      [
+        2048,
+        2048
+      ],
+      [
+        2752,
+        1536
+      ]
+    ],
+    "steps": 40,
+    "note": "Every row carries its own meta.render. Two images are only comparable when prompt, size, steps and seed are identical, which is what meta.render_digest pins."
+  },
+  "notes": [
+    "The reference images in this dataset are drawn by the generator. No model output is stored here or in any result file: an image a lane produced is not data (SPEC §0.6).",
+    "`answer` is the short form of the prompt, and it is what the CLIP text encoder sees: CLIP truncates at 77 tokens, so scoring against the full descriptive prompt would compare the picture to a sentence cut off mid-clause.",
+    "CLIPScore is 100 * max(cosine(image, text), 0). It is a weak, relative measure: it separates a picture of the wrong thing from a picture of the right thing, and it says nothing useful about two lanes within a point or two of each other.",
+    "An item counts as correct when its CLIPScore clears the workload's pass_threshold. The per-item score in items[].metrics is the number worth reading; accuracy is a convenience.",
+    "The four edit cases are excluded: their prompt is an instruction about a reference image, and CLIP scores it against the output alone, which measures nothing."
+  ]
+}

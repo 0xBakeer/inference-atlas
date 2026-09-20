@@ -10,6 +10,7 @@ Commands
 ``packet``   print the agent packet for a cell
 ``wrap``     turn an engine-native benchmark JSON into an Atlas result file
 ``restamp``  name the build behind an already-written result and recompute its ids
+``t2i-reference``  render the bf16 reference bundle the image fidelity suite compares against
 """
 
 from __future__ import annotations
@@ -234,6 +235,11 @@ def run(
         None, "--isolation-check", help="What was MEASURED about isolation, not just asserted."
     ),
     gotcha: list[str] = typer.Option([], "--gotcha", help="Add a gotcha (repeatable)."),
+    reference_bundle: Path | None = typer.Option(
+        None,
+        "--reference-bundle",
+        help="Bundle from `atlas-bench t2i-reference`; the image fidelity suite needs one.",
+    ),
     telemetry: bool = typer.Option(True, "--telemetry/--no-telemetry"),
     tokenizer: str | None = typer.Option(
         None, "--tokenizer", help="HF tokenizer id, only for engines that report no usage."
@@ -243,6 +249,11 @@ def run(
     spec = load_spec(spec_path)
     if tokenizer:
         spec.tokenizer = tokenizer
+    if reference_bundle:
+        # Set on every workload rather than guessed by id: only the fidelity scorer reads
+        # it, and a packet that names the bundle itself already works without this flag.
+        for ref in spec.workloads:
+            ref.params.setdefault("reference_bundle", str(reference_bundle))
     conditions = _conditions_option(dedicated, conditions_detail, isolation_check)
     registry = _registry(registry_dir)
     resolved_login = resolve_login(login or spec.github_login)
@@ -287,6 +298,49 @@ def run(
 
     for warning in dict.fromkeys(output.warnings):
         error_console.print(f"[yellow]warning:[/] {warning}")
+
+
+@app.command("t2i-reference")
+def t2i_reference(
+    spec_path: Path = typer.Option(..., "--spec", help="Task packet for the bf16 lane."),
+    out: Path = typer.Option(..., "--out", help="Directory to write the reference bundle to."),
+    workload_id: str = typer.Option(
+        "eval-t2i-fidelity-v1", "--workload", help="Which image eval suite to render."
+    ),
+    base_url: str | None = typer.Option(None, "--base-url", help="Attach to a running lane."),
+    registry_dir: Path | None = typer.Option(None, "--registry-dir", "--repo"),
+) -> None:
+    """Render the bf16 reference images the fidelity suite scores against.
+
+    The bundle stays on this machine: fidelity results publish the numbers and a perceptual
+    hash per case, never the pictures. Run this once on the bf16 configuration, then point
+    every quantized run at it with `--reference-bundle`.
+    """
+    from .reference import build_reference_bundle_sync
+
+    spec = load_spec(spec_path)
+    if base_url:
+        spec.engine.base_url = base_url
+    registry = _registry(registry_dir)
+
+    def progress(case_id: str, result: Any) -> None:
+        status = f"[green]{result.seconds:6.2f}s[/]" if result.ok else "[red]failed[/]"
+        console.print(f"  {case_id}  {status}")
+
+    manifest = build_reference_bundle_sync(
+        spec, registry=registry, out_dir=out, workload_id=workload_id, progress=progress
+    )
+    rendered, failed = len(manifest["items"]), len(manifest["failures"])
+    console.print(
+        f"wrote {out}/{'manifest.json'}: {rendered} case(s)"
+        + (f", [red]{failed} failed[/]" if failed else "")
+    )
+    console.print(
+        f"config_id [bold]{manifest['config_id']}[/] — a fidelity run is only comparable "
+        "against a bundle from the configuration it means to be the reference for."
+    )
+    if failed:
+        raise typer.Exit(code=1)
 
 
 def _print_summary(records: list[dict[str, Any]], paths: list[Path]) -> None:

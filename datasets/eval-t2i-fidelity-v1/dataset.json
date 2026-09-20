@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "id": "eval-t2i-fidelity-v1",
+  "name": "Reference-fidelity eval v1",
+  "kind": "eval",
+  "description": "All 24 cases, scored for how far a lane's picture is from the same lane's bf16 reference at identical prompt, size, steps and seed: PSNR, SSIM, LPIPS when it is installed, and mean absolute alpha error on the transparent cases.",
+  "licence": "MIT",
+  "created": "2026-09-20",
+  "files": [
+    "items.jsonl",
+    "images/"
+  ],
+  "count": 24,
+  "generator": "datasets/_gen/gen_t2i.py",
+  "token_heuristic": "approx_tokens = ceil(sum(len(m.content) for m in messages) / 4)",
+  "provenance": "Synthetic, authored in this repository. No third-party text.",
+  "default_scorer": "fidelity",
+  "scoring": {
+    "answer_extraction": [
+      "Drop everything inside <think>...</think> (and an unterminated leading <think> block).",
+      "Drop markdown code fences, keeping the fenced content.",
+      "If any line matches /^\\s*(?:final answer|answer)\\s*[:\\-]\\s*(.+)$/i, take the capture of the LAST such line and use only that.",
+      "Strip surrounding whitespace, matching quotes, and a single trailing '.' or '!'.",
+      "Scorers that need the untouched output (instruction, json) get the raw text as well; the instruction scorer always works on the raw output."
+    ],
+    "scorers": {
+      "fidelity": "Image suites only. Compare the image against the same case in a bf16 reference bundle produced on the same box at identical prompt, size, steps and seed: PSNR, SSIM, LPIPS when installed, and mean absolute alpha error on RGBA cases. Correct when it clears the workload's psnr_min and ssim_min. Refuses to score when the reference's render_digest differs."
+    },
+    "pass_rule": "One item is correct or incorrect; there is no partial credit. accuracy = correct / total. An item whose request failed (timeout, 5xx, context overflow) counts as incorrect AND is reported in scores.failures and metrics.requests_failed."
+  },
+  "categories": [
+    "edit",
+    "portrait",
+    "product",
+    "rgba",
+    "scene",
+    "text"
+  ],
+  "difficulties": [
+    "easy",
+    "medium",
+    "hard"
+  ],
+  "counts": {
+    "by_category": {
+      "text": 6,
+      "portrait": 4,
+      "product": 4,
+      "scene": 3,
+      "rgba": 3,
+      "edit": 4
+    },
+    "by_difficulty": {
+      "easy": 7,
+      "medium": 10,
+      "hard": 7
+    },
+    "by_scorer": {
+      "fidelity": 24
+    }
+  },
+  "render": {
+    "sizes_px": [
+      [
+        768,
+        1376
+      ],
+      [
+        1024,
+        1024
+      ],
+      [
+        2048,
+        2048
+      ],
+      [
+        2752,
+        1536
+      ]
+    ],
+    "steps": 40,
+    "note": "Every row carries its own meta.render. Two images are only comparable when prompt, size, steps and seed are identical, which is what meta.render_digest pins."
+  },
+  "notes": [
+    "The reference images in this dataset are drawn by the generator. No model output is stored here or in any result file: an image a lane produced is not data (SPEC §0.6).",
+    "There are no reference pixels in this repository and there never will be: a generated image is model output, not authored data (SPEC §0.6). The reference is produced on the contributor's own box by running this suite on the bf16 configuration with `atlas-bench t2i-reference`, which writes a local bundle of images plus a manifest (per-case sha256, perceptual hash, and the config_id and args_canonical of the run that produced them).",
+    "A result therefore publishes numbers and 64-bit perceptual hashes, never pixels. The hashes are what lets two contributors compare bf16 references at all: equal hashes mean the same picture, a large Hamming distance means two boxes that disagree about what bf16 produces, and that is itself worth knowing.",
+    "Fidelity metrics are only meaningful at identical prompt, size, steps and seed. meta.render_digest pins exactly that, and the scorer refuses to compare a candidate against a reference bundle whose digest differs rather than reporting a number that looks like drift but is a different picture.",
+    "An item counts as correct when it clears both thresholds in the workload (psnr_min and ssim_min). Running the suite on the bf16 configuration that produced the reference is a determinism check, not a quality one: anything below a perfect score there means the lane is not reproducible at a fixed seed."
+  ],
+  "reference": {
+    "kind": "local-bundle",
+    "produced_by": "atlas-bench t2i-reference --spec <bf16 packet>",
+    "manifest_fields": [
+      "case_id",
+      "sha256",
+      "phash",
+      "width",
+      "height",
+      "steps",
+      "seed",
+      "render_digest",
+      "config_id",
+      "args_canonical"
+    ]
+  },
+  "images": {
+    "dir": "images",
+    "format": "PNG",
+    "sizes_px": [
+      512
+    ],
+    "count": 4,
+    "total_bytes": 41803,
+    "max_bytes": 30720
+  }
+}

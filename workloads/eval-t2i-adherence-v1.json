@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "id": "eval-t2i-adherence-v1",
+  "name": "Prompt adherence v1",
+  "kind": "eval",
+  "description": "Twenty text-to-image cases scored with CLIPScore against the short form of their prompt: does the picture show what was asked for. Weak by construction and useful anyway — it is what catches a quantization that has stopped following the prompt rather than merely become softer.",
+  "dataset_id": "eval-t2i-adherence-v1",
+  "params": {
+    "concurrency": 1,
+    "num_requests": 20,
+    "input_tokens": null,
+    "output_tokens": null,
+    "seed": 42,
+    "warmup_requests": 1,
+    "repeat": 1,
+    "timeout_s": 1800,
+    "guidance": null,
+    "images_per_request": 1,
+    "clip_backend": "open_clip",
+    "clip_model": "ViT-L-14",
+    "clip_pretrained": "openai",
+    "clipscore_min": 26.0
+  },
+  "sweep": null,
+  "eval": {
+    "suite": "t2i-adherence",
+    "scorer": "clip",
+    "pass_threshold": null,
+    "max_output_tokens": null,
+    "categories": [
+      "text",
+      "portrait",
+      "product",
+      "scene",
+      "rgba"
+    ],
+    "notes": "CLIPScore is 100 * max(cosine(image, text), 0) against the row's answer, which is the short form of the prompt because CLIP truncates at 77 tokens. An item counts as correct above params.clipscore_min; the per-item score in items[].metrics is the number worth reading. Two lanes within a point of each other are not distinguishable by this metric and should not be ranked by it."
+  },
+  "metrics_required": [
+    "accuracy",
+    "success_rate",
+    "avg_latency_ms"
+  ],
+  "immutable": true,
+  "created": "2026-09-20",
+  "supersedes": null,
+  "notes": "The render shape comes from each row's meta.render, not from params: these are frozen cases, and a case rendered at another size or seed is a different picture. params carries only what is the same for all of them. The CLIP model is part of the measurement: ViT-L-14/openai is the pinned default and a score from another backbone is a different scale. ImageReward is deliberately not the default — its pins (timm 0.6.13, fairscale sdist-only) conflict with open_clip in one environment, so it belongs in a separate run if it is used at all."
+}

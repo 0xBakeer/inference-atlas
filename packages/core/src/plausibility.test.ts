@@ -204,6 +204,33 @@ describe('checkPlausibility', () => {
     expect(codes(issues)).toContain('distribution-out-of-order');
   });
 
+  // An image run reports no tokens, so the bandwidth bound has nothing to bite on; what is
+  // still checkable is that seconds per image are positive and ordered.
+  it('checks the seconds-per-image distribution of an image run', () => {
+    const clean = checkPlausibility({
+      result: result(
+        { s_per_image: { mean: 12.4, p50: 12.1, p95: 13.9 }, vram_peak_gb: 41 },
+        { kind: 'image', workload_id: 't2i-single-1k-40s-v1' },
+      ),
+      hardware: spark,
+      model: dense,
+      quant: fp8,
+    });
+    expect(codes(clean)).toEqual([]);
+
+    const broken = checkPlausibility({
+      result: result(
+        { s_per_image: { p50: 40, p95: 12 }, load_s: -1 },
+        { kind: 'image', workload_id: 't2i-single-1k-40s-v1' },
+      ),
+      hardware: spark,
+      model: dense,
+      quant: fp8,
+    });
+    expect(codes(broken)).toContain('distribution-out-of-order');
+    expect(codes(broken)).toContain('negative-metric');
+  });
+
   it('warns when failures happened but nobody said what broke', () => {
     const issues = checkPlausibility({
       result: result({

@@ -180,6 +180,7 @@ const NON_NEGATIVE: Array<keyof MetricBlock> = [
   'requests_total',
   'requests_ok',
   'requests_failed',
+  'load_s',
 ];
 
 const DISTRIBUTIONS: Array<keyof MetricBlock> = [
@@ -188,6 +189,7 @@ const DISTRIBUTIONS: Array<keyof MetricBlock> = [
   'itl_ms',
   'e2e_ms',
   'decode_tok_s_per_request',
+  's_per_image',
 ];
 
 function checkMetricBlock(

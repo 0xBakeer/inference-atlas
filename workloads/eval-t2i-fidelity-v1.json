@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "id": "eval-t2i-fidelity-v1",
+  "name": "Fidelity to a bf16 reference v1",
+  "kind": "eval",
+  "description": "All 24 cases, scored for how far a lane's picture is from a bf16 reference produced on the same box at identical prompt, size, steps and seed: PSNR, SSIM, LPIPS when it is installed, and mean absolute alpha error on the transparent cases.",
+  "dataset_id": "eval-t2i-fidelity-v1",
+  "params": {
+    "concurrency": 1,
+    "num_requests": 24,
+    "input_tokens": null,
+    "output_tokens": null,
+    "seed": 42,
+    "warmup_requests": 1,
+    "repeat": 1,
+    "timeout_s": 1800,
+    "guidance": null,
+    "images_per_request": 1,
+    "reference": "bf16-same-box",
+    "psnr_min": 30.0,
+    "ssim_min": 0.9,
+    "lpips": "if-installed"
+  },
+  "sweep": null,
+  "eval": {
+    "suite": "t2i-fidelity",
+    "scorer": "fidelity",
+    "pass_threshold": null,
+    "max_output_tokens": null,
+    "categories": [
+      "text",
+      "portrait",
+      "product",
+      "scene",
+      "rgba",
+      "edit"
+    ],
+    "notes": "Requires a reference bundle written by `atlas-bench t2i-reference` from a bf16 run of this same suite on the same machine. The scorer compares meta.render_digest first and refuses to score a case whose reference was produced from a different spec, because a number that looks like drift but is a different picture is worse than no number. An item is correct when it clears both psnr_min and ssim_min."
+  },
+  "metrics_required": [
+    "accuracy",
+    "success_rate",
+    "avg_latency_ms"
+  ],
+  "immutable": true,
+  "created": "2026-09-20",
+  "supersedes": null,
+  "notes": "No reference pixels exist in this repository and none should: a generated image is model output, not authored data (SPEC §0.6). The result publishes the metrics plus a 64-bit perceptual hash of each candidate and its reference, and names the reference run in workload.resolved_params.reference_run_id. Running this suite on the very configuration that produced the reference is a determinism check rather than a quality one: below a perfect score there, the lane is not reproducible at a fixed seed, which is worth recording. The render shape comes from each row's meta.render, not from params: these are frozen cases, and a case rendered at another size or seed is a different picture. params carries only what is the same for all of them."
+}

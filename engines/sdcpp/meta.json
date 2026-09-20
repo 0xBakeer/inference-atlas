@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "id": "sdcpp",
+  "name": "stable-diffusion.cpp",
+  "repo": "https://github.com/leejet/stable-diffusion.cpp",
+  "docs": "https://github.com/leejet/stable-diffusion.cpp/tree/master/docs",
+  "description": "A ggml-based C/C++ diffusion runtime, the image-generation counterpart of llama.cpp. It is a command-line program (`sd-cli`) that writes a PNG, not a server: there is no HTTP API to attach to, so the harness drives it through a command template and measures the process. It is the only lane here that loads GGUF, and it loads the transformer, the text encoder and the VAE as three separate files.",
+  "api": "custom",
+  "platforms": [
+    "linux-cuda",
+    "linux-cpu",
+    "macos-metal",
+    "windows-cuda"
+  ],
+  "quant_formats": [
+    "gguf",
+    "bf16",
+    "fp16"
+  ],
+  "install": [
+    {
+      "method": "source",
+      "command": "cmake -B build -DSD_CUDA=ON && cmake --build build --config Release",
+      "arch": [
+        "x86_64",
+        "aarch64",
+        "arm64"
+      ],
+      "notes": "There are no published binaries for aarch64 CUDA; build from the tag named by the engine version."
+    }
+  ],
+  "serve": {
+    "command_template": "sd-cli --diffusion-model {model_ref} --vae {vae} --llm {text_encoder} -p {prompt} -W {width} -H {height} --steps {steps} --seed {seed} -o {out} {flags}",
+    "model_ref": "gguf_path",
+    "flag_style": "--{name} {value}",
+    "bool_style": "--{name}",
+    "notes": "Not a serve command: sd-cli renders one image per invocation and exits, so this is the template the image runner fills per request. The flag names are the ones the project's own Qwen-Image docs use (--diffusion-model, --vae, --llm, -p, -W, -H, --seed, -o, and -r for a reference image, repeated once per reference). `--llm` is a separate file: which text encoder and at which quantization is part of the configuration and belongs in args, because a Q8_0 transformer with a bf16 text encoder is not the same lane as a Q8_0 transformer with a Q8_0 one."
+  },
+  "health": {
+    "path": null,
+    "models_path": null
+  },
+  "bench_harness": "atlas-bench",
+  "drop_params": [
+    "diffusion-model",
+    "vae",
+    "llm",
+    "llm_vision",
+    "output",
+    "o",
+    "prompt",
+    "p",
+    "seed",
+    "width",
+    "height",
+    "threads"
+  ],
+  "param_aliases": {
+    "cfg": "cfg-scale",
+    "sampler": "sampling-method"
+  },
+  "version_source": {
+    "kind": "github-releases",
+    "tag_prefix": "master-"
+  },
+  "versions_available": [],
+  "links": {
+    "model_doc": "https://github.com/leejet/stable-diffusion.cpp/blob/master/docs/qwen_image.md"
+  },
+  "notes": "A CLI lane has no queue and no warm process: every image pays the model load unless the build keeps it resident, so load_s is part of the measurement here in a way it is not for a server, and s_per_image without it is the number to compare. versions_available is empty on purpose. A version file has to carry that build's real flags and their real defaults (AGENTS.md), and a wrong default silently merges two configurations into one fingerprint. Nobody has installed this engine for this model yet, so the first run that does reads `--help` on the actual build and adds the version file in the same pull request as its numbers."
+}

@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "id": "Qwen/Qwen-Image-2.1",
+  "name": "Qwen-Image-2.1",
+  "hf_id": "Qwen/Qwen-Image-2.1",
+  "family": "qwen-image",
+  "vendor": "alibaba",
+  "params_b": 16.56,
+  "active_params_b": null,
+  "architecture": "QwenImage21Pipeline",
+  "moe": false,
+  "experts": null,
+  "experts_active": null,
+  "attention": null,
+  "modalities": [
+    "text",
+    "image"
+  ],
+  "context_length": 262144,
+  "licence": "qwen-research",
+  "released": null,
+  "tags": [
+    "text-to-image",
+    "image-editing",
+    "rgba",
+    "diffusion"
+  ],
+  "links": {
+    "hf": "https://huggingface.co/Qwen/Qwen-Image-2.1",
+    "repo": "https://github.com/QwenLM/Qwen-Image-2.1",
+    "blog": "https://qwen.ai/blog?id=qwen-image-2.1"
+  },
+  "notes": "A diffusion model, not a language model, and several fields mean something different here. params_b is the sum of the three components in the repository, taken from their own safetensors indexes: a 7.115 B single-stream DiT (32 layers, 32 heads of 128, context_in_dim 4096, mlp_ratio 3, causal_condition true), an 8.767 B Qwen3-VL text encoder, and a 0.676 B 64-channel RGBA VAE at 16x spatial compression — 33.1 GB together in bf16. active_params_b is null rather than a number: it exists so the bandwidth plausibility bound can be computed from weight bytes per decoded token, and a denoising step is not a decoded token. There is no meaningful per-token bound for this model and inventing one would put a ceiling on a metric it never reports. context_length is the text encoder's max_position_embeddings (262144 from text_encoder/config.json); the useful prompt length is far shorter and the reference images an edit conditions on also consume it, because they are read as vision context AND encoded into latent tokens. licence is the card's license_name, qwen-research, not Apache-2.0. released is null: the model card carries no release date."
+}

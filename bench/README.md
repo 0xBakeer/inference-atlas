@@ -131,6 +131,7 @@ without an adapter falls back to attach mode.
 | `packet --cell ...`                                             | prints the agent task packet (SPEC §7) for a cell                                                                                                                                                                        |
 | `wrap raw.json --spec task.json`                                | wraps `vllm bench serve` / SGLang `bench_serving` JSON into a result file                                                                                                                                                |
 | `restamp FILE... --build REF`                                   | names the build behind an already-written result, recomputes `config_id`/`run_id` and moves the file (the cell is unchanged); for results written before `engine.build` existed                                          |
+| `t2i-reference --spec task.json --out DIR`                      | renders the bf16 reference bundle the image fidelity suite scores against: images plus a manifest (per case sha256, perceptual hash, render digest) naming the configuration that produced them. Stays on the box        |
 
 Useful `run` flags: `--gotcha "text"` (repeatable), `--notes "ambient 22C, box idle"`,
 `--no-telemetry`, `--tokenizer <hf-id>`, `--login <github-login>`.
@@ -245,6 +246,22 @@ An eval's output cap is `eval.max_output_tokens`.
 - **Tool rows** send `meta.tools` with `tool_choice: "auto"` and score `tool_calls[0]`;
   `answer.tool_call: null` is correct only when no call was made at all.
 - **Vision rows** attach `row.image` as a `data:image/…;base64,…` part next to the text.
+- **Image suites render before they score.** A `kind: eval` workload whose scorer is `ocr`,
+  `clip`, `rgba` or `fidelity` goes through `atlas_bench/workloads/image_eval.py`: the render
+  spec comes from the row's `meta.render` (not from the workload), the picture is made in a
+  temporary directory and deleted afterwards, and `scores.items[].metrics` carries the
+  measurement behind each verdict while `predicted` stays null — a generated picture is not
+  data this repository stores, and neither is an OCR transcription of one.
+- **Image lanes are not chat clients.** `atlas_bench/images.py` speaks the OpenAI images API
+  (`/v1/images/generations`, and `/v1/images/edits` as multipart with one repeated `image`
+  field per reference) with a per-engine parameter map — `true_cfg_scale` on vLLM-Omni,
+  `guidance_scale` on SGLang-Diffusion, `transparent` only where it exists — or drives a CLI
+  that writes a PNG (stable-diffusion.cpp), whose argv template the packet carries in
+  `image_lane`. The map is a whitelist: a parameter a lane has no entry for is not sent.
+- **The image fidelity suite needs a local reference.** `atlas-bench t2i-reference` renders
+  it from the bf16 configuration on the same box; `run --reference-bundle DIR` then scores
+  against it. Optional extras: `atlas-bench[images]` (numpy + Pillow, required for any image
+  scoring), `[ocr]`, `[clip]`, `[lpips]`.
 - **A missed needle is a failed request** in a `longctx` workload: it lowers `success_rate`
   and adds a `failures[]` entry with category `malformed-output`, while the request's timing
   numbers are still reported.

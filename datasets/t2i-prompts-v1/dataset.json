@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "id": "t2i-prompts-v1",
+  "name": "Text-to-image latency prompts v1",
+  "kind": "images",
+  "description": "Twelve prompts for the image-generation latency workloads: six text-to-image, three single-reference edits and three four-reference edits. The render shape (size, steps, seed, guidance) comes from the workload, not from the row — a latency workload measures one shape over several prompts.",
+  "licence": "MIT",
+  "created": "2026-09-20",
+  "files": [
+    "items.jsonl",
+    "images/"
+  ],
+  "count": 12,
+  "generator": "datasets/_gen/gen_t2i.py",
+  "token_heuristic": "approx_tokens = ceil(sum(len(m.content) for m in messages) / 4)",
+  "provenance": "Synthetic, authored in this repository. No third-party text.",
+  "categories": [
+    "edit-ref1",
+    "edit-ref4",
+    "t2i"
+  ],
+  "counts": {
+    "by_category": {
+      "edit-ref1": 3,
+      "edit-ref4": 3,
+      "t2i": 6
+    }
+  },
+  "images": {
+    "dir": "images",
+    "format": "PNG",
+    "sizes_px": [
+      512
+    ],
+    "count": 5,
+    "total_bytes": 68406,
+    "max_bytes": 30720
+  },
+  "schema": {
+    "fields": [
+      "id",
+      "category",
+      "prompt",
+      "reference_images",
+      "meta"
+    ]
+  },
+  "notes": [
+    "The reference images in this dataset are drawn by the generator. No model output is stored here or in any result file: an image a lane produced is not data (SPEC §0.6).",
+    "`reference_images` are sent as the conditioning images of an edit request (repeated `image` fields in multipart, or base64 in JSON). Four references cost sequence length in both the text encoder and the transformer, which is why edit-ref1 and edit-ref4 are separate workloads.",
+    "Row order is the order the workloads render in; a latency workload takes the first `num_requests` rows of its category so a shorter run is a prefix of a longer one."
+  ]
+}

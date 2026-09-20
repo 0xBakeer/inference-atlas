@@ -20,13 +20,12 @@ const REQUIRED: Record<Dataset['kind'], { all: string[]; oneOf: string[][] }> = 
   prompts: { all: ['id'], oneOf: [['messages', 'prompt']] },
   eval: { all: ['id', 'answer', 'scorer'], oneOf: [['prompt', 'messages']] },
   haystack: { all: ['id', 'answer'], oneOf: [['question', 'prompt']] },
-  images: {
-    all: ['id'],
-    oneOf: [
-      ['image', 'image_file'],
-      ['prompt', 'messages'],
-    ],
-  },
+  // An `images` row is a picture the run is *about*: either one the model is asked to
+  // describe (`image`/`image_file`) or one it is asked to draw (`prompt`). A generation row
+  // may also carry `reference_images` to condition an edit on, but that is optional — most
+  // of them are text to image — so the picture fields are alternatives to the prompt rather
+  // than required next to it.
+  images: { all: ['id'], oneOf: [['image', 'image_file', 'prompt', 'messages']] },
   // A conversations row is one turn of a recorded session, not a standalone item: it is
   // keyed by the session it belongs to and by its position in it, and what else it carries
   // depends on the role — a tool turn has results and no content, an assistant turn has

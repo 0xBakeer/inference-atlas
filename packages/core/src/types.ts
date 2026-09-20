@@ -67,6 +67,10 @@ export interface MetricBlock {
   itl_ms?: Distribution | null;
   e2e_ms?: Distribution | null;
   decode_tok_s_per_request?: Distribution | null;
+  /** Seconds per generated image, warmup excluded (kind=image). */
+  s_per_image?: Distribution | null;
+  /** Seconds from process start to the engine reporting ready. */
+  load_s?: number | null;
   vram_peak_gb?: number | null;
   ram_peak_gb?: number | null;
   kv_cache_tokens?: number | null;
@@ -300,7 +304,15 @@ export interface Quant {
 
 /* -------------------------------------------------------------------- workload */
 
-export type WorkloadKind = 'serving' | 'sweep' | 'prefill' | 'longctx' | 'eval' | 'agentic';
+export type WorkloadKind =
+  | 'serving'
+  | 'sweep'
+  | 'prefill'
+  | 'longctx'
+  | 'eval'
+  | 'agentic'
+  /** Image generation: seconds per picture at one fixed render shape. */
+  | 'image';
 
 export type ScorerKind =
   | 'exact'
@@ -634,6 +646,8 @@ export interface CompiledIndexRow {
     vram_peak_gb?: number | null;
     power_avg_w?: number | null;
     decode_tok_s_per_request?: number | null;
+    /** Median seconds per generated image (kind=image). */
+    s_per_image_p50?: number | null;
   };
   provenance: {
     login: string;
