@@ -155,8 +155,7 @@ async def run_image_eval(ctx: RunContext) -> WorkloadOutcome:
         if key in ctx.params:
             resolved[key] = ctx.params[key]
     if bundle is not None:
-        resolved["reference"] = bundle.describe()
-        resolved["reference_run_id"] = bundle.run_id
+        resolved.update(bundle.describe_flat())
 
     return WorkloadOutcome(
         kind="eval",

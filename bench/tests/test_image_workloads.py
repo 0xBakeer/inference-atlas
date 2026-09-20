@@ -245,7 +245,15 @@ async def test_fidelity_against_a_bundle_this_very_lane_produced(tmp_path: Path)
     item = outcome.scores["items"][0]
     assert item["metrics"]["psnr"] == 100.0
     assert item["metrics"]["phash_hamming"] == 0
-    assert outcome.resolved_params["reference"]["cases"] == 24
+    assert outcome.resolved_params["reference_cases"] == 24
+    # result.schema.json's workload.resolved_params is a flat map: string, number, boolean,
+    # array or null, and nothing else. The bundle header is nested, so it is flattened into
+    # reference_* keys — a sub-object here is a schema error on every eval suite run with a
+    # reference bundle, not only on the fidelity one.
+    assert not any(isinstance(value, dict)
+                   for value in outcome.resolved_params.values()), outcome.resolved_params
+    assert outcome.resolved_params["reference_engine_id"] == "qwen-image-spark"
+    assert outcome.resolved_params["reference_workload_id"] == "eval-t2i-fidelity-v1"
 
 
 @pytest.mark.asyncio

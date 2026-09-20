@@ -73,6 +73,24 @@ class ReferenceBundle:
             "cases": len(self.items),
         }
 
+    def describe_flat(self) -> dict[str, Any]:
+        """:meth:`describe` as ``reference_*`` scalars, which is what a result may hold.
+
+        ``workload.resolved_params`` is a flat map in ``result.schema.json`` — its values are
+        strings, numbers, booleans, arrays or null, and nothing else. The bundle header is a
+        nested object, so it goes in one key per field rather than as a sub-object; the same
+        information, in the shape the schema allows.
+        """
+        engine = self.meta.get("engine") or {}
+        header = self.describe()
+        flat = {f"reference_{key}": header[key]
+                for key in ("schema", "run_id", "config_id", "args_canonical", "hardware_id",
+                            "workload_id", "created", "cases")}
+        flat["reference_engine_id"] = engine.get("id")
+        flat["reference_engine_version"] = engine.get("version")
+        flat["reference_engine_build"] = engine.get("build")
+        return flat
+
 
 def load_reference_bundle(path: Path | str) -> ReferenceBundle:
     """Read a bundle directory (or its manifest.json directly)."""
