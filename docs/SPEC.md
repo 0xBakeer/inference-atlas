@@ -260,7 +260,7 @@ GGUF quants: `"files": ["Qwen3.8-27B-Q5_K_M.gguf"]`, `"engines": ["llamacpp","ol
   "id": "serve-chat-c8-i1k-o256-v1",
   "name": "...",
   "kind": "serving",
-  // serving | sweep | prefill | longctx | eval
+  // serving | sweep | prefill | longctx | eval | agentic | image
   "description": "...",
   "dataset_id": "prompts-mixed-v1",
   "params": {
@@ -734,3 +734,57 @@ or where reality disagreed with it. Each one is binding until superseded here.
     files, which already have a better answer. And it does not credit an unclaimed address:
     an unattributable commit stays unattributed, because crediting a plausible neighbour is
     worse than crediting nobody.
+
+**2026-09-20 — image generation (decision 26)**
+
+26. **Image generation is one new workload kind and nothing else.** A text-to-image model
+    is measured along the same axes as any other — model × quant × hardware × engine ×
+    flags × workload — so it needs no new registry, no new result shape and no second
+    fingerprint. What it does need is a place to say _what picture_, and that splits in two:
+
+    - **`kind: image`** is latency. The render shape is the workload (`width`, `height`,
+      `steps`, `seed`, `images_per_request`, `ref_images` are required in `params`), the
+      dataset supplies prompts, concurrency is 1 because one image at a time is the honest
+      shape of a single-GPU box for this model class, and the headline is
+      `metrics.s_per_image` with the warmup renders excluded. Two metric-block fields were
+      added for it: `s_per_image` (a distribution, so `metrics_required` can name
+      `s_per_image.p50` the way it names `ttft_ms.p50`) and `load_s`. Peak memory stays
+      `vram_peak_gb` — the existing 1 Hz `nvidia-smi` sampler already produces it, and a
+      second field in different units would fracture the data for nothing.
+    - **Scored image suites stay `kind: eval`.** They produce a `scores` block, they count
+      as eval coverage, and `accuracy` keeps its meaning (share of items that passed the
+      suite's threshold). Four scorers were added to the vocabulary — `ocr`, `clip`, `rgba`,
+      `fidelity` — in a second registry (`IMAGE_SCORERS`) because their call shape is
+      `score(path, row, cfg) -> ImageScore`, not `score(text, row) -> ScoreResult`. Their
+      render spec is frozen **per case in the dataset row** (`meta.render`), not in the
+      workload: a case rendered at another size or seed is a different picture, and the
+      whole point of a frozen suite is that everyone renders the same one.
+
+    `scores.items[]` gained one optional field, `metrics`, for suites where "correct" is a
+    threshold on a measurement rather than a match. It holds numbers, and the two 64-bit
+    perceptual hashes; `predicted` is **null** on every image item.
+
+27. **A fidelity reference is local, and only its fingerprints are published.** Comparing a
+    quantized lane against bf16 at identical prompt, size, steps and seed is the most useful
+    thing this suite can do, and it needs reference pixels — which cannot live here. §0.6 is
+    explicit that test data is authored in this repository, `datasets/README.md` says no
+    model output was used as data, and 24 references at 1K and 2K would also be a fifth of
+    the corpus budget under a licence nobody can name.
+
+    So the reference is a **local bundle**: `atlas-bench t2i-reference` renders the suite
+    once from the bf16 configuration on the contributor's own box and writes the images plus
+    a manifest — per case a sha256, a 64-bit perceptual hash and the render digest, and for
+    the bundle as a whole the engine, version, `config_id`, `args_canonical` and hardware id
+    that produced it. A fidelity result publishes the metrics, the candidate's and the
+    reference's perceptual hashes, and the bundle header. Never a pixel.
+
+    Two properties make that honest rather than merely convenient. The **render digest**
+    (`sha256(prompt|w|h|steps|seed|mode|refs)[:16]`, computed identically in
+    `datasets/_gen/_lib.py` and `atlas_bench/images.py`, pinned by a test over the committed
+    rows) is compared before scoring, so a bundle built from an edited case set is refused
+    instead of reported as drift. And the **perceptual hashes** are what let two
+    contributors compare references at all: equal hashes mean the same picture, a large
+    Hamming distance means two boxes disagree about what bf16 produces on that case, which
+    is worth knowing before anyone compares their PSNR tables. The cost is real and stated:
+    a fidelity number is only meaningful relative to a reference the same contributor made,
+    and the result names it (`workload.resolved_params.reference_run_id`).

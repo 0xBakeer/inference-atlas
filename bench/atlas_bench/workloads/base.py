@@ -52,6 +52,10 @@ class RunContext:
     telemetry_factory: Callable[[], TelemetrySampler | None] | None = None
     warnings: list[str] = field(default_factory=list)
     dry_run: bool = False
+    #: Image lanes are not chat clients: an image workload renders through an
+    #: `atlas_bench.images` lane, built from the packet unless one is handed in (the tests
+    #: hand in a stub, and `t2i-reference` hands in the one it already opened).
+    image_lane: Any = None
 
     def new_sampler(self) -> TelemetrySampler | None:
         """A fresh telemetry sampler for one measured window (``None`` when disabled)."""
@@ -64,7 +68,7 @@ class RunContext:
 
     @property
     def kind(self) -> str:
-        """Workload kind (``serving`` | ``sweep`` | ``prefill`` | ``longctx`` | ``eval``)."""
+        """Workload kind: serving, sweep, prefill, longctx, eval, agentic or image."""
         return str(self.workload.get("kind") or "serving")
 
     def param(self, name: str, default: Any = None) -> Any:

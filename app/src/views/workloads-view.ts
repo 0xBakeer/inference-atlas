@@ -10,7 +10,7 @@ import { store } from '../store.js';
 import { fmtInt } from '@atlas/core';
 import { ViewElement } from './view-base.js';
 
-const KINDS = ['serving', 'sweep', 'prefill', 'longctx', 'eval'] as const;
+const KINDS = ['serving', 'sweep', 'prefill', 'longctx', 'eval', 'image'] as const;
 
 function paramsSummary(w: Workload): string {
   const p = w.params ?? {};

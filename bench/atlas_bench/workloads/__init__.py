@@ -1,9 +1,9 @@
 """Workload runners.
 
 ``RUNNERS`` maps a workload ``kind`` onto its coroutine. A workload file selects the kind
-(``serving`` | ``sweep`` | ``prefill`` | ``longctx`` | ``eval`` | ``agentic``); the packet only names the
-workload id, and the resolved parameter snapshot is stored in the result so a run stays
-reproducible even if a workload file is later superseded.
+(``serving``, ``sweep``, ``prefill``, ``longctx``, ``eval``, ``agentic`` or ``image``); the
+packet only names the workload id, and the resolved parameter snapshot is stored in the
+result so a run stays reproducible even if a workload file is later superseded.
 """
 
 from __future__ import annotations
@@ -14,6 +14,7 @@ from typing import Any
 from .agentic import run_agentic
 from .base import RunContext, WorkloadOutcome
 from .eval import run_eval
+from .image import run_image
 from .longctx import run_longctx
 from .prefill import run_prefill
 from .serving import run_serving
@@ -28,6 +29,7 @@ RUNNERS: dict[str, Callable[[RunContext], Awaitable[WorkloadOutcome]]] = {
     "longctx": run_longctx,
     "eval": run_eval,
     "agentic": run_agentic,
+    "image": run_image,
 }
 
 
@@ -67,4 +69,8 @@ def _kind_from_id(workload_id: str) -> str:
         "longctx": "longctx",
         "eval": "eval",
         "agentic": "agentic",
+        # Image latency workloads are named after what they render (`t2i-single-1k-40s-v1`,
+        # `edit-ref4-1k-40s-v1`); the scored image suites are `eval-t2i-*` and are eval.
+        "t2i": "image",
+        "edit": "image",
     }.get(prefix, "serving")

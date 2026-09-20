@@ -19,6 +19,9 @@ What it checks, per dataset:
   * eval rows: category/difficulty/scorer are known values, mc rows have choices
     and an answer that is one of the labels, code_exec rows have tests, vision
     rows point at an image that exists, and at least 95 % of answers are non-empty;
+  * image-generation eval rows carry a meta.render whose size is a multiple of 32, a
+    meta.render_digest that recomputes, and reference images that exist and are small;
+  * `images` rows (generation prompts) carry a prompt and resolvable reference images;
   * haystack recipes rebuild to the recorded sha256, and every static file matches;
   * eval-longctx recipes rebuild to their recorded sha256 too;
   * the eval-instruction rule DSL self-test passes and every rule used by an item
@@ -45,11 +48,28 @@ SIZE_BUDGET_BYTES = 25 * 1024 * 1024
 KINDS = {"prompts", "eval", "images", "haystack"}
 DIFFICULTIES = {"easy", "medium", "hard"}
 SCORERS = {"exact", "numeric", "mc", "contains", "json", "code_exec", "needle", "instruction",
-           "vision", "judge", "integrity"}
+           "vision", "judge", "integrity", "ocr", "clip", "rgba", "fidelity"}
+#: Scorers whose item is a generated image rather than text. Their rows carry `meta.render`.
+IMAGE_SCORERS = {"ocr", "clip", "rgba", "fidelity"}
+#: The VAE compresses 16x and the transformer consumes 2x2 groups of latents, so a render
+#: size that is not a multiple of 32 is floored by the pipeline and the row would ask for a
+#: size no lane can produce.
+RENDER_MULTIPLE = 32
 BUCKETS = {"xs": (16, 64), "s": (65, 256), "m": (257, 1024), "l": (1025, 4096),
            "xl": (4097, 16384), "xxl": (16385, 65536)}
 
 problems: list[str] = []
+
+
+def _digest(prompt: str, render: dict) -> str:
+    """`_lib.render_digest`, loaded the same way the other reference implementations are."""
+    global _LIB
+    if _LIB is None:
+        _LIB = load_module(DATASETS / "_gen" / "_lib.py", "datasets_lib_check")
+    return _LIB.render_digest(prompt, render)
+
+
+_LIB = None
 
 
 def fail(where: str, message: str) -> None:
@@ -86,6 +106,9 @@ def load_module(path: Path, name: str):
     spec = importlib.util.spec_from_file_location(name, path)
     module = importlib.util.module_from_spec(spec)
     assert spec.loader is not None
+    # Registered before execution: a module that defines a dataclass needs to find itself
+    # in sys.modules while its class bodies run.
+    sys.modules[name] = module
     spec.loader.exec_module(module)
     return module
 
@@ -163,6 +186,9 @@ def check_eval_rows(rows: list[dict], where: str, directory: Path) -> None:
                 float(str(answer))
             except ValueError:
                 fail(where, f"{rid} is scored numeric but its answer {answer!r} is not a number")
+        if scorer in IMAGE_SCORERS:
+            check_render(row, where, _digest)
+            check_reference_images(row, where, directory)
         if "image" in row:
             path = directory / row["image"]
             if not path.exists():
@@ -173,6 +199,60 @@ def check_eval_rows(rows: list[dict], where: str, directory: Path) -> None:
         share = 1 - empty / len(rows)
         if share < 0.95:
             fail(where, f"only {share:.1%} of answers are non-empty (95 % required)")
+
+
+def check_reference_images(row: dict, where: str, directory: Path) -> None:
+    """Conditioning images of an edit row: they must exist and stay inside the size cap."""
+    names = row.get("reference_images") or (row.get("meta") or {}).get("reference_images") or []
+    if not isinstance(names, list):
+        fail(where, f"{row.get('id')} reference_images is not a list")
+        return
+    for name in names:
+        path = directory / str(name)
+        if not path.exists():
+            fail(where, f"{row.get('id')} references missing image {name}")
+        elif path.stat().st_size > 30 * 1024:
+            fail(where, f"{row.get('id')} image {name} is {human(path.stat().st_size)}, "
+                        "over the 30 KB limit")
+
+
+def check_render(row: dict, where: str, digest_of) -> None:
+    """The render spec of an image-generation row.
+
+    Everything here is part of the measurement rather than metadata: a fidelity number is
+    only meaningful when two images were made from the same prompt at the same size, steps
+    and seed, and `render_digest` is what a scorer compares before it agrees to score.
+    """
+    rid = row.get("id", "<no id>")
+    render = (row.get("meta") or {}).get("render")
+    if not isinstance(render, dict):
+        fail(where, f"{rid} has no meta.render")
+        return
+    for field in ("width", "height", "steps", "seed"):
+        value = render.get(field)
+        if not isinstance(value, int):
+            fail(where, f"{rid} meta.render.{field} is {value!r}, expected an integer")
+    for field in ("width", "height"):
+        value = render.get(field)
+        if isinstance(value, int) and value % RENDER_MULTIPLE:
+            fail(where, f"{rid} meta.render.{field} is {value}, not a multiple of "
+                        f"{RENDER_MULTIPLE}")
+    recorded = (row.get("meta") or {}).get("render_digest")
+    expected = digest_of(row.get("prompt") or "", render)
+    if recorded != expected:
+        fail(where, f"{rid} meta.render_digest is {recorded!r}, the spec hashes to {expected!r}")
+
+
+def check_image_prompt_rows(rows: list[dict], where: str, directory: Path) -> None:
+    """`images` datasets: prompts for a generation workload, not questions."""
+    for row in rows:
+        rid = row.get("id", "<no id>")
+        for field in ("id", "category", "prompt"):
+            if field not in row:
+                fail(where, f"{rid} is missing '{field}'")
+        if not str(row.get("prompt") or "").strip():
+            fail(where, f"{rid} has an empty prompt")
+        check_reference_images(row, where, directory)
 
 
 def check_haystack_rows(rows: list[dict], where: str, directory: Path) -> None:
@@ -331,6 +411,8 @@ def check_dataset(directory: Path) -> tuple[str, str, int, int]:
             check_tool_rows(rows, where)
         if directory.name == "eval-longctx-v1":
             check_longctx_recipes(rows, where)
+    elif kind == "images":
+        check_image_prompt_rows(rows, where, directory)
     elif kind == "haystack":
         check_haystack_rows(rows, where, directory)
 

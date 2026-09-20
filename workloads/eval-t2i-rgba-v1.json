@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "id": "eval-t2i-rgba-v1",
+  "name": "Transparent background v1",
+  "kind": "eval",
+  "description": "Four cases that ask for a transparent background — three stickers and one cut-out edit — scored on the alpha channel itself: how much of it is transparent, how clean the edge is, and whether the opaque part is one subject rather than a field of speckles.",
+  "dataset_id": "eval-t2i-rgba-v1",
+  "params": {
+    "concurrency": 1,
+    "num_requests": 4,
+    "input_tokens": null,
+    "output_tokens": null,
+    "seed": 42,
+    "warmup_requests": 1,
+    "repeat": 1,
+    "timeout_s": 1800,
+    "guidance": null,
+    "images_per_request": 1,
+    "transparent": true,
+    "min_component_fraction": 0.001
+  },
+  "sweep": null,
+  "eval": {
+    "suite": "t2i-rgba",
+    "scorer": "rgba",
+    "pass_threshold": null,
+    "max_output_tokens": null,
+    "categories": [
+      "rgba",
+      "edit"
+    ],
+    "notes": "The thresholds are per row (answer.min_transparent_fraction, answer.max_components, answer.max_ambiguous_fraction) because a sticker with three curls of steam is legitimately several components. An image with no alpha channel, or one whose alpha is uniformly opaque, fails: `transparent: true` quietly ignored is exactly what this suite exists to catch."
+  },
+  "metrics_required": [
+    "accuracy",
+    "success_rate",
+    "avg_latency_ms"
+  ],
+  "immutable": true,
+  "created": "2026-09-20",
+  "supersedes": null,
+  "notes": "The render shape comes from each row's meta.render, not from params: these are frozen cases, and a case rendered at another size or seed is a different picture. params carries only what is the same for all of them. A lane with no transparency parameter at all should not be run against this suite — record the gap instead of a row of zeros, since what would be measured is the API, not the model."
+}

@@ -118,6 +118,16 @@ export const METRICS: MetricDef[] = [
     fromBlock: (m) => n(m.power_avg_w),
   },
   {
+    key: 's_per_image_p50',
+    label: 'Seconds per image (p50)',
+    short: 's/image',
+    unit: 's',
+    better: 'lower',
+    fmt: (v) => fmtNum(v, 2),
+    fromRow: (r) => n(r.metrics.s_per_image_p50),
+    fromBlock: (m) => n(m.s_per_image?.p50),
+  },
+  {
     key: 'tok_per_w',
     label: 'Tokens per watt',
     short: 'tok/W',
@@ -163,6 +173,9 @@ export function metricLabel(site: SiteConfig, key: string): string {
  */
 const KEY_METRICS_BY_KIND: Partial<Record<WorkloadKind, string[]>> = {
   longctx: ['ttft_p50', 'decode_tok_s_per_request', 'output_tok_s'],
+  // An image run has no tokens at all: every token metric on it is null, and without this
+  // the headline would fall through to whatever happens to be present (success rate).
+  image: ['s_per_image_p50', 'vram_peak_gb', 'success_rate'],
 };
 
 /** Headline number for an index row: first key metric present, in site preference order. */

@@ -25,8 +25,33 @@ telemetry = ["nvidia-ml-py>=12.555"]
 tokenizer = ["tokenizers>=0.19"]
 # GGUF downloads for the llama.cpp adapter.
 hf = ["huggingface-hub>=0.23"]
+# Image-generation workloads: PSNR/SSIM, alpha statistics, connected components and the
+# perceptual hash. Both dependencies publish manylinux aarch64 wheels on PyPI (checked
+# 2026-09-20: numpy 2.5.3 manylinux_2_27/2_28_aarch64, pillow 12.3.0 manylinux_2_27/2_28
+# and musllinux aarch64), so a DGX Spark installs them without a compiler.
+images = ["pillow>=10.3", "numpy>=1.26"]
+# OCR for eval-t2i-text-v1. pytesseract is a py3-none-any wrapper and needs the tesseract
+# BINARY as well (apt install tesseract-ocr tesseract-ocr-chi-sim for the bilingual case);
+# rapidocr-onnxruntime is py3-none-any and pulls onnxruntime, which publishes
+# manylinux_2_28_aarch64 wheels, so it is the one that installs on aarch64 with no system
+# package. easyocr is also pure Python but drags torch, torchvision, opencv and scipy —
+# every one of them has aarch64 wheels, but it is 2 GB to read a shop sign, so it is not in
+# this extra. Whichever runs is recorded in the result: the scores are not comparable
+# across backends.
+ocr = ["pytesseract>=0.3.13", "rapidocr-onnxruntime>=1.4"]
+# Prompt adherence for eval-t2i-adherence-v1. open_clip_torch is py3-none-any; torch and
+# torchvision publish manylinux_2_28_aarch64 wheels on PyPI (2.14.0 / 0.29.0), though on a
+# CUDA box you want the build from the PyTorch index rather than the PyPI one.
+# ImageReward is deliberately absent: it pins timm==0.6.13 against open_clip's timm>=1.0.17
+# and depends on fairscale 0.4.13, which publishes no wheel at all. It can be measured, but
+# only in an environment of its own.
+clip = ["open_clip_torch>=2.24"]
+# LPIPS for the fidelity suite. py3-none-any, needs torch. Optional on purpose: an empty
+# LPIPS column is honest, a table missing the cases it could not compute is not.
+lpips = ["lpips>=0.1.4"]
 all = [
     "pillow>=10.3",
+    "numpy>=1.26",
     "nvidia-ml-py>=12.555",
     "tokenizers>=0.19",
     "huggingface-hub>=0.23",
@@ -43,6 +68,10 @@ dev = [
     "pytest>=8.2",
     "pytest-asyncio>=0.23",
     "ruff>=0.5",
+    # The image metric tests draw their own inputs and compare them, so the `images` extra
+    # is part of the dev environment rather than something the suite skips around.
+    "pillow>=10.3",
+    "numpy>=1.26",
 ]
 
 [build-system]

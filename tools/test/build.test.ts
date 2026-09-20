@@ -98,6 +98,7 @@ describe('output shape', () => {
       'decode_tok_s_per_request',
       'output_tok_s',
       'power_avg_w',
+      's_per_image_p50',
       'success_rate',
       'tpot_p50',
       'ttft_p50',

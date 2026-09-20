@@ -35,6 +35,9 @@ const BETTER: Record<MetricKey, 'higher' | 'lower'> = {
   vram_peak_gb: 'higher',
   power_avg_w: 'higher',
   decode_tok_s_per_request: 'higher',
+  // Lower is better, and unlike the token metrics there is no per-request variant: an
+  // image run makes one picture at a time by construction.
+  s_per_image_p50: 'lower',
 };
 
 function num(value: unknown): number | null {
@@ -52,7 +55,7 @@ function fromDistribution(
 /** Every ranking key present, so lookups do not have to deal with `undefined`. */
 type RowMetrics = Record<MetricKey, number | null>;
 
-/** The nine ranking numbers, pulled out of one metric block. */
+/** The ranking numbers, pulled out of one metric block. */
 function pick(block: MetricBlock | null | undefined): RowMetrics {
   return {
     output_tok_s: num(block?.output_tok_s),
@@ -66,6 +69,7 @@ function pick(block: MetricBlock | null | undefined): RowMetrics {
     decode_tok_s_per_request:
       fromDistribution(block?.decode_tok_s_per_request, 'mean') ??
       fromDistribution(block?.decode_tok_s_per_request, 'p50'),
+    s_per_image_p50: fromDistribution(block?.s_per_image, 'p50'),
   };
 }
 

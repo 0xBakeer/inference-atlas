@@ -18,6 +18,7 @@ __all__ = [
     "PACKET_VERSION",
     "EngineRef",
     "HardwareRef",
+    "ImageLaneSpec",
     "InstallSpec",
     "ModelRef",
     "RequestOptions",
@@ -122,6 +123,35 @@ class WorkloadRef(_Base):
         raise TypeError(f"cannot read workload reference from {value!r}")
 
 
+class ImageLaneSpec(_Base):
+    """How to reach an image-generation lane, when it is not a plain HTTP server.
+
+    Image workloads default to the OpenAI images shape against the engine's base URL, which
+    is what every HTTP lane here speaks and what needs no packet field at all. A CLI lane
+    (stable-diffusion.cpp) has no server to attach to, so its command has to be in the
+    packet: a list of argv tokens with `{prompt} {seed} {width} {height} {steps} {out}`
+    placeholders and a repeating `{image...}` token for reference images. It is a list and
+    not a string because a shell between the harness and the prompt is one escaping bug
+    away from measuring a different prompt.
+    """
+
+    kind: str = "openai_images"  # openai_images | cli
+    command: list[str] = Field(default_factory=list)
+    #: Extra placeholders for the template: model paths, the text encoder file, a sampler.
+    vars: dict[str, Any] = Field(default_factory=dict)
+    env: dict[str, str] = Field(default_factory=dict)
+    workdir: str | None = None
+    timeout_s: float | None = None
+    #: Appended once per reference image, with `{image}` substituted (`["-r", "{image}"]`).
+    image_args: list[str] = Field(default_factory=list)
+    #: Appended when the case asks for a transparent background / carries a negative prompt.
+    transparent_args: list[str] = Field(default_factory=list)
+    negative_args: list[str] = Field(default_factory=list)
+    #: Override the engine's canonical->wire parameter names (atlas_bench.images.PARAM_MAPS).
+    param_map: dict[str, str | None] | None = None
+    extra_params: dict[str, Any] = Field(default_factory=dict)
+
+
 class RequestOptions(_Base):
     """Sampling/transport options applied to every request of the run."""
 
@@ -167,6 +197,7 @@ class TaskSpec(_Base):
     args: dict[str, Any] = Field(default_factory=dict)
     workloads: list[WorkloadRef] = Field(default_factory=list)
     request: RequestOptions = Field(default_factory=RequestOptions)
+    image_lane: ImageLaneSpec | None = None
     output_dir: str = "results"
     branch: str | None = None
     pr_title: str | None = None

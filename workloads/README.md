@@ -44,6 +44,15 @@ tokens).
 | `prefill` | time to first token on a long input, almost no decode      | `prefill` | tiny `output_tokens`                       |
 | `longctx` | behaviour as the prompt grows, with a retrieval check      | `longctx` | may carry a `sweep` and/or an `eval` block |
 | `eval`    | capability, scored per item                                | `eval`    | `eval` and `dataset_id` required           |
+| `image`   | seconds per generated picture at one fixed render shape    | `image`   | `params` carries the whole shape (below)   |
+
+`image` is the one kind whose shape lives entirely in `params`: `width`, `height`, `steps`,
+`seed`, `images_per_request` and `ref_images` are all required there, because the same
+prompts at another size or step count are a different measurement rather than the same one
+run differently. Its dataset supplies prompts and, for the edit workloads, the reference
+images they condition on. Scored image suites are **not** this kind: they are `kind: eval`
+with an image scorer (`ocr`, `clip`, `rgba`, `fidelity`), they produce a `scores` block like
+every other eval, and their render spec is frozen per case in the dataset row.
 
 `metrics_required` lists the metric paths a result must carry non-null. Dotted
 paths address into a distribution (`ttft_ms.p50`). For `kind: eval` the three
@@ -90,6 +99,14 @@ were right.
 | `eval-commonsense-v2`              | eval    | `eval-commonsense-v2`       | mixed scorers, max_out 2048, new suite        |
 | `eval-security-v2`                 | eval    | `eval-security-v2`          | mixed scorers, max_out 4096, new suite        |
 | `eval-longgen-integrity-v1`        | eval    | `eval-longgen-integrity-v1` | `integrity`, max_out 3000, c1, n=36           |
+| `t2i-single-1k-40s-v1`             | image   | `t2i-prompts-v1`            | 1024², 40 steps, c1, 6 prompts × 3, warmup 1  |
+| `t2i-single-2k-40s-v1`             | image   | `t2i-prompts-v1`            | 2048² native 2K, 40 steps, c1, 6 × 3          |
+| `edit-ref1-1k-40s-v1`              | image   | `t2i-prompts-v1`            | 1024², 1 reference image, c1, 3 × 3           |
+| `edit-ref4-1k-40s-v1`              | image   | `t2i-prompts-v1`            | 1024², 4 reference images, c1, 3 × 3          |
+| `eval-t2i-text-v1`                 | eval    | `eval-t2i-text-v1`          | `ocr`, 6 cases, exact strings + CER           |
+| `eval-t2i-adherence-v1`            | eval    | `eval-t2i-adherence-v1`     | `clip`, 20 cases, CLIPScore ViT-L-14          |
+| `eval-t2i-rgba-v1`                 | eval    | `eval-t2i-rgba-v1`          | `rgba`, 4 cases, alpha channel checks         |
+| `eval-t2i-fidelity-v1`             | eval    | `eval-t2i-fidelity-v1`      | `fidelity`, 24 cases, vs a bf16 bundle        |
 
 ## Conventions a runner must honour
 
@@ -122,6 +139,25 @@ were right.
   clean run of 36 is not proof of absence: at a one-in-five per-generation rate a clean
   pass is a plausible outcome for an affected build, so report the run rather than the
   absence.
+- **Image workloads run one at a time.** `concurrency` is 1 and the runner does not
+  parallelise: a transformer over thousands of latent tokens saturates a single GPU on its
+  own, so a second request in flight measures the queue. Each prompt is rendered `repeat`
+  times and `s_per_image` is the distribution over every measured render; `warmup_requests`
+  are rendered first and excluded. Where a lane reports its own inference time
+  (`timing.total_ms`) that is used instead of the wall clock, and which of the two applied
+  is in `raw.payload` per render.
+- **`guidance: null` means the lane's own default.** Guidance above 1 runs a second
+  transformer forward per denoising step, so two lanes whose defaults differ are doing
+  different amounts of work; record the effective value in the result's `args` before
+  comparing seconds per image.
+- **No generated image is ever stored.** The runners render into a temporary directory and
+  delete it; results carry numbers, and for the fidelity suite a 64-bit perceptual hash.
+  `scores.items[].predicted` is null on image suites — an OCR transcription is the generated
+  content read back, and it does not belong in the repository either.
+- **The fidelity suite needs a local bf16 reference.** `atlas-bench t2i-reference --spec
+bf16.json --out DIR` renders it once on the same box; every quantized run then passes
+  `--reference-bundle DIR`. The scorer compares the render digest first and refuses to score
+  a case whose reference came from a different spec.
 - **`params.reasoning: "default"`** means "leave the engine's own default alone".
   Whatever it was, record it in the result's `args` — reasoning settings move eval
   scores and latency more than most flags.
