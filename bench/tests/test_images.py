@@ -296,3 +296,38 @@ def test_render_digest_changes_with_every_ingredient() -> None:
     for key, value in (("width", 2048), ("steps", 20), ("seed", 8), ("transparent", True)):
         assert render_digest("a fox", {**base, key: value}) != digest
     assert render_digest("a fox", {**base, "reference_images": ["images/a.png"]}) != digest
+
+
+def test_sglang_spells_transparency_as_the_background_enum() -> None:
+    """`transparent: True` is `background: "transparent"` on this lane, not `background: true`.
+
+    SGLang-Diffusion's ImageGenerationsRequest declares `background: transparent|opaque|auto`,
+    gpt-image-1's spelling. Sending the boolean is the failure mode eval-t2i-rgba-v1 exists to
+    catch: it comes back opaque and the suite scores the API rather than the model.
+    """
+    lane = OpenAIImagesLane("http://x", engine_id="sglang-diffusion", model="m")
+    payload = lane.payload_for(
+        ImageRequest(id="a", prompt="p", width=1024, height=1024, steps=40, seed=42,
+                     transparent=True))
+    assert payload["background"] == "transparent"
+    assert lane.supports_transparency() is True
+    plain = lane.payload_for(
+        ImageRequest(id="b", prompt="p", width=1024, height=1024, steps=40, seed=42))
+    assert "background" not in plain, "an opaque case leaves the lane's own default alone"
+
+
+def test_the_recipe_server_keeps_the_boolean_spelling() -> None:
+    """Only targets in _WIRE_TRUE are translated; qwen-image-spark's knob really is a bool."""
+    lane = OpenAIImagesLane("http://x", engine_id="qwen-image-spark", model="m")
+    payload = lane.payload_for(
+        ImageRequest(id="a", prompt="p", width=1024, height=1024, steps=40, seed=42,
+                     transparent=True))
+    assert payload["transparent"] is True
+
+
+def test_sglang_inference_time_is_preferred_over_the_wall_clock() -> None:
+    """SGLang returns inference_time_s; it is the engine's own number and excludes the client."""
+    lane = OpenAIImagesLane("http://x", engine_id="sglang-diffusion", model="m")
+    assert lane.timing == ("inference_time_s", "s")
+    assert lane._server_seconds({"inference_time_s": 36.08}) == 36.08
+    assert lane._server_seconds({}) is None

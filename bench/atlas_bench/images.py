@@ -76,8 +76,10 @@ _OPENAI_BASE = {
 PARAM_MAPS: dict[str, dict[str, str | None]] = {
     # vLLM-Omni calls classifier-free guidance true_cfg_scale and has no RGBA switch.
     "vllm-omni": {**_OPENAI_BASE, "guidance": "true_cfg_scale"},
-    # SGLang-Diffusion calls the same knob guidance_scale.
-    "sglang-diffusion": {**_OPENAI_BASE, "guidance": "guidance_scale"},
+    # SGLang-Diffusion calls the same knob guidance_scale, and spells transparency the way
+    # gpt-image-1 does: `background`, an enum rather than a boolean (see _WIRE_TRUE).
+    "sglang-diffusion": {**_OPENAI_BASE, "guidance": "guidance_scale",
+                         "transparent": "background"},
     # The recipe's own server accepts either spelling and adds `transparent` for the RGBA
     # mode, which is the whole reason the transparency suite can be run at all.
     "qwen-image-spark": {**_OPENAI_BASE, "guidance": "guidance_scale",
@@ -86,9 +88,17 @@ PARAM_MAPS: dict[str, dict[str, str | None]] = {
     "default": dict(_OPENAI_BASE),
 }
 
-#: Where a lane reports its own inference time, and in which unit.
+#: What a canonical `True` becomes for targets that are not booleans. `transparent` is a flag
+#: in one spelling and an enum in the other — OpenAI's `background` takes
+#: transparent/opaque/auto — and a lane that is sent `background: true` either rejects it or,
+#: worse, ignores it and returns an opaque picture that the RGBA suite then scores.
+_WIRE_TRUE: dict[str, str] = {"background": "transparent"}
+
+#: Where a lane reports its own inference time, and in which unit. Preferred over the wall
+#: clock: it is the engine's own number and it excludes the client.
 TIMING_PATHS: dict[str, tuple[str, str]] = {
     "qwen-image-spark": ("timing.total_ms", "ms"),
+    "sglang-diffusion": ("inference_time_s", "s"),
 }
 
 
@@ -249,7 +259,8 @@ class OpenAIImagesLane(ImageLane):
             target = self.param_map.get(name)
             if target is None or value is None:
                 continue
-            payload[target] = value
+            payload[target] = _WIRE_TRUE[target] if value is True and target in _WIRE_TRUE \
+                else value
         payload.update(self.extra_params)
         return payload
 
