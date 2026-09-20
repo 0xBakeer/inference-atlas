@@ -1,0 +1,295 @@
+{
+  "schema_version": 1,
+  "run_id": "9fba48e44168bf00--edit-ref1-1k-40s-v1--695c14",
+  "config_id": "9fba48e44168bf00",
+  "cell_id": "6bcd882b7f88",
+  "workload_id": "edit-ref1-1k-40s-v1",
+  "kind": "image",
+  "engine": {
+    "id": "qwen-image-spark",
+    "version": "0.1.1",
+    "commit": null,
+    "build": null,
+    "container": null,
+    "install_method": "source"
+  },
+  "model": {
+    "id": "Qwen/Qwen-Image-2.1",
+    "quant_id": "bf16",
+    "hf_id": "Qwen/Qwen-Image-2.1",
+    "revision": null,
+    "dtype": "auto",
+    "local_path": null
+  },
+  "hardware": {
+    "id": "nvidia-gb10-dgx-spark",
+    "count": 1,
+    "driver": "580.173.02",
+    "cuda": "13.0",
+    "host": {
+      "cpu": "Cortex-A725",
+      "cpu_cores": 20,
+      "ram_gb": 121.6,
+      "os": "Ubuntu 24.04.4 LTS",
+      "kernel": "6.17.0-1029-nvidia",
+      "arch": "aarch64"
+    },
+    "fingerprint": "sha256:52ea2bdd513719724db88c162b6cc2c9fb4e5b67e02dbe41b9de00687acefb91",
+    "captured": {
+      "nvidia_smi": {
+        "driver": "580.173.02",
+        "cuda": "13.0",
+        "products": [
+          "NVIDIA GB10"
+        ],
+        "fb_memory_total_mib": 0.0
+      },
+      "lscpu": {
+        "architecture": "aarch64",
+        "cpus": "20",
+        "vendor_id": "ARM",
+        "model_name": "Cortex-A725",
+        "cores_per_socket": "10",
+        "sockets": "1",
+        "cpu_max_mhz": "2808.0000"
+      }
+    }
+  },
+  "args": {},
+  "args_canonical": "@dtype=auto;@quant=bf16",
+  "serve_command": null,
+  "workload": {
+    "id": "edit-ref1-1k-40s-v1",
+    "resolved_params": {
+      "dataset_id": "t2i-prompts-v1",
+      "prompts": 3,
+      "width": 1024,
+      "height": 1024,
+      "steps": 40,
+      "seed": 42,
+      "guidance": null,
+      "images_per_request": 1,
+      "ref_images": 1,
+      "transparent": false,
+      "concurrency": 1,
+      "repeat": 3,
+      "warmup_requests": 1,
+      "timeout_s": 1800.0,
+      "dataset_categories": [
+        "edit-ref1"
+      ],
+      "lane": "openai_images",
+      "invocation": "http://127.0.0.1:8020/v1/images/generations"
+    }
+  },
+  "metrics": {
+    "requests_total": 9,
+    "requests_ok": 9,
+    "requests_failed": 0,
+    "success_rate": 1.0,
+    "duration_s": 596.197,
+    "s_per_image": {
+      "mean": 59.613,
+      "p50": 59.621,
+      "p90": 59.731,
+      "p95": 59.79,
+      "p99": 59.837,
+      "min": 59.394,
+      "max": 59.849
+    },
+    "e2e_ms": {
+      "mean": 59620.044,
+      "p50": 59625.329,
+      "p90": 59739.111,
+      "p95": 59804.908,
+      "p99": 59857.545,
+      "min": 59400.286,
+      "max": 59870.705
+    },
+    "load_s": null,
+    "vram_peak_gb": 73.03,
+    "ram_peak_gb": 78.843,
+    "power_avg_w": 84.89,
+    "power_peak_w": 87.35,
+    "energy_wh": 14.0478,
+    "gpu_util_avg_pct": 95.25,
+    "temp_max_c": 87.0,
+    "thermal_throttle_detected": false
+  },
+  "failures": [],
+  "conditions": {
+    "dedicated": true,
+    "detail": "Box dedicated to this run. The qwen-image-spark server on :8020 is the lane under test and the only process holding the GPU; no second engine, no compile, no desktop session. Ambient temperature unknown (no sensor on this box).",
+    "isolation_check": "nvidia-smi --query-compute-apps listed exactly one pid (the :8020 uvicorn worker) before and during the run; pgrep found no sglang, vllm, comfy or sd-cli process. A 1 Hz sampler recorded the sum of --query-compute-apps and free -m for the whole run."
+  },
+  "gotchas": [
+    {
+      "severity": "info",
+      "text": "nvidia-smi --query-gpu=memory.used returns [N/A] on GB10: the CPU and the GPU share one pool and the per-device counter is not implemented. vram_peak_gb here comes from the sum of --query-compute-apps=used_memory instead, which the harness now falls back to. It is a whole-device figure and it is only equal to this lane's footprint because the box ran nothing else."
+    },
+    {
+      "severity": "info",
+      "text": "The model name on the wire is not the Hugging Face repo id. This server's build_job lowercases the model field and checks it against {\"\", \"qwen-image-2.1\", \"qwen-image\", \"qwen\", \"gpt-image-1\", \"dall-e-3\", \"dall-e-2\"}, so a packet that sends Qwen/Qwen-Image-2.1 gets a 400 on every request. The packet carries served_model_id=qwen-image-2.1."
+    },
+    {
+      "severity": "info",
+      "text": "Effective guidance was 1.0, the lane's own default: guidance_scale is a per-request field, not a QIMG_ variable, and build_job falls back to 1.0 when neither guidance_scale nor true_cfg_scale is sent. The workloads send neither, so args carries no guidance and the number to compare against another lane is 1.0. Above 1.0 this pipeline runs a second transformer forward per step, which roughly doubles seconds per image."
+    },
+    {
+      "severity": "info",
+      "text": "Seconds per image are the server's own timing.total_ms (queue/encode/denoise/decode), not the HTTP wall clock; the harness prefers it for this engine. On the smoke render the two were 53.432 s and 53.45 s, so the client costs ~20 ms."
+    },
+    {
+      "severity": "info",
+      "text": "QIMG_MAX_PIXELS defaults to 4300800 in 0.1.1 (it was 4227072 in 0.1.0). Every shape these suites ask for fits: 2048x2048 is 4194304 and 2752x1536 is 4227072. On 0.1.0 the 2752x1536 adherence and fidelity cases would have been refused with a 400."
+    },
+    {
+      "severity": "info",
+      "text": "This lane renders 1024x1024 at 40 steps within a 0.21 s band over 17 independent cases (52.83-53.04 s), so its percentiles are narrow by construction and a p90/p50 gap here means a shape change, not variance. 2048x2048 costs 251.5 s, 4.75x the 1K time for 4x the pixels; one reference image adds ~6 s and a second ~8 s more."
+    }
+  ],
+  "derived": {
+    "cost_per_1m_output_tokens_usd": null,
+    "tokens_per_watt": null,
+    "tok_s_per_gb_bandwidth": null,
+    "bandwidth_efficiency": null,
+    "memory_headroom_gb": 54.97
+  },
+  "raw": {
+    "harness": "atlas-bench",
+    "harness_version": "0.1.0",
+    "sha256": "79584d3896d48d2622e6b7631746b3814ceae498e1e099c59cde3c31a23d153d",
+    "payload_path": null,
+    "payload": {
+      "lane": "openai_images",
+      "payload": [
+        {
+          "id": "spd-0007",
+          "warmup": true,
+          "ok": true,
+          "seconds": 59.6125,
+          "wall_s": 59.6165,
+          "timing_source": "server",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "spd-0007",
+          "warmup": false,
+          "ok": true,
+          "seconds": 59.6495,
+          "wall_s": 59.6528,
+          "timing_source": "server",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "spd-0008",
+          "warmup": false,
+          "ok": true,
+          "seconds": 59.7019,
+          "wall_s": 59.7062,
+          "timing_source": "server",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "spd-0009",
+          "warmup": false,
+          "ok": true,
+          "seconds": 59.5367,
+          "wall_s": 59.5432,
+          "timing_source": "server",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "spd-0007",
+          "warmup": false,
+          "ok": true,
+          "seconds": 59.69,
+          "wall_s": 59.6936,
+          "timing_source": "server",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "spd-0008",
+          "warmup": false,
+          "ok": true,
+          "seconds": 59.8485,
+          "wall_s": 59.8707,
+          "timing_source": "server",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "spd-0009",
+          "warmup": false,
+          "ok": true,
+          "seconds": 59.4928,
+          "wall_s": 59.4991,
+          "timing_source": "server",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "spd-0007",
+          "warmup": false,
+          "ok": true,
+          "seconds": 59.5855,
+          "wall_s": 59.5891,
+          "timing_source": "server",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "spd-0008",
+          "warmup": false,
+          "ok": true,
+          "seconds": 59.6208,
+          "wall_s": 59.6253,
+          "timing_source": "server",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "spd-0009",
+          "warmup": false,
+          "ok": true,
+          "seconds": 59.3938,
+          "wall_s": 59.4003,
+          "timing_source": "server",
+          "status": 200,
+          "error_category": null
+        }
+      ],
+      "engine_endpoint": {
+        "attached": true,
+        "base_url": "http://127.0.0.1:8020",
+        "served_model_id": "qwen-image-2.1",
+        "advertised_models": [
+          "qwen-image-2.1"
+        ]
+      }
+    },
+    "truncated": false
+  },
+  "provenance": {
+    "github_login": "0xBakeer",
+    "github_user_id": null,
+    "started_at": "2026-09-20T17:50:43Z",
+    "finished_at": "2026-09-20T18:00:39Z",
+    "submitted_at": null,
+    "commit": null,
+    "pr": null,
+    "method": "atlas-bench",
+    "agent": null,
+    "notes": "NVIDIA DGX Spark (GB10, sm_121), driver 580.173.02, CUDA 13.0, aarch64 Ubuntu 24.04, 121 GiB unified memory. qwen-image-21-spark 0.1.1 serving the diffusers QwenImage21Pipeline in bf16 behind FastAPI on :8020, one image at a time under a lock, torch 2.14.0+cu130, diffusers main @80c7ed262aeffbeb43ef13ae04baeb9b84515a69, transformers 5.17.0, attention sdpa, QIMG_MAX_PIXELS 4300800. This is the bf16 reference lane: the fidelity suite here is scored against a reference bundle rendered by this same configuration, so it is a determinism check rather than a quality one. Ambient temperature unknown."
+  },
+  "verification": {
+    "level": "self-reported",
+    "reproduced_by": [],
+    "flags": []
+  }
+}

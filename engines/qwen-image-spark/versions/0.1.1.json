@@ -1,0 +1,186 @@
+{
+  "schema_version": 1,
+  "engine_id": "qwen-image-spark",
+  "version": "0.1.1",
+  "released": "2026-09-20",
+  "extraction_method": "help",
+  "extracted_at": "2026-09-20T18:00:00Z",
+  "source": "./run.sh (usage header + the ${VAR:-default} block) and server/app.py::build_settings on the installed build at ~/recipes/qwen-image-21-spark, VERSION 0.1.1, cross-checked against the live /readyz",
+  "notes": "Every setting is an environment variable read once at startup, so the configuration is the environment: the registry name is the QIMG_ variable lower-cased and hyphenated (max-pixels = QIMG_MAX_PIXELS). The defaults below are the ones this build actually ships, read from run.sh and from the fallbacks in server/app.py rather than from the README table. Two of them moved in 0.1.1 and are the reason this file cannot be shared with 0.1.0: max-pixels 4227072 -> 4300800 and stop-grace 180 -> 420. guidance-scale is not an environment variable at all — it is a per-request field defaulting to 1.0 in build_job, which is the value every measurement here ran at. The checkout is not a git working tree (it was unpacked, not cloned), so there is no commit to name beyond the VERSION file and the diffusers sha the server reports.",
+  "params": [
+    {
+      "name": "model",
+      "type": "str",
+      "default": "Qwen/Qwen-Image-2.1",
+      "help": "QIMG_MODEL_REPO — the Hugging Face repo ./run.sh download fetches. Dropped from the fingerprint.",
+      "env": "QIMG_MODEL_REPO",
+      "aliases": ["model-repo"],
+      "group": "model",
+      "impact": "low"
+    },
+    {
+      "name": "model-dir",
+      "type": "path",
+      "default": "./models/Qwen-Image-2.1",
+      "help": "QIMG_MODEL_DIR — where the checkpoint lives. Dropped from the fingerprint.",
+      "env": "QIMG_MODEL_DIR",
+      "group": "model",
+      "impact": "low"
+    },
+    {
+      "name": "device",
+      "type": "enum",
+      "default": "auto",
+      "choices": ["auto", "cuda", "mps", "cpu"],
+      "help": "QIMG_DEVICE. auto is resolved once at load: cuda if a CUDA device exists, else mps on Apple silicon, else cpu. /readyz reports which one was taken.",
+      "env": "QIMG_DEVICE",
+      "group": "runtime",
+      "impact": "high"
+    },
+    {
+      "name": "dtype",
+      "type": "enum",
+      "default": "bf16",
+      "choices": ["bf16", "fp16", "fp32"],
+      "help": "QIMG_DTYPE — the dtype the whole pipeline is loaded in. This lane exists to be bf16.",
+      "env": "QIMG_DTYPE",
+      "group": "precision",
+      "impact": "high"
+    },
+    {
+      "name": "attention",
+      "type": "enum",
+      "default": "sdpa",
+      "choices": ["sdpa", "flash", "eager"],
+      "help": "QIMG_ATTENTION — the attention backend handed to the pipeline. /readyz echoes it.",
+      "env": "QIMG_ATTENTION",
+      "group": "runtime",
+      "impact": "high"
+    },
+    {
+      "name": "default-steps",
+      "type": "int",
+      "default": 40,
+      "range": [1, null],
+      "help": "QIMG_DEFAULT_STEPS — denoising steps when a request sends neither num_inference_steps nor steps. Every image workload sends its own, so this does not move a number here.",
+      "env": "QIMG_DEFAULT_STEPS",
+      "group": "sampling",
+      "impact": "high"
+    },
+    {
+      "name": "default-size",
+      "type": "str",
+      "default": "1024x1024",
+      "help": "QIMG_DEFAULT_SIZE — the size a request without size/width/height gets. Accepts WxH, a native 2K ratio name, name@1K, 1K or 2K.",
+      "env": "QIMG_DEFAULT_SIZE",
+      "group": "sampling",
+      "impact": "medium"
+    },
+    {
+      "name": "max-pixels",
+      "type": "int",
+      "default": 4300800,
+      "range": [1, null],
+      "help": "QIMG_MAX_PIXELS — the largest batch, in pixels, the server will accept (n * width * height). 4300800 is the largest native size by area, 2400x1792. A request above it is refused with a 400, never shrunk.",
+      "env": "QIMG_MAX_PIXELS",
+      "group": "limits",
+      "impact": "medium"
+    },
+    {
+      "name": "max-queue",
+      "type": "int",
+      "default": 8,
+      "range": [0, null],
+      "help": "QIMG_MAX_QUEUE — how many requests may wait for the single GPU lock before the server answers 503. Irrelevant at concurrency 1.",
+      "env": "QIMG_MAX_QUEUE",
+      "group": "limits",
+      "impact": "low"
+    },
+    {
+      "name": "timeout",
+      "type": "float",
+      "default": 900,
+      "range": [0, null],
+      "help": "QIMG_TIMEOUT — seconds a single job may hold the GPU before it is abandoned.",
+      "env": "QIMG_TIMEOUT",
+      "group": "limits",
+      "impact": "low"
+    },
+    {
+      "name": "stop-grace",
+      "type": "int",
+      "default": 420,
+      "range": [0, null],
+      "help": "QIMG_STOP_GRACE — how long ./run.sh stop waits for the in-flight image before SIGKILL; uvicorn's --timeout-graceful-shutdown is set ten seconds inside it. Shutdown only, so it cannot move a measured number.",
+      "env": "QIMG_STOP_GRACE",
+      "group": "lifecycle",
+      "impact": "low"
+    },
+    {
+      "name": "output-dir",
+      "type": "path",
+      "default": "./outputs",
+      "help": "QIMG_OUTPUT_DIR — where rendered files are kept for /outputs and response_format=url. Dropped from the fingerprint.",
+      "env": "QIMG_OUTPUT_DIR",
+      "group": "io",
+      "impact": "low"
+    },
+    {
+      "name": "api-key",
+      "type": "str",
+      "default": null,
+      "help": "QIMG_API_KEY — bearer token required on every route when set. Dropped from the fingerprint.",
+      "env": "QIMG_API_KEY",
+      "group": "io",
+      "impact": "low"
+    },
+    {
+      "name": "host",
+      "type": "str",
+      "default": "0.0.0.0",
+      "help": "HOST. Dropped from the fingerprint.",
+      "env": "HOST",
+      "group": "io",
+      "impact": "low"
+    },
+    {
+      "name": "port",
+      "type": "int",
+      "default": 8020,
+      "range": [1, 65535],
+      "help": "PORT. Dropped from the fingerprint.",
+      "env": "PORT",
+      "group": "io",
+      "impact": "low"
+    },
+    {
+      "name": "guidance-scale",
+      "type": "float",
+      "default": 1.0,
+      "range": [1.0, 20.0],
+      "help": "Per-request, not an environment variable: build_job reads guidance_scale or true_cfg_scale and falls back to 1.0. Above 1.0 the pipeline runs a second transformer forward per step, so it roughly doubles seconds per image. Recorded here because a lane's effective guidance is what makes two lanes comparable.",
+      "aliases": ["true-cfg-scale"],
+      "group": "sampling",
+      "impact": "high"
+    },
+    {
+      "name": "output-format",
+      "type": "enum",
+      "default": "png",
+      "choices": ["png", "webp", "jpeg"],
+      "help": "Per-request. Forced to png whenever transparent is true, because only png carries the alpha channel here.",
+      "group": "io",
+      "impact": "low"
+    },
+    {
+      "name": "transparent",
+      "type": "bool",
+      "default": false,
+      "help": "Per-request. Switches the pipeline to the RGBA mode and rewrites the prompt through rgba_prompt(); `background: transparent` is accepted as OpenAI's spelling of the same thing.",
+      "aliases": ["background"],
+      "group": "sampling",
+      "impact": "high"
+    }
+  ],
+  "distribution": "upstream"
+}
