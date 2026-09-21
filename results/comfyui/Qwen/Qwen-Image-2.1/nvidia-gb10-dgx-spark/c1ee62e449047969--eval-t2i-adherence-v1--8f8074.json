@@ -1,0 +1,759 @@
+{
+  "schema_version": 1,
+  "run_id": "c1ee62e449047969--eval-t2i-adherence-v1--8f8074",
+  "config_id": "c1ee62e449047969",
+  "cell_id": "ff875ae5a63a",
+  "workload_id": "eval-t2i-adherence-v1",
+  "kind": "eval",
+  "engine": {
+    "id": "comfyui",
+    "version": "0.36.0",
+    "commit": null,
+    "build": "github.com/comfyanonymous/ComfyUI@3dd559d81f745747cab884a3b9f5fd8867d79efe",
+    "container": null,
+    "install_method": "source"
+  },
+  "model": {
+    "id": "Qwen/Qwen-Image-2.1",
+    "quant_id": "w4a8-te",
+    "hf_id": "Qwen/Qwen-Image-2.1",
+    "revision": null,
+    "dtype": "auto",
+    "local_path": null
+  },
+  "hardware": {
+    "id": "nvidia-gb10-dgx-spark",
+    "count": 1,
+    "driver": "580.173.02",
+    "cuda": "13.0",
+    "host": {
+      "cpu": "Cortex-A725",
+      "cpu_cores": 20,
+      "ram_gb": 121.6,
+      "os": "Ubuntu 24.04.4 LTS",
+      "kernel": "6.17.0-1029-nvidia",
+      "arch": "aarch64"
+    },
+    "fingerprint": "sha256:52ea2bdd513719724db88c162b6cc2c9fb4e5b67e02dbe41b9de00687acefb91",
+    "captured": {
+      "nvidia_smi": {
+        "driver": "580.173.02",
+        "cuda": "13.0",
+        "products": [
+          "NVIDIA GB10"
+        ],
+        "fb_memory_total_mib": 0.0
+      },
+      "lscpu": {
+        "architecture": "aarch64",
+        "cpus": "20",
+        "vendor_id": "ARM",
+        "model_name": "Cortex-A725",
+        "cores_per_socket": "10",
+        "sockets": "1",
+        "cpu_max_mhz": "2808.0000"
+      }
+    }
+  },
+  "args": {
+    "cfg-scale": 1,
+    "sampler": "euler",
+    "scheduler": "simple",
+    "resolution": 1024,
+    "steps": 40,
+    "denoise": 1,
+    "cache-none": true
+  },
+  "args_canonical": "@build=github.com/comfyanonymous/comfyui@3dd559d81f745747cab884a3b9f5fd8867d79efe;@dtype=auto;@quant=w4a8-te;cache-none=true;cfg-scale=1;denoise=1;resolution=1024;sampler=euler;scheduler=simple;steps=40",
+  "serve_command": null,
+  "workload": {
+    "id": "eval-t2i-adherence-v1",
+    "resolved_params": {
+      "dataset_id": "eval-t2i-adherence-v1",
+      "suite": "t2i-adherence",
+      "scorer": "clip",
+      "items": 20,
+      "concurrency": 1,
+      "warmup_requests": 1,
+      "timeout_s": 1800.0,
+      "dataset_categories": null,
+      "lane": "cli",
+      "invocation": "/usr/bin/python3 /home/bakeer/lanes/qwen-image-21/_measure/comfy_render.py --base http://127.0.0.1:8188 --unet '{unet}' --clip '{clip}' --vae '{vae}' --prompt '{prompt}' --negative '{negative_prompt}' --width '{width}' --height '{height}' --steps '{steps}' --seed '{seed}' --cfg 1 --sampler euler --scheduler simple --resolution 1024 --out '{out}'",
+      "backend": "open_clip",
+      "clip_backend": "open_clip",
+      "clip_model": "ViT-L-14",
+      "clip_pretrained": "openai",
+      "clipscore_min": 26.0,
+      "reference_schema": "t2i-reference/1",
+      "reference_run_id": null,
+      "reference_config_id": "9fba48e44168bf00",
+      "reference_args_canonical": "@dtype=auto;@quant=bf16",
+      "reference_hardware_id": "nvidia-gb10-dgx-spark",
+      "reference_workload_id": "eval-t2i-fidelity-v1",
+      "reference_created": "2026-09-20T16:08:45Z",
+      "reference_cases": 24,
+      "reference_engine_id": "qwen-image-spark",
+      "reference_engine_version": "0.1.1",
+      "reference_engine_build": null
+    }
+  },
+  "metrics": {
+    "requests_total": 20,
+    "requests_ok": 20,
+    "requests_failed": 0,
+    "success_rate": 1.0,
+    "duration_s": 987.538,
+    "s_per_image": {
+      "mean": 47.766,
+      "p50": 32.221,
+      "p90": 47.873,
+      "p95": 187.521,
+      "p99": 187.643,
+      "min": 32.194,
+      "max": 187.674
+    },
+    "e2e_ms": {
+      "mean": 47766.452,
+      "p50": 32220.976,
+      "p90": 47872.893,
+      "p95": 187521.26,
+      "p99": 187643.155,
+      "min": 32193.647,
+      "max": 187673.629
+    },
+    "load_s": null,
+    "vram_peak_gb": 16.858,
+    "ram_peak_gb": 25.436,
+    "power_avg_w": 81.9,
+    "power_peak_w": 92.31,
+    "energy_wh": 22.8485,
+    "gpu_util_avg_pct": 88.57,
+    "temp_max_c": 87.0,
+    "thermal_throttle_detected": true
+  },
+  "scores": {
+    "suite": "t2i-adherence",
+    "total": 20,
+    "correct": 11,
+    "accuracy": 0.55,
+    "success_rate": 1.0,
+    "by_category": {
+      "portrait": {
+        "total": 4,
+        "correct": 0
+      },
+      "product": {
+        "total": 4,
+        "correct": 1
+      },
+      "rgba": {
+        "total": 3,
+        "correct": 3
+      },
+      "scene": {
+        "total": 3,
+        "correct": 2
+      },
+      "text": {
+        "total": 6,
+        "correct": 5
+      }
+    },
+    "by_difficulty": {
+      "easy": {
+        "total": 6,
+        "correct": 2
+      },
+      "hard": {
+        "total": 5,
+        "correct": 3
+      },
+      "medium": {
+        "total": 9,
+        "correct": 6
+      }
+    },
+    "avg_output_tokens": null,
+    "avg_latency_ms": 47766.45,
+    "failures": 0,
+    "items": [
+      {
+        "id": "t2i-0001",
+        "correct": false,
+        "predicted": null,
+        "expected": "a bakery sign reading GOLDEN CRUMB BAKERY with OPEN 7 AM TO 6 PM below it",
+        "latency_ms": 32205.458,
+        "output_tokens": null,
+        "category": "text",
+        "difficulty": "easy",
+        "metrics": {
+          "clipscore": 25.5074,
+          "clipscore_min": 26.0
+        }
+      },
+      {
+        "id": "t2i-0002",
+        "correct": true,
+        "predicted": null,
+        "expected": "an exhibition poster titled NORTHERN LIGHTS dated SEPTEMBER 14 in HALL B",
+        "latency_ms": 187513.241,
+        "output_tokens": null,
+        "category": "text",
+        "difficulty": "easy",
+        "metrics": {
+          "clipscore": 35.8439,
+          "clipscore_min": 26.0
+        }
+      },
+      {
+        "id": "t2i-0003",
+        "correct": true,
+        "predicted": null,
+        "expected": "a cafe chalkboard menu listing ESPRESSO 2.50, FLAT WHITE 3.80 and CROISSANT 2.20",
+        "latency_ms": 32207.797,
+        "output_tokens": null,
+        "category": "text",
+        "difficulty": "medium",
+        "metrics": {
+          "clipscore": 27.5764,
+          "clipscore_min": 26.0
+        }
+      },
+      {
+        "id": "t2i-0004",
+        "correct": true,
+        "predicted": null,
+        "expected": "a phone app screen headed Weekly Report showing 4208 steps and a Continue button",
+        "latency_ms": 32218.163,
+        "output_tokens": null,
+        "category": "text",
+        "difficulty": "medium",
+        "metrics": {
+          "clipscore": 32.4737,
+          "clipscore_min": 26.0
+        }
+      },
+      {
+        "id": "t2i-0005",
+        "correct": true,
+        "predicted": null,
+        "expected": "a bilingual cafe door sign reading 欢迎光临 above WELCOME FRIENDS",
+        "latency_ms": 32217.669,
+        "output_tokens": null,
+        "category": "text",
+        "difficulty": "hard",
+        "metrics": {
+          "clipscore": 32.7232,
+          "clipscore_min": 26.0
+        }
+      },
+      {
+        "id": "t2i-0006",
+        "correct": true,
+        "predicted": null,
+        "expected": "a handwritten paper note reading Meet me at Pier 9 at dusk",
+        "latency_ms": 32193.647,
+        "output_tokens": null,
+        "category": "text",
+        "difficulty": "hard",
+        "metrics": {
+          "clipscore": 33.4756,
+          "clipscore_min": 26.0
+        }
+      },
+      {
+        "id": "t2i-0007",
+        "correct": false,
+        "predicted": null,
+        "expected": "a portrait of a woman beside a window in soft directional light",
+        "latency_ms": 32212.292,
+        "output_tokens": null,
+        "category": "portrait",
+        "difficulty": "easy",
+        "metrics": {
+          "clipscore": 19.9793,
+          "clipscore_min": 26.0
+        }
+      },
+      {
+        "id": "t2i-0008",
+        "correct": false,
+        "predicted": null,
+        "expected": "a person holding a ceramic cup with both hands, all ten fingers visible",
+        "latency_ms": 32357.299,
+        "output_tokens": null,
+        "category": "portrait",
+        "difficulty": "hard",
+        "metrics": {
+          "clipscore": 21.7593,
+          "clipscore_min": 26.0
+        }
+      },
+      {
+        "id": "t2i-0009",
+        "correct": false,
+        "predicted": null,
+        "expected": "two people talking outdoors, strongly backlit by a low sun",
+        "latency_ms": 32249.768,
+        "output_tokens": null,
+        "category": "portrait",
+        "difficulty": "medium",
+        "metrics": {
+          "clipscore": 20.7482,
+          "clipscore_min": 26.0
+        }
+      },
+      {
+        "id": "t2i-0010",
+        "correct": false,
+        "predicted": null,
+        "expected": "a studio headshot on a grey backdrop with visible skin texture and catchlights",
+        "latency_ms": 32210.495,
+        "output_tokens": null,
+        "category": "portrait",
+        "difficulty": "medium",
+        "metrics": {
+          "clipscore": 21.1423,
+          "clipscore_min": 26.0
+        }
+      },
+      {
+        "id": "t2i-0011",
+        "correct": true,
+        "predicted": null,
+        "expected": "a clear glass bottle on polished marble with refraction and a soft shadow",
+        "latency_ms": 32213.735,
+        "output_tokens": null,
+        "category": "product",
+        "difficulty": "medium",
+        "metrics": {
+          "clipscore": 30.3586,
+          "clipscore_min": 26.0
+        }
+      },
+      {
+        "id": "t2i-0012",
+        "correct": false,
+        "predicted": null,
+        "expected": "a macro shot of a steel watch with a brown leather strap on slate",
+        "latency_ms": 32225.664,
+        "output_tokens": null,
+        "category": "product",
+        "difficulty": "medium",
+        "metrics": {
+          "clipscore": 24.6417,
+          "clipscore_min": 26.0
+        }
+      },
+      {
+        "id": "t2i-0013",
+        "correct": false,
+        "predicted": null,
+        "expected": "three matte ceramic bowls stacked centred on a linen cloth, nothing else in frame",
+        "latency_ms": 32236.58,
+        "output_tokens": null,
+        "category": "product",
+        "difficulty": "easy",
+        "metrics": {
+          "clipscore": 25.5108,
+          "clipscore_min": 26.0
+        }
+      },
+      {
+        "id": "t2i-0014",
+        "correct": false,
+        "predicted": null,
+        "expected": "a top-down flat lay of four objects in a two by two grid on folded linen",
+        "latency_ms": 32223.788,
+        "output_tokens": null,
+        "category": "product",
+        "difficulty": "hard",
+        "metrics": {
+          "clipscore": 19.0609,
+          "clipscore_min": 26.0
+        }
+      },
+      {
+        "id": "t2i-0015",
+        "correct": false,
+        "predicted": null,
+        "expected": "a wide coastal cliff at sunrise with sea mist in the bays",
+        "latency_ms": 187673.629,
+        "output_tokens": null,
+        "category": "scene",
+        "difficulty": "easy",
+        "metrics": {
+          "clipscore": 25.8766,
+          "clipscore_min": 26.0
+        }
+      },
+      {
+        "id": "t2i-0016",
+        "correct": true,
+        "predicted": null,
+        "expected": "a narrow rainy alley at night in vertical framing with neon reflections",
+        "latency_ms": 32232.616,
+        "output_tokens": null,
+        "category": "scene",
+        "difficulty": "medium",
+        "metrics": {
+          "clipscore": 27.835,
+          "clipscore_min": 26.0
+        }
+      },
+      {
+        "id": "t2i-0017",
+        "correct": true,
+        "predicted": null,
+        "expected": "layered mountain ridges in fog with soft tonal separation",
+        "latency_ms": 32212.492,
+        "output_tokens": null,
+        "category": "scene",
+        "difficulty": "hard",
+        "metrics": {
+          "clipscore": 28.2239,
+          "clipscore_min": 26.0
+        }
+      },
+      {
+        "id": "t2i-0018",
+        "correct": true,
+        "predicted": null,
+        "expected": "a die-cut sticker of a sitting fox on a transparent background",
+        "latency_ms": 32288.705,
+        "output_tokens": null,
+        "category": "rgba",
+        "difficulty": "easy",
+        "metrics": {
+          "clipscore": 30.7315,
+          "clipscore_min": 26.0
+        }
+      },
+      {
+        "id": "t2i-0019",
+        "correct": true,
+        "predicted": null,
+        "expected": "a sticker of a takeaway coffee cup with steam on a transparent background",
+        "latency_ms": 32194.202,
+        "output_tokens": null,
+        "category": "rgba",
+        "difficulty": "medium",
+        "metrics": {
+          "clipscore": 30.1251,
+          "clipscore_min": 26.0
+        }
+      },
+      {
+        "id": "t2i-0020",
+        "correct": true,
+        "predicted": null,
+        "expected": "a soft shaded icon of a potted monstera on a transparent background",
+        "latency_ms": 32241.806,
+        "output_tokens": null,
+        "category": "rgba",
+        "difficulty": "medium",
+        "metrics": {
+          "clipscore": 32.4282,
+          "clipscore_min": 26.0
+        }
+      }
+    ]
+  },
+  "failures": [],
+  "conditions": {
+    "dedicated": true,
+    "detail": "Box dedicated to this run. Nothing else held the GPU: the qwen-image-21-spark server and every other engine in this campaign were stopped and confirmed gone first. ComfyUI was restarted for this run so no state from the driver probes carried in. Ambient temperature unknown (no sensor on this box).",
+    "isolation_check": "nvidia-smi --query-compute-apps was empty before the server started and listed only the ComfyUI process while it ran; pgrep found no other engine. A 1 Hz sampler recorded the sum of --query-compute-apps and free -m for the whole run."
+  },
+  "gotchas": [
+    {
+      "severity": "warn",
+      "text": "The driver reported thermal/hardware slowdown during the run — the numbers are throttled."
+    },
+    {
+      "severity": "info",
+      "text": "nvidia-smi --query-gpu=memory.used returns [N/A] on GB10: the CPU and the GPU share one pool and the per-device counter is not implemented. vram_peak_gb here comes from the sum of --query-compute-apps=used_memory, which the harness falls back to."
+    },
+    {
+      "severity": "info",
+      "text": "THE EDIT NUMBERS FROM THIS LANE ARE NOT COMPARABLE TO THE OTHER ENGINES. Reference images change the picture here but cost no measurable time. Measured before the run, twelve renders, same prompt and seed: 0/1/4 references gave 29.20/30.08/29.11 s and then 30.06/29.21/30.07 s on a second pass -- a bimodal 29.1/30.1 band with no correlation to the reference count -- while every output hash differed. Raising the encode node's resolution, which multiplies the reference latents by 4x and 16x, also changed the image and not the time (resolution 0/1024/2048 -> 29.13/30.06/29.19 s, three distinct hashes). The QwenImage21Cache prefix cache is not the explanation either: device=auto and device=off both took 27.1 s on the same four-reference edit. On the recipe lane a reference costs ~6.4 s and each further one ~7.7 s, and on SGLang-Diffusion ~6.6 and ~7.0 s. Whatever this build does with reference latents, it is not paying attention cost for them, so read edit-ref1 and edit-ref4 here as this lane's own numbers and not as the same measurement."
+    },
+    {
+      "severity": "info",
+      "text": "The workflow IS the configuration on this engine. Which DiT, text encoder and VAE are loaded are widget values on UNETLoader/CLIPLoader/VAELoader, so two runs with identical command-line flags can be different measurements. The quantization format is detected from each checkpoint's own comfy_quant metadata tensor rather than set by a flag, which is why none of the fp8/int8 CLI flags are passed."
+    },
+    {
+      "severity": "info",
+      "text": "TextEncodeQwenImage21's reference-image input is not an IMAGE. It is images: COMFY_AUTOGROW_V3, and the API graph wants the expanded names NESTED under the group -- {\"images\": {\"image_1\": [node, 0], ...}}. Wiring the bare group name is accepted and silently ignored, so the render succeeds, faster than it should, conditioned on nothing; wiring image_1 at the top level passes validation and then dies inside the node with TypeError: execute() got an unexpected keyword argument 'image_1'. Both wrong forms were hit and fixed before any number here was taken."
+    },
+    {
+      "severity": "info",
+      "text": "This lane has no transparency parameter at all, so eval-t2i-rgba-v1 was run with no rewrite and whatever alpha the model emits is the measurement. That is not the same thing the qwen-image-spark reference lane does: its transparent:true is a prompt rewrite (rgba_prompt wraps the prompt in an RGBA template), so the three transparent cases of eval-t2i-fidelity-v1 compare two different prompts on this lane and will fail for that reason rather than because of the quantization."
+    },
+    {
+      "severity": "info",
+      "text": "ComfyUI was started with --cache-none, and that is in args because it changes the numbers. By default this build keeps the last execution's node outputs and returns them unchanged for an identical graph; the harness renders a warmup and then the same request again as the first measured render, so exactly one render per workload came back in 1.15 s instead of 30.2 s -- a cached image, not a render, dragging the mean below the median. It cannot be defeated from inside the graph: the only KSampler input free to vary is negative_prompt, and on this build the picture changes with it even at cfg 1 (three renders with different markers gave three different hashes). --cache-none costs a measured 1.0 s per render (30.06 -> 31.06 s) because the loader nodes re-execute, and leaves the image byte-identical: three renders at one prompt and seed produced one hash, the same hash the cached server produced."
+    },
+    {
+      "severity": "info",
+      "text": "Seconds per image are the CLI lane's process wall clock, which includes the HTTP round trip to ComfyUI and the PNG fetch, but not the model load: ComfyUI keeps the models resident between prompts and only the first render pays for loading them. The first render of the run is the warmup and is excluded."
+    },
+    {
+      "severity": "info",
+      "text": "The output size comes from EmptyLatentImage at the workload's width and height, not from the encode node's own latent output, which the shipped template feeds through a ComfySwitchNode and which is sized from the first reference image. Every dataset reference image is 512x512 and the workloads render at 1024x1024, so following the reference size would have measured the wrong shape. The template's own note warns that a custom size far from image_1 can shift the edit."
+    }
+  ],
+  "derived": {
+    "cost_per_1m_output_tokens_usd": null,
+    "tokens_per_watt": null,
+    "tok_s_per_gb_bandwidth": null,
+    "bandwidth_efficiency": null,
+    "memory_headroom_gb": 111.142
+  },
+  "raw": {
+    "harness": "atlas-bench",
+    "harness_version": "0.1.0",
+    "sha256": "bd5ff0135378a4f0089a4d736bc37c9cebea0a622bf5fd00e343a22c7cfef724",
+    "payload_path": null,
+    "payload": {
+      "lane": "cli",
+      "scorer": "clip",
+      "payload": [
+        {
+          "id": "t2i-0001",
+          "warmup": true,
+          "ok": true,
+          "seconds": 32.2092,
+          "wall_s": 32.2092,
+          "timing_source": "wall",
+          "status": 0,
+          "error_category": null
+        },
+        {
+          "id": "t2i-0001",
+          "warmup": false,
+          "ok": true,
+          "seconds": 32.2055,
+          "wall_s": 32.2055,
+          "timing_source": "wall",
+          "status": 0,
+          "error_category": null
+        },
+        {
+          "id": "t2i-0002",
+          "warmup": false,
+          "ok": true,
+          "seconds": 187.5132,
+          "wall_s": 187.5132,
+          "timing_source": "wall",
+          "status": 0,
+          "error_category": null
+        },
+        {
+          "id": "t2i-0003",
+          "warmup": false,
+          "ok": true,
+          "seconds": 32.2078,
+          "wall_s": 32.2078,
+          "timing_source": "wall",
+          "status": 0,
+          "error_category": null
+        },
+        {
+          "id": "t2i-0004",
+          "warmup": false,
+          "ok": true,
+          "seconds": 32.2182,
+          "wall_s": 32.2182,
+          "timing_source": "wall",
+          "status": 0,
+          "error_category": null
+        },
+        {
+          "id": "t2i-0005",
+          "warmup": false,
+          "ok": true,
+          "seconds": 32.2177,
+          "wall_s": 32.2177,
+          "timing_source": "wall",
+          "status": 0,
+          "error_category": null
+        },
+        {
+          "id": "t2i-0006",
+          "warmup": false,
+          "ok": true,
+          "seconds": 32.1936,
+          "wall_s": 32.1936,
+          "timing_source": "wall",
+          "status": 0,
+          "error_category": null
+        },
+        {
+          "id": "t2i-0007",
+          "warmup": false,
+          "ok": true,
+          "seconds": 32.2123,
+          "wall_s": 32.2123,
+          "timing_source": "wall",
+          "status": 0,
+          "error_category": null
+        },
+        {
+          "id": "t2i-0008",
+          "warmup": false,
+          "ok": true,
+          "seconds": 32.3573,
+          "wall_s": 32.3573,
+          "timing_source": "wall",
+          "status": 0,
+          "error_category": null
+        },
+        {
+          "id": "t2i-0009",
+          "warmup": false,
+          "ok": true,
+          "seconds": 32.2498,
+          "wall_s": 32.2498,
+          "timing_source": "wall",
+          "status": 0,
+          "error_category": null
+        },
+        {
+          "id": "t2i-0010",
+          "warmup": false,
+          "ok": true,
+          "seconds": 32.2105,
+          "wall_s": 32.2105,
+          "timing_source": "wall",
+          "status": 0,
+          "error_category": null
+        },
+        {
+          "id": "t2i-0011",
+          "warmup": false,
+          "ok": true,
+          "seconds": 32.2137,
+          "wall_s": 32.2137,
+          "timing_source": "wall",
+          "status": 0,
+          "error_category": null
+        },
+        {
+          "id": "t2i-0012",
+          "warmup": false,
+          "ok": true,
+          "seconds": 32.2257,
+          "wall_s": 32.2257,
+          "timing_source": "wall",
+          "status": 0,
+          "error_category": null
+        },
+        {
+          "id": "t2i-0013",
+          "warmup": false,
+          "ok": true,
+          "seconds": 32.2366,
+          "wall_s": 32.2366,
+          "timing_source": "wall",
+          "status": 0,
+          "error_category": null
+        },
+        {
+          "id": "t2i-0014",
+          "warmup": false,
+          "ok": true,
+          "seconds": 32.2238,
+          "wall_s": 32.2238,
+          "timing_source": "wall",
+          "status": 0,
+          "error_category": null
+        },
+        {
+          "id": "t2i-0015",
+          "warmup": false,
+          "ok": true,
+          "seconds": 187.6736,
+          "wall_s": 187.6736,
+          "timing_source": "wall",
+          "status": 0,
+          "error_category": null
+        },
+        {
+          "id": "t2i-0016",
+          "warmup": false,
+          "ok": true,
+          "seconds": 32.2326,
+          "wall_s": 32.2326,
+          "timing_source": "wall",
+          "status": 0,
+          "error_category": null
+        },
+        {
+          "id": "t2i-0017",
+          "warmup": false,
+          "ok": true,
+          "seconds": 32.2125,
+          "wall_s": 32.2125,
+          "timing_source": "wall",
+          "status": 0,
+          "error_category": null
+        },
+        {
+          "id": "t2i-0018",
+          "warmup": false,
+          "ok": true,
+          "seconds": 32.2887,
+          "wall_s": 32.2887,
+          "timing_source": "wall",
+          "status": 0,
+          "error_category": null
+        },
+        {
+          "id": "t2i-0019",
+          "warmup": false,
+          "ok": true,
+          "seconds": 32.1942,
+          "wall_s": 32.1942,
+          "timing_source": "wall",
+          "status": 0,
+          "error_category": null
+        },
+        {
+          "id": "t2i-0020",
+          "warmup": false,
+          "ok": true,
+          "seconds": 32.2418,
+          "wall_s": 32.2418,
+          "timing_source": "wall",
+          "status": 0,
+          "error_category": null
+        }
+      ],
+      "engine_endpoint": {
+        "attached": true,
+        "base_url": null,
+        "served_model_id": "Qwen/Qwen-Image-2.1",
+        "advertised_models": []
+      }
+    },
+    "truncated": false
+  },
+  "provenance": {
+    "github_login": "0xBakeer",
+    "github_user_id": null,
+    "started_at": "2026-09-21T05:57:19Z",
+    "finished_at": "2026-09-21T06:14:03Z",
+    "submitted_at": null,
+    "commit": null,
+    "pr": null,
+    "method": "atlas-bench",
+    "agent": null,
+    "notes": "NVIDIA DGX Spark (GB10, sm_121), driver 580.173.02, CUDA 13.0, aarch64 Ubuntu 24.04, 121 GiB unified memory. ComfyUI 0.36.0 at commit 3dd559d81f745747cab884a3b9f5fd8867d79efe, torch 2.14.0+cu130, comfy-kitchen 0.2.35, transformers 5.17.0. Weights: Comfy-Org/Qwen-Image-2.1 qwen_image_2.1_int8_convrot.safetensors (DiT, int8_tensorwise + convrot Hadamard rotation, groupsize 256) with qwen3vl_8b_w4a8.safetensors (text encoder, asym_w4a8_int8, int4 packed as int8 with an fp8 per-group scale) and qwen_image_2.1_vae_bf16.safetensors. There is no w4a8 DiT; w4a8 exists only for the text encoder, which is why this cell's quant_id is w4a8-te and the DiT is the int8_convrot file. The model is selected inside the workflow, not on the command line, so the graph is part of the configuration: UNETLoader -> KSampler, CLIPLoader + VAELoader -> TextEncodeQwenImage21 -> KSampler, VAEDecode -> SaveImage, at cfg 1, euler, simple, denoise 1, with the encode node's resolution left at its default 1024. Ambient temperature unknown."
+  },
+  "verification": {
+    "level": "self-reported",
+    "reproduced_by": [],
+    "flags": []
+  }
+}
