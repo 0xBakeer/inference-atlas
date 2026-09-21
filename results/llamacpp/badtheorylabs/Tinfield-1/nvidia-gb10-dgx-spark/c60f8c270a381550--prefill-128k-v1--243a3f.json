@@ -1,0 +1,350 @@
+{
+  "schema_version": 1,
+  "run_id": "c60f8c270a381550--prefill-128k-v1--243a3f",
+  "config_id": "c60f8c270a381550",
+  "cell_id": "69abd8ebdbf6",
+  "workload_id": "prefill-128k-v1",
+  "kind": "prefill",
+  "engine": {
+    "id": "llamacpp",
+    "version": "b11071",
+    "commit": "6ad1af56033cc9d4cecacf574ac8af8eb4b3249e",
+    "build": null,
+    "container": null,
+    "install_method": "source"
+  },
+  "model": {
+    "id": "badtheorylabs/Tinfield-1",
+    "quant_id": "gguf-iq2-xxs-compact",
+    "hf_id": "badtheorylabs/Tinfield-1",
+    "revision": "79689f3f0a2d763a7b873db4695f1568c24d38cd",
+    "dtype": "auto",
+    "local_path": null
+  },
+  "hardware": {
+    "id": "nvidia-gb10-dgx-spark",
+    "count": 1,
+    "driver": "580.173.02",
+    "cuda": "13.0",
+    "host": {
+      "cpu": "Cortex-A725",
+      "cpu_cores": 20,
+      "ram_gb": 121.6,
+      "os": "Ubuntu 24.04.4 LTS",
+      "kernel": "6.17.0-1029-nvidia",
+      "arch": "aarch64"
+    },
+    "fingerprint": "sha256:52ea2bdd513719724db88c162b6cc2c9fb4e5b67e02dbe41b9de00687acefb91",
+    "captured": {
+      "nvidia_smi": {
+        "driver": "580.173.02",
+        "cuda": "13.0",
+        "products": [
+          "NVIDIA GB10"
+        ],
+        "fb_memory_total_mib": 0.0
+      },
+      "lscpu": {
+        "architecture": "aarch64",
+        "cpus": "20",
+        "vendor_id": "ARM",
+        "model_name": "Cortex-A725",
+        "cores_per_socket": "10",
+        "sockets": "1",
+        "cpu_max_mhz": "2808.0000"
+      }
+    }
+  },
+  "args": {
+    "ctx-size": 524288,
+    "parallel": 4,
+    "n-gpu-layers": 999,
+    "flash-attn": "on",
+    "batch-size": 2048,
+    "ubatch-size": 2048,
+    "threads": 20,
+    "load-mode": "none",
+    "jinja": true,
+    "cache-type-k": "f16",
+    "cache-type-v": "f16",
+    "temp": 1.0,
+    "top-p": 0.95,
+    "top-k": 20
+  },
+  "args_canonical": "@dtype=auto;@quant=gguf-iq2-xxs-compact;ctx-size=524288;flash-attn=on;load-mode=none;n-gpu-layers=999;parallel=4;temperature=1;threads=20;top-k=20;ubatch-size=2048",
+  "serve_command": null,
+  "workload": {
+    "id": "prefill-128k-v1",
+    "resolved_params": {
+      "concurrency": 1,
+      "num_requests": 10,
+      "input_tokens": 131072,
+      "output_tokens": 16,
+      "warmup_requests": 1,
+      "prompts_padded": false,
+      "needle_check": false,
+      "timeout_s": 900.0,
+      "seed": 42
+    }
+  },
+  "env": {
+    "GGML_CUDA_NO_VMM": "1"
+  },
+  "metrics": {
+    "requests_total": 10,
+    "requests_ok": 0,
+    "requests_failed": 10,
+    "success_rate": 0.0,
+    "duration_s": 2.519,
+    "input_tokens_total": 0,
+    "output_tokens_total": 0,
+    "output_tok_s": 0.0,
+    "total_tok_s": 0.0,
+    "req_s": 0.0,
+    "prefill_tok_s": null,
+    "ttft_ms": null,
+    "tpot_ms": null,
+    "itl_ms": null,
+    "e2e_ms": null,
+    "decode_tok_s_per_request": null,
+    "vram_peak_gb": 63.068,
+    "ram_peak_gb": 104.934,
+    "kv_cache_tokens": null,
+    "power_avg_w": 15.32,
+    "power_peak_w": 15.6,
+    "energy_wh": 0.0089,
+    "gpu_util_avg_pct": 0.0,
+    "temp_max_c": 68.0,
+    "thermal_throttle_detected": false
+  },
+  "failures": [
+    {
+      "at": "request",
+      "count": 10,
+      "category": "context-overflow",
+      "message": "{\"error\":{\"code\":400,\"message\":\"request (161024 tokens) exceeds the available context size (131072 tokens), try increasing it\",\"type\":\"exceed_context_size_error\",\"n_prompt_tokens\":161024,\"n_ctx\":131072}}",
+      "sample_request_id": "prefill-r00000"
+    }
+  ],
+  "conditions": {
+    "dedicated": true,
+    "detail": "Only this llama-server was resident; the image server that normally runs on the box was stopped before the model was loaded, and nvidia-smi listed no other compute process.",
+    "isolation_check": "nvidia-smi compute apps -> 3676821, /home/bakeer/llama.cpp-tinfield/build/bin/llama-server ; docker ps -> 1 containers; load1 at start 0.06"
+  },
+  "gotchas": [
+    {
+      "severity": "warn",
+      "text": "Requests exceeded the model's context window; the workload's input length does not fit this configuration."
+    },
+    {
+      "severity": "info",
+      "text": "This llama.cpp build has no --no-mmap flag any more. The equivalent is --load-mode none, which reads the whole GGUF into memory. There is also a new --lazy-mode (default auto) that serves tensors larger than 4 GiB, here the 26.8 GiB engram table, from a memory map on demand; it only applies when the file is memory-mapped. On this box load mode and thread count made no measurable difference to speed (llama-bench tg128 32.0 tok/s and pp2048 1,095 tok/s with load-mode none or auto, 10 or 20 threads), so none was used for a fully resident, repeatable run."
+    },
+    {
+      "severity": "info",
+      "text": "KV cache is f16. Only 12 of the 48 layers are full attention, so four 131072-token slots of f16 KV fit comfortably. q8_0 K and V were measured as well and were slower at depth: llama-bench tg128 at 32768 tokens of context 23.9 tok/s with q8_0 against 25.6 with f16, prefill equal within noise. The model card suggests -ctk q8_0 -ctv q4_0 to fit 64 GB machines, which is not needed here."
+    },
+    {
+      "severity": "info",
+      "text": "The chat template defaults to reasoning_effort xhigh when thinking is on (accepted values xhigh, medium, low; pass it through chat_template_kwargs). Thinking is parsed into reasoning_content and the answer into content with --jinja; tool calls come back as OpenAI tool_calls with finish_reason tool_calls."
+    },
+    {
+      "severity": "info",
+      "text": "GGML_CUDA_NO_VMM=1 was set for every load, as is usual for large models on GB10 where CUDA VMM allocation can stall the load. A load without it was not tried on this build."
+    },
+    {
+      "severity": "info",
+      "text": "-np 4 splits -c 524288 into four slots of 131072. -c is the total across slots, so -np 4 -c 131072 would have given each slot 32768 tokens and silently truncated the long-context rows."
+    },
+    {
+      "severity": "warn",
+      "text": "Every request failed with context overflow: the atlas 128k haystacks tokenize to about 161,000 tokens with the qwen4exp tokenizer (161,024 here), more than this config's 131072-token slot. The 128k prefill was measured on the single 262144-token slot config instead, in its longctx-depth-sweep-v1 and longctx-needle-128k-v1 rows (about 520 tok/s, TTFT about 306 s at 161k tokens). A rerun of this row on that config was not done because ten 161k-token prefills take close to an hour."
+    }
+  ],
+  "derived": {
+    "cost_per_1m_output_tokens_usd": null,
+    "tokens_per_watt": null,
+    "tok_s_per_gb_bandwidth": null,
+    "bandwidth_efficiency": null,
+    "memory_headroom_gb": 64.932
+  },
+  "raw": {
+    "harness": "atlas-bench",
+    "harness_version": "0.1.0",
+    "sha256": "29b31bc59de5eceed5019efb0cf472d3b01a22e78169152166d732213ff8472e",
+    "payload_path": null,
+    "payload": {
+      "requests": [
+        {
+          "id": "prefill-w00000",
+          "prompt_id": "hay-128k-d10",
+          "warmup": true,
+          "status": "error",
+          "ttft_ms": null,
+          "e2e_ms": 122.807,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "token_source": "usage",
+          "finish_reason": null,
+          "error_category": "context-overflow"
+        },
+        {
+          "id": "prefill-r00000",
+          "prompt_id": "hay-128k-d10",
+          "warmup": false,
+          "status": "error",
+          "ttft_ms": null,
+          "e2e_ms": 123.926,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "token_source": "usage",
+          "finish_reason": null,
+          "error_category": "context-overflow"
+        },
+        {
+          "id": "prefill-r00001",
+          "prompt_id": "hay-128k-multi",
+          "warmup": false,
+          "status": "error",
+          "ttft_ms": null,
+          "e2e_ms": 151.023,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "token_source": "usage",
+          "finish_reason": null,
+          "error_category": "context-overflow"
+        },
+        {
+          "id": "prefill-r00002",
+          "prompt_id": "hay-128k-d50",
+          "warmup": false,
+          "status": "error",
+          "ttft_ms": null,
+          "e2e_ms": 147.772,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "token_source": "usage",
+          "finish_reason": null,
+          "error_category": "context-overflow"
+        },
+        {
+          "id": "prefill-r00003",
+          "prompt_id": "hay-128k-d90",
+          "warmup": false,
+          "status": "error",
+          "ttft_ms": null,
+          "e2e_ms": 121.192,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "token_source": "usage",
+          "finish_reason": null,
+          "error_category": "context-overflow"
+        },
+        {
+          "id": "prefill-r00004",
+          "prompt_id": "hay-128k-d10",
+          "warmup": false,
+          "status": "error",
+          "ttft_ms": null,
+          "e2e_ms": 122.5,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "token_source": "usage",
+          "finish_reason": null,
+          "error_category": "context-overflow"
+        },
+        {
+          "id": "prefill-r00005",
+          "prompt_id": "hay-128k-multi",
+          "warmup": false,
+          "status": "error",
+          "ttft_ms": null,
+          "e2e_ms": 123.013,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "token_source": "usage",
+          "finish_reason": null,
+          "error_category": "context-overflow"
+        },
+        {
+          "id": "prefill-r00006",
+          "prompt_id": "hay-128k-d50",
+          "warmup": false,
+          "status": "error",
+          "ttft_ms": null,
+          "e2e_ms": 123.005,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "token_source": "usage",
+          "finish_reason": null,
+          "error_category": "context-overflow"
+        },
+        {
+          "id": "prefill-r00007",
+          "prompt_id": "hay-128k-d90",
+          "warmup": false,
+          "status": "error",
+          "ttft_ms": null,
+          "e2e_ms": 122.294,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "token_source": "usage",
+          "finish_reason": null,
+          "error_category": "context-overflow"
+        },
+        {
+          "id": "prefill-r00008",
+          "prompt_id": "hay-128k-d10",
+          "warmup": false,
+          "status": "error",
+          "ttft_ms": null,
+          "e2e_ms": 116.169,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "token_source": "usage",
+          "finish_reason": null,
+          "error_category": "context-overflow"
+        },
+        {
+          "id": "prefill-r00009",
+          "prompt_id": "hay-128k-multi",
+          "warmup": false,
+          "status": "error",
+          "ttft_ms": null,
+          "e2e_ms": 116.697,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "token_source": "usage",
+          "finish_reason": null,
+          "error_category": "context-overflow"
+        }
+      ],
+      "engine_endpoint": {
+        "attached": true,
+        "base_url": "http://127.0.0.1:8080/v1",
+        "served_model_id": "tinfield",
+        "advertised_models": [
+          "tinfield"
+        ]
+      }
+    },
+    "truncated": false
+  },
+  "provenance": {
+    "github_login": "0xBakeer",
+    "github_user_id": null,
+    "started_at": "2026-09-21T15:32:28Z",
+    "finished_at": "2026-09-21T15:32:31Z",
+    "submitted_at": null,
+    "commit": null,
+    "pr": null,
+    "method": "atlas-bench",
+    "agent": null,
+    "notes": "llama.cpp release b11071 (commit 6ad1af56033cc9d4cecacf574ac8af8eb4b3249e) built from source on the box: cmake -B build -DCMAKE_BUILD_TYPE=Release -DGGML_CUDA=ON -DGGML_CUDA_GRAPHS=ON -DCMAKE_CUDA_ARCHITECTURES=121, GNU 13.3.0, CUDA 13.0, driver 580.173.02, Ubuntu 24.04.4, kernel 6.17.0-1029-nvidia. Weights: badtheorylabs/Tinfield-1-Compact-GGUF at revision 79689f3f, the six IQ2XXS shards (77,363,822,656 bytes), sha256 checked against the Hub. Served with GGML_CUDA_NO_VMM=1 and: llama-server -m tinfield-1-compact-IQ2XXS-00001-of-00006.gguf --alias tinfield -ngl 999 -fa on -b 2048 -ub 2048 -t 20 --jinja --temp 1.0 --top-p 0.95 --top-k 20 -c 524288 -np 4 --load-mode none. That is four slots of 131072 tokens each (kv_unified false), f16 K and V cache, the whole file read into memory instead of memory-mapped. Load to /health took 44-50 s; the server process held about 94 GB of the 121 GiB unified memory with 27 GB still available. The sampler flags are the model card values and only matter for requests that set none; every request here sets temperature 0 and seed 42. The chat template defaults to thinking on with reasoning_effort xhigh and preserves earlier turns reasoning (llama.cpp enables reasoning-preserve by default for it). Speed rows turn thinking off per request with chat_template_kwargs enable_thinking false; eval rows use the template default."
+  },
+  "verification": {
+    "level": "self-reported",
+    "reproduced_by": [],
+    "flags": []
+  }
+}
