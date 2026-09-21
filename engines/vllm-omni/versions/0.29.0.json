@@ -1,0 +1,452 @@
+{
+  "schema_version": 1,
+  "engine_id": "vllm-omni",
+  "version": "0.29.0",
+  "released": null,
+  "extraction_method": "argparse",
+  "extracted_at": "2026-09-20T00:00:00Z",
+  "source": "the installed build: ~/lanes/qwen-image-21/vllm-omni/src/vllm_omni/entrypoints/cli/serve.py (the OmniConfig argument group `vllm serve --help` prints under --omni) plus vLLM 0.29.0's own EngineArgs for the handful of core flags that can move an image number",
+  "notes": "vllm-omni is an out-of-tree addition to a stock vLLM wheel, so the version string names both: vllm 0.29.0 from the PyPI aarch64 wheel plus vllm-omni from PR 7759. That is why this is registered as a fork with source_ref at the PR head and why results carry engine.build. Two defaults are traps. --gpu-memory-utilization is accepted, echoed back in 'non-default args', and then has no effect on the diffusion path: it sizes the KV cache, and the diffusion stage loads all components resident regardless. And --diffusion-quantization-config's help text shows only the flat form; the per-component dict the model's own recipe uses is undocumented there but is detected by quantization/factory.py and confirmed in the server log. --enforce-eager defaults to false, so CUDA graph capture lands inside the first request unless the run is warmed.",
+  "params": [
+    {
+      "name": "model",
+      "type": "str",
+      "default": null,
+      "help": "Positional. Dropped from the fingerprint.",
+      "group": "model",
+      "impact": "low"
+    },
+    {
+      "name": "served-model-name",
+      "type": "str",
+      "default": null,
+      "help": "Name the OpenAI routes answer to. Dropped from the fingerprint.",
+      "group": "model",
+      "impact": "low"
+    },
+    {
+      "name": "host",
+      "type": "str",
+      "default": null,
+      "help": "Dropped from the fingerprint.",
+      "group": "io",
+      "impact": "low"
+    },
+    {
+      "name": "port",
+      "type": "int",
+      "default": 8000,
+      "help": "Dropped from the fingerprint.",
+      "group": "io",
+      "impact": "low"
+    },
+    {
+      "name": "revision",
+      "type": "str",
+      "default": null,
+      "help": "Dropped from the fingerprint.",
+      "group": "model",
+      "impact": "low"
+    },
+    {
+      "name": "trust-remote-code",
+      "type": "bool",
+      "default": false,
+      "help": "Allow custom code from the checkpoint repo.",
+      "group": "model",
+      "impact": "low"
+    },
+    {
+      "name": "omni",
+      "type": "bool",
+      "default": false,
+      "help": "Enable the vLLM-Omni multi-stage / diffusion path. Without it `vllm serve` is the text engine and this model does not load at all.",
+      "group": "runtime",
+      "impact": "high"
+    },
+    {
+      "name": "task-type",
+      "type": "str",
+      "default": null,
+      "help": "Model-defined startup task; diffusion models may use it to select task-specific weights.",
+      "group": "runtime",
+      "impact": "high"
+    },
+    {
+      "name": "num-gpus",
+      "type": "int",
+      "default": null,
+      "help": "Devices for diffusion inference.",
+      "group": "parallelism",
+      "impact": "high"
+    },
+    {
+      "name": "model-class-name",
+      "type": "str",
+      "default": null,
+      "help": "Override the diffusion pipeline class.",
+      "group": "model",
+      "impact": "high"
+    },
+    {
+      "name": "diffusion-load-format",
+      "type": "str",
+      "default": null,
+      "help": "How the diffusion weights are read.",
+      "group": "model",
+      "impact": "medium"
+    },
+    {
+      "name": "diffusers-load-kwargs",
+      "type": "json",
+      "default": "{}",
+      "help": "Extra kwargs handed to the diffusers loader.",
+      "group": "model",
+      "impact": "high"
+    },
+    {
+      "name": "diffusers-call-kwargs",
+      "type": "json",
+      "default": "{}",
+      "help": "Extra kwargs handed to the pipeline call. Anything here changes the picture.",
+      "group": "sampling",
+      "impact": "high"
+    },
+    {
+      "name": "diffusion-quantization-config",
+      "type": "json",
+      "default": null,
+      "help": "Online quantization. The help only shows the flat form {\"method\":\"fp8\",\"activation_scheme\":\"dynamic\"}, but quantization/factory.py detects a per-component dict (no top-level `method` key) and the server logs 'Per-component quantization'. That per-component form, with ignored_layers, is what the model's own recipe uses.",
+      "group": "precision",
+      "impact": "high"
+    },
+    {
+      "name": "force-cutlass-fp8",
+      "type": "bool",
+      "default": null,
+      "help": "Force CUTLASS FP8 linear kernels for ModelOpt FP8 checkpoints on SM89+. Ignored for bf16 and for online (non-ModelOpt) FP8.",
+      "group": "precision",
+      "impact": "high"
+    },
+    {
+      "name": "gpu-memory-utilization",
+      "type": "float",
+      "default": 0.9,
+      "help": "vLLM EngineArgs. It sizes the autoregressive KV cache and DOES NOT bound the diffusion path: the diffusion stage loads every component resident and walks straight past it. There is no equivalent of SGLang's auto memory policy here \u2014 short of memory, vLLM-Omni keeps allocating rather than downgrading to offload.",
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "enforce-eager",
+      "type": "bool",
+      "default": false,
+      "help": "vLLM EngineArgs. False means CUDA graphs are captured on first use, so a cold first request carries graph capture inside its own measurement.",
+      "group": "compile",
+      "impact": "high"
+    },
+    {
+      "name": "max-model-len",
+      "type": "int",
+      "default": null,
+      "help": "vLLM EngineArgs; the text side's context, not the latent sequence.",
+      "group": "runtime",
+      "impact": "low"
+    },
+    {
+      "name": "tensor-parallel-size",
+      "type": "int",
+      "default": 1,
+      "help": "vLLM EngineArgs.",
+      "group": "parallelism",
+      "impact": "high",
+      "aliases": [
+        "tp"
+      ]
+    },
+    {
+      "name": "dtype",
+      "type": "str",
+      "default": "auto",
+      "help": "vLLM EngineArgs; auto reads the checkpoint's own dtype.",
+      "group": "precision",
+      "impact": "high"
+    },
+    {
+      "name": "diffusion-attention-backend",
+      "type": "str",
+      "default": null,
+      "help": "Unset resolves from the device: on GB10 the platform default prints 'CUDNN_ATTN (Blackwell sm_121, cuDNN 92000, head_dim 128)'.",
+      "group": "runtime",
+      "impact": "high"
+    },
+    {
+      "name": "diffusion-attention-config",
+      "type": "json",
+      "default": null,
+      "help": "Per-role attention configuration, e.g. default.backend FLASH_ATTN or per_role.cross.backend SAGE_ATTN.",
+      "group": "runtime",
+      "impact": "high"
+    },
+    {
+      "name": "fa-deterministic",
+      "type": "bool",
+      "default": false,
+      "help": "Deterministic flash-attention kernels.",
+      "group": "runtime",
+      "impact": "high"
+    },
+    {
+      "name": "diffusion-compile-granularity",
+      "type": "str",
+      "default": null,
+      "help": "What torch.compile is applied to.",
+      "group": "compile",
+      "impact": "high"
+    },
+    {
+      "name": "diffusion-compile-dynamic",
+      "type": "bool",
+      "default": null,
+      "help": "Dynamic shapes for the compiled graph.",
+      "group": "compile",
+      "impact": "high"
+    },
+    {
+      "name": "cache-backend",
+      "type": "enum",
+      "default": "none",
+      "help": "Step caching across denoising steps; 'none' is off, and anything else changes the picture as well as the speed.",
+      "group": "sampling",
+      "impact": "high"
+    },
+    {
+      "name": "cache-config",
+      "type": "json",
+      "default": null,
+      "help": "Parameters for the step cache.",
+      "group": "sampling",
+      "impact": "high"
+    },
+    {
+      "name": "step-execution",
+      "type": "str",
+      "default": null,
+      "help": "How a denoising step is scheduled.",
+      "group": "runtime",
+      "impact": "medium"
+    },
+    {
+      "name": "vae-use-slicing",
+      "type": "bool",
+      "default": false,
+      "help": "Decode the VAE in slices.",
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "vae-use-tiling",
+      "type": "bool",
+      "default": false,
+      "help": "Decode the VAE in tiles. With --enforce-eager this is the vendor's memory advice; neither helps a run that dies during weight loading, which is where the bf16 attempt died on a busy box.",
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "usp",
+      "type": "int",
+      "default": null,
+      "help": "Ulysses sequence-parallel degree.",
+      "group": "parallelism",
+      "impact": "high",
+      "aliases": [
+        "ulysses-degree"
+      ]
+    },
+    {
+      "name": "ulysses-mode",
+      "type": "enum",
+      "default": "strict",
+      "help": "strict or advanced_uaa.",
+      "group": "parallelism",
+      "impact": "medium"
+    },
+    {
+      "name": "ring",
+      "type": "int",
+      "default": null,
+      "help": "Ring attention degree.",
+      "group": "parallelism",
+      "impact": "high",
+      "aliases": [
+        "ring-degree"
+      ]
+    },
+    {
+      "name": "allgather-degree",
+      "type": "int",
+      "default": null,
+      "help": "All-gather degree.",
+      "group": "parallelism",
+      "impact": "medium"
+    },
+    {
+      "name": "use-hsdp",
+      "type": "bool",
+      "default": false,
+      "help": "Hybrid sharded data parallel.",
+      "group": "parallelism",
+      "impact": "high"
+    },
+    {
+      "name": "hsdp-shard-size",
+      "type": "int",
+      "default": -1,
+      "help": "HSDP shard size.",
+      "group": "parallelism",
+      "impact": "medium"
+    },
+    {
+      "name": "hsdp-replicate-size",
+      "type": "int",
+      "default": 1,
+      "help": "HSDP replicate size.",
+      "group": "parallelism",
+      "impact": "medium"
+    },
+    {
+      "name": "lora-path",
+      "type": "path",
+      "default": null,
+      "help": "Startup PEFT LoRA.",
+      "group": "model",
+      "impact": "high"
+    },
+    {
+      "name": "lora-scale",
+      "type": "float",
+      "default": null,
+      "help": "LoRA scale; distilled LoRAs are fused at their checkpoint scale.",
+      "group": "model",
+      "impact": "high"
+    },
+    {
+      "name": "lora-backend",
+      "type": "str",
+      "default": null,
+      "help": "LoRA implementation.",
+      "group": "model",
+      "impact": "medium"
+    },
+    {
+      "name": "request-batch-max-wait-ms",
+      "type": "float",
+      "default": 0.0,
+      "help": "How long the scheduler waits to fill a batch. Irrelevant at concurrency 1.",
+      "group": "serving",
+      "impact": "low"
+    },
+    {
+      "name": "batch-timeout",
+      "type": "int",
+      "default": 10,
+      "help": "Batch timeout.",
+      "group": "serving",
+      "impact": "low"
+    },
+    {
+      "name": "stage-init-timeout",
+      "type": "int",
+      "default": 300,
+      "help": "Timeout for initialising one stage.",
+      "group": "lifecycle",
+      "impact": "low"
+    },
+    {
+      "name": "init-timeout",
+      "type": "int",
+      "default": 600,
+      "help": "Timeout for initialising all stages.",
+      "group": "lifecycle",
+      "impact": "low"
+    },
+    {
+      "name": "worker-backend",
+      "type": "enum",
+      "default": "multi_process",
+      "help": "multi_process or ray.",
+      "group": "runtime",
+      "impact": "medium"
+    },
+    {
+      "name": "enable-sleep-mode",
+      "type": "bool",
+      "default": false,
+      "help": "GPU memory pool for sleep mode.",
+      "group": "memory",
+      "impact": "medium"
+    },
+    {
+      "name": "log-stats",
+      "type": "bool",
+      "default": false,
+      "help": "Log serving statistics.",
+      "group": "io",
+      "impact": "low"
+    },
+    {
+      "name": "num-inference-steps",
+      "type": "int",
+      "default": null,
+      "help": "Per-request. Every workload here sends 40.",
+      "group": "sampling",
+      "impact": "high"
+    },
+    {
+      "name": "true-cfg-scale",
+      "type": "float",
+      "default": null,
+      "help": "Per-request. This engine's wire name for the canonical guidance parameter; SGLang-Diffusion calls the same thing guidance_scale, so raw flag values are not comparable across the two lanes \u2014 only the effective guidance is.",
+      "group": "sampling",
+      "impact": "high"
+    },
+    {
+      "name": "size",
+      "type": "str",
+      "default": null,
+      "help": "Per-request, WIDTHxHEIGHT.",
+      "group": "sampling",
+      "impact": "high"
+    },
+    {
+      "name": "seed",
+      "type": "int",
+      "default": null,
+      "help": "Per-request. Seed semantics are engine-specific: at seed 42 this lane produces a different, equally valid scene from SGLang's, so a fidelity number against a bf16 bundle made elsewhere is not a quality number.",
+      "group": "sampling",
+      "impact": "high"
+    },
+    {
+      "name": "negative-prompt",
+      "type": "str",
+      "default": null,
+      "help": "Per-request; only does anything above guidance 1.",
+      "group": "sampling",
+      "impact": "medium"
+    },
+    {
+      "name": "response-format",
+      "type": "enum",
+      "default": "url",
+      "help": "Per-request; the harness asks for b64_json.",
+      "group": "io",
+      "impact": "low",
+      "choices": [
+        "url",
+        "b64_json"
+      ]
+    }
+  ],
+  "distribution": "fork",
+  "source_repo": "github.com/vllm-project/vllm-omni",
+  "source_ref": "3ea9e605011fc2a0bfa9f3e8531286fb683068dd"
+}

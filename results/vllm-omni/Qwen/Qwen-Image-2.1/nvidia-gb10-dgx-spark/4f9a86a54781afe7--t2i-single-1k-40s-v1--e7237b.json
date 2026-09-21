@@ -1,0 +1,393 @@
+{
+  "schema_version": 1,
+  "run_id": "4f9a86a54781afe7--t2i-single-1k-40s-v1--e7237b",
+  "config_id": "4f9a86a54781afe7",
+  "cell_id": "aa0fbaa657b0",
+  "workload_id": "t2i-single-1k-40s-v1",
+  "kind": "image",
+  "engine": {
+    "id": "vllm-omni",
+    "version": "0.29.0",
+    "commit": null,
+    "build": "github.com/vllm-project/vllm-omni@3ea9e605011fc2a0bfa9f3e8531286fb683068dd",
+    "container": "vllm/vllm-openai:v0.29.0",
+    "install_method": "pip"
+  },
+  "model": {
+    "id": "Qwen/Qwen-Image-2.1",
+    "quant_id": "fp8-online",
+    "hf_id": "Qwen/Qwen-Image-2.1",
+    "revision": null,
+    "dtype": "auto",
+    "local_path": null
+  },
+  "hardware": {
+    "id": "nvidia-gb10-dgx-spark",
+    "count": 1,
+    "driver": "580.173.02",
+    "cuda": "13.0",
+    "host": {
+      "cpu": "Cortex-A725",
+      "cpu_cores": 20,
+      "ram_gb": 121.6,
+      "os": "Ubuntu 24.04.4 LTS",
+      "kernel": "6.17.0-1029-nvidia",
+      "arch": "aarch64"
+    },
+    "fingerprint": "sha256:52ea2bdd513719724db88c162b6cc2c9fb4e5b67e02dbe41b9de00687acefb91",
+    "captured": {
+      "nvidia_smi": {
+        "driver": "580.173.02",
+        "cuda": "13.0",
+        "products": [
+          "NVIDIA GB10"
+        ],
+        "fb_memory_total_mib": 0
+      },
+      "lscpu": {
+        "architecture": "aarch64",
+        "cpus": "20",
+        "vendor_id": "ARM",
+        "model_name": "Cortex-A725",
+        "cores_per_socket": "10",
+        "sockets": "1",
+        "cpu_max_mhz": "2808.0000"
+      }
+    }
+  },
+  "args": {
+    "diffusion-quantization-config": {
+      "transformer": {
+        "method": "fp8",
+        "ignored_layers": [
+          "img_mlp"
+        ]
+      },
+      "text_encoder": {
+        "method": "fp8"
+      }
+    }
+  },
+  "args_canonical": "@build=github.com/vllm-project/vllm-omni@3ea9e605011fc2a0bfa9f3e8531286fb683068dd;@dtype=auto;@quant=fp8-online;diffusion-quantization-config={\"text_encoder\":{\"method\":\"fp8\"},\"transformer\":{\"ignored_layers\":[\"img_mlp\"],\"method\":\"fp8\"}}",
+  "serve_command": null,
+  "workload": {
+    "id": "t2i-single-1k-40s-v1",
+    "resolved_params": {
+      "dataset_id": "t2i-prompts-v1",
+      "prompts": 6,
+      "width": 1024,
+      "height": 1024,
+      "steps": 40,
+      "seed": 42,
+      "guidance": null,
+      "images_per_request": 1,
+      "ref_images": 0,
+      "transparent": false,
+      "concurrency": 1,
+      "repeat": 3,
+      "warmup_requests": 1,
+      "timeout_s": 1800,
+      "dataset_categories": [
+        "t2i"
+      ],
+      "lane": "openai_images",
+      "invocation": "http://127.0.0.1:8091/v1/images/generations"
+    }
+  },
+  "metrics": {
+    "requests_total": 18,
+    "requests_ok": 18,
+    "requests_failed": 0,
+    "success_rate": 1,
+    "duration_s": 955.474,
+    "s_per_image": {
+      "mean": 50.188,
+      "p50": 49.632,
+      "p90": 52.183,
+      "p95": 52.237,
+      "p99": 52.253,
+      "min": 49.397,
+      "max": 52.257
+    },
+    "e2e_ms": {
+      "mean": 50188.229,
+      "p50": 49632.203,
+      "p90": 52183.309,
+      "p95": 52237.04,
+      "p99": 52253.097,
+      "min": 49397.474,
+      "max": 52257.112
+    },
+    "load_s": null,
+    "vram_peak_gb": 31.539,
+    "ram_peak_gb": 37.633,
+    "power_avg_w": 81.59,
+    "power_peak_w": 84.19,
+    "energy_wh": 21.6606,
+    "gpu_util_avg_pct": 95.65,
+    "temp_max_c": 85,
+    "thermal_throttle_detected": false
+  },
+  "failures": [],
+  "conditions": {
+    "dedicated": true,
+    "detail": "Box dedicated to this run, and that is the point for this engine: the bring-up's bf16 attempt was killed by the memory watchdog with the recipe server holding 65 GB, leaving it about 41 GB. Here nothing else was resident -- every other engine in this campaign was stopped and confirmed gone first. Ambient temperature unknown (no sensor on this box).",
+    "isolation_check": "nvidia-smi --query-compute-apps was empty before the server started and listed only the vLLM worker while it ran; pgrep found no other engine. A 1 Hz sampler recorded the sum of --query-compute-apps and free -m for the whole run, and a second 1 Hz guard watched free -m during the load with a 112000 MiB abort."
+  },
+  "gotchas": [
+    {
+      "severity": "info",
+      "text": "nvidia-smi --query-gpu=memory.used returns [N/A] on GB10: the CPU and the GPU share one pool and the per-device counter is not implemented. vram_peak_gb here comes from the sum of --query-compute-apps=used_memory, which the harness falls back to."
+    },
+    {
+      "severity": "info",
+      "text": "--gpu-memory-utilization does not bound this path. It is accepted and echoed back in the server's non-default args, and then has no effect: it sizes the autoregressive KV cache, while the diffusion stage loads every component resident regardless. There is no equivalent of SGLang's auto memory policy here -- short of memory this engine keeps allocating rather than downgrading to offload, which is how the bring-up's bf16 attempt died. It is therefore not passed in this run; the box was made empty instead."
+    },
+    {
+      "severity": "info",
+      "text": "--diffusion-quantization-config's help text shows only the flat form {\"method\":\"fp8\",\"activation_scheme\":\"dynamic\"}. The per-component dict this model's own recipe uses is undocumented there, but quantization/factory.py detects it (no top-level method key) and the server confirms it in the log with 'Per-component quantization'. ignored_layers img_mlp is the vendor's own recommendation for this model and is what the FP8 configuration here passes."
+    },
+    {
+      "severity": "info",
+      "text": "Seed semantics are per engine and this one differs from the reference lane's. At seed 42 vLLM-Omni produces a different, equally valid scene from the diffusers pipeline that made the bf16 bundle, so eval-t2i-fidelity-v1 on this lane is a scene-match number and NOT a quality number. Read the perceptual-hash Hamming distance rather than the PSNR to tell the two apart: quantization noise keeps it near zero, a different noise draw does not."
+    },
+    {
+      "severity": "info",
+      "text": "enforce_eager defaults to false, so CUDA graphs are captured on the first request and that capture sits inside the first measured render unless it is warmed. The harness renders warmup_requests first and excludes them, so the published percentiles are warm; the bring-up measured the cold/warm gap at 4.8 percent."
+    }
+  ],
+  "derived": {
+    "cost_per_1m_output_tokens_usd": null,
+    "tokens_per_watt": null,
+    "tok_s_per_gb_bandwidth": null,
+    "bandwidth_efficiency": null,
+    "memory_headroom_gb": 96.461
+  },
+  "raw": {
+    "harness": "atlas-bench",
+    "harness_version": "0.1.0",
+    "sha256": "53148fae46191d0b3325787b69e5e70fb1b23f63f3272f38aeda32f84ac5fdaf",
+    "payload_path": null,
+    "payload": {
+      "lane": "openai_images",
+      "payload": [
+        {
+          "id": "spd-0001",
+          "warmup": true,
+          "ok": true,
+          "seconds": 52.0864,
+          "wall_s": 52.0864,
+          "timing_source": "wall",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "spd-0001",
+          "warmup": false,
+          "ok": true,
+          "seconds": 49.3975,
+          "wall_s": 49.3975,
+          "timing_source": "wall",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "spd-0002",
+          "warmup": false,
+          "ok": true,
+          "seconds": 52.1618,
+          "wall_s": 52.1618,
+          "timing_source": "wall",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "spd-0003",
+          "warmup": false,
+          "ok": true,
+          "seconds": 52.118,
+          "wall_s": 52.118,
+          "timing_source": "wall",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "spd-0004",
+          "warmup": false,
+          "ok": true,
+          "seconds": 52.2571,
+          "wall_s": 52.2571,
+          "timing_source": "wall",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "spd-0005",
+          "warmup": false,
+          "ok": true,
+          "seconds": 52.2335,
+          "wall_s": 52.2335,
+          "timing_source": "wall",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "spd-0006",
+          "warmup": false,
+          "ok": true,
+          "seconds": 49.617,
+          "wall_s": 49.617,
+          "timing_source": "wall",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "spd-0001",
+          "warmup": false,
+          "ok": true,
+          "seconds": 49.6163,
+          "wall_s": 49.6163,
+          "timing_source": "wall",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "spd-0002",
+          "warmup": false,
+          "ok": true,
+          "seconds": 49.6852,
+          "wall_s": 49.6852,
+          "timing_source": "wall",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "spd-0003",
+          "warmup": false,
+          "ok": true,
+          "seconds": 49.6065,
+          "wall_s": 49.6065,
+          "timing_source": "wall",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "spd-0004",
+          "warmup": false,
+          "ok": true,
+          "seconds": 49.5963,
+          "wall_s": 49.5963,
+          "timing_source": "wall",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "spd-0005",
+          "warmup": false,
+          "ok": true,
+          "seconds": 49.6244,
+          "wall_s": 49.6244,
+          "timing_source": "wall",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "spd-0006",
+          "warmup": false,
+          "ok": true,
+          "seconds": 49.6223,
+          "wall_s": 49.6223,
+          "timing_source": "wall",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "spd-0001",
+          "warmup": false,
+          "ok": true,
+          "seconds": 49.6309,
+          "wall_s": 49.6309,
+          "timing_source": "wall",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "spd-0002",
+          "warmup": false,
+          "ok": true,
+          "seconds": 49.6335,
+          "wall_s": 49.6335,
+          "timing_source": "wall",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "spd-0003",
+          "warmup": false,
+          "ok": true,
+          "seconds": 49.6571,
+          "wall_s": 49.6571,
+          "timing_source": "wall",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "spd-0004",
+          "warmup": false,
+          "ok": true,
+          "seconds": 49.6471,
+          "wall_s": 49.6471,
+          "timing_source": "wall",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "spd-0005",
+          "warmup": false,
+          "ok": true,
+          "seconds": 49.6307,
+          "wall_s": 49.6307,
+          "timing_source": "wall",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "spd-0006",
+          "warmup": false,
+          "ok": true,
+          "seconds": 49.6527,
+          "wall_s": 49.6527,
+          "timing_source": "wall",
+          "status": 200,
+          "error_category": null
+        }
+      ],
+      "engine_endpoint": {
+        "attached": true,
+        "base_url": "http://127.0.0.1:8091",
+        "served_model_id": "Qwen-Image-2.1",
+        "advertised_models": [
+          "Qwen-Image-2.1"
+        ]
+      }
+    },
+    "truncated": false
+  },
+  "provenance": {
+    "github_login": "0xBakeer",
+    "github_user_id": 17404809,
+    "started_at": "2026-09-21T06:43:39Z",
+    "finished_at": "2026-09-21T06:59:34Z",
+    "submitted_at": null,
+    "commit": null,
+    "pr": null,
+    "method": "atlas-bench",
+    "agent": null,
+    "notes": "NVIDIA DGX Spark (GB10, sm_121), driver 580.173.02, CUDA 13.0, aarch64 Ubuntu 24.04, 121 GiB unified memory. vLLM 0.29.0 from the PyPI aarch64 wheel plus vllm-omni 0.29.0rc2.dev17+g3ea9e6050 (PR 7759 head), torch 2.13.0+cu130, diffusers 0.40.0, transformers 5.14.1. Configuration: online FP8 on the transformer with ignored_layers img_mlp, and on the Qwen3-VL text encoder, via --diffusion-quantization-config. Server process start to /health 200 was 240 s, which the result records as load_s null because the harness attached to a server it did not start. Ambient temperature unknown."
+  },
+  "verification": {
+    "level": "self-reported",
+    "reproduced_by": [],
+    "flags": []
+  }
+}
