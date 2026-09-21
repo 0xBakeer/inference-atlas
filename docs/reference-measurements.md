@@ -89,3 +89,44 @@ Decode tok/s (256-token generations) vs real prompt tokens:
   quant does 38.7 tok/s short. Extending cudagraph capture sizes changed nothing.
 - Gotcha: Triton JIT needs Python.h — use a uv-managed CPython when there is no sudo.
 - Gotcha: `VLLM_USE_PRECOMPILED=1` works on aarch64/GB10.
+
+### llama.cpp b11071 · Tinfield 1 · `gguf-iq2-xxs-compact` · 2026-09-21
+
+`badtheorylabs/Tinfield-1-Compact-GGUF` at revision 79689f3f (six IQ2XXS shards, 77.4 GB),
+llama.cpp tag b11071 (6ad1af56) built with
+`-DGGML_CUDA=ON -DGGML_CUDA_GRAPHS=ON -DCMAKE_CUDA_ARCHITECTURES=121`, run with `GGML_CUDA_NO_VMM=1`.
+These are the measurements that sit next to the atlas rows for this model and are not atlas rows
+themselves.
+
+llama-bench, `-ngl 999 -fa on -lm none -b 2048 -ub 2048 -t 20`, f16 K and V, tok/s:
+
+| depth (tokens) | pp512 | pp2048 | tg128 |
+| -------------- | ----- | ------ | ----- |
+| 0              | 980   | 1,097  | 32.0  |
+| 8,192          | 855   | 966    | 29.7  |
+| 32,768         | 660   | 723    | 25.6  |
+| 65,536         | 507   | 571    | 21.1  |
+| 131,072        | 300   | 404    | 14.8  |
+
+- Rows 0 to 32K are 3 repetitions, 64K and 128K one each.
+- q8_0 K and V at 32K depth: pp2048 763, tg128 23.9, so f16 is faster at decode.
+- `--load-mode none` vs `auto`, 10 vs 20 threads: no difference (tg128 32.0 in all four). `-ub 2048`
+  gives about 2.5 % more prefill than `-ub 1024`.
+- Load to `/health`: 44 to 60 s from local NVMe with `--load-mode none`. With `-c 524288 -np 4` the server
+  held about 94 GB and left 27 GB available. The release has no `--no-mmap`; `--load-mode none` replaces it.
+
+Agentic and one-shot coding checks (server defaults `--temp 1.0 --top-p 0.95 --top-k 20`,
+thinking on at the template default `reasoning_effort` xhigh):
+
+- opencode 1.18.31, the aquarium prompt (build one self-contained `aquarium.html`, write it and
+  do nothing else): one `write` call with valid arguments, 22 KB of HTML, 29,282 prompt and 28,090
+  output tokens, 20.6 minutes at about 24 tok/s. The page runs from `file://` with no console errors.
+  It has light shafts, bubbles from two vents, kelp, three fish species with depth dimming, a working
+  pause button and a working fish-count slider. Caustics and fish shadows on the sand are faint. After
+  writing, the model ignored "do nothing else" and made three more tool calls to open the page in a
+  browser and screenshot it.
+- One-shot "Angry Birds style game in one HTML file" through the chat API: 35,874 output tokens
+  (about 79,000 characters of reasoning), 22.3 minutes at 26.9 tok/s, finish reason `stop`, 31 KB of
+  HTML. It does not run. A stray identifier `hw_` in the block constructor throws a ReferenceError
+  while the page builds the level, so only the HUD appears; with that token removed, a second TypeError
+  follows. This is the same kind of token-level damage `eval-longgen-integrity-v1` counts.
