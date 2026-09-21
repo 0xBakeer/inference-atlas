@@ -1,0 +1,399 @@
+{
+  "schema_version": 1,
+  "run_id": "c1ee62e449047969--t2i-single-1k-40s-v1--0ee5e2",
+  "config_id": "c1ee62e449047969",
+  "cell_id": "ff875ae5a63a",
+  "workload_id": "t2i-single-1k-40s-v1",
+  "kind": "image",
+  "engine": {
+    "id": "comfyui",
+    "version": "0.36.0",
+    "commit": null,
+    "build": "github.com/comfyanonymous/ComfyUI@3dd559d81f745747cab884a3b9f5fd8867d79efe",
+    "container": null,
+    "install_method": "source"
+  },
+  "model": {
+    "id": "Qwen/Qwen-Image-2.1",
+    "quant_id": "w4a8-te",
+    "hf_id": "Qwen/Qwen-Image-2.1",
+    "revision": null,
+    "dtype": "auto",
+    "local_path": null
+  },
+  "hardware": {
+    "id": "nvidia-gb10-dgx-spark",
+    "count": 1,
+    "driver": "580.173.02",
+    "cuda": "13.0",
+    "host": {
+      "cpu": "Cortex-A725",
+      "cpu_cores": 20,
+      "ram_gb": 121.6,
+      "os": "Ubuntu 24.04.4 LTS",
+      "kernel": "6.17.0-1029-nvidia",
+      "arch": "aarch64"
+    },
+    "fingerprint": "sha256:52ea2bdd513719724db88c162b6cc2c9fb4e5b67e02dbe41b9de00687acefb91",
+    "captured": {
+      "nvidia_smi": {
+        "driver": "580.173.02",
+        "cuda": "13.0",
+        "products": [
+          "NVIDIA GB10"
+        ],
+        "fb_memory_total_mib": 0
+      },
+      "lscpu": {
+        "architecture": "aarch64",
+        "cpus": "20",
+        "vendor_id": "ARM",
+        "model_name": "Cortex-A725",
+        "cores_per_socket": "10",
+        "sockets": "1",
+        "cpu_max_mhz": "2808.0000"
+      }
+    }
+  },
+  "args": {
+    "cfg-scale": 1,
+    "sampler": "euler",
+    "scheduler": "simple",
+    "resolution": 1024,
+    "steps": 40,
+    "denoise": 1,
+    "cache-none": true
+  },
+  "args_canonical": "@build=github.com/comfyanonymous/comfyui@3dd559d81f745747cab884a3b9f5fd8867d79efe;@dtype=auto;@quant=w4a8-te;cache-none=true;cfg-scale=1;denoise=1;resolution=1024;sampler=euler;scheduler=simple;steps=40",
+  "serve_command": null,
+  "workload": {
+    "id": "t2i-single-1k-40s-v1",
+    "resolved_params": {
+      "dataset_id": "t2i-prompts-v1",
+      "prompts": 6,
+      "width": 1024,
+      "height": 1024,
+      "steps": 40,
+      "seed": 42,
+      "guidance": null,
+      "images_per_request": 1,
+      "ref_images": 0,
+      "transparent": false,
+      "concurrency": 1,
+      "repeat": 3,
+      "warmup_requests": 1,
+      "timeout_s": 1800,
+      "dataset_categories": [
+        "t2i"
+      ],
+      "lane": "cli",
+      "invocation": "/usr/bin/python3 /home/bakeer/lanes/qwen-image-21/_measure/comfy_render.py --base http://127.0.0.1:8188 --unet '{unet}' --clip '{clip}' --vae '{vae}' --prompt '{prompt}' --negative '{negative_prompt}' --width '{width}' --height '{height}' --steps '{steps}' --seed '{seed}' --cfg 1 --sampler euler --scheduler simple --resolution 1024 --out '{out}'"
+    }
+  },
+  "metrics": {
+    "requests_total": 18,
+    "requests_ok": 18,
+    "requests_failed": 0,
+    "success_rate": 1,
+    "duration_s": 612.973,
+    "s_per_image": {
+      "mean": 32.209,
+      "p50": 32.204,
+      "p90": 32.23,
+      "p95": 32.239,
+      "p99": 32.247,
+      "min": 32.19,
+      "max": 32.249
+    },
+    "e2e_ms": {
+      "mean": 32209.389,
+      "p50": 32203.86,
+      "p90": 32229.748,
+      "p95": 32239.237,
+      "p99": 32246.903,
+      "min": 32189.782,
+      "max": 32248.82
+    },
+    "load_s": null,
+    "vram_peak_gb": 13.388,
+    "ram_peak_gb": 19.623,
+    "power_avg_w": 80.6,
+    "power_peak_w": 91.98,
+    "energy_wh": 13.7183,
+    "gpu_util_avg_pct": 87.72,
+    "temp_max_c": 85,
+    "thermal_throttle_detected": false
+  },
+  "failures": [],
+  "conditions": {
+    "dedicated": true,
+    "detail": "Box dedicated to this run. Nothing else held the GPU: the qwen-image-21-spark server and every other engine in this campaign were stopped and confirmed gone first. ComfyUI was restarted for this run so no state from the driver probes carried in. Ambient temperature unknown (no sensor on this box).",
+    "isolation_check": "nvidia-smi --query-compute-apps was empty before the server started and listed only the ComfyUI process while it ran; pgrep found no other engine. A 1 Hz sampler recorded the sum of --query-compute-apps and free -m for the whole run."
+  },
+  "gotchas": [
+    {
+      "severity": "info",
+      "text": "nvidia-smi --query-gpu=memory.used returns [N/A] on GB10: the CPU and the GPU share one pool and the per-device counter is not implemented. vram_peak_gb here comes from the sum of --query-compute-apps=used_memory, which the harness falls back to."
+    },
+    {
+      "severity": "info",
+      "text": "THE EDIT NUMBERS FROM THIS LANE ARE NOT COMPARABLE TO THE OTHER ENGINES. Reference images change the picture here but cost no measurable time. Measured before the run, twelve renders, same prompt and seed: 0/1/4 references gave 29.20/30.08/29.11 s and then 30.06/29.21/30.07 s on a second pass -- a bimodal 29.1/30.1 band with no correlation to the reference count -- while every output hash differed. Raising the encode node's resolution, which multiplies the reference latents by 4x and 16x, also changed the image and not the time (resolution 0/1024/2048 -> 29.13/30.06/29.19 s, three distinct hashes). The QwenImage21Cache prefix cache is not the explanation either: device=auto and device=off both took 27.1 s on the same four-reference edit. On the recipe lane a reference costs ~6.4 s and each further one ~7.7 s, and on SGLang-Diffusion ~6.6 and ~7.0 s. Whatever this build does with reference latents, it is not paying attention cost for them, so read edit-ref1 and edit-ref4 here as this lane's own numbers and not as the same measurement."
+    },
+    {
+      "severity": "info",
+      "text": "The workflow IS the configuration on this engine. Which DiT, text encoder and VAE are loaded are widget values on UNETLoader/CLIPLoader/VAELoader, so two runs with identical command-line flags can be different measurements. The quantization format is detected from each checkpoint's own comfy_quant metadata tensor rather than set by a flag, which is why none of the fp8/int8 CLI flags are passed."
+    },
+    {
+      "severity": "info",
+      "text": "TextEncodeQwenImage21's reference-image input is not an IMAGE. It is images: COMFY_AUTOGROW_V3, and the API graph wants the expanded names NESTED under the group -- {\"images\": {\"image_1\": [node, 0], ...}}. Wiring the bare group name is accepted and silently ignored, so the render succeeds, faster than it should, conditioned on nothing; wiring image_1 at the top level passes validation and then dies inside the node with TypeError: execute() got an unexpected keyword argument 'image_1'. Both wrong forms were hit and fixed before any number here was taken."
+    },
+    {
+      "severity": "info",
+      "text": "This lane has no transparency parameter at all, so eval-t2i-rgba-v1 was run with no rewrite and whatever alpha the model emits is the measurement. That is not the same thing the qwen-image-spark reference lane does: its transparent:true is a prompt rewrite (rgba_prompt wraps the prompt in an RGBA template), so the three transparent cases of eval-t2i-fidelity-v1 compare two different prompts on this lane and will fail for that reason rather than because of the quantization."
+    },
+    {
+      "severity": "info",
+      "text": "ComfyUI was started with --cache-none, and that is in args because it changes the numbers. By default this build keeps the last execution's node outputs and returns them unchanged for an identical graph; the harness renders a warmup and then the same request again as the first measured render, so exactly one render per workload came back in 1.15 s instead of 30.2 s -- a cached image, not a render, dragging the mean below the median. It cannot be defeated from inside the graph: the only KSampler input free to vary is negative_prompt, and on this build the picture changes with it even at cfg 1 (three renders with different markers gave three different hashes). --cache-none costs a measured 1.0 s per render (30.06 -> 31.06 s) because the loader nodes re-execute, and leaves the image byte-identical: three renders at one prompt and seed produced one hash, the same hash the cached server produced."
+    },
+    {
+      "severity": "info",
+      "text": "Seconds per image are the CLI lane's process wall clock, which includes the HTTP round trip to ComfyUI and the PNG fetch, but not the model load: ComfyUI keeps the models resident between prompts and only the first render pays for loading them. The first render of the run is the warmup and is excluded."
+    },
+    {
+      "severity": "info",
+      "text": "The output size comes from EmptyLatentImage at the workload's width and height, not from the encode node's own latent output, which the shipped template feeds through a ComfySwitchNode and which is sized from the first reference image. Every dataset reference image is 512x512 and the workloads render at 1024x1024, so following the reference size would have measured the wrong shape. The template's own note warns that a custom size far from image_1 can shift the edit."
+    }
+  ],
+  "derived": {
+    "cost_per_1m_output_tokens_usd": null,
+    "tokens_per_watt": null,
+    "tok_s_per_gb_bandwidth": null,
+    "bandwidth_efficiency": null,
+    "memory_headroom_gb": 114.612
+  },
+  "raw": {
+    "harness": "atlas-bench",
+    "harness_version": "0.1.0",
+    "sha256": "7b02170e664f95b90f4e30862b97fabef881fba5fefc62dc3f0c70eb319dd07b",
+    "payload_path": null,
+    "payload": {
+      "lane": "cli",
+      "payload": [
+        {
+          "id": "spd-0001",
+          "warmup": true,
+          "ok": true,
+          "seconds": 33.204,
+          "wall_s": 33.204,
+          "timing_source": "wall",
+          "status": 0,
+          "error_category": null
+        },
+        {
+          "id": "spd-0001",
+          "warmup": false,
+          "ok": true,
+          "seconds": 32.2223,
+          "wall_s": 32.2223,
+          "timing_source": "wall",
+          "status": 0,
+          "error_category": null
+        },
+        {
+          "id": "spd-0002",
+          "warmup": false,
+          "ok": true,
+          "seconds": 32.1983,
+          "wall_s": 32.1983,
+          "timing_source": "wall",
+          "status": 0,
+          "error_category": null
+        },
+        {
+          "id": "spd-0003",
+          "warmup": false,
+          "ok": true,
+          "seconds": 32.2252,
+          "wall_s": 32.2252,
+          "timing_source": "wall",
+          "status": 0,
+          "error_category": null
+        },
+        {
+          "id": "spd-0004",
+          "warmup": false,
+          "ok": true,
+          "seconds": 32.1938,
+          "wall_s": 32.1938,
+          "timing_source": "wall",
+          "status": 0,
+          "error_category": null
+        },
+        {
+          "id": "spd-0005",
+          "warmup": false,
+          "ok": true,
+          "seconds": 32.2006,
+          "wall_s": 32.2006,
+          "timing_source": "wall",
+          "status": 0,
+          "error_category": null
+        },
+        {
+          "id": "spd-0006",
+          "warmup": false,
+          "ok": true,
+          "seconds": 32.2064,
+          "wall_s": 32.2064,
+          "timing_source": "wall",
+          "status": 0,
+          "error_category": null
+        },
+        {
+          "id": "spd-0001",
+          "warmup": false,
+          "ok": true,
+          "seconds": 32.2014,
+          "wall_s": 32.2014,
+          "timing_source": "wall",
+          "status": 0,
+          "error_category": null
+        },
+        {
+          "id": "spd-0002",
+          "warmup": false,
+          "ok": true,
+          "seconds": 32.2375,
+          "wall_s": 32.2375,
+          "timing_source": "wall",
+          "status": 0,
+          "error_category": null
+        },
+        {
+          "id": "spd-0003",
+          "warmup": false,
+          "ok": true,
+          "seconds": 32.1941,
+          "wall_s": 32.1941,
+          "timing_source": "wall",
+          "status": 0,
+          "error_category": null
+        },
+        {
+          "id": "spd-0004",
+          "warmup": false,
+          "ok": true,
+          "seconds": 32.2264,
+          "wall_s": 32.2264,
+          "timing_source": "wall",
+          "status": 0,
+          "error_category": null
+        },
+        {
+          "id": "spd-0005",
+          "warmup": false,
+          "ok": true,
+          "seconds": 32.1988,
+          "wall_s": 32.1988,
+          "timing_source": "wall",
+          "status": 0,
+          "error_category": null
+        },
+        {
+          "id": "spd-0006",
+          "warmup": false,
+          "ok": true,
+          "seconds": 32.2063,
+          "wall_s": 32.2063,
+          "timing_source": "wall",
+          "status": 0,
+          "error_category": null
+        },
+        {
+          "id": "spd-0001",
+          "warmup": false,
+          "ok": true,
+          "seconds": 32.2255,
+          "wall_s": 32.2255,
+          "timing_source": "wall",
+          "status": 0,
+          "error_category": null
+        },
+        {
+          "id": "spd-0002",
+          "warmup": false,
+          "ok": true,
+          "seconds": 32.1945,
+          "wall_s": 32.1945,
+          "timing_source": "wall",
+          "status": 0,
+          "error_category": null
+        },
+        {
+          "id": "spd-0003",
+          "warmup": false,
+          "ok": true,
+          "seconds": 32.1899,
+          "wall_s": 32.1899,
+          "timing_source": "wall",
+          "status": 0,
+          "error_category": null
+        },
+        {
+          "id": "spd-0004",
+          "warmup": false,
+          "ok": true,
+          "seconds": 32.2488,
+          "wall_s": 32.2488,
+          "timing_source": "wall",
+          "status": 0,
+          "error_category": null
+        },
+        {
+          "id": "spd-0005",
+          "warmup": false,
+          "ok": true,
+          "seconds": 32.1898,
+          "wall_s": 32.1898,
+          "timing_source": "wall",
+          "status": 0,
+          "error_category": null
+        },
+        {
+          "id": "spd-0006",
+          "warmup": false,
+          "ok": true,
+          "seconds": 32.2092,
+          "wall_s": 32.2092,
+          "timing_source": "wall",
+          "status": 0,
+          "error_category": null
+        }
+      ],
+      "engine_endpoint": {
+        "attached": true,
+        "base_url": null,
+        "served_model_id": "Qwen/Qwen-Image-2.1",
+        "advertised_models": []
+      }
+    },
+    "truncated": false
+  },
+  "provenance": {
+    "github_login": "0xBakeer",
+    "github_user_id": 17404809,
+    "started_at": "2026-09-21T04:30:53Z",
+    "finished_at": "2026-09-21T04:41:06Z",
+    "submitted_at": null,
+    "commit": null,
+    "pr": null,
+    "method": "atlas-bench",
+    "agent": null,
+    "notes": "NVIDIA DGX Spark (GB10, sm_121), driver 580.173.02, CUDA 13.0, aarch64 Ubuntu 24.04, 121 GiB unified memory. ComfyUI 0.36.0 at commit 3dd559d81f745747cab884a3b9f5fd8867d79efe, torch 2.14.0+cu130, comfy-kitchen 0.2.35, transformers 5.17.0. Weights: Comfy-Org/Qwen-Image-2.1 qwen_image_2.1_int8_convrot.safetensors (DiT, int8_tensorwise + convrot Hadamard rotation, groupsize 256) with qwen3vl_8b_w4a8.safetensors (text encoder, asym_w4a8_int8, int4 packed as int8 with an fp8 per-group scale) and qwen_image_2.1_vae_bf16.safetensors. There is no w4a8 DiT; w4a8 exists only for the text encoder, which is why this cell's quant_id is w4a8-te and the DiT is the int8_convrot file. The model is selected inside the workflow, not on the command line, so the graph is part of the configuration: UNETLoader -> KSampler, CLIPLoader + VAELoader -> TextEncodeQwenImage21 -> KSampler, VAEDecode -> SaveImage, at cfg 1, euler, simple, denoise 1, with the encode node's resolution left at its default 1024. Ambient temperature unknown."
+  },
+  "verification": {
+    "level": "self-reported",
+    "reproduced_by": [],
+    "flags": []
+  }
+}

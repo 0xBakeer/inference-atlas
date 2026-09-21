@@ -1,0 +1,565 @@
+{
+  "schema_version": 1,
+  "engine_id": "comfyui",
+  "version": "0.36.0",
+  "released": null,
+  "extraction_method": "argparse",
+  "extracted_at": "2026-09-21T00:00:00Z",
+  "source": "comfy/cli_args.py in the installed checkout at ~/lanes/qwen-image-21/comfy/src (the argparse `python main.py --help` renders), version from comfyui_version.py",
+  "notes": "ComfyUI is the engine where the command line does not name the model. Which DiT, which text encoder and which VAE are loaded are widget values on UNETLoader, CLIPLoader and VAELoader inside the workflow, so the workflow is part of the configuration: a result records the files in args and the graph in raw.payload, and two runs with identical flags can be different measurements. The quantization format is detected from the checkpoint's own `comfy_quant` metadata tensor rather than from a flag, which is why none of the fp8/int8 flags above are set for the int8_convrot and w4a8 cells. Only the options that can move an image number on a single-GPU box are listed; the manager, TLS, CORS, DirectML, oneAPI and partner-node options are omitted. The checkout is a nightly commit past the 0.36.0 tag, so the version string does not identify the build and results carry engine.build (SPEC decision 24).",
+  "params": [
+    {
+      "name": "listen",
+      "type": "str",
+      "default": "127.0.0.1",
+      "help": "IP to bind. Dropped from the fingerprint.",
+      "group": "io",
+      "impact": "low"
+    },
+    {
+      "name": "port",
+      "type": "int",
+      "default": 8188,
+      "help": "Dropped from the fingerprint.",
+      "group": "io",
+      "impact": "low"
+    },
+    {
+      "name": "base-directory",
+      "type": "path",
+      "default": null,
+      "help": "Root for models, custom_nodes, input, output, temp and user. Dropped from the fingerprint.",
+      "group": "io",
+      "impact": "low"
+    },
+    {
+      "name": "models-directory",
+      "type": "path",
+      "default": null,
+      "help": "Where the model folders live. Dropped from the fingerprint.",
+      "group": "io",
+      "impact": "low"
+    },
+    {
+      "name": "output-directory",
+      "type": "path",
+      "default": null,
+      "help": "Overrides --base-directory for outputs. Dropped.",
+      "group": "io",
+      "impact": "low"
+    },
+    {
+      "name": "input-directory",
+      "type": "path",
+      "default": null,
+      "help": "Overrides --base-directory for inputs. Dropped.",
+      "group": "io",
+      "impact": "low"
+    },
+    {
+      "name": "temp-directory",
+      "type": "path",
+      "default": null,
+      "help": "Overrides --base-directory for temp. Dropped.",
+      "group": "io",
+      "impact": "low"
+    },
+    {
+      "name": "max-upload-size",
+      "type": "float",
+      "default": 100,
+      "help": "Largest upload in MB. Reference images for the edit workloads go through /upload/image, so this has to clear them.",
+      "group": "io",
+      "impact": "low"
+    },
+    {
+      "name": "disable-auto-launch",
+      "type": "bool",
+      "default": false,
+      "help": "Do not open a browser. Headless only.",
+      "group": "io",
+      "impact": "low"
+    },
+    {
+      "name": "cuda-device",
+      "type": "str",
+      "default": null,
+      "help": "Comma-separated CUDA device ids this instance may see.",
+      "group": "runtime",
+      "impact": "high"
+    },
+    {
+      "name": "default-device",
+      "type": "int",
+      "default": null,
+      "help": "Which visible device is the default.",
+      "group": "runtime",
+      "impact": "high"
+    },
+    {
+      "name": "default-hashing-function",
+      "type": "enum",
+      "default": "sha256",
+      "help": "Hash used for duplicate filename/content comparison.",
+      "group": "io",
+      "impact": "low",
+      "choices": [
+        "md5",
+        "sha1",
+        "sha256",
+        "sha512"
+      ]
+    },
+    {
+      "name": "force-fp32",
+      "type": "bool",
+      "default": false,
+      "help": "Force fp32 everywhere.",
+      "group": "precision",
+      "impact": "high"
+    },
+    {
+      "name": "force-fp16",
+      "type": "bool",
+      "default": false,
+      "help": "Force fp16 everywhere.",
+      "group": "precision",
+      "impact": "high"
+    },
+    {
+      "name": "fp32-unet",
+      "type": "bool",
+      "default": false,
+      "help": "Run the diffusion model in fp32.",
+      "group": "precision",
+      "impact": "high"
+    },
+    {
+      "name": "bf16-unet",
+      "type": "bool",
+      "default": false,
+      "help": "Run the diffusion model in bf16.",
+      "group": "precision",
+      "impact": "high"
+    },
+    {
+      "name": "fp16-unet",
+      "type": "bool",
+      "default": false,
+      "help": "Run the diffusion model in fp16.",
+      "group": "precision",
+      "impact": "high"
+    },
+    {
+      "name": "fp8_e4m3fn-unet",
+      "type": "bool",
+      "default": false,
+      "help": "Store UNet weights in fp8_e4m3fn.",
+      "group": "precision",
+      "impact": "high"
+    },
+    {
+      "name": "fp8_e5m2-unet",
+      "type": "bool",
+      "default": false,
+      "help": "Store UNet weights in fp8_e5m2.",
+      "group": "precision",
+      "impact": "high"
+    },
+    {
+      "name": "fp8_e8m0fnu-unet",
+      "type": "bool",
+      "default": false,
+      "help": "Store UNet weights in fp8_e8m0fnu.",
+      "group": "precision",
+      "impact": "high"
+    },
+    {
+      "name": "fp16-vae",
+      "type": "bool",
+      "default": false,
+      "help": "Run the VAE in fp16; documented as able to produce black images.",
+      "group": "precision",
+      "impact": "high"
+    },
+    {
+      "name": "fp32-vae",
+      "type": "bool",
+      "default": false,
+      "help": "Run the VAE in fp32.",
+      "group": "precision",
+      "impact": "high"
+    },
+    {
+      "name": "bf16-vae",
+      "type": "bool",
+      "default": false,
+      "help": "Run the VAE in bf16.",
+      "group": "precision",
+      "impact": "high"
+    },
+    {
+      "name": "cpu-vae",
+      "type": "bool",
+      "default": false,
+      "help": "Run the VAE on the CPU.",
+      "group": "precision",
+      "impact": "high"
+    },
+    {
+      "name": "fp8_e4m3fn-text-enc",
+      "type": "bool",
+      "default": false,
+      "help": "Store text encoder weights in fp8 (e4m3fn).",
+      "group": "precision",
+      "impact": "high"
+    },
+    {
+      "name": "fp8_e5m2-text-enc",
+      "type": "bool",
+      "default": false,
+      "help": "Store text encoder weights in fp8 (e5m2).",
+      "group": "precision",
+      "impact": "high"
+    },
+    {
+      "name": "fp16-text-enc",
+      "type": "bool",
+      "default": false,
+      "help": "Store text encoder weights in fp16.",
+      "group": "precision",
+      "impact": "high"
+    },
+    {
+      "name": "fp32-text-enc",
+      "type": "bool",
+      "default": false,
+      "help": "Store text encoder weights in fp32.",
+      "group": "precision",
+      "impact": "high"
+    },
+    {
+      "name": "bf16-text-enc",
+      "type": "bool",
+      "default": false,
+      "help": "Store text encoder weights in bf16.",
+      "group": "precision",
+      "impact": "high"
+    },
+    {
+      "name": "fp16-intermediates",
+      "type": "bool",
+      "default": false,
+      "help": "Experimental: fp16 for tensors between nodes instead of fp32.",
+      "group": "precision",
+      "impact": "high"
+    },
+    {
+      "name": "supports-fp8-compute",
+      "type": "bool",
+      "default": false,
+      "help": "Pretend the device supports fp8 compute.",
+      "group": "precision",
+      "impact": "high"
+    },
+    {
+      "name": "force-channels-last",
+      "type": "bool",
+      "default": false,
+      "help": "Force channels-last memory format.",
+      "group": "runtime",
+      "impact": "high"
+    },
+    {
+      "name": "use-split-cross-attention",
+      "type": "bool",
+      "default": false,
+      "help": "Split cross-attention optimization.",
+      "group": "runtime",
+      "impact": "high"
+    },
+    {
+      "name": "use-quad-cross-attention",
+      "type": "bool",
+      "default": false,
+      "help": "Sub-quadratic cross-attention.",
+      "group": "runtime",
+      "impact": "high"
+    },
+    {
+      "name": "use-pytorch-cross-attention",
+      "type": "bool",
+      "default": false,
+      "help": "torch 2.x scaled_dot_product_attention.",
+      "group": "runtime",
+      "impact": "high"
+    },
+    {
+      "name": "use-sage-attention",
+      "type": "bool",
+      "default": false,
+      "help": "SageAttention.",
+      "group": "runtime",
+      "impact": "high"
+    },
+    {
+      "name": "use-flash-attention",
+      "type": "bool",
+      "default": false,
+      "help": "FlashAttention.",
+      "group": "runtime",
+      "impact": "high"
+    },
+    {
+      "name": "use-ck-attention",
+      "type": "bool",
+      "default": false,
+      "help": "Comfy Kitchen attention.",
+      "group": "runtime",
+      "impact": "high"
+    },
+    {
+      "name": "force-upcast-attention",
+      "type": "bool",
+      "default": false,
+      "help": "Force attention upcasting.",
+      "group": "precision",
+      "impact": "high"
+    },
+    {
+      "name": "dont-upcast-attention",
+      "type": "bool",
+      "default": false,
+      "help": "Disable all attention upcasting.",
+      "group": "precision",
+      "impact": "high"
+    },
+    {
+      "name": "gpu-only",
+      "type": "bool",
+      "default": false,
+      "help": "Keep everything, text encoders included, on the GPU.",
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "highvram",
+      "type": "bool",
+      "default": false,
+      "help": "Keep models in GPU memory instead of unloading to CPU after use.",
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "lowvram",
+      "type": "bool",
+      "default": false,
+      "help": "Run text encoders on the CPU. No effect when dynamic VRAM is on.",
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "novram",
+      "type": "bool",
+      "default": false,
+      "help": "For when lowvram is not enough.",
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "cpu",
+      "type": "bool",
+      "default": false,
+      "help": "Everything on the CPU.",
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "reserve-vram",
+      "type": "float",
+      "default": null,
+      "help": "GB reserved for the OS and other software. The default depends on the OS, which is why this is null rather than a number.",
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "vram-headroom",
+      "type": "float",
+      "default": 0,
+      "help": "Extra GB DynamicVRAM tries to keep completely free.",
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "disable-nvml-pressure",
+      "type": "bool",
+      "default": false,
+      "help": "Use CUDA rather than NVML for DynamicVRAM memory pressure. Worth knowing on a device whose NVML memory counters do not answer.",
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "disable-dynamic-vram",
+      "type": "bool",
+      "default": false,
+      "help": "Turn off dynamic VRAM and load from estimates instead.",
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "enable-dynamic-vram",
+      "type": "bool",
+      "default": false,
+      "help": "Force dynamic VRAM on where it is not the default.",
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "async-offload",
+      "type": "int",
+      "default": null,
+      "help": "Async weight offload streams; the flag's const is 2 and it is enabled by default on NVIDIA, so the default here is null rather than off.",
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "disable-async-offload",
+      "type": "bool",
+      "default": false,
+      "help": "Turn async weight offloading off.",
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "fast-disk",
+      "type": "bool",
+      "default": false,
+      "help": "Force disk-backed dynamic loading over unpinned RAM.",
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "disable-fast-disk",
+      "type": "bool",
+      "default": false,
+      "help": "Overrides --fast-disk.",
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "cuda-malloc",
+      "type": "bool",
+      "default": false,
+      "help": "cudaMallocAsync; on by default for torch 2.0 and up, which is why the pair of flags exists.",
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "disable-cuda-malloc",
+      "type": "bool",
+      "default": false,
+      "help": "Turn cudaMallocAsync off.",
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "high-ram",
+      "type": "bool",
+      "default": false,
+      "help": "Prefer pagefile use over model reloading.",
+      "group": "memory",
+      "impact": "medium"
+    },
+    {
+      "name": "cache-ram",
+      "type": "list",
+      "default": [],
+      "help": "RAM-pressure caching thresholds. The default mode; with no values, active is 10 % of system RAM (2-10 GB) and inactive is 100 % (max 128 GB).",
+      "group": "runtime",
+      "impact": "high"
+    },
+    {
+      "name": "cache-classic",
+      "type": "bool",
+      "default": false,
+      "help": "Old aggressive caching.",
+      "group": "runtime",
+      "impact": "high"
+    },
+    {
+      "name": "cache-lru",
+      "type": "int",
+      "default": 0,
+      "help": "LRU caching of N node results.",
+      "group": "runtime",
+      "impact": "high"
+    },
+    {
+      "name": "cache-none",
+      "type": "bool",
+      "default": false,
+      "help": "Execute every node for every run.",
+      "group": "runtime",
+      "impact": "high"
+    },
+    {
+      "name": "disable-cuda-graphs",
+      "type": "bool",
+      "default": false,
+      "help": "Turn CUDA graphs off.",
+      "group": "compile",
+      "impact": "high"
+    },
+    {
+      "name": "disable-comfy-compiler",
+      "type": "bool",
+      "default": false,
+      "help": "Turn the Comfy model compiler off, CUDA-graph subfeature included.",
+      "group": "compile",
+      "impact": "high"
+    },
+    {
+      "name": "enable-triton-backend",
+      "type": "bool",
+      "default": false,
+      "help": "Enable comfy-kitchen's Triton backend, which is off at launch by default.",
+      "group": "compile",
+      "impact": "high"
+    },
+    {
+      "name": "disable-triton-backend",
+      "type": "bool",
+      "default": false,
+      "help": "Force comfy-kitchen's Triton backend off.",
+      "group": "compile",
+      "impact": "high"
+    },
+    {
+      "name": "force-non-blocking",
+      "type": "bool",
+      "default": false,
+      "help": "Non-blocking copies for all applicable tensors.",
+      "group": "runtime",
+      "impact": "medium"
+    },
+    {
+      "name": "preview-method",
+      "type": "enum",
+      "default": "none",
+      "help": "Preview method for sampler nodes; NoPreviews by default, and anything else costs a decode per step.",
+      "group": "runtime",
+      "impact": "high"
+    },
+    {
+      "name": "preview-size",
+      "type": "int",
+      "default": 512,
+      "help": "Largest preview edge.",
+      "group": "runtime",
+      "impact": "low"
+    }
+  ],
+  "distribution": "fork",
+  "source_repo": "github.com/comfyanonymous/ComfyUI",
+  "source_ref": "3dd559d81f745747cab884a3b9f5fd8867d79efe"
+}
