@@ -1,0 +1,419 @@
+{
+  "schema_version": 1,
+  "run_id": "6562d63bab4c3c2c--eval-t2i-text-v1--c029e8",
+  "config_id": "6562d63bab4c3c2c",
+  "cell_id": "bbefaf9edddb",
+  "workload_id": "eval-t2i-text-v1",
+  "kind": "eval",
+  "engine": {
+    "id": "sglang-diffusion",
+    "version": "0.0.0.dev60+g791c7850d",
+    "commit": null,
+    "build": null,
+    "container": null,
+    "install_method": "source"
+  },
+  "model": {
+    "id": "Qwen/Qwen-Image-2.1",
+    "quant_id": "fp8-online",
+    "hf_id": "Qwen/Qwen-Image-2.1",
+    "revision": null,
+    "dtype": "auto",
+    "local_path": null
+  },
+  "hardware": {
+    "id": "nvidia-gb10-dgx-spark",
+    "count": 1,
+    "driver": "580.173.02",
+    "cuda": "13.0",
+    "host": {
+      "cpu": "Cortex-A725",
+      "cpu_cores": 20,
+      "ram_gb": 121.6,
+      "os": "Ubuntu 24.04.4 LTS",
+      "kernel": "6.17.0-1029-nvidia",
+      "arch": "aarch64"
+    },
+    "fingerprint": "sha256:52ea2bdd513719724db88c162b6cc2c9fb4e5b67e02dbe41b9de00687acefb91",
+    "captured": {
+      "nvidia_smi": {
+        "driver": "580.173.02",
+        "cuda": "13.0",
+        "products": [
+          "NVIDIA GB10"
+        ],
+        "fb_memory_total_mib": 0.0
+      },
+      "lscpu": {
+        "architecture": "aarch64",
+        "cpus": "20",
+        "vendor_id": "ARM",
+        "model_name": "Cortex-A725",
+        "cores_per_socket": "10",
+        "sockets": "1",
+        "cpu_max_mhz": "2808.0000"
+      }
+    }
+  },
+  "args": {
+    "component-quantizations.transformer": "fp8",
+    "output-format": "png"
+  },
+  "args_canonical": "@dtype=auto;@quant=fp8-online;component-quantizations.transformer=fp8;output-format=png",
+  "serve_command": null,
+  "workload": {
+    "id": "eval-t2i-text-v1",
+    "resolved_params": {
+      "dataset_id": "eval-t2i-text-v1",
+      "suite": "t2i-text",
+      "scorer": "ocr",
+      "items": 6,
+      "concurrency": 1,
+      "warmup_requests": 1,
+      "timeout_s": 1800.0,
+      "dataset_categories": null,
+      "lane": "openai_images",
+      "invocation": "http://127.0.0.1:30000/v1/images/generations",
+      "backend": "rapidocr",
+      "ocr_backend": "auto",
+      "ocr_languages": [
+        "eng",
+        "chi_sim"
+      ],
+      "reference_schema": "t2i-reference/1",
+      "reference_run_id": null,
+      "reference_config_id": "9fba48e44168bf00",
+      "reference_args_canonical": "@dtype=auto;@quant=bf16",
+      "reference_hardware_id": "nvidia-gb10-dgx-spark",
+      "reference_workload_id": "eval-t2i-fidelity-v1",
+      "reference_created": "2026-09-20T16:08:45Z",
+      "reference_cases": 24,
+      "reference_engine_id": "qwen-image-spark",
+      "reference_engine_version": "0.1.1",
+      "reference_engine_build": null
+    }
+  },
+  "metrics": {
+    "requests_total": 6,
+    "requests_ok": 6,
+    "requests_failed": 0,
+    "success_rate": 1.0,
+    "duration_s": 434.543,
+    "s_per_image": {
+      "mean": 66.864,
+      "p50": 33.043,
+      "p90": 134.962,
+      "p95": 182.888,
+      "p99": 221.229,
+      "min": 32.566,
+      "max": 230.815
+    },
+    "e2e_ms": {
+      "mean": 66955.884,
+      "p50": 33104.035,
+      "p90": 135106.219,
+      "p95": 183080.537,
+      "p99": 221459.991,
+      "min": 32634.596,
+      "max": 231054.855
+    },
+    "load_s": null,
+    "vram_peak_gb": 26.515,
+    "ram_peak_gb": 49.039,
+    "power_avg_w": 78.76,
+    "power_peak_w": 88.05,
+    "energy_wh": 9.5855,
+    "gpu_util_avg_pct": 94.48,
+    "temp_max_c": 86.0,
+    "thermal_throttle_detected": true
+  },
+  "scores": {
+    "suite": "t2i-text",
+    "total": 6,
+    "correct": 3,
+    "accuracy": 0.5,
+    "success_rate": 1.0,
+    "by_category": {
+      "edit": {
+        "total": 1,
+        "correct": 1
+      },
+      "text": {
+        "total": 5,
+        "correct": 2
+      }
+    },
+    "by_difficulty": {
+      "easy": {
+        "total": 2,
+        "correct": 0
+      },
+      "hard": {
+        "total": 1,
+        "correct": 1
+      },
+      "medium": {
+        "total": 3,
+        "correct": 2
+      }
+    },
+    "avg_output_tokens": null,
+    "avg_latency_ms": 66955.88,
+    "failures": 0,
+    "items": [
+      {
+        "id": "t2i-0001",
+        "correct": false,
+        "predicted": null,
+        "expected": "GOLDEN CRUMB BAKERY | OPEN 7 AM TO 6 PM",
+        "latency_ms": 33035.469,
+        "output_tokens": null,
+        "category": "text",
+        "difficulty": "easy",
+        "metrics": {
+          "ocr_strings_found": 1,
+          "ocr_strings_expected": 2,
+          "ocr_exact": 0.5,
+          "cer": 0.176471,
+          "cer_worst": 0.352941
+        }
+      },
+      {
+        "id": "t2i-0002",
+        "correct": false,
+        "predicted": null,
+        "expected": "NORTHERN LIGHTS | SEPTEMBER 14 | HALL B",
+        "latency_ms": 231054.855,
+        "output_tokens": null,
+        "category": "text",
+        "difficulty": "easy",
+        "metrics": {
+          "ocr_strings_found": 2,
+          "ocr_strings_expected": 3,
+          "ocr_exact": 0.666667,
+          "cer": 0.027778,
+          "cer_worst": 0.083333
+        }
+      },
+      {
+        "id": "t2i-0003",
+        "correct": false,
+        "predicted": null,
+        "expected": "ESPRESSO 2.50 | FLAT WHITE 3.80 | CROISSANT 2.20",
+        "latency_ms": 32634.596,
+        "output_tokens": null,
+        "category": "text",
+        "difficulty": "medium",
+        "metrics": {
+          "ocr_strings_found": 2,
+          "ocr_strings_expected": 3,
+          "ocr_exact": 0.666667,
+          "cer": 0.102564,
+          "cer_worst": 0.307692
+        }
+      },
+      {
+        "id": "t2i-0004",
+        "correct": true,
+        "predicted": null,
+        "expected": "Weekly Report | 4208 | Continue",
+        "latency_ms": 33172.602,
+        "output_tokens": null,
+        "category": "text",
+        "difficulty": "medium",
+        "metrics": {
+          "ocr_strings_found": 3,
+          "ocr_strings_expected": 3,
+          "ocr_exact": 1.0,
+          "cer": 0.0,
+          "cer_worst": 0.0
+        }
+      },
+      {
+        "id": "t2i-0005",
+        "correct": true,
+        "predicted": null,
+        "expected": "欢迎光临 | WELCOME FRIENDS",
+        "latency_ms": 32680.201,
+        "output_tokens": null,
+        "category": "text",
+        "difficulty": "hard",
+        "metrics": {
+          "ocr_strings_found": 2,
+          "ocr_strings_expected": 2,
+          "ocr_exact": 1.0,
+          "cer": 0.0,
+          "cer_worst": 0.0
+        }
+      },
+      {
+        "id": "t2i-0022",
+        "correct": true,
+        "predicted": null,
+        "expected": "HARBOUR ROAD 12",
+        "latency_ms": 39157.582,
+        "output_tokens": null,
+        "category": "edit",
+        "difficulty": "medium",
+        "metrics": {
+          "ocr_strings_found": 1,
+          "ocr_strings_expected": 1,
+          "ocr_exact": 1.0,
+          "cer": 0.0,
+          "cer_worst": 0.0
+        }
+      }
+    ]
+  },
+  "failures": [],
+  "conditions": {
+    "dedicated": true,
+    "detail": "Box dedicated to this run. The qwen-image-21-spark bf16 server on :8020 was STOPPED for it, so SGLang saw an empty box (115.9 GiB free at load) and its auto memory policy kept every component on its checkpoint mapping instead of streaming the text encoder layer by layer, which is what it did during bring-up under a 52 GiB budget. Nothing else held the GPU. Ambient temperature unknown (no sensor on this box).",
+    "isolation_check": "nvidia-smi --query-compute-apps was empty before the server started and listed only the SGLang worker while it ran; pgrep found no other engine. A 1 Hz sampler recorded the sum of --query-compute-apps and free -m for the whole run."
+  },
+  "gotchas": [
+    {
+      "severity": "warn",
+      "text": "The driver reported thermal/hardware slowdown during the run — the numbers are throttled."
+    },
+    {
+      "severity": "info",
+      "text": "nvidia-smi --query-gpu=memory.used returns [N/A] on GB10: the CPU and the GPU share one pool and the per-device counter is not implemented. vram_peak_gb here comes from the sum of --query-compute-apps=used_memory, which the harness falls back to. It is a whole-device figure and it is only equal to this lane's footprint because the box ran nothing else."
+    },
+    {
+      "severity": "info",
+      "text": "output_format=png is not a preference, it is what makes this lane answer at all. Qwen-Image-2.1's VAE has four channels, this build's default output container for the model resolves to JPEG, and Pillow cannot save RGBA as JPEG: every plain render returns HTTP 500 with KeyError: 'RGBA' raised inside imageio's Pillow plugin. Requests that carry background=transparent happen to work by accident, because that switches the container to PNG."
+    },
+    {
+      "severity": "info",
+      "text": "This lane's transparency knob is background=transparent|opaque|auto, gpt-image-1's spelling, not a boolean named transparent. Sending the boolean is the silent failure eval-t2i-rgba-v1 exists to catch. Verified directly before the run: background=transparent returns an image whose alpha runs 0..255 with mean 80.5, while a plain render is RGBA with alpha 248..255, i.e. opaque."
+    },
+    {
+      "severity": "info",
+      "text": "Seconds per image are the server's own inference_time_s, not the HTTP wall clock; on a probe render the two were 35.37 s wall against the engine's own figure, and which of the two applied is in raw.payload per render."
+    },
+    {
+      "severity": "info",
+      "text": "ninja must be on PATH. It is installed inside the venv but invoking .venv/bin/sglang directly does not put it there. Missing, bf16 only logs 'Disabling diffusion residual-gate CUDA fast path ... No such file or directory: ninja' and falls back to eager, while online FP8 dies outright: its per-token quant kernel has no precompiled sm_121 variant and falls through to a KernelBackend.JIT compile. Every configuration in this pass exports PATH=$PWD/.venv/bin:$PATH."
+    },
+    {
+      "severity": "info",
+      "text": "Seed semantics are per engine. This lane seeds a torch generator on cuda (generator_device defaults to 'cuda'), so its fidelity score against the bf16 bundle is a scene-match number against a diffusers pipeline seeded the same way — meaningful as drift, but it is not the same arithmetic as comparing two runs of one engine."
+    }
+  ],
+  "derived": {
+    "cost_per_1m_output_tokens_usd": null,
+    "tokens_per_watt": null,
+    "tok_s_per_gb_bandwidth": null,
+    "bandwidth_efficiency": null,
+    "memory_headroom_gb": 101.485
+  },
+  "raw": {
+    "harness": "atlas-bench",
+    "harness_version": "0.1.0",
+    "sha256": "4162f71301824203ce7bca4a4479f1c9f8979c1dd831a303fe478f4884eaed3d",
+    "payload_path": null,
+    "payload": {
+      "lane": "openai_images",
+      "scorer": "ocr",
+      "payload": [
+        {
+          "id": "t2i-0001",
+          "warmup": true,
+          "ok": true,
+          "seconds": 32.7328,
+          "wall_s": 32.8077,
+          "timing_source": "server",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "t2i-0001",
+          "warmup": false,
+          "ok": true,
+          "seconds": 32.9612,
+          "wall_s": 33.0355,
+          "timing_source": "server",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "t2i-0002",
+          "warmup": false,
+          "ok": true,
+          "seconds": 230.8147,
+          "wall_s": 231.0549,
+          "timing_source": "server",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "t2i-0003",
+          "warmup": false,
+          "ok": true,
+          "seconds": 32.5665,
+          "wall_s": 32.6346,
+          "timing_source": "server",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "t2i-0004",
+          "warmup": false,
+          "ok": true,
+          "seconds": 33.1254,
+          "wall_s": 33.1726,
+          "timing_source": "server",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "t2i-0005",
+          "warmup": false,
+          "ok": true,
+          "seconds": 32.6046,
+          "wall_s": 32.6802,
+          "timing_source": "server",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "t2i-0022",
+          "warmup": false,
+          "ok": true,
+          "seconds": 39.1092,
+          "wall_s": 39.1576,
+          "timing_source": "server",
+          "status": 200,
+          "error_category": null
+        }
+      ],
+      "engine_endpoint": {
+        "attached": true,
+        "base_url": "http://127.0.0.1:30000",
+        "served_model_id": "Qwen-Image-2.1",
+        "advertised_models": [
+          "Qwen-Image-2.1"
+        ]
+      }
+    },
+    "truncated": false
+  },
+  "provenance": {
+    "github_login": "0xBakeer",
+    "github_user_id": null,
+    "started_at": "2026-09-20T23:49:37Z",
+    "finished_at": "2026-09-20T23:56:56Z",
+    "submitted_at": null,
+    "commit": null,
+    "pr": null,
+    "method": "atlas-bench",
+    "agent": null,
+    "notes": "NVIDIA DGX Spark (GB10, sm_121), driver 580.173.02, CUDA 13.0, aarch64 Ubuntu 24.04, 121 GiB unified memory. SGLang-Diffusion source build 0.0.0.dev60+g791c7850d (upstream main @791c7850d, which contains the Qwen-Image-2.1 PR #39983 merged 2026-09-20; the PyPI sglang[diffusion] 0.5.20 does not have this model at all), sglang-kernel 0.4.7, torch 2.13.0+cu130, diffusers 0.37.0.dev0, transformers 5.12.1. Configuration: online FP8 on the transformer only (--component-quantizations.transformer fp8); the Qwen3-VL text encoder stays bf16. Attention backend is Torch SDPA, which is what this build falls back to on SM12.x whatever is selected. Server process start to /health 200 was 61 s, which the result records as load_s null because the harness attached to a server it did not start. Ambient temperature unknown."
+  },
+  "verification": {
+    "level": "self-reported",
+    "reproduced_by": [],
+    "flags": []
+  }
+}

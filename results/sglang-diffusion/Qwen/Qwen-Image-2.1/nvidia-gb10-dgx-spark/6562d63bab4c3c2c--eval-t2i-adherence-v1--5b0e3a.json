@@ -1,0 +1,748 @@
+{
+  "schema_version": 1,
+  "run_id": "6562d63bab4c3c2c--eval-t2i-adherence-v1--5b0e3a",
+  "config_id": "6562d63bab4c3c2c",
+  "cell_id": "bbefaf9edddb",
+  "workload_id": "eval-t2i-adherence-v1",
+  "kind": "eval",
+  "engine": {
+    "id": "sglang-diffusion",
+    "version": "0.0.0.dev60+g791c7850d",
+    "commit": null,
+    "build": null,
+    "container": null,
+    "install_method": "source"
+  },
+  "model": {
+    "id": "Qwen/Qwen-Image-2.1",
+    "quant_id": "fp8-online",
+    "hf_id": "Qwen/Qwen-Image-2.1",
+    "revision": null,
+    "dtype": "auto",
+    "local_path": null
+  },
+  "hardware": {
+    "id": "nvidia-gb10-dgx-spark",
+    "count": 1,
+    "driver": "580.173.02",
+    "cuda": "13.0",
+    "host": {
+      "cpu": "Cortex-A725",
+      "cpu_cores": 20,
+      "ram_gb": 121.6,
+      "os": "Ubuntu 24.04.4 LTS",
+      "kernel": "6.17.0-1029-nvidia",
+      "arch": "aarch64"
+    },
+    "fingerprint": "sha256:52ea2bdd513719724db88c162b6cc2c9fb4e5b67e02dbe41b9de00687acefb91",
+    "captured": {
+      "nvidia_smi": {
+        "driver": "580.173.02",
+        "cuda": "13.0",
+        "products": [
+          "NVIDIA GB10"
+        ],
+        "fb_memory_total_mib": 0.0
+      },
+      "lscpu": {
+        "architecture": "aarch64",
+        "cpus": "20",
+        "vendor_id": "ARM",
+        "model_name": "Cortex-A725",
+        "cores_per_socket": "10",
+        "sockets": "1",
+        "cpu_max_mhz": "2808.0000"
+      }
+    }
+  },
+  "args": {
+    "component-quantizations.transformer": "fp8",
+    "output-format": "png"
+  },
+  "args_canonical": "@dtype=auto;@quant=fp8-online;component-quantizations.transformer=fp8;output-format=png",
+  "serve_command": null,
+  "workload": {
+    "id": "eval-t2i-adherence-v1",
+    "resolved_params": {
+      "dataset_id": "eval-t2i-adherence-v1",
+      "suite": "t2i-adherence",
+      "scorer": "clip",
+      "items": 20,
+      "concurrency": 1,
+      "warmup_requests": 1,
+      "timeout_s": 1800.0,
+      "dataset_categories": null,
+      "lane": "openai_images",
+      "invocation": "http://127.0.0.1:30000/v1/images/generations",
+      "backend": "open_clip",
+      "clip_backend": "open_clip",
+      "clip_model": "ViT-L-14",
+      "clip_pretrained": "openai",
+      "clipscore_min": 26.0,
+      "reference_schema": "t2i-reference/1",
+      "reference_run_id": null,
+      "reference_config_id": "9fba48e44168bf00",
+      "reference_args_canonical": "@dtype=auto;@quant=bf16",
+      "reference_hardware_id": "nvidia-gb10-dgx-spark",
+      "reference_workload_id": "eval-t2i-fidelity-v1",
+      "reference_created": "2026-09-20T16:08:45Z",
+      "reference_cases": 24,
+      "reference_engine_id": "qwen-image-spark",
+      "reference_engine_version": "0.1.1",
+      "reference_engine_build": null
+    }
+  },
+  "metrics": {
+    "requests_total": 20,
+    "requests_ok": 20,
+    "requests_failed": 0,
+    "success_rate": 1.0,
+    "duration_s": 1087.483,
+    "s_per_image": {
+      "mean": 52.656,
+      "p50": 32.822,
+      "p90": 53.018,
+      "p95": 230.759,
+      "p99": 232.277,
+      "min": 32.372,
+      "max": 232.657
+    },
+    "e2e_ms": {
+      "mean": 52747.224,
+      "p50": 32899.423,
+      "p90": 53095.717,
+      "p95": 231001.331,
+      "p99": 232577.84,
+      "min": 32452.196,
+      "max": 232971.967
+    },
+    "load_s": null,
+    "vram_peak_gb": 26.649,
+    "ram_peak_gb": 51.338,
+    "power_avg_w": 78.78,
+    "power_peak_w": 85.65,
+    "energy_wh": 24.2006,
+    "gpu_util_avg_pct": 93.46,
+    "temp_max_c": 87.0,
+    "thermal_throttle_detected": true
+  },
+  "scores": {
+    "suite": "t2i-adherence",
+    "total": 20,
+    "correct": 12,
+    "accuracy": 0.6,
+    "success_rate": 1.0,
+    "by_category": {
+      "portrait": {
+        "total": 4,
+        "correct": 0
+      },
+      "product": {
+        "total": 4,
+        "correct": 1
+      },
+      "rgba": {
+        "total": 3,
+        "correct": 3
+      },
+      "scene": {
+        "total": 3,
+        "correct": 3
+      },
+      "text": {
+        "total": 6,
+        "correct": 5
+      }
+    },
+    "by_difficulty": {
+      "easy": {
+        "total": 6,
+        "correct": 3
+      },
+      "hard": {
+        "total": 5,
+        "correct": 3
+      },
+      "medium": {
+        "total": 9,
+        "correct": 6
+      }
+    },
+    "avg_output_tokens": null,
+    "avg_latency_ms": 52747.22,
+    "failures": 0,
+    "items": [
+      {
+        "id": "t2i-0001",
+        "correct": false,
+        "predicted": null,
+        "expected": "a bakery sign reading GOLDEN CRUMB BAKERY with OPEN 7 AM TO 6 PM below it",
+        "latency_ms": 32858.009,
+        "output_tokens": null,
+        "category": "text",
+        "difficulty": "easy",
+        "metrics": {
+          "clipscore": 25.4954,
+          "clipscore_min": 26.0
+        }
+      },
+      {
+        "id": "t2i-0002",
+        "correct": true,
+        "predicted": null,
+        "expected": "an exhibition poster titled NORTHERN LIGHTS dated SEPTEMBER 14 in HALL B",
+        "latency_ms": 230897.614,
+        "output_tokens": null,
+        "category": "text",
+        "difficulty": "easy",
+        "metrics": {
+          "clipscore": 37.9752,
+          "clipscore_min": 26.0
+        }
+      },
+      {
+        "id": "t2i-0003",
+        "correct": true,
+        "predicted": null,
+        "expected": "a cafe chalkboard menu listing ESPRESSO 2.50, FLAT WHITE 3.80 and CROISSANT 2.20",
+        "latency_ms": 33061.712,
+        "output_tokens": null,
+        "category": "text",
+        "difficulty": "medium",
+        "metrics": {
+          "clipscore": 29.3999,
+          "clipscore_min": 26.0
+        }
+      },
+      {
+        "id": "t2i-0004",
+        "correct": true,
+        "predicted": null,
+        "expected": "a phone app screen headed Weekly Report showing 4208 steps and a Continue button",
+        "latency_ms": 32494.385,
+        "output_tokens": null,
+        "category": "text",
+        "difficulty": "medium",
+        "metrics": {
+          "clipscore": 31.3295,
+          "clipscore_min": 26.0
+        }
+      },
+      {
+        "id": "t2i-0005",
+        "correct": true,
+        "predicted": null,
+        "expected": "a bilingual cafe door sign reading 欢迎光临 above WELCOME FRIENDS",
+        "latency_ms": 32694.07,
+        "output_tokens": null,
+        "category": "text",
+        "difficulty": "hard",
+        "metrics": {
+          "clipscore": 36.931,
+          "clipscore_min": 26.0
+        }
+      },
+      {
+        "id": "t2i-0006",
+        "correct": true,
+        "predicted": null,
+        "expected": "a handwritten paper note reading Meet me at Pier 9 at dusk",
+        "latency_ms": 33104.558,
+        "output_tokens": null,
+        "category": "text",
+        "difficulty": "hard",
+        "metrics": {
+          "clipscore": 33.8002,
+          "clipscore_min": 26.0
+        }
+      },
+      {
+        "id": "t2i-0007",
+        "correct": false,
+        "predicted": null,
+        "expected": "a portrait of a woman beside a window in soft directional light",
+        "latency_ms": 33098.257,
+        "output_tokens": null,
+        "category": "portrait",
+        "difficulty": "easy",
+        "metrics": {
+          "clipscore": 18.8712,
+          "clipscore_min": 26.0
+        }
+      },
+      {
+        "id": "t2i-0008",
+        "correct": false,
+        "predicted": null,
+        "expected": "a person holding a ceramic cup with both hands, all ten fingers visible",
+        "latency_ms": 32519.727,
+        "output_tokens": null,
+        "category": "portrait",
+        "difficulty": "hard",
+        "metrics": {
+          "clipscore": 23.8002,
+          "clipscore_min": 26.0
+        }
+      },
+      {
+        "id": "t2i-0009",
+        "correct": false,
+        "predicted": null,
+        "expected": "two people talking outdoors, strongly backlit by a low sun",
+        "latency_ms": 32955.454,
+        "output_tokens": null,
+        "category": "portrait",
+        "difficulty": "medium",
+        "metrics": {
+          "clipscore": 23.0815,
+          "clipscore_min": 26.0
+        }
+      },
+      {
+        "id": "t2i-0010",
+        "correct": false,
+        "predicted": null,
+        "expected": "a studio headshot on a grey backdrop with visible skin texture and catchlights",
+        "latency_ms": 32452.196,
+        "output_tokens": null,
+        "category": "portrait",
+        "difficulty": "medium",
+        "metrics": {
+          "clipscore": 22.0753,
+          "clipscore_min": 26.0
+        }
+      },
+      {
+        "id": "t2i-0011",
+        "correct": true,
+        "predicted": null,
+        "expected": "a clear glass bottle on polished marble with refraction and a soft shadow",
+        "latency_ms": 32759.078,
+        "output_tokens": null,
+        "category": "product",
+        "difficulty": "medium",
+        "metrics": {
+          "clipscore": 30.1882,
+          "clipscore_min": 26.0
+        }
+      },
+      {
+        "id": "t2i-0012",
+        "correct": false,
+        "predicted": null,
+        "expected": "a macro shot of a steel watch with a brown leather strap on slate",
+        "latency_ms": 32996.66,
+        "output_tokens": null,
+        "category": "product",
+        "difficulty": "medium",
+        "metrics": {
+          "clipscore": 20.8305,
+          "clipscore_min": 26.0
+        }
+      },
+      {
+        "id": "t2i-0013",
+        "correct": false,
+        "predicted": null,
+        "expected": "three matte ceramic bowls stacked centred on a linen cloth, nothing else in frame",
+        "latency_ms": 32570.577,
+        "output_tokens": null,
+        "category": "product",
+        "difficulty": "easy",
+        "metrics": {
+          "clipscore": 24.3139,
+          "clipscore_min": 26.0
+        }
+      },
+      {
+        "id": "t2i-0014",
+        "correct": false,
+        "predicted": null,
+        "expected": "a top-down flat lay of four objects in a two by two grid on folded linen",
+        "latency_ms": 32831.364,
+        "output_tokens": null,
+        "category": "product",
+        "difficulty": "hard",
+        "metrics": {
+          "clipscore": 22.6949,
+          "clipscore_min": 26.0
+        }
+      },
+      {
+        "id": "t2i-0015",
+        "correct": true,
+        "predicted": null,
+        "expected": "a wide coastal cliff at sunrise with sea mist in the bays",
+        "latency_ms": 232971.967,
+        "output_tokens": null,
+        "category": "scene",
+        "difficulty": "easy",
+        "metrics": {
+          "clipscore": 26.8778,
+          "clipscore_min": 26.0
+        }
+      },
+      {
+        "id": "t2i-0016",
+        "correct": true,
+        "predicted": null,
+        "expected": "a narrow rainy alley at night in vertical framing with neon reflections",
+        "latency_ms": 32940.837,
+        "output_tokens": null,
+        "category": "scene",
+        "difficulty": "medium",
+        "metrics": {
+          "clipscore": 27.6169,
+          "clipscore_min": 26.0
+        }
+      },
+      {
+        "id": "t2i-0017",
+        "correct": true,
+        "predicted": null,
+        "expected": "layered mountain ridges in fog with soft tonal separation",
+        "latency_ms": 32670.641,
+        "output_tokens": null,
+        "category": "scene",
+        "difficulty": "hard",
+        "metrics": {
+          "clipscore": 27.0366,
+          "clipscore_min": 26.0
+        }
+      },
+      {
+        "id": "t2i-0018",
+        "correct": true,
+        "predicted": null,
+        "expected": "a die-cut sticker of a sitting fox on a transparent background",
+        "latency_ms": 33339.95,
+        "output_tokens": null,
+        "category": "rgba",
+        "difficulty": "easy",
+        "metrics": {
+          "clipscore": 31.4302,
+          "clipscore_min": 26.0
+        }
+      },
+      {
+        "id": "t2i-0019",
+        "correct": true,
+        "predicted": null,
+        "expected": "a sticker of a takeaway coffee cup with steam on a transparent background",
+        "latency_ms": 32961.793,
+        "output_tokens": null,
+        "category": "rgba",
+        "difficulty": "medium",
+        "metrics": {
+          "clipscore": 27.321,
+          "clipscore_min": 26.0
+        }
+      },
+      {
+        "id": "t2i-0020",
+        "correct": true,
+        "predicted": null,
+        "expected": "a soft shaded icon of a potted monstera on a transparent background",
+        "latency_ms": 32765.639,
+        "output_tokens": null,
+        "category": "rgba",
+        "difficulty": "medium",
+        "metrics": {
+          "clipscore": 30.913,
+          "clipscore_min": 26.0
+        }
+      }
+    ]
+  },
+  "failures": [],
+  "conditions": {
+    "dedicated": true,
+    "detail": "Box dedicated to this run. The qwen-image-21-spark bf16 server on :8020 was STOPPED for it, so SGLang saw an empty box (115.9 GiB free at load) and its auto memory policy kept every component on its checkpoint mapping instead of streaming the text encoder layer by layer, which is what it did during bring-up under a 52 GiB budget. Nothing else held the GPU. Ambient temperature unknown (no sensor on this box).",
+    "isolation_check": "nvidia-smi --query-compute-apps was empty before the server started and listed only the SGLang worker while it ran; pgrep found no other engine. A 1 Hz sampler recorded the sum of --query-compute-apps and free -m for the whole run."
+  },
+  "gotchas": [
+    {
+      "severity": "warn",
+      "text": "The driver reported thermal/hardware slowdown during the run — the numbers are throttled."
+    },
+    {
+      "severity": "info",
+      "text": "nvidia-smi --query-gpu=memory.used returns [N/A] on GB10: the CPU and the GPU share one pool and the per-device counter is not implemented. vram_peak_gb here comes from the sum of --query-compute-apps=used_memory, which the harness falls back to. It is a whole-device figure and it is only equal to this lane's footprint because the box ran nothing else."
+    },
+    {
+      "severity": "info",
+      "text": "output_format=png is not a preference, it is what makes this lane answer at all. Qwen-Image-2.1's VAE has four channels, this build's default output container for the model resolves to JPEG, and Pillow cannot save RGBA as JPEG: every plain render returns HTTP 500 with KeyError: 'RGBA' raised inside imageio's Pillow plugin. Requests that carry background=transparent happen to work by accident, because that switches the container to PNG."
+    },
+    {
+      "severity": "info",
+      "text": "This lane's transparency knob is background=transparent|opaque|auto, gpt-image-1's spelling, not a boolean named transparent. Sending the boolean is the silent failure eval-t2i-rgba-v1 exists to catch. Verified directly before the run: background=transparent returns an image whose alpha runs 0..255 with mean 80.5, while a plain render is RGBA with alpha 248..255, i.e. opaque."
+    },
+    {
+      "severity": "info",
+      "text": "Seconds per image are the server's own inference_time_s, not the HTTP wall clock; on a probe render the two were 35.37 s wall against the engine's own figure, and which of the two applied is in raw.payload per render."
+    },
+    {
+      "severity": "info",
+      "text": "ninja must be on PATH. It is installed inside the venv but invoking .venv/bin/sglang directly does not put it there. Missing, bf16 only logs 'Disabling diffusion residual-gate CUDA fast path ... No such file or directory: ninja' and falls back to eager, while online FP8 dies outright: its per-token quant kernel has no precompiled sm_121 variant and falls through to a KernelBackend.JIT compile. Every configuration in this pass exports PATH=$PWD/.venv/bin:$PATH."
+    },
+    {
+      "severity": "info",
+      "text": "Seed semantics are per engine. This lane seeds a torch generator on cuda (generator_device defaults to 'cuda'), so its fidelity score against the bf16 bundle is a scene-match number against a diffusers pipeline seeded the same way — meaningful as drift, but it is not the same arithmetic as comparing two runs of one engine."
+    }
+  ],
+  "derived": {
+    "cost_per_1m_output_tokens_usd": null,
+    "tokens_per_watt": null,
+    "tok_s_per_gb_bandwidth": null,
+    "bandwidth_efficiency": null,
+    "memory_headroom_gb": 101.351
+  },
+  "raw": {
+    "harness": "atlas-bench",
+    "harness_version": "0.1.0",
+    "sha256": "aec3ee1042a987231aa689f541663c9838eb392b38e8e2194b1a3799b8cae102",
+    "payload_path": null,
+    "payload": {
+      "lane": "openai_images",
+      "scorer": "clip",
+      "payload": [
+        {
+          "id": "t2i-0001",
+          "warmup": true,
+          "ok": true,
+          "seconds": 32.4686,
+          "wall_s": 32.5388,
+          "timing_source": "server",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "t2i-0001",
+          "warmup": false,
+          "ok": true,
+          "seconds": 32.7873,
+          "wall_s": 32.858,
+          "timing_source": "server",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "t2i-0002",
+          "warmup": false,
+          "ok": true,
+          "seconds": 230.6594,
+          "wall_s": 230.8976,
+          "timing_source": "server",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "t2i-0003",
+          "warmup": false,
+          "ok": true,
+          "seconds": 32.9885,
+          "wall_s": 33.0617,
+          "timing_source": "server",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "t2i-0004",
+          "warmup": false,
+          "ok": true,
+          "seconds": 32.4462,
+          "wall_s": 32.4944,
+          "timing_source": "server",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "t2i-0005",
+          "warmup": false,
+          "ok": true,
+          "seconds": 32.6192,
+          "wall_s": 32.6941,
+          "timing_source": "server",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "t2i-0006",
+          "warmup": false,
+          "ok": true,
+          "seconds": 33.0346,
+          "wall_s": 33.1046,
+          "timing_source": "server",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "t2i-0007",
+          "warmup": false,
+          "ok": true,
+          "seconds": 33.0254,
+          "wall_s": 33.0983,
+          "timing_source": "server",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "t2i-0008",
+          "warmup": false,
+          "ok": true,
+          "seconds": 32.4463,
+          "wall_s": 32.5197,
+          "timing_source": "server",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "t2i-0009",
+          "warmup": false,
+          "ok": true,
+          "seconds": 32.8632,
+          "wall_s": 32.9555,
+          "timing_source": "server",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "t2i-0010",
+          "warmup": false,
+          "ok": true,
+          "seconds": 32.3725,
+          "wall_s": 32.4522,
+          "timing_source": "server",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "t2i-0011",
+          "warmup": false,
+          "ok": true,
+          "seconds": 32.6928,
+          "wall_s": 32.7591,
+          "timing_source": "server",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "t2i-0012",
+          "warmup": false,
+          "ok": true,
+          "seconds": 32.9275,
+          "wall_s": 32.9967,
+          "timing_source": "server",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "t2i-0013",
+          "warmup": false,
+          "ok": true,
+          "seconds": 32.4959,
+          "wall_s": 32.5706,
+          "timing_source": "server",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "t2i-0014",
+          "warmup": false,
+          "ok": true,
+          "seconds": 32.7524,
+          "wall_s": 32.8314,
+          "timing_source": "server",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "t2i-0015",
+          "warmup": false,
+          "ok": true,
+          "seconds": 232.6566,
+          "wall_s": 232.972,
+          "timing_source": "server",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "t2i-0016",
+          "warmup": false,
+          "ok": true,
+          "seconds": 32.8568,
+          "wall_s": 32.9408,
+          "timing_source": "server",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "t2i-0017",
+          "warmup": false,
+          "ok": true,
+          "seconds": 32.6014,
+          "wall_s": 32.6706,
+          "timing_source": "server",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "t2i-0018",
+          "warmup": false,
+          "ok": true,
+          "seconds": 33.2805,
+          "wall_s": 33.34,
+          "timing_source": "server",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "t2i-0019",
+          "warmup": false,
+          "ok": true,
+          "seconds": 32.9026,
+          "wall_s": 32.9618,
+          "timing_source": "server",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "t2i-0020",
+          "warmup": false,
+          "ok": true,
+          "seconds": 32.7125,
+          "wall_s": 32.7656,
+          "timing_source": "server",
+          "status": 200,
+          "error_category": null
+        }
+      ],
+      "engine_endpoint": {
+        "attached": true,
+        "base_url": "http://127.0.0.1:30000",
+        "served_model_id": "Qwen-Image-2.1",
+        "advertised_models": [
+          "Qwen-Image-2.1"
+        ]
+      }
+    },
+    "truncated": false
+  },
+  "provenance": {
+    "github_login": "0xBakeer",
+    "github_user_id": null,
+    "started_at": "2026-09-20T23:56:56Z",
+    "finished_at": "2026-09-21T00:15:21Z",
+    "submitted_at": null,
+    "commit": null,
+    "pr": null,
+    "method": "atlas-bench",
+    "agent": null,
+    "notes": "NVIDIA DGX Spark (GB10, sm_121), driver 580.173.02, CUDA 13.0, aarch64 Ubuntu 24.04, 121 GiB unified memory. SGLang-Diffusion source build 0.0.0.dev60+g791c7850d (upstream main @791c7850d, which contains the Qwen-Image-2.1 PR #39983 merged 2026-09-20; the PyPI sglang[diffusion] 0.5.20 does not have this model at all), sglang-kernel 0.4.7, torch 2.13.0+cu130, diffusers 0.37.0.dev0, transformers 5.12.1. Configuration: online FP8 on the transformer only (--component-quantizations.transformer fp8); the Qwen3-VL text encoder stays bf16. Attention backend is Torch SDPA, which is what this build falls back to on SM12.x whatever is selected. Server process start to /health 200 was 61 s, which the result records as load_s null because the harness attached to a server it did not start. Ambient temperature unknown."
+  },
+  "verification": {
+    "level": "self-reported",
+    "reproduced_by": [],
+    "flags": []
+  }
+}
