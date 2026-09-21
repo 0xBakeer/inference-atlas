@@ -1,0 +1,393 @@
+{
+  "schema_version": 1,
+  "run_id": "4e338ee7c9d69d84--t2i-single-2k-40s-v1--b31b9e",
+  "config_id": "4e338ee7c9d69d84",
+  "cell_id": "bbefaf9edddb",
+  "workload_id": "t2i-single-2k-40s-v1",
+  "kind": "image",
+  "engine": {
+    "id": "sglang-diffusion",
+    "version": "0.0.0.dev60+g791c7850d",
+    "commit": null,
+    "build": null,
+    "container": null,
+    "install_method": "source"
+  },
+  "model": {
+    "id": "Qwen/Qwen-Image-2.1",
+    "quant_id": "fp8-online",
+    "hf_id": "Qwen/Qwen-Image-2.1",
+    "revision": null,
+    "dtype": "auto",
+    "local_path": null
+  },
+  "hardware": {
+    "id": "nvidia-gb10-dgx-spark",
+    "count": 1,
+    "driver": "580.173.02",
+    "cuda": "13.0",
+    "host": {
+      "cpu": "Cortex-A725",
+      "cpu_cores": 20,
+      "ram_gb": 121.6,
+      "os": "Ubuntu 24.04.4 LTS",
+      "kernel": "6.17.0-1029-nvidia",
+      "arch": "aarch64"
+    },
+    "fingerprint": "sha256:52ea2bdd513719724db88c162b6cc2c9fb4e5b67e02dbe41b9de00687acefb91",
+    "captured": {
+      "nvidia_smi": {
+        "driver": "580.173.02",
+        "cuda": "13.0",
+        "products": [
+          "NVIDIA GB10"
+        ],
+        "fb_memory_total_mib": 0.0
+      },
+      "lscpu": {
+        "architecture": "aarch64",
+        "cpus": "20",
+        "vendor_id": "ARM",
+        "model_name": "Cortex-A725",
+        "cores_per_socket": "10",
+        "sockets": "1",
+        "cpu_max_mhz": "2808.0000"
+      }
+    }
+  },
+  "args": {
+    "component-quantizations.transformer": "fp8",
+    "component-quantizations.text_encoder": "fp8",
+    "output-format": "png"
+  },
+  "args_canonical": "@dtype=auto;@quant=fp8-online;component-quantizations.text-encoder=fp8;component-quantizations.transformer=fp8;output-format=png",
+  "serve_command": null,
+  "workload": {
+    "id": "t2i-single-2k-40s-v1",
+    "resolved_params": {
+      "dataset_id": "t2i-prompts-v1",
+      "prompts": 6,
+      "width": 2048,
+      "height": 2048,
+      "steps": 40,
+      "seed": 42,
+      "guidance": null,
+      "images_per_request": 1,
+      "ref_images": 0,
+      "transparent": false,
+      "concurrency": 1,
+      "repeat": 3,
+      "warmup_requests": 1,
+      "timeout_s": 1800.0,
+      "dataset_categories": [
+        "t2i"
+      ],
+      "lane": "openai_images",
+      "invocation": "http://127.0.0.1:30000/v1/images/generations"
+    }
+  },
+  "metrics": {
+    "requests_total": 18,
+    "requests_ok": 18,
+    "requests_failed": 0,
+    "success_rate": 1.0,
+    "duration_s": 4379.97,
+    "s_per_image": {
+      "mean": 230.206,
+      "p50": 230.165,
+      "p90": 230.314,
+      "p95": 230.463,
+      "p99": 230.928,
+      "min": 229.961,
+      "max": 231.044
+    },
+    "e2e_ms": {
+      "mean": 230512.511,
+      "p50": 230469.292,
+      "p90": 230574.244,
+      "p95": 230737.032,
+      "p99": 231263.748,
+      "min": 230261.066,
+      "max": 231395.426
+    },
+    "load_s": null,
+    "vram_peak_gb": 26.489,
+    "ram_peak_gb": 42.588,
+    "power_avg_w": 75.34,
+    "power_peak_w": 78.68,
+    "energy_wh": 91.6678,
+    "gpu_util_avg_pct": 95.77,
+    "temp_max_c": 87.0,
+    "thermal_throttle_detected": true
+  },
+  "failures": [],
+  "conditions": {
+    "dedicated": true,
+    "detail": "Box dedicated to this run. The qwen-image-21-spark bf16 server on :8020 was STOPPED for it, so SGLang saw an empty box (115.9 GiB free at load) and its auto memory policy kept every component on its checkpoint mapping instead of streaming the text encoder layer by layer, which is what it did during bring-up under a 52 GiB budget. Nothing else held the GPU. Ambient temperature unknown (no sensor on this box).",
+    "isolation_check": "nvidia-smi --query-compute-apps was empty before the server started and listed only the SGLang worker while it ran; pgrep found no other engine. A 1 Hz sampler recorded the sum of --query-compute-apps and free -m for the whole run."
+  },
+  "gotchas": [
+    {
+      "severity": "warn",
+      "text": "The driver reported thermal/hardware slowdown during the run — the numbers are throttled."
+    },
+    {
+      "severity": "info",
+      "text": "nvidia-smi --query-gpu=memory.used returns [N/A] on GB10: the CPU and the GPU share one pool and the per-device counter is not implemented. vram_peak_gb here comes from the sum of --query-compute-apps=used_memory, which the harness falls back to. It is a whole-device figure and it is only equal to this lane's footprint because the box ran nothing else."
+    },
+    {
+      "severity": "info",
+      "text": "output_format=png is not a preference, it is what makes this lane answer at all. Qwen-Image-2.1's VAE has four channels, this build's default output container for the model resolves to JPEG, and Pillow cannot save RGBA as JPEG: every plain render returns HTTP 500 with KeyError: 'RGBA' raised inside imageio's Pillow plugin. Requests that carry background=transparent happen to work by accident, because that switches the container to PNG."
+    },
+    {
+      "severity": "info",
+      "text": "This lane's transparency knob is background=transparent|opaque|auto, gpt-image-1's spelling, not a boolean named transparent. Sending the boolean is the silent failure eval-t2i-rgba-v1 exists to catch. Verified directly before the run: background=transparent returns an image whose alpha runs 0..255 with mean 80.5, while a plain render is RGBA with alpha 248..255, i.e. opaque."
+    },
+    {
+      "severity": "info",
+      "text": "Seconds per image are the server's own inference_time_s, not the HTTP wall clock; on a probe render the two were 35.37 s wall against the engine's own figure, and which of the two applied is in raw.payload per render."
+    },
+    {
+      "severity": "info",
+      "text": "ninja must be on PATH. It is installed inside the venv but invoking .venv/bin/sglang directly does not put it there. Missing, bf16 only logs 'Disabling diffusion residual-gate CUDA fast path ... No such file or directory: ninja' and falls back to eager, while online FP8 dies outright: its per-token quant kernel has no precompiled sm_121 variant and falls through to a KernelBackend.JIT compile. Every configuration in this pass exports PATH=$PWD/.venv/bin:$PATH."
+    },
+    {
+      "severity": "info",
+      "text": "Seed semantics are per engine. This lane seeds a torch generator on cuda (generator_device defaults to 'cuda'), so its fidelity score against the bf16 bundle is a scene-match number against a diffusers pipeline seeded the same way — meaningful as drift, but it is not the same arithmetic as comparing two runs of one engine."
+    }
+  ],
+  "derived": {
+    "cost_per_1m_output_tokens_usd": null,
+    "tokens_per_watt": null,
+    "tok_s_per_gb_bandwidth": null,
+    "bandwidth_efficiency": null,
+    "memory_headroom_gb": 101.511
+  },
+  "raw": {
+    "harness": "atlas-bench",
+    "harness_version": "0.1.0",
+    "sha256": "03e27674c452382323a72c9b9944fa8cb77fe38a46e3fd6425c44e2fea059145",
+    "payload_path": null,
+    "payload": {
+      "lane": "openai_images",
+      "payload": [
+        {
+          "id": "spd-0001",
+          "warmup": true,
+          "ok": true,
+          "seconds": 230.4682,
+          "wall_s": 230.7449,
+          "timing_source": "server",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "spd-0001",
+          "warmup": false,
+          "ok": true,
+          "seconds": 230.2947,
+          "wall_s": 230.5543,
+          "timing_source": "server",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "spd-0002",
+          "warmup": false,
+          "ok": true,
+          "seconds": 230.0715,
+          "wall_s": 230.3866,
+          "timing_source": "server",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "spd-0003",
+          "warmup": false,
+          "ok": true,
+          "seconds": 230.0496,
+          "wall_s": 230.3726,
+          "timing_source": "server",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "spd-0004",
+          "warmup": false,
+          "ok": true,
+          "seconds": 230.1106,
+          "wall_s": 230.4405,
+          "timing_source": "server",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "spd-0005",
+          "warmup": false,
+          "ok": true,
+          "seconds": 231.0444,
+          "wall_s": 231.3954,
+          "timing_source": "server",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "spd-0006",
+          "warmup": false,
+          "ok": true,
+          "seconds": 230.1667,
+          "wall_s": 230.4712,
+          "timing_source": "server",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "spd-0001",
+          "warmup": false,
+          "ok": true,
+          "seconds": 230.216,
+          "wall_s": 230.4673,
+          "timing_source": "server",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "spd-0002",
+          "warmup": false,
+          "ok": true,
+          "seconds": 229.9613,
+          "wall_s": 230.2611,
+          "timing_source": "server",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "spd-0003",
+          "warmup": false,
+          "ok": true,
+          "seconds": 230.1142,
+          "wall_s": 230.4228,
+          "timing_source": "server",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "spd-0004",
+          "warmup": false,
+          "ok": true,
+          "seconds": 230.2001,
+          "wall_s": 230.5179,
+          "timing_source": "server",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "spd-0005",
+          "warmup": false,
+          "ok": true,
+          "seconds": 230.1384,
+          "wall_s": 230.4569,
+          "timing_source": "server",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "spd-0006",
+          "warmup": false,
+          "ok": true,
+          "seconds": 230.1629,
+          "wall_s": 230.487,
+          "timing_source": "server",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "spd-0001",
+          "warmup": false,
+          "ok": true,
+          "seconds": 230.3602,
+          "wall_s": 230.6208,
+          "timing_source": "server",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "spd-0002",
+          "warmup": false,
+          "ok": true,
+          "seconds": 230.2134,
+          "wall_s": 230.5019,
+          "timing_source": "server",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "spd-0003",
+          "warmup": false,
+          "ok": true,
+          "seconds": 230.108,
+          "wall_s": 230.4022,
+          "timing_source": "server",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "spd-0004",
+          "warmup": false,
+          "ok": true,
+          "seconds": 230.2345,
+          "wall_s": 230.544,
+          "timing_source": "server",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "spd-0005",
+          "warmup": false,
+          "ok": true,
+          "seconds": 230.1724,
+          "wall_s": 230.507,
+          "timing_source": "server",
+          "status": 200,
+          "error_category": null
+        },
+        {
+          "id": "spd-0006",
+          "warmup": false,
+          "ok": true,
+          "seconds": 230.0802,
+          "wall_s": 230.4156,
+          "timing_source": "server",
+          "status": 200,
+          "error_category": null
+        }
+      ],
+      "engine_endpoint": {
+        "attached": true,
+        "base_url": "http://127.0.0.1:30000",
+        "served_model_id": "Qwen-Image-2.1",
+        "advertised_models": [
+          "Qwen-Image-2.1"
+        ]
+      }
+    },
+    "truncated": false
+  },
+  "provenance": {
+    "github_login": "0xBakeer",
+    "github_user_id": null,
+    "started_at": "2026-09-21T00:54:02Z",
+    "finished_at": "2026-09-21T02:07:03Z",
+    "submitted_at": null,
+    "commit": null,
+    "pr": null,
+    "method": "atlas-bench",
+    "agent": null,
+    "notes": "NVIDIA DGX Spark (GB10, sm_121), driver 580.173.02, CUDA 13.0, aarch64 Ubuntu 24.04, 121 GiB unified memory. SGLang-Diffusion source build 0.0.0.dev60+g791c7850d (upstream main @791c7850d, which contains the Qwen-Image-2.1 PR #39983 merged 2026-09-20; the PyPI sglang[diffusion] 0.5.20 does not have this model at all), sglang-kernel 0.4.7, torch 2.13.0+cu130, diffusers 0.37.0.dev0, transformers 5.12.1. Configuration: online FP8 on the transformer and on the Qwen3-VL text encoder (--component-quantizations.transformer fp8 --component-quantizations.text_encoder fp8). Attention backend is Torch SDPA, which is what this build falls back to on SM12.x whatever is selected. Server process start to /health 200 was 118 s, which the result records as load_s null because the harness attached to a server it did not start. Ambient temperature unknown."
+  },
+  "verification": {
+    "level": "self-reported",
+    "reproduced_by": [],
+    "flags": []
+  }
+}
