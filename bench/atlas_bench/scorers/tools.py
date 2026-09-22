@@ -9,7 +9,10 @@ The row's ``scorer`` says ``json``, but the thing being judged is not the text: 
   ``meta.arguments_match == "exact"``. Strings compare case-insensitively after stripping,
   numbers numerically.
 - ``answer.tool_call = null`` — correct only when no tool call was made at all. The text of
-  the reply is not scored.
+  the reply is not scored, unless the row also carries ``answer.reply_contains``: then every
+  entry (a string, or a list of accepted alternatives) must also occur in the reply,
+  casefolded, with ``<think>`` blocks removed. That is how ``eval-tools-small-v1`` checks a
+  model that answers from a tool result it was given instead of calling the tool again.
 """
 
 from __future__ import annotations
@@ -17,8 +20,9 @@ from __future__ import annotations
 import json
 from typing import Any
 
-from . import ScoreResult
+from . import ScoreResult, collapse_ws, strip_think
 from .json_match import is_subset
+from .text import _entry_matches
 
 __all__ = ["parse_arguments", "score_tool_call"]
 
@@ -43,11 +47,22 @@ def score_tool_call(output: str, row: Any) -> ScoreResult:
 
     if expected is None:
         made = ", ".join(str((c.get("function") or {}).get("name")) for c in calls)
+        wanted = answer.get("reply_contains") if isinstance(answer, dict) else None
+        if calls or not wanted:
+            return ScoreResult(
+                not calls,
+                predicted=f"tool_calls: {made}" if calls else "no tool call",
+                expected="no tool call",
+                detail=None if not calls else "a tool was called where none was expected",
+            )
+        reply = strip_think(output or "").strip()
+        haystack = collapse_ws(reply)
+        missing = [entry for entry in wanted if not _entry_matches(entry, haystack)]
         return ScoreResult(
-            not calls,
-            predicted=f"tool_calls: {made}" if calls else "no tool call",
-            expected="no tool call",
-            detail=None if not calls else "a tool was called where none was expected",
+            not missing,
+            predicted=reply[:500] or "no tool call",
+            expected=f"no tool call; reply contains {json.dumps(wanted, ensure_ascii=False)}"[:500],
+            detail=None if not missing else "the reply did not contain the tool result",
         )
 
     if not calls:

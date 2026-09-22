@@ -407,7 +407,7 @@ def check_dataset(directory: Path) -> tuple[str, str, int, int]:
         check_eval_rows(rows, where, directory)
         if directory.name == "eval-instruction-v1":
             check_instruction_rules(rows, where, directory)
-        if directory.name == "eval-tools-v1":
+        if directory.name.startswith("eval-tools"):
             check_tool_rows(rows, where)
         if directory.name == "eval-longctx-v1":
             check_longctx_recipes(rows, where)

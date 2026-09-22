@@ -63,50 +63,90 @@ were right.
 
 ## All workloads
 
-| id                                 | kind    | dataset                     | shape                                         |
-| ---------------------------------- | ------- | --------------------------- | --------------------------------------------- |
-| `serve-single-i256-o256-v1`        | serving | `prompts-mixed-v1`          | c1, n=50, in≈256, out=256                     |
-| `serve-short-c16-i128-o128-v1`     | serving | `prompts-mixed-v1`          | c16, n=320, in≈128, out=128                   |
-| `serve-chat-c8-i1k-o256-v1`        | serving | `prompts-mixed-v1`          | c8, n=200, in≈1k, out=256                     |
-| `serve-chat-c32-i1k-o256-v1`       | serving | `prompts-mixed-v1`          | c32, n=400, in≈1k, out=256                    |
-| `serve-chat-c64-i1k-o256-v1`       | serving | `prompts-mixed-v1`          | c64, n=640, in≈1k, out=256                    |
-| `serve-long-c4-i8k-o512-v1`        | serving | `prompts-mixed-v1`          | c4, n=40, in≈8k, out=512                      |
-| `serve-code-c8-i2k-o1k-v1`         | serving | `prompts-code-v1`           | c8, n=160, in≈2k, out=1k                      |
-| `serve-prefix-c16-v1`              | serving | `prompts-shared-prefix-v1`  | c16, n=200, grouped by prefix                 |
-| `sweep-parallel-1-32-i512-o256-v1` | sweep   | `prompts-mixed-v1`          | concurrency 1,2,4,8,16,32                     |
-| `sweep-parallel-1-64-i1k-o256-v1`  | sweep   | `prompts-mixed-v1`          | concurrency 1,2,4,8,16,32,64                  |
-| `prefill-8k-v1`                    | prefill | `haystack-v1`               | c1, n=10, in=8k, out=16                       |
-| `prefill-32k-v1`                   | prefill | `haystack-v1`               | c1, n=10, in=32k, out=16                      |
-| `prefill-128k-v1`                  | prefill | `haystack-v1`               | c1, n=10, in=128k, out=16                     |
-| `longctx-depth-sweep-v1`           | longctx | `haystack-v1`               | input_tokens 1k…256k, out=256, needle checked |
-| `longctx-needle-32k-v1`            | longctx | `eval-longctx-v1`           | c1, n=6, in=32k, needle scored                |
-| `longctx-needle-128k-v1`           | longctx | `eval-longctx-v1`           | c1, n=6, in=128k, needle scored               |
-| `eval-math-v1`                     | eval    | `eval-math-v1`              | `numeric`, max_out 4096                       |
-| `eval-reasoning-v1`                | eval    | `eval-reasoning-v1`         | `exact` (rows may be `mc`), max_out 2048      |
-| `eval-code-v1`                     | eval    | `eval-code-v1`              | `code-exec`, max_out 4096                     |
-| `eval-knowledge-v1`                | eval    | `eval-knowledge-v1`         | `mc`, max_out 2048                            |
-| `eval-instruction-v1`              | eval    | `eval-instruction-v1`       | `instruction`, max_out 2048                   |
-| `eval-json-v1`                     | eval    | `eval-json-v1`              | `json`, max_out 2048                          |
-| `eval-tools-v1`                    | eval    | `eval-tools-v1`             | `json` on `tool_calls[0]`, max_out 2048       |
-| `eval-vision-v1`                   | eval    | `eval-vision-v1`            | `vision`, max_out 2048                        |
-| `eval-multilingual-v1`             | eval    | `eval-multilingual-v1`      | `contains`, max_out 2048                      |
-| `eval-longctx-v1`                  | eval    | `eval-longctx-v1`           | `needle`, max_out 1024, c1                    |
-| `eval-format-v1`                   | eval    | `eval-format-v1`            | `exact`, max_out 256                          |
-| `eval-math-v2`                     | eval    | `eval-math-v2`              | `numeric`, max_out 4096, supersedes v1        |
-| `eval-reasoning-v2`                | eval    | `eval-reasoning-v2`         | mixed scorers, max_out 4096, supersedes v1    |
-| `eval-knowledge-v2`                | eval    | `eval-knowledge-v2`         | `mc`, max_out 1024, supersedes v1             |
-| `eval-science-v2`                  | eval    | `eval-science-v2`           | `numeric`, max_out 4096, new suite            |
-| `eval-commonsense-v2`              | eval    | `eval-commonsense-v2`       | mixed scorers, max_out 2048, new suite        |
-| `eval-security-v2`                 | eval    | `eval-security-v2`          | mixed scorers, max_out 4096, new suite        |
-| `eval-longgen-integrity-v1`        | eval    | `eval-longgen-integrity-v1` | `integrity`, max_out 3000, c1, n=36           |
-| `t2i-single-1k-40s-v1`             | image   | `t2i-prompts-v1`            | 1024², 40 steps, c1, 6 prompts × 3, warmup 1  |
-| `t2i-single-2k-40s-v1`             | image   | `t2i-prompts-v1`            | 2048² native 2K, 40 steps, c1, 6 × 3          |
-| `edit-ref1-1k-40s-v1`              | image   | `t2i-prompts-v1`            | 1024², 1 reference image, c1, 3 × 3           |
-| `edit-ref4-1k-40s-v1`              | image   | `t2i-prompts-v1`            | 1024², 4 reference images, c1, 3 × 3          |
-| `eval-t2i-text-v1`                 | eval    | `eval-t2i-text-v1`          | `ocr`, 6 cases, exact strings + CER           |
-| `eval-t2i-adherence-v1`            | eval    | `eval-t2i-adherence-v1`     | `clip`, 20 cases, CLIPScore ViT-L-14          |
-| `eval-t2i-rgba-v1`                 | eval    | `eval-t2i-rgba-v1`          | `rgba`, 4 cases, alpha channel checks         |
-| `eval-t2i-fidelity-v1`             | eval    | `eval-t2i-fidelity-v1`      | `fidelity`, 24 cases, vs a bf16 bundle        |
+| id                                  | kind    | dataset                     | shape                                         |
+| ----------------------------------- | ------- | --------------------------- | --------------------------------------------- |
+| `serve-single-i256-o256-v1`         | serving | `prompts-mixed-v1`          | c1, n=50, in≈256, out=256                     |
+| `serve-short-c16-i128-o128-v1`      | serving | `prompts-mixed-v1`          | c16, n=320, in≈128, out=128                   |
+| `serve-chat-c8-i1k-o256-v1`         | serving | `prompts-mixed-v1`          | c8, n=200, in≈1k, out=256                     |
+| `serve-chat-c32-i1k-o256-v1`        | serving | `prompts-mixed-v1`          | c32, n=400, in≈1k, out=256                    |
+| `serve-chat-c64-i1k-o256-v1`        | serving | `prompts-mixed-v1`          | c64, n=640, in≈1k, out=256                    |
+| `serve-long-c4-i8k-o512-v1`         | serving | `prompts-mixed-v1`          | c4, n=40, in≈8k, out=512                      |
+| `serve-code-c8-i2k-o1k-v1`          | serving | `prompts-code-v1`           | c8, n=160, in≈2k, out=1k                      |
+| `serve-prefix-c16-v1`               | serving | `prompts-shared-prefix-v1`  | c16, n=200, grouped by prefix                 |
+| `sweep-parallel-1-32-i512-o256-v1`  | sweep   | `prompts-mixed-v1`          | concurrency 1,2,4,8,16,32                     |
+| `sweep-parallel-1-64-i1k-o256-v1`   | sweep   | `prompts-mixed-v1`          | concurrency 1,2,4,8,16,32,64                  |
+| `sweep-parallel-1-256-i512-o256-v1` | sweep   | `prompts-mixed-v1`          | concurrency 1,2,4,…,64,128,256                |
+| `prefill-8k-v1`                     | prefill | `haystack-v1`               | c1, n=10, in=8k, out=16                       |
+| `prefill-32k-v1`                    | prefill | `haystack-v1`               | c1, n=10, in=32k, out=16                      |
+| `prefill-128k-v1`                   | prefill | `haystack-v1`               | c1, n=10, in=128k, out=16                     |
+| `longctx-depth-sweep-v1`            | longctx | `haystack-v1`               | input_tokens 1k…256k, out=256, needle checked |
+| `longctx-needle-32k-v1`             | longctx | `eval-longctx-v1`           | c1, n=6, in=32k, needle scored                |
+| `longctx-needle-128k-v1`            | longctx | `eval-longctx-v1`           | c1, n=6, in=128k, needle scored               |
+| `eval-math-v1`                      | eval    | `eval-math-v1`              | `numeric`, max_out 4096                       |
+| `eval-reasoning-v1`                 | eval    | `eval-reasoning-v1`         | `exact` (rows may be `mc`), max_out 2048      |
+| `eval-code-v1`                      | eval    | `eval-code-v1`              | `code-exec`, max_out 4096                     |
+| `eval-knowledge-v1`                 | eval    | `eval-knowledge-v1`         | `mc`, max_out 2048                            |
+| `eval-instruction-v1`               | eval    | `eval-instruction-v1`       | `instruction`, max_out 2048                   |
+| `eval-json-v1`                      | eval    | `eval-json-v1`              | `json`, max_out 2048                          |
+| `eval-tools-v1`                     | eval    | `eval-tools-v1`             | `json` on `tool_calls[0]`, max_out 2048       |
+| `eval-vision-v1`                    | eval    | `eval-vision-v1`            | `vision`, max_out 2048                        |
+| `eval-multilingual-v1`              | eval    | `eval-multilingual-v1`      | `contains`, max_out 2048                      |
+| `eval-longctx-v1`                   | eval    | `eval-longctx-v1`           | `needle`, max_out 1024, c1                    |
+| `eval-format-v1`                    | eval    | `eval-format-v1`            | `exact`, max_out 256                          |
+| `eval-math-v2`                      | eval    | `eval-math-v2`              | `numeric`, max_out 4096, supersedes v1        |
+| `eval-reasoning-v2`                 | eval    | `eval-reasoning-v2`         | mixed scorers, max_out 4096, supersedes v1    |
+| `eval-knowledge-v2`                 | eval    | `eval-knowledge-v2`         | `mc`, max_out 1024, supersedes v1             |
+| `eval-science-v2`                   | eval    | `eval-science-v2`           | `numeric`, max_out 4096, new suite            |
+| `eval-commonsense-v2`               | eval    | `eval-commonsense-v2`       | mixed scorers, max_out 2048, new suite        |
+| `eval-security-v2`                  | eval    | `eval-security-v2`          | mixed scorers, max_out 4096, new suite        |
+| `eval-longgen-integrity-v1`         | eval    | `eval-longgen-integrity-v1` | `integrity`, max_out 3000, c1, n=36           |
+| `eval-rag-grounded-v1`              | eval    | `eval-rag-grounded-v1`      | `needle`, max_out 2048, n=120, half abstain   |
+| `eval-tools-small-v1`               | eval    | `eval-tools-small-v1`       | `json` on `tool_calls[0]`, multi-turn, n=100  |
+| `t2i-single-1k-40s-v1`              | image   | `t2i-prompts-v1`            | 1024², 40 steps, c1, 6 prompts × 3, warmup 1  |
+| `t2i-single-2k-40s-v1`              | image   | `t2i-prompts-v1`            | 2048² native 2K, 40 steps, c1, 6 × 3          |
+| `edit-ref1-1k-40s-v1`               | image   | `t2i-prompts-v1`            | 1024², 1 reference image, c1, 3 × 3           |
+| `edit-ref4-1k-40s-v1`               | image   | `t2i-prompts-v1`            | 1024², 4 reference images, c1, 3 × 3          |
+| `eval-t2i-text-v1`                  | eval    | `eval-t2i-text-v1`          | `ocr`, 6 cases, exact strings + CER           |
+| `eval-t2i-adherence-v1`             | eval    | `eval-t2i-adherence-v1`     | `clip`, 20 cases, CLIPScore ViT-L-14          |
+| `eval-t2i-rgba-v1`                  | eval    | `eval-t2i-rgba-v1`          | `rgba`, 4 cases, alpha channel checks         |
+| `eval-t2i-fidelity-v1`              | eval    | `eval-t2i-fidelity-v1`      | `fidelity`, 24 cases, vs a bf16 bundle        |
+
+## Small-model tier
+
+Three workloads (2026-09-22) for 1-3B models, chosen from what the existing small-model
+results show rather than from a wish list. The evidence is `google/gemma-4-E2B-it` on two
+engines (vLLM bf16 on a GB10, LM Studio MLX 4-bit on an M2 Max):
+
+- **Saturated for small models already:** `eval-tools-v1` 1.00 / 1.00, `eval-format-v1`
+  1.00 / 0.87, `eval-json-v1` 0.93 / 0.99 (its extraction category 40 of 40),
+  `eval-multilingual-v1` 0.96 / 0.96, `eval-knowledge-v1` 0.94 / 0.98. Short extraction,
+  classification and JSON-from-a-sentence suites would land in the same place, so there
+  are none here.
+- **Still spreading, so no "easy tier" is needed:** `eval-math-v1` 0.62 / 0.98 and
+  `eval-reasoning-v1` 0.18 / 0.73. The v1 suites _are_ the easy tier for this size. No
+  small model has run a `-v2` suite yet; run them before concluding they sit at the floor.
+- **Batch-1 latency is covered:** `serve-single-i256-o256-v1` already records TTFT and
+  TPOT for one short request at a time (45 ms and 25.5 ms p50 for the vLLM run). A
+  tiny-prompt variant would differ by a few milliseconds of prefill.
+- **Not covered:** throughput past 64 streams, reading a provided passage without
+  inventing (closed-book `eval-hallucination-v1` is 0.07 for the MLX run, and nothing
+  measures the grounded case), and tool use that is harder than copying arguments.
+
+| id                                  | measures                                                                                                                                                                                                                                                                    | ~2B model at 100+ tok/s |
+| ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- |
+| `sweep-parallel-1-256-i512-o256-v1` | The 1-32 sweep continued to 64, 128 and 256 streams. The vLLM run above still gained 1.7x from 16 to 32 streams with per-request decode only 16 % slower, and its 64-stream point was capped by `--max-num-seqs 32`, so the knee has not been measured for any small model. | 5-10 min                |
+| `eval-rag-grounded-v1`              | 120 questions over 30 invented 80-110-word passages. Half are answerable (lookup with a same-type distractor, a one-step sum or difference, a stated condition), half are not (never mentioned, or given only for the sibling entity). Always declining scores 0.5.         | 1-5 min                 |
+| `eval-tools-small-v1`               | 100 items with one or two tools: derived arguments (relative dates, spoken times, dozens, °F into a °C tool), a choice between near-identical tools, asking when a required argument is missing, using a result in the next call, answering from a result, revising a call. | 1-5 min                 |
+
+The eval runtimes are wide because thinking decides them: without it the answers are a
+few dozen tokens each; with it a small model can spend a few hundred to a thousand tokens
+per item at 4 streams. The sweep sends 2,112 requests of 256 output tokens.
+
+Running them: the sweep only measures a point if the engine admits that many sequences
+(vLLM `--max-num-seqs`, SGLang `--max-running-requests`, llama.cpp `--parallel`), and
+prompts repeat within a point from 64 streams up, so run it with prefix caching off or
+say that it was on. The tools suite needs the engine's tool-call parser enabled, and the
+parser is part of the configuration.
 
 ## Conventions a runner must honour
 
