@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "id": "eval-rag-grounded-v1",
+  "name": "Grounded answering over a short passage v1",
+  "kind": "eval",
+  "description": "120 questions over 30 short invented passages, half answerable from the passage and half not. Measures whether a model reads a provided context correctly (lookup with a same-type distractor, a one-step sum or difference, a stated condition) and whether it declines when the passage does not hold the answer, including the near-miss case where the passage gives the same attribute for a sibling entity.",
+  "licence": "MIT",
+  "created": "2026-09-22",
+  "files": [
+    "items.jsonl"
+  ],
+  "count": 120,
+  "generator": "datasets/_gen/gen_eval_rag_grounded.py",
+  "token_heuristic": "approx_tokens = ceil(sum(len(m.content) for m in messages) / 4)",
+  "provenance": "Synthetic, authored in this repository. No third-party text.",
+  "default_scorer": "needle",
+  "scoring": {
+    "answer_extraction": [
+      "Drop everything inside <think>...</think> (and an unterminated leading <think> block).",
+      "Drop markdown code fences, keeping the fenced content.",
+      "If any line matches /^\\s*(?:final answer|answer)\\s*[:\\-]\\s*(.+)$/i, take the capture of the LAST such line and use only that.",
+      "Strip surrounding whitespace, matching quotes, and a single trailing '.' or '!'.",
+      "Scorers that need the untouched output (instruction, json) get the raw text as well; the instruction scorer always works on the raw output."
+    ],
+    "scorers": {
+      "needle": "Casefolded substring test of `answer` in the extracted output, after removing spaces, commas and hyphens from both sides. Meant for retrieval, not phrasing."
+    },
+    "pass_rule": "One item is correct or incorrect; there is no partial credit. accuracy = correct / total. An item whose request failed (timeout, 5xx, context overflow) counts as incorrect AND is reported in scores.failures and metrics.requests_failed."
+  },
+  "categories": [
+    "absent",
+    "combine",
+    "condition",
+    "lookup",
+    "near_miss"
+  ],
+  "difficulties": [
+    "easy",
+    "medium",
+    "hard"
+  ],
+  "counts": {
+    "by_category": {
+      "lookup": 30,
+      "combine": 15,
+      "absent": 30,
+      "near_miss": 30,
+      "condition": 15
+    },
+    "by_difficulty": {
+      "easy": 60,
+      "hard": 45,
+      "medium": 15
+    },
+    "by_scorer": {
+      "needle": 120
+    }
+  },
+  "seed": 20260922,
+  "passages": 30,
+  "passage_words": {
+    "min": 80,
+    "max": 108
+  },
+  "abstain_phrases": [
+    "NOT IN PASSAGE",
+    "not in the passage",
+    "not mentioned",
+    "does not mention",
+    "doesn't mention",
+    "not stated",
+    "does not state",
+    "doesn't state",
+    "does not say",
+    "doesn't say",
+    "not specified",
+    "does not specify",
+    "doesn't specify",
+    "not provided",
+    "does not provide",
+    "doesn't provide",
+    "not given",
+    "no information",
+    "not included",
+    "cannot be determined"
+  ],
+  "notes": [
+    "Every passage, entity, place and person is invented, so no item can be answered from memory; every answer is computed from the values rendered into the passage.",
+    "Answerable rows (lookup, combine, condition) carry the value as `answer`; unanswerable rows (absent, near_miss) carry the list of accepted ways to decline, any one of which passes. The needle scorer compares casefolded text with spaces, commas and hyphens removed.",
+    "A generation-time check guarantees that no rendered value in a passage is a substring of another, so answering with the distractor can never pass the substring test for the right value.",
+    "Answers never need a unit: prices, times and measurements are asked as bare values, times use two-digit hours (10:05-18:55) and prices never end in 0, so formatting cannot decide an item.",
+    "Always declining scores exactly 0.5; always answering scores at most 0.5. Read scores.by_category, not only accuracy."
+  ]
+}

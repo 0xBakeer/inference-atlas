@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "id": "sweep-parallel-1-256-i512-o256-v1",
+  "name": "Parallelism sweep 1-256, 512 in / 256 out",
+  "kind": "sweep",
+  "description": "As sweep-parallel-1-32-i512-o256-v1, continued to 64, 128 and 256 concurrent requests. Small models on a single accelerator are still scaling at 32 and 64 (google/gemma-4-E2B-it on a GB10 gained about 1.7x in output tokens per second from 16 to 32 concurrent requests while per-request decode slowed by only about 16 %), so the shorter sweeps end before the knee. This one finds it.",
+  "dataset_id": "prompts-mixed-v1",
+  "params": {
+    "concurrency": 1,
+    "num_requests": 32,
+    "input_tokens": 512,
+    "output_tokens": 256,
+    "seed": 42,
+    "warmup_requests": 4,
+    "temperature": 0,
+    "repeat": 1,
+    "timeout_s": 600,
+    "dataset_buckets": [
+      "m"
+    ],
+    "requests_per_concurrency": 4
+  },
+  "sweep": {
+    "concurrency": [
+      1,
+      2,
+      4,
+      8,
+      16,
+      32,
+      64,
+      128,
+      256
+    ]
+  },
+  "eval": null,
+  "metrics_required": [
+    "ttft_ms.p50",
+    "tpot_ms.p50",
+    "output_tok_s",
+    "req_s",
+    "success_rate"
+  ],
+  "immutable": true,
+  "created": "2026-09-22",
+  "supersedes": null,
+  "notes": "Part of the small-model tier (workloads/README.md). Requests per sweep point = max(params.num_requests, concurrency * params.requests_per_concurrency): 32 up to concurrency 8, then 64, 128, 256, 512 and 1024, 2,112 requests in all. A point only measures its concurrency if the engine admits that many sequences at once (vLLM --max-num-seqs, SGLang --max-running-requests, llama.cpp --parallel); record the value in args, because a lower cap turns the top points into queueing measurements (TTFT climbs, output_tok_s flattens). The m bucket holds 150 prompts, so from concurrency 64 up prompts repeat within a point: run with prefix caching off, or record that it was on, since cache hits shorten prefill. timeout_s is 600 because a request queued behind 255 others at a low sequence cap can legitimately wait minutes."
+}

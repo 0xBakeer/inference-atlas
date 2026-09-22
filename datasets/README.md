@@ -36,11 +36,19 @@ comparable when they saw the same bytes.
 | `eval-commonsense-v2`       | eval     |  116 |   75 KB | `gen_eval_commonsense_v2.py`    | `mc`               |
 | `eval-security-v2`          | eval     |  111 |   63 KB | `gen_eval_security_v2.py`       | `mc`               |
 | `eval-longgen-integrity-v1` | eval     |   36 | 1.03 MB | `gen_eval_longgen_integrity.py` | `integrity`        |
+| `eval-rag-grounded-v1`      | eval     |  120 |  142 KB | `gen_eval_rag_grounded.py`      | `needle`           |
+| `eval-tools-small-v1`       | eval     |  100 |  145 KB | `gen_eval_tools_small.py`       | `json`             |
 | `t2i-prompts-v1`            | images   |   12 |   73 KB | `gen_t2i.py`                    | – (+ refs)         |
 | `eval-t2i-text-v1`          | eval     |    6 |   11 KB | `gen_t2i.py`                    | `ocr`              |
 | `eval-t2i-adherence-v1`     | eval     |   20 |   20 KB | `gen_t2i.py`                    | `clip`             |
 | `eval-t2i-rgba-v1`          | eval     |    4 |   34 KB | `gen_t2i.py`                    | `rgba`             |
 | `eval-t2i-fidelity-v1`      | eval     |   24 |   66 KB | `gen_t2i.py`                    | `fidelity`         |
+
+`eval-rag-grounded-v1` and `eval-tools-small-v1` (2026-09-22) are the **small-model
+tier** (see [`workloads/README.md`](../workloads/README.md#small-model-tier)): answering
+from a short provided passage, and declining when the passage does not hold the answer;
+and tool use with one or two tools where the arguments must be derived, the tool must be
+chosen, a missing argument must be asked for, or an earlier call's result must be used.
 
 `eval-longgen-integrity-v1` (2026-09-02) is a different axis again. Every suite above
 asks a short question, so a serving build that corrupts roughly one token in several
@@ -224,6 +232,12 @@ with `tool_choice: "auto"` and score **`tool_calls[0]`**:
   after stripping; numbers compare numerically.
 - `answer.tool_call = null` → correct only when the response contains no tool call
   at all. The text of the reply is not scored.
+
+`eval-tools-small-v1` uses the same scorer and adds one optional key. When a
+`tool_call: null` row also carries `answer.reply_contains` (a list of strings, or of
+lists of accepted alternatives), the reply must additionally contain every entry,
+casefolded, with `<think>` blocks removed. Its multi-turn rows carry earlier assistant
+`tool_calls` and `tool` role results in `messages`, in the OpenAI chat format.
 
 ### `eval-longgen-integrity-v1`
 
