@@ -2,10 +2,19 @@
 
 from __future__ import annotations
 
+import asyncio
+
 import httpx
 import pytest
 
-from atlas_bench.client import ChatClient, categorize_error, is_refusal
+from atlas_bench.client import (
+    POOL_HEADROOM,
+    POOL_MINIMUM,
+    ChatClient,
+    categorize_error,
+    is_refusal,
+    pool_limits,
+)
 from tests.conftest import FakeOpenAIServer
 
 MESSAGES = [{"role": "user", "content": "hello"}]
@@ -331,3 +340,51 @@ async def test_extra_body_passes_through(fake_server: FakeOpenAIServer) -> None:
     body = fake_server.requests[0]
     assert body["chat_template_kwargs"] == {"enable_thinking": False}
     assert body["reasoning_effort"] == "low"
+
+
+# ------------------------------------------------------- connection pool sizing
+
+
+def test_pool_limits_never_shrink_below_the_httpx_default() -> None:
+    """A small run keeps httpx's own 100, and keepalive is raised to match it.
+
+    httpx defaults ``max_keepalive_connections`` to 20, so even a 32-way workload spends
+    most of its life tearing down and re-opening sockets. The pool is one number here.
+    """
+    limits = pool_limits(None)
+    assert limits.max_connections == POOL_MINIMUM
+    assert limits.max_keepalive_connections == POOL_MINIMUM
+    assert pool_limits(8).max_connections == POOL_MINIMUM
+
+
+def test_pool_limits_follow_the_widest_workload() -> None:
+    """Past 100 the pool tracks the workload, with headroom for the side requests."""
+    assert pool_limits(256).max_connections == 256 + POOL_HEADROOM
+    assert pool_limits(256).max_keepalive_connections == 256 + POOL_HEADROOM
+    assert pool_limits(1024).max_connections == 1024 + POOL_HEADROOM
+
+
+def test_client_pool_admits_every_request_of_a_256_way_workload() -> None:
+    """The regression this guards: a 256-way sweep point capped at 100 in-flight requests.
+
+    The pool, not the engine, was the limit, and nothing in the result file said so — the
+    server's queue was empty while 156 requests sat in the client.
+    """
+    client = ChatClient("http://fake", "fake-model", max_connections=256)
+    pool = client._client._transport._pool  # type: ignore[attr-defined]
+    assert pool._max_connections >= 256
+    assert pool._max_keepalive_connections >= 256
+
+
+async def test_concurrent_requests_are_not_serialized_by_the_pool(
+    fake_server: FakeOpenAIServer,
+) -> None:
+    """With the pool sized to the workload, 120 streams are in flight together."""
+    async with ChatClient(
+        "http://fake", "fake-model", transport=fake_server.transport, max_connections=120
+    ) as client:
+        results = await asyncio.gather(
+            *(client.chat_stream(MESSAGES, request_id=f"r{i}") for i in range(120))
+        )
+    assert all(r.ok for r in results)
+    assert len(fake_server.requests) == 120
