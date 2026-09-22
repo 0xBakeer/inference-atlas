@@ -1,0 +1,828 @@
+{
+  "schema_version": 1,
+  "run_id": "73e47dd3906b3891--longctx-depth-sweep-v1--d9c6ee",
+  "config_id": "73e47dd3906b3891",
+  "cell_id": "2bc3f4d89f7d",
+  "workload_id": "longctx-depth-sweep-v1",
+  "kind": "longctx",
+  "engine": {
+    "id": "exllamav3",
+    "version": "1.5.0-gb10",
+    "commit": "329e051385505b6ba981138d86a90bffe032c831",
+    "build": "github.com/vcruz305/exllamav3@329e051385505b6ba981138d86a90bffe032c831",
+    "container": null,
+    "install_method": "source"
+  },
+  "model": {
+    "id": "Qwen/Qwen3.8-Flash-Next",
+    "quant_id": "exl3-3.05bpw-h5-ng5",
+    "hf_id": "Qwen/Qwen3.8-Flash-Next",
+    "revision": "69e33439ae950f17bcbe95c98f117d80f759ab6d",
+    "dtype": "auto",
+    "local_path": null
+  },
+  "hardware": {
+    "id": "nvidia-gb10-dgx-spark",
+    "count": 1,
+    "driver": "580.173.02",
+    "cuda": "13.0",
+    "host": {
+      "cpu": "Cortex-A725",
+      "cpu_cores": 20,
+      "ram_gb": 121.6,
+      "os": "Ubuntu 24.04.4 LTS",
+      "kernel": "6.17.0-1029-nvidia",
+      "arch": "aarch64"
+    },
+    "fingerprint": "sha256:52ea2bdd513719724db88c162b6cc2c9fb4e5b67e02dbe41b9de00687acefb91",
+    "captured": {
+      "nvidia_smi": {
+        "driver": "580.173.02",
+        "cuda": "13.0",
+        "products": [
+          "NVIDIA GB10"
+        ],
+        "fb_memory_total_mib": 0
+      },
+      "lscpu": {
+        "architecture": "aarch64",
+        "cpus": "20",
+        "vendor_id": "ARM",
+        "model_name": "Cortex-A725",
+        "cores_per_socket": "10",
+        "sockets": "1",
+        "cpu_max_mhz": "2808.0000"
+      }
+    }
+  },
+  "args": {
+    "max-seq-len": 262144,
+    "cache-size": 262144,
+    "cache-quant": 8,
+    "draft-mode": "mtp",
+    "draft-cache-quant": 8,
+    "draft-num-tokens": 5,
+    "dynamic-draft": true,
+    "draft-confidence": 0.6,
+    "max-batch-size": 4,
+    "reasoning": true,
+    "tool-format": "qwen3_coder"
+  },
+  "args_canonical": "@build=github.com/vcruz305/exllamav3@329e051385505b6ba981138d86a90bffe032c831;@dtype=auto;@quant=exl3-3.05bpw-h5-ng5;cache-quant=8;cache-size=262144;draft-cache-quant=8;draft-confidence=0.6;draft-mode=mtp;draft-num-tokens=5;dynamic-draft=true;max-batch-size=4;max-seq-len=262144;reasoning=true;tool-format=qwen3_coder",
+  "serve_command": null,
+  "workload": {
+    "id": "longctx-depth-sweep-v1",
+    "resolved_params": {
+      "axis": "input_tokens",
+      "points": [
+        [
+          1024,
+          90
+        ],
+        [
+          4096,
+          90
+        ],
+        [
+          8192,
+          90
+        ],
+        [
+          16384,
+          90
+        ],
+        [
+          32768,
+          90
+        ],
+        [
+          65536,
+          90
+        ],
+        [
+          131072,
+          90
+        ],
+        [
+          262144,
+          90
+        ]
+      ],
+      "output_tokens": 256,
+      "needle_check": true,
+      "needle_depth": 0.9,
+      "headline_input_tokens": 131072,
+      "needles_found": 7,
+      "needles_total": 7,
+      "dataset_categories": null,
+      "dataset_target_tokens": null,
+      "timeout_s": 1800,
+      "seed": 42
+    }
+  },
+  "env": {
+    "EXL3_INT8_GEMV": "0",
+    "EXL3_MOE_COOP_WIDE": "1",
+    "EXL3_GR_INT8": "1",
+    "EXL3_MTP_HEAD_N": "65536",
+    "EXL3_NGRAM_STREAM": "0",
+    "TORCH_CUDA_ARCH_LIST": "12.1"
+  },
+  "metrics": {
+    "requests_total": 1,
+    "requests_ok": 1,
+    "requests_failed": 0,
+    "success_rate": 1,
+    "duration_s": 257.522,
+    "input_tokens_total": 160844,
+    "output_tokens_total": 6,
+    "output_tok_s": 0.023,
+    "total_tok_s": 624.606,
+    "req_s": 0.004,
+    "prefill_tok_s": 624.585,
+    "ttft_ms": {
+      "mean": 257521.551,
+      "p50": 257521.551,
+      "p90": 257521.551,
+      "p95": 257521.551,
+      "p99": 257521.551,
+      "min": 257521.551,
+      "max": 257521.551
+    },
+    "tpot_ms": null,
+    "itl_ms": null,
+    "e2e_ms": {
+      "mean": 257522.038,
+      "p50": 257522.038,
+      "p90": 257522.038,
+      "p95": 257522.038,
+      "p99": 257522.038,
+      "min": 257522.038,
+      "max": 257522.038
+    },
+    "decode_tok_s_per_request": null,
+    "vram_peak_gb": 57.474,
+    "ram_peak_gb": 99.556,
+    "kv_cache_tokens": null,
+    "power_avg_w": 50.91,
+    "power_peak_w": 53.75,
+    "energy_wh": 3.6459,
+    "gpu_util_avg_pct": 90.92,
+    "temp_max_c": 71,
+    "thermal_throttle_detected": false
+  },
+  "sweep": [
+    {
+      "input_tokens": 1024,
+      "output_tokens": 256,
+      "label": "depth 90% · needle found",
+      "metrics": {
+        "requests_total": 1,
+        "requests_ok": 1,
+        "requests_failed": 0,
+        "success_rate": 1,
+        "duration_s": 3.719,
+        "input_tokens_total": 1377,
+        "output_tokens_total": 6,
+        "output_tok_s": 1.613,
+        "total_tok_s": 371.853,
+        "req_s": 0.269,
+        "prefill_tok_s": 370.285,
+        "ttft_ms": {
+          "mean": 3718.757,
+          "p50": 3718.757,
+          "p90": 3718.757,
+          "p95": 3718.757,
+          "p99": 3718.757,
+          "min": 3718.757,
+          "max": 3718.757
+        },
+        "tpot_ms": null,
+        "itl_ms": null,
+        "e2e_ms": {
+          "mean": 3719.106,
+          "p50": 3719.106,
+          "p90": 3719.106,
+          "p95": 3719.106,
+          "p99": 3719.106,
+          "min": 3719.106,
+          "max": 3719.106
+        },
+        "decode_tok_s_per_request": null,
+        "vram_peak_gb": 57.472,
+        "ram_peak_gb": 98.049,
+        "kv_cache_tokens": null,
+        "power_avg_w": 32.5,
+        "power_peak_w": 47.21,
+        "energy_wh": 0.0336,
+        "gpu_util_avg_pct": 46.5,
+        "temp_max_c": 67,
+        "thermal_throttle_detected": false
+      }
+    },
+    {
+      "input_tokens": 4096,
+      "output_tokens": 256,
+      "label": "depth 90% · needle found",
+      "metrics": {
+        "requests_total": 1,
+        "requests_ok": 1,
+        "requests_failed": 0,
+        "success_rate": 1,
+        "duration_s": 9.763,
+        "input_tokens_total": 5166,
+        "output_tokens_total": 6,
+        "output_tok_s": 0.615,
+        "total_tok_s": 529.77,
+        "req_s": 0.102,
+        "prefill_tok_s": 529.177,
+        "ttft_ms": {
+          "mean": 9762.326,
+          "p50": 9762.326,
+          "p90": 9762.326,
+          "p95": 9762.326,
+          "p99": 9762.326,
+          "min": 9762.326,
+          "max": 9762.326
+        },
+        "tpot_ms": null,
+        "itl_ms": null,
+        "e2e_ms": {
+          "mean": 9762.652,
+          "p50": 9762.652,
+          "p90": 9762.652,
+          "p95": 9762.652,
+          "p99": 9762.652,
+          "min": 9762.652,
+          "max": 9762.652
+        },
+        "decode_tok_s_per_request": null,
+        "vram_peak_gb": 57.472,
+        "ram_peak_gb": 97.763,
+        "kv_cache_tokens": null,
+        "power_avg_w": 43.4,
+        "power_peak_w": 52.68,
+        "energy_wh": 0.1211,
+        "gpu_util_avg_pct": 84.4,
+        "temp_max_c": 68,
+        "thermal_throttle_detected": false
+      }
+    },
+    {
+      "input_tokens": 8192,
+      "output_tokens": 256,
+      "label": "depth 90% · needle found",
+      "metrics": {
+        "requests_total": 1,
+        "requests_ok": 1,
+        "requests_failed": 0,
+        "success_rate": 1,
+        "duration_s": 17.53,
+        "input_tokens_total": 10147,
+        "output_tokens_total": 6,
+        "output_tok_s": 0.342,
+        "total_tok_s": 579.172,
+        "req_s": 0.057,
+        "prefill_tok_s": 578.842,
+        "ttft_ms": {
+          "mean": 17529.812,
+          "p50": 17529.812,
+          "p90": 17529.812,
+          "p95": 17529.812,
+          "p99": 17529.812,
+          "min": 17529.812,
+          "max": 17529.812
+        },
+        "tpot_ms": null,
+        "itl_ms": null,
+        "e2e_ms": {
+          "mean": 17530.115,
+          "p50": 17530.115,
+          "p90": 17530.115,
+          "p95": 17530.115,
+          "p99": 17530.115,
+          "min": 17530.115,
+          "max": 17530.115
+        },
+        "decode_tok_s_per_request": null,
+        "vram_peak_gb": 57.472,
+        "ram_peak_gb": 97.829,
+        "kv_cache_tokens": null,
+        "power_avg_w": 45.06,
+        "power_peak_w": 52.55,
+        "energy_wh": 0.2211,
+        "gpu_util_avg_pct": 81.59,
+        "temp_max_c": 69,
+        "thermal_throttle_detected": false
+      }
+    },
+    {
+      "input_tokens": 16384,
+      "output_tokens": 256,
+      "label": "depth 90% · needle found",
+      "metrics": {
+        "requests_total": 1,
+        "requests_ok": 1,
+        "requests_failed": 0,
+        "success_rate": 1,
+        "duration_s": 33.293,
+        "input_tokens_total": 19989,
+        "output_tokens_total": 6,
+        "output_tok_s": 0.18,
+        "total_tok_s": 600.576,
+        "req_s": 0.03,
+        "prefill_tok_s": 600.407,
+        "ttft_ms": {
+          "mean": 33292.435,
+          "p50": 33292.435,
+          "p90": 33292.435,
+          "p95": 33292.435,
+          "p99": 33292.435,
+          "min": 33292.435,
+          "max": 33292.435
+        },
+        "tpot_ms": null,
+        "itl_ms": null,
+        "e2e_ms": {
+          "mean": 33292.948,
+          "p50": 33292.948,
+          "p90": 33292.948,
+          "p95": 33292.948,
+          "p99": 33292.948,
+          "min": 33292.948,
+          "max": 33292.948
+        },
+        "decode_tok_s_per_request": null,
+        "vram_peak_gb": 57.472,
+        "ram_peak_gb": 98.291,
+        "kv_cache_tokens": null,
+        "power_avg_w": 47.02,
+        "power_peak_w": 52.88,
+        "energy_wh": 0.44,
+        "gpu_util_avg_pct": 83.16,
+        "temp_max_c": 70,
+        "thermal_throttle_detected": false
+      }
+    },
+    {
+      "input_tokens": 32768,
+      "output_tokens": 256,
+      "label": "depth 90% · needle found",
+      "metrics": {
+        "requests_total": 1,
+        "requests_ok": 1,
+        "requests_failed": 0,
+        "success_rate": 1,
+        "duration_s": 64.839,
+        "input_tokens_total": 40330,
+        "output_tokens_total": 6,
+        "output_tok_s": 0.093,
+        "total_tok_s": 622.09,
+        "req_s": 0.015,
+        "prefill_tok_s": 622.002,
+        "ttft_ms": {
+          "mean": 64839.037,
+          "p50": 64839.037,
+          "p90": 64839.037,
+          "p95": 64839.037,
+          "p99": 64839.037,
+          "min": 64839.037,
+          "max": 64839.037
+        },
+        "tpot_ms": null,
+        "itl_ms": {
+          "mean": 0.021,
+          "p50": 0.021,
+          "p90": 0.021,
+          "p95": 0.021,
+          "p99": 0.021,
+          "min": 0.021,
+          "max": 0.021
+        },
+        "e2e_ms": {
+          "mean": 64839.371,
+          "p50": 64839.371,
+          "p90": 64839.371,
+          "p95": 64839.371,
+          "p99": 64839.371,
+          "min": 64839.371,
+          "max": 64839.371
+        },
+        "decode_tok_s_per_request": null,
+        "vram_peak_gb": 57.472,
+        "ram_peak_gb": 98.623,
+        "kv_cache_tokens": null,
+        "power_avg_w": 48.92,
+        "power_peak_w": 53.41,
+        "energy_wh": 0.8846,
+        "gpu_util_avg_pct": 85.33,
+        "temp_max_c": 70,
+        "thermal_throttle_detected": false
+      }
+    },
+    {
+      "input_tokens": 65536,
+      "output_tokens": 256,
+      "label": "depth 90% · needle found",
+      "metrics": {
+        "requests_total": 1,
+        "requests_ok": 1,
+        "requests_failed": 0,
+        "success_rate": 1,
+        "duration_s": 128.826,
+        "input_tokens_total": 80478,
+        "output_tokens_total": 6,
+        "output_tok_s": 0.047,
+        "total_tok_s": 624.749,
+        "req_s": 0.008,
+        "prefill_tok_s": 624.705,
+        "ttft_ms": {
+          "mean": 128825.51,
+          "p50": 128825.51,
+          "p90": 128825.51,
+          "p95": 128825.51,
+          "p99": 128825.51,
+          "min": 128825.51,
+          "max": 128825.51
+        },
+        "tpot_ms": null,
+        "itl_ms": null,
+        "e2e_ms": {
+          "mean": 128826.002,
+          "p50": 128826.002,
+          "p90": 128826.002,
+          "p95": 128826.002,
+          "p99": 128826.002,
+          "min": 128826.002,
+          "max": 128826.002
+        },
+        "decode_tok_s_per_request": null,
+        "vram_peak_gb": 57.474,
+        "ram_peak_gb": 99.232,
+        "kv_cache_tokens": null,
+        "power_avg_w": 49.95,
+        "power_peak_w": 53.31,
+        "energy_wh": 1.7855,
+        "gpu_util_avg_pct": 88.42,
+        "temp_max_c": 71,
+        "thermal_throttle_detected": false
+      }
+    },
+    {
+      "input_tokens": 131072,
+      "output_tokens": 256,
+      "label": "depth 90% · needle found",
+      "metrics": {
+        "requests_total": 1,
+        "requests_ok": 1,
+        "requests_failed": 0,
+        "success_rate": 1,
+        "duration_s": 257.522,
+        "input_tokens_total": 160844,
+        "output_tokens_total": 6,
+        "output_tok_s": 0.023,
+        "total_tok_s": 624.606,
+        "req_s": 0.004,
+        "prefill_tok_s": 624.585,
+        "ttft_ms": {
+          "mean": 257521.551,
+          "p50": 257521.551,
+          "p90": 257521.551,
+          "p95": 257521.551,
+          "p99": 257521.551,
+          "min": 257521.551,
+          "max": 257521.551
+        },
+        "tpot_ms": null,
+        "itl_ms": null,
+        "e2e_ms": {
+          "mean": 257522.038,
+          "p50": 257522.038,
+          "p90": 257522.038,
+          "p95": 257522.038,
+          "p99": 257522.038,
+          "min": 257522.038,
+          "max": 257522.038
+        },
+        "decode_tok_s_per_request": null,
+        "vram_peak_gb": 57.474,
+        "ram_peak_gb": 99.556,
+        "kv_cache_tokens": null,
+        "power_avg_w": 50.91,
+        "power_peak_w": 53.75,
+        "energy_wh": 3.6459,
+        "gpu_util_avg_pct": 90.92,
+        "temp_max_c": 71,
+        "thermal_throttle_detected": false
+      }
+    },
+    {
+      "input_tokens": 262144,
+      "output_tokens": 256,
+      "label": "depth 90% · needle n/a",
+      "metrics": {
+        "requests_total": 1,
+        "requests_ok": 0,
+        "requests_failed": 1,
+        "success_rate": 0,
+        "duration_s": 1.012,
+        "input_tokens_total": 0,
+        "output_tokens_total": 0,
+        "output_tok_s": 0,
+        "total_tok_s": 0,
+        "req_s": 0,
+        "prefill_tok_s": null,
+        "ttft_ms": null,
+        "tpot_ms": null,
+        "itl_ms": null,
+        "e2e_ms": null,
+        "decode_tok_s_per_request": null,
+        "vram_peak_gb": 57.474,
+        "ram_peak_gb": 99.113,
+        "kv_cache_tokens": null,
+        "power_avg_w": 32.7,
+        "power_peak_w": 32.7,
+        "energy_wh": 0,
+        "gpu_util_avg_pct": 89,
+        "temp_max_c": 66,
+        "thermal_throttle_detected": false
+      }
+    }
+  ],
+  "failures": [
+    {
+      "at": "request",
+      "count": 1,
+      "category": "http-4xx",
+      "message": "{\"error\":{\"message\":\"Prompt length 321320 exceeds the available context size of 262144 tokens\",\"type\":\"invalid_request_error\",\"param\":null,\"code\":\"context_length_exceeded\"}}",
+      "sample_request_id": "ctx262144-r00000"
+    }
+  ],
+  "conditions": {
+    "dedicated": true,
+    "detail": "Only this TabbyAPI server (and the small cache-busting proxy in front of it for the speed rows) was resident; the image server that normally runs on the box was stopped, and nvidia-smi listed no other compute process. The only other running container was a small host metrics exporter (python, about 10 MB, no GPU).",
+    "isolation_check": "nvidia-smi compute apps -> 4152553, python ; docker ps -> 1 containers; load1 at start 0.08"
+  },
+  "gotchas": [
+    {
+      "severity": "info",
+      "text": "Prefix caching cannot be turned off per request in exllamav3 or TabbyAPI: the Generator reuses any prefix whose KV pages and recurrent-state checkpoint are still in memory (a repeated tool prompt showed 76% cached). The prefill and long-context workloads cycle the same haystack documents, so the speed rows were sent through a small proxy on the box that prepends a unique HTML comment of about 12 tokens (<!-- 12 hex chars -->) to the first message of every request. That changes the first KV page and forces a full prefill; the server log reports none cached for every request of these rows, and input token counts include the comment."
+    },
+    {
+      "severity": "info",
+      "text": "The recipe's headline numbers come from examples/chat.py, a console chat. For an OpenAI server the recipe README points at TabbyAPI, and its own scripts/beta_testing/serve_openai.py is marked beta: it answers one request at a time, puts tool results into user turns as text, never fills reasoning_content, and injects its own tool instruction instead of the model's tool template. These rows are served by TabbyAPI 7208273 on the recipe's engine build, weights, environment and draft/cache settings. TabbyAPI decides batching (max_batch_size 4), prefix caching, reasoning and tool-call parsing, which the recipe does not specify."
+    },
+    {
+      "severity": "info",
+      "text": "TabbyAPI has no setting for draft_confidence, the -dc of chat.py. Without it the Generator's dynamic drafting targets 0.4 instead of the recipe's 0.6. A two-line patch to TabbyAPI (common/config_models.py adds draft_model.draft_confidence, backends/exllamav3/model.py passes it to the Generator) makes the value configurable; that is the only change to TabbyAPI."
+    },
+    {
+      "severity": "info",
+      "text": "EXL3_NGRAM_STREAM=0 comes from the recipe launcher and holds the 32.6 GB n-gram (PLE) table in system RAM instead of the engine default of streaming its rows from disk per forward. The recipe README says elsewhere that the RAM table measured no faster with MTP; the launcher sets it anyway, and it is followed here as written. It is why the server process holds about 36 GB of host memory on top of the device weights."
+    },
+    {
+      "severity": "info",
+      "text": "On GB10 page cache counts against memory the CUDA allocator can use, and exllamav3 sizes its load against cudaMemGetInfo, which reports MemFree rather than MemAvailable. After the 85 GB download and a sha256 pass the page cache held about 84 GB; the recipe's drop-model-cache.sh (posix_fadvise DONTNEED on every pack file) runs before each load."
+    },
+    {
+      "severity": "info",
+      "text": "The model writes tool calls in Qwen's XML form (<function=name><parameter=key>value</parameter></function>), so TabbyAPI needs tool_format qwen3_coder; tool calls then come back as OpenAI tool_calls with finish_reason tool_calls, and thinking lands in reasoning_content with reasoning true."
+    },
+    {
+      "severity": "info",
+      "text": "From a Mac on the same LAN, requests to dgx.local took about 4 s longer than the server's own timing because of mDNS name resolution; the harness ran on the box against 127.0.0.1, so none of that is in these rows."
+    }
+  ],
+  "derived": {
+    "cost_per_1m_output_tokens_usd": null,
+    "tokens_per_watt": 0.0005,
+    "tok_s_per_gb_bandwidth": 0.000084,
+    "bandwidth_efficiency": null,
+    "memory_headroom_gb": 70.526
+  },
+  "raw": {
+    "harness": "atlas-bench",
+    "harness_version": "0.1.0",
+    "sha256": "a9a804157aa97321b6fa5a0a2725e41230d6272179e6a4c11253e12a93d7cfbf",
+    "payload_path": null,
+    "payload": {
+      "points": [
+        {
+          "id": "hay-1k-d90",
+          "input_tokens": 1024,
+          "depth_pct": 90,
+          "needle_correct": true,
+          "output_tok_s": 1.613,
+          "decode_tok_s": null,
+          "ttft_ms": 3718.757,
+          "success_rate": 1
+        },
+        {
+          "id": "hay-4k-d90",
+          "input_tokens": 4096,
+          "depth_pct": 90,
+          "needle_correct": true,
+          "output_tok_s": 0.615,
+          "decode_tok_s": null,
+          "ttft_ms": 9762.326,
+          "success_rate": 1
+        },
+        {
+          "id": "hay-8k-d90",
+          "input_tokens": 8192,
+          "depth_pct": 90,
+          "needle_correct": true,
+          "output_tok_s": 0.342,
+          "decode_tok_s": null,
+          "ttft_ms": 17529.812,
+          "success_rate": 1
+        },
+        {
+          "id": "hay-16k-d90",
+          "input_tokens": 16384,
+          "depth_pct": 90,
+          "needle_correct": true,
+          "output_tok_s": 0.18,
+          "decode_tok_s": null,
+          "ttft_ms": 33292.435,
+          "success_rate": 1
+        },
+        {
+          "id": "hay-32k-d90",
+          "input_tokens": 32768,
+          "depth_pct": 90,
+          "needle_correct": true,
+          "output_tok_s": 0.093,
+          "decode_tok_s": null,
+          "ttft_ms": 64839.037,
+          "success_rate": 1
+        },
+        {
+          "id": "hay-64k-d90",
+          "input_tokens": 65536,
+          "depth_pct": 90,
+          "needle_correct": true,
+          "output_tok_s": 0.047,
+          "decode_tok_s": null,
+          "ttft_ms": 128825.51,
+          "success_rate": 1
+        },
+        {
+          "id": "hay-128k-d90",
+          "input_tokens": 131072,
+          "depth_pct": 90,
+          "needle_correct": true,
+          "output_tok_s": 0.023,
+          "decode_tok_s": null,
+          "ttft_ms": 257521.551,
+          "success_rate": 1
+        },
+        {
+          "id": "hay-256k-d90",
+          "input_tokens": 262144,
+          "depth_pct": 90,
+          "needle_correct": null,
+          "output_tok_s": 0,
+          "decode_tok_s": null,
+          "ttft_ms": null,
+          "success_rate": 0
+        }
+      ],
+      "requests": [
+        {
+          "id": "ctx1024-r00000",
+          "prompt_id": "hay-1k-d90",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 3718.757,
+          "e2e_ms": 3719.106,
+          "prompt_tokens": 1377,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "ctx4096-r00000",
+          "prompt_id": "hay-4k-d90",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 9762.326,
+          "e2e_ms": 9762.652,
+          "prompt_tokens": 5166,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "ctx8192-r00000",
+          "prompt_id": "hay-8k-d90",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 17529.812,
+          "e2e_ms": 17530.115,
+          "prompt_tokens": 10147,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "ctx16384-r00000",
+          "prompt_id": "hay-16k-d90",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 33292.435,
+          "e2e_ms": 33292.948,
+          "prompt_tokens": 19989,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "ctx32768-r00000",
+          "prompt_id": "hay-32k-d90",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 64839.037,
+          "e2e_ms": 64839.371,
+          "prompt_tokens": 40330,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "ctx65536-r00000",
+          "prompt_id": "hay-64k-d90",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 128825.51,
+          "e2e_ms": 128826.002,
+          "prompt_tokens": 80478,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "ctx131072-r00000",
+          "prompt_id": "hay-128k-d90",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 257521.551,
+          "e2e_ms": 257522.038,
+          "prompt_tokens": 160844,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "ctx262144-r00000",
+          "prompt_id": "hay-256k-d90",
+          "warmup": false,
+          "status": "error",
+          "ttft_ms": null,
+          "e2e_ms": 471.081,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "token_source": "usage",
+          "finish_reason": null,
+          "error_category": "http-4xx"
+        }
+      ],
+      "engine_endpoint": {
+        "attached": true,
+        "base_url": "http://127.0.0.1:8898/v1",
+        "served_model_id": "Qwen3.8-Flash-Next-EXL3",
+        "advertised_models": [
+          "Qwen3.8-Flash-Next-EXL3",
+          "vllm-cache",
+          "Ling-3.0-flash-dspark",
+          "qwen38-flash-next-ngram"
+        ]
+      }
+    },
+    "truncated": false
+  },
+  "provenance": {
+    "github_login": "0xBakeer",
+    "github_user_id": 17404809,
+    "started_at": "2026-09-22T00:49:33Z",
+    "finished_at": "2026-09-22T00:58:10Z",
+    "submitted_at": null,
+    "commit": null,
+    "pr": null,
+    "method": "atlas-bench",
+    "agent": null,
+    "notes": "Served with the vcruz305 Qwen3.8-Flash-Next EXL3 DGX Spark recipe (github.com/vcruz305/Qwen3.8-Flash-Next-EXL3-DGX-Spark-recipe at e0ebee8), native exllamav3 path. Engine: github.com/vcruz305/exllamav3 master at 329e051 (upstream v1.5.0 plus the fork's aarch64 guards and GB10 decode changes), built from source on the box with uv pip install --no-build-isolation -e . into a Python 3.12 venv with torch 2.13.0+cu130, triton 3.7.1, CUDA 13.0 (nvcc at /usr/local/cuda-13.0), TORCH_CUDA_ARCH_LIST 12.1, GNU 13.3.0; driver 580.173.02, Ubuntu 24.04.4, kernel 6.17.0-1029-nvidia. Weights: turboderp/Qwen3.8-Flash-Next-exl3 branch 3.05bpw_h5_ng5 at commit 69e33439ae950f17bcbe95c98f117d80f759ab6d, 85,139,442,313 bytes, sha256 of every LFS file checked against the Hub. The recipe's own headline path is examples/chat.py, which is a console chat, not a server; the recipe README names TabbyAPI as the OpenAI API layer for this engine, so the server is TabbyAPI (theroyallab/tabbyAPI main at 7208273) with a two-line patch that passes draft_model.draft_confidence to the Generator (stock TabbyAPI leaves it at the Generator default 0.4 and the recipe runs 0.6). TabbyAPI config: max_seq_len 262144, cache_size 262144, cache_mode 8,8, draft_mode mtp, draft_cache_mode 8,8, draft_num_tokens 5, dynamic_draft true, draft_confidence 0.6, chunk_size 2048, max_batch_size 4 (the TabbyAPI default for recurrent models), reasoning true with <think> and </think>, tool_format qwen3_coder, sysmem_recurrent_cache 4096 MB, sysmem_kv_cache 0. That is the recipe launcher scripts/exl3_native/tuning/run-qwen38-exl3.sh (chat.py -mode qwen35 -mtp -ndt 5 -dds -dc 0.6 -cq 8,8 -cs 262144) mapped onto TabbyAPI names, with the launcher environment EXL3_INT8_GEMV=0 EXL3_MOE_COOP_WIDE=1 EXL3_GR_INT8=1 EXL3_MTP_HEAD_N=65536 EXL3_NGRAM_STREAM=0, the process pinned with taskset -c 5-9,15-19 to the ten Cortex-X925 cores, and the pack's page cache dropped with the recipe's drop-model-cache.sh before load. Load took 59.3 s; after load the box had 97.4 GB of 121.6 GiB in use and 27.2 GB available, of which the server process held 36.5 GB resident on the host side (EXL3_NGRAM_STREAM=0 keeps the 32.6 GB n-gram table in system RAM). Every request here sets temperature 0 and seed 42, which is what the recipe measures with (greedy, -topk 1). The chat template defaults to thinking on with reasoning_effort xhigh; speed rows turn it off per request with chat_template_kwargs enable_thinking false, eval rows use the template default unless a gotcha says otherwise."
+  },
+  "verification": {
+    "level": "self-reported",
+    "reproduced_by": [],
+    "flags": []
+  }
+}
