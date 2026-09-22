@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "id": "exl3-3.05bpw-h5-ng5",
+  "model_id": "Qwen/Qwen3.8-Flash-Next",
+  "format": "exl3",
+  "bits": 3.05,
+  "hf_id": "turboderp/Qwen3.8-Flash-Next-exl3",
+  "revision": "69e33439ae950f17bcbe95c98f117d80f759ab6d",
+  "files": [
+    "model-00001-of-00007.safetensors",
+    "model-00002-of-00007.safetensors",
+    "model-00003-of-00007.safetensors",
+    "model-00004-of-00007.safetensors",
+    "model-00005-of-00007.safetensors",
+    "model-00006-of-00007.safetensors",
+    "model-00007-of-00007.safetensors",
+    "ngram_embedding.safetensors",
+    "mtp_hyper_connection_mixer_patch.safetensors"
+  ],
+  "ollama_tag": null,
+  "size_gb": 85.14,
+  "engines": [
+    "exllamav3"
+  ],
+  "source": "community",
+  "calibration": "EXL3 trellis quantization (exllamav3 1.4.4 per quantization_config.json): mul1 codebook, out_scales always, 250 rows x 2048 columns of calibration data; the card does not name the calibration text.",
+  "links": {
+    "hf": "https://huggingface.co/turboderp/Qwen3.8-Flash-Next-exl3/tree/3.05bpw_h5_ng5",
+    "recipe": "https://github.com/vcruz305/Qwen3.8-Flash-Next-EXL3-DGX-Spark-recipe"
+  },
+  "notes": "The 3.05bpw_h5_ng5 branch of turboderp's EXL3 repo, pinned to commit 69e33439ae950f17bcbe95c98f117d80f759ab6d (branch head on 2026-09-21, last modified 2026-08-31). The repo keeps one revision per branch; this is not the main branch. Read from config.json quantization_config: bits 3.05 (the decoder: experts at 3 bits, dense linears at 5), head_bits 5, mtp_bits 3 for the native MTP head, vision_bits 5; the n-gram (PLE) embedding table is a separate 32.6 GB file quantized at 5 bits (the ng5 in the branch name) and shipped as 128 shard tensors. size_gb is the sum of every file in the revision as listed by the Hub API: 85,139,442,313 bytes, of which 52.3 GB are the seven decoder shards, 32.6 GB the n-gram table, 13 MB an MTP hyperconnection mixer patch and the rest metadata (a 97 MB quantization_config.json, a 33 MB index) and tokenizer files. How much of it is resident depends on the engine: exllamav3 can stream the n-gram table from disk (its default) or hold it in system RAM (EXL3_NGRAM_STREAM=0, what the GB10 recipe runs); the decoder weights are always on the device. This pack loads in exllamav3 directly; vLLM needs the vllm-exl3 plugin plus three rewrites of config.json and the index, which is a different code path and not listed here."
+}
