@@ -47,7 +47,9 @@ export function parseCodeowners(text: string | null): OwnerRule[] {
     if (!line) continue;
     const [pattern, ...owners] = line.split(/\s+/);
     if (!pattern || owners.length === 0) continue;
-    rules.push({ pattern, owners: owners.map((o) => o.replace(/^@/, '').toLowerCase()) });
+    // Spelled as written, so messages name the owner the way CODEOWNERS does; compared
+    // case-insensitively below, the way GitHub compares logins.
+    rules.push({ pattern, owners: owners.map((o) => o.replace(/^@/, '')) });
   }
   return rules;
 }
@@ -117,7 +119,7 @@ export function checkRegistryEdits(
     const existing = change.oldPath ?? change.path;
     if (!GUARDED.some((dir) => existing.startsWith(dir))) continue;
     const owners = ownersOf(rules, existing);
-    if (owners.includes(login)) continue;
+    if (owners.some((o) => o.toLowerCase() === login)) continue;
     const ownerText = owners.length > 0 ? owners.map((o) => `@${o}`).join(', ') : 'a maintainer';
 
     if (change.status === 'D' || change.oldPath) {
