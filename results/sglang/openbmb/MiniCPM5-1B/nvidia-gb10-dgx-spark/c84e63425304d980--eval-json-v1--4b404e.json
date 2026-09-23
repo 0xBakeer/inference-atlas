@@ -1,0 +1,1341 @@
+{
+  "schema_version": 1,
+  "run_id": "c84e63425304d980--eval-json-v1--4b404e",
+  "config_id": "c84e63425304d980",
+  "cell_id": "0e7d746e67fa",
+  "workload_id": "eval-json-v1",
+  "kind": "eval",
+  "engine": {
+    "id": "sglang",
+    "version": "0.5.20",
+    "commit": null,
+    "build": "pypi sglang==0.5.20 (py3.12 venv, torch 2.13.0+cu130, flashinfer-python 0.6.18, sglang-kernel 0.4.7)",
+    "container": null,
+    "install_method": "pip"
+  },
+  "model": {
+    "id": "openbmb/MiniCPM5-1B",
+    "quant_id": "bf16",
+    "hf_id": "openbmb/MiniCPM5-1B",
+    "revision": "87179e5c1f455ef22e6223592d2d61351b525bfc",
+    "dtype": "auto",
+    "local_path": null
+  },
+  "hardware": {
+    "id": "nvidia-gb10-dgx-spark",
+    "count": 1,
+    "driver": "580.173.02",
+    "cuda": "13.0",
+    "host": {
+      "cpu": "Cortex-A725",
+      "cpu_cores": 20,
+      "ram_gb": 121.6,
+      "os": "Ubuntu 24.04.4 LTS",
+      "kernel": "6.17.0-1029-nvidia",
+      "arch": "aarch64"
+    },
+    "fingerprint": "sha256:52ea2bdd513719724db88c162b6cc2c9fb4e5b67e02dbe41b9de00687acefb91",
+    "captured": {
+      "nvidia_smi": {
+        "driver": "580.173.02",
+        "cuda": "13.0",
+        "products": [
+          "NVIDIA GB10"
+        ],
+        "fb_memory_total_mib": 0
+      },
+      "lscpu": {
+        "architecture": "aarch64",
+        "cpus": "20",
+        "vendor_id": "ARM",
+        "model_name": "Cortex-A725",
+        "cores_per_socket": "10",
+        "sockets": "1",
+        "cpu_max_mhz": "2808.0000"
+      }
+    }
+  },
+  "args": {
+    "dtype": "bfloat16",
+    "context-length": 131072,
+    "mem-fraction-static": 0.75,
+    "tool-call-parser": "minicpm5",
+    "reasoning-parser": "qwen3",
+    "max-running-requests": 512
+  },
+  "args_canonical": "@build=pypi sglang==0.5.20 (py3.12 venv, torch 2.13.0+cu130, flashinfer-python 0.6.18, sglang-kernel 0.4.7);@dtype=auto;@quant=bf16;context-length=131072;dtype=bfloat16;max-running-requests=512;mem-fraction-static=0.75;reasoning-parser=qwen3;tool-call-parser=minicpm5",
+  "serve_command": null,
+  "workload": {
+    "id": "eval-json-v1",
+    "resolved_params": {
+      "dataset_id": "eval-json-v1",
+      "suite": "json",
+      "scorer": "json",
+      "items": 110,
+      "concurrency": 4,
+      "max_output_tokens": 2048,
+      "timeout_s": 300,
+      "temperature": 0,
+      "reasoning": "default",
+      "dataset_categories": null,
+      "dataset_target_tokens": null,
+      "pass_threshold": null,
+      "seed": 42
+    }
+  },
+  "env": {
+    "SGLANG_ALLOW_OVERWRITE_LONGER_CONTEXT_LEN": "1",
+    "SGLANG_DISABLE_CUDNN_CHECK": "1"
+  },
+  "metrics": {
+    "requests_total": 110,
+    "requests_ok": 110,
+    "requests_failed": 0,
+    "success_rate": 1,
+    "duration_s": 128.123,
+    "input_tokens_total": 9703,
+    "output_tokens_total": 55655,
+    "e2e_ms": {
+      "mean": 4610.696,
+      "p50": 4050.035,
+      "p90": 6408.667,
+      "p95": 7571.725,
+      "p99": 11887.492,
+      "min": 2303.425,
+      "max": 18879.058
+    },
+    "vram_peak_gb": 89.356,
+    "ram_peak_gb": 97.808,
+    "power_avg_w": 31.32,
+    "power_peak_w": 33.25,
+    "energy_wh": 1.1156,
+    "gpu_util_avg_pct": 95.19,
+    "temp_max_c": 58,
+    "thermal_throttle_detected": false
+  },
+  "scores": {
+    "suite": "json",
+    "total": 110,
+    "correct": 88,
+    "accuracy": 0.8,
+    "success_rate": 1,
+    "by_category": {
+      "aggregation": {
+        "total": 10,
+        "correct": 10
+      },
+      "arrays": {
+        "total": 18,
+        "correct": 17
+      },
+      "classification": {
+        "total": 22,
+        "correct": 13
+      },
+      "extraction": {
+        "total": 40,
+        "correct": 33
+      },
+      "nested": {
+        "total": 10,
+        "correct": 7
+      },
+      "normalisation": {
+        "total": 6,
+        "correct": 6
+      },
+      "transformation": {
+        "total": 4,
+        "correct": 2
+      }
+    },
+    "by_difficulty": {
+      "easy": {
+        "total": 32,
+        "correct": 21
+      },
+      "hard": {
+        "total": 12,
+        "correct": 11
+      },
+      "medium": {
+        "total": 66,
+        "correct": 56
+      }
+    },
+    "avg_output_tokens": 505.95,
+    "avg_latency_ms": 4610.7,
+    "failures": 0,
+    "items": [
+      {
+        "id": "json-0001",
+        "correct": false,
+        "predicted": "{\"age\":64,\"city\":\"Aberholt\",\"email\":\"priya. jewellery@example.org\",\"name\":\"Priya Ellery\"}",
+        "expected": "{\"age\":64,\"city\":\"Aberholt\",\"email\":\"priya.ellery@example.org\",\"name\":\"Priya Ellery\"}",
+        "latency_ms": 5027.747,
+        "output_tokens": 566,
+        "category": "extraction",
+        "difficulty": "easy"
+      },
+      {
+        "id": "json-0002",
+        "correct": true,
+        "predicted": "{\"age\":25,\"city\":\"Kesswater\",\"email\":\"dana.fairbank@example.org\",\"name\":\"Dana Fairbank\"}",
+        "expected": "{\"age\":25,\"city\":\"Kesswater\",\"email\":\"dana.fairbank@example.org\",\"name\":\"Dana Fairbank\"}",
+        "latency_ms": 4446.243,
+        "output_tokens": 501,
+        "category": "extraction",
+        "difficulty": "easy"
+      },
+      {
+        "id": "json-0003",
+        "correct": false,
+        "predicted": "{\"age\":27,\"city\":\"Valcrest\",\"email\":\"mira. jewellery@example.org\",\"name\":\"Mira Ellery\"}",
+        "expected": "{\"age\":27,\"city\":\"Valcrest\",\"email\":\"mira.ellery@example.org\",\"name\":\"Mira Ellery\"}",
+        "latency_ms": 3995.068,
+        "output_tokens": 453,
+        "category": "extraction",
+        "difficulty": "easy"
+      },
+      {
+        "id": "json-0004",
+        "correct": true,
+        "predicted": "{\"age\":62,\"city\":\"Aberholt\",\"email\":\"priya.dunmore@example.org\",\"name\":\"Priya Dunmore\"}",
+        "expected": "{\"age\":62,\"city\":\"Aberholt\",\"email\":\"priya.dunmore@example.org\",\"name\":\"Priya Dunmore\"}",
+        "latency_ms": 4385.696,
+        "output_tokens": 496,
+        "category": "extraction",
+        "difficulty": "easy"
+      },
+      {
+        "id": "json-0005",
+        "correct": true,
+        "predicted": "{\"age\":62,\"city\":\"Marren Bay\",\"email\":\"gus.dunmore@example.org\",\"name\":\"Gus Dunmore\"}",
+        "expected": "{\"age\":62,\"city\":\"Marren Bay\",\"email\":\"gus.dunmore@example.org\",\"name\":\"Gus Dunmore\"}",
+        "latency_ms": 5371.568,
+        "output_tokens": 602,
+        "category": "extraction",
+        "difficulty": "easy"
+      },
+      {
+        "id": "json-0006",
+        "correct": true,
+        "predicted": "{\"age\":40,\"city\":\"Dunhallow\",\"email\":\"ines.dunmore@example.org\",\"name\":\"Ines Dunmore\"}",
+        "expected": "{\"age\":40,\"city\":\"Dunhallow\",\"email\":\"ines.dunmore@example.org\",\"name\":\"Ines Dunmore\"}",
+        "latency_ms": 4989.974,
+        "output_tokens": 561,
+        "category": "extraction",
+        "difficulty": "easy"
+      },
+      {
+        "id": "json-0007",
+        "correct": true,
+        "predicted": "{\"age\":71,\"city\":\"Kesswater\",\"email\":\"mira.braith@example.org\",\"name\":\"Mira Braith\"}",
+        "expected": "{\"age\":71,\"city\":\"Kesswater\",\"email\":\"mira.braith@example.org\",\"name\":\"Mira Braith\"}",
+        "latency_ms": 2838.973,
+        "output_tokens": 322,
+        "category": "extraction",
+        "difficulty": "easy"
+      },
+      {
+        "id": "json-0008",
+        "correct": true,
+        "predicted": "{\"age\":26,\"city\":\"Threeford\",\"email\":\"fenna.keswick@example.org\",\"name\":\"Fenna Keswick\"}",
+        "expected": "{\"age\":26,\"city\":\"Threeford\",\"email\":\"fenna.keswick@example.org\",\"name\":\"Fenna Keswick\"}",
+        "latency_ms": 2818.259,
+        "output_tokens": 319,
+        "category": "extraction",
+        "difficulty": "easy"
+      },
+      {
+        "id": "json-0009",
+        "correct": true,
+        "predicted": "{\"age\":21,\"city\":\"Marren Bay\",\"email\":\"priya.alder@example.org\",\"name\":\"Priya Alder\"}",
+        "expected": "{\"age\":21,\"city\":\"Marren Bay\",\"email\":\"priya.alder@example.org\",\"name\":\"Priya Alder\"}",
+        "latency_ms": 4737.982,
+        "output_tokens": 528,
+        "category": "extraction",
+        "difficulty": "easy"
+      },
+      {
+        "id": "json-0010",
+        "correct": true,
+        "predicted": "{\"age\":65,\"city\":\"Aberholt\",\"email\":\"dana.gale@example.org\",\"name\":\"Dana Gale\"}",
+        "expected": "{\"age\":65,\"city\":\"Aberholt\",\"email\":\"dana.gale@example.org\",\"name\":\"Dana Gale\"}",
+        "latency_ms": 4010.313,
+        "output_tokens": 450,
+        "category": "extraction",
+        "difficulty": "easy"
+      },
+      {
+        "id": "json-0011",
+        "correct": false,
+        "predicted": "{\"age\":56,\"city\":\"Valcrest\",\"email\":\"ies@example.org\",\"name\":\"Ines Ivers\"}",
+        "expected": "{\"age\":56,\"city\":\"Valcrest\",\"email\":\"ines.ivers@example.org\",\"name\":\"Ines Ivers\"}",
+        "latency_ms": 4091.007,
+        "output_tokens": 454,
+        "category": "extraction",
+        "difficulty": "easy"
+      },
+      {
+        "id": "json-0012",
+        "correct": false,
+        "predicted": "{\"age\":54,\"city\":\"Kesswater\",\"email\":\"jewellery@example.org\",\"name\":\"Tomas Ellery\"}",
+        "expected": "{\"age\":54,\"city\":\"Kesswater\",\"email\":\"tomas.ellery@example.org\",\"name\":\"Tomas Ellery\"}",
+        "latency_ms": 5296.958,
+        "output_tokens": 588,
+        "category": "extraction",
+        "difficulty": "easy"
+      },
+      {
+        "id": "json-0013",
+        "correct": true,
+        "predicted": "{\"amount_cents\":17746,\"currency\":\"EUR\",\"due_days\":14,\"invoice_id\":\"INV-77315\"}",
+        "expected": "{\"amount_cents\":17746,\"currency\":\"EUR\",\"due_days\":14,\"invoice_id\":\"INV-77315\"}",
+        "latency_ms": 4293.227,
+        "output_tokens": 472,
+        "category": "extraction",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0014",
+        "correct": true,
+        "predicted": "{\"amount_cents\":203187,\"currency\":\"GBP\",\"due_days\":30,\"invoice_id\":\"INV-82382\"}",
+        "expected": "{\"amount_cents\":203187,\"currency\":\"GBP\",\"due_days\":30,\"invoice_id\":\"INV-82382\"}",
+        "latency_ms": 7089.621,
+        "output_tokens": 786,
+        "category": "extraction",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0015",
+        "correct": false,
+        "predicted": "{\"amount_cents\":10456400,\"currency\":\"EUR\",\"due_days\":14,\"invoice_id\":\"INV-77092\"}",
+        "expected": "{\"amount_cents\":104564,\"currency\":\"EUR\",\"due_days\":14,\"invoice_id\":\"INV-77092\"}",
+        "latency_ms": 5285.272,
+        "output_tokens": 588,
+        "category": "extraction",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0016",
+        "correct": true,
+        "predicted": "{\"amount_cents\":169877,\"currency\":\"USD\",\"due_days\":30,\"invoice_id\":\"INV-44042\"}",
+        "expected": "{\"amount_cents\":169877,\"currency\":\"USD\",\"due_days\":30,\"invoice_id\":\"INV-44042\"}",
+        "latency_ms": 4873.422,
+        "output_tokens": 542,
+        "category": "extraction",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0017",
+        "correct": true,
+        "predicted": "{\"amount_cents\":126104,\"currency\":\"CHF\",\"due_days\":60,\"invoice_id\":\"INV-31069\"}",
+        "expected": "{\"amount_cents\":126104,\"currency\":\"CHF\",\"due_days\":60,\"invoice_id\":\"INV-31069\"}",
+        "latency_ms": 5886.234,
+        "output_tokens": 657,
+        "category": "extraction",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0018",
+        "correct": true,
+        "predicted": "{\"amount_cents\":7610,\"currency\":\"EUR\",\"due_days\":7,\"invoice_id\":\"INV-60017\"}",
+        "expected": "{\"amount_cents\":7610,\"currency\":\"EUR\",\"due_days\":7,\"invoice_id\":\"INV-60017\"}",
+        "latency_ms": 4012.215,
+        "output_tokens": 448,
+        "category": "extraction",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0019",
+        "correct": false,
+        "predicted": "{\"amount_cents\":248414,\"currency\":\"CHF\",\"due_days\":60,\"invoice_id\":\"INV-86413\"}",
+        "expected": "{\"amount_cents\":248441,\"currency\":\"CHF\",\"due_days\":60,\"invoice_id\":\"INV-86413\"}",
+        "latency_ms": 4911.485,
+        "output_tokens": 549,
+        "category": "extraction",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0020",
+        "correct": true,
+        "predicted": "{\"amount_cents\":175564,\"currency\":\"CHF\",\"due_days\":60,\"invoice_id\":\"INV-82818\"}",
+        "expected": "{\"amount_cents\":175564,\"currency\":\"CHF\",\"due_days\":60,\"invoice_id\":\"INV-82818\"}",
+        "latency_ms": 5559.921,
+        "output_tokens": 623,
+        "category": "extraction",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0021",
+        "correct": true,
+        "predicted": "{\"amount_cents\":236148,\"currency\":\"GBP\",\"due_days\":60,\"invoice_id\":\"INV-94680\"}",
+        "expected": "{\"amount_cents\":236148,\"currency\":\"GBP\",\"due_days\":60,\"invoice_id\":\"INV-94680\"}",
+        "latency_ms": 6445.022,
+        "output_tokens": 709,
+        "category": "extraction",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0022",
+        "correct": true,
+        "predicted": "{\"amount_cents\":167374,\"currency\":\"CHF\",\"due_days\":7,\"invoice_id\":\"INV-50802\"}",
+        "expected": "{\"amount_cents\":167374,\"currency\":\"CHF\",\"due_days\":7,\"invoice_id\":\"INV-50802\"}",
+        "latency_ms": 5459.745,
+        "output_tokens": 601,
+        "category": "extraction",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0023",
+        "correct": true,
+        "predicted": "{\"amount_cents\":219295,\"currency\":\"USD\",\"due_days\":14,\"invoice_id\":\"INV-28572\"}",
+        "expected": "{\"amount_cents\":219295,\"currency\":\"USD\",\"due_days\":14,\"invoice_id\":\"INV-28572\"}",
+        "latency_ms": 5717.855,
+        "output_tokens": 625,
+        "category": "extraction",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0024",
+        "correct": true,
+        "predicted": "{\"amount_cents\":14140,\"currency\":\"EUR\",\"due_days\":7,\"invoice_id\":\"INV-24541\"}",
+        "expected": "{\"amount_cents\":14140,\"currency\":\"EUR\",\"due_days\":7,\"invoice_id\":\"INV-24541\"}",
+        "latency_ms": 5920.463,
+        "output_tokens": 643,
+        "category": "extraction",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0025",
+        "correct": true,
+        "predicted": "{\"latency_ms\":8944,\"level\":\"INFO\",\"service\":\"payments\",\"status\":200,\"tenant\":\"t-5887\"}",
+        "expected": "{\"latency_ms\":8944,\"level\":\"INFO\",\"service\":\"payments\",\"status\":200,\"tenant\":\"t-5887\"}",
+        "latency_ms": 2303.425,
+        "output_tokens": 249,
+        "category": "extraction",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0026",
+        "correct": true,
+        "predicted": "{\"latency_ms\":1508,\"level\":\"ERROR\",\"service\":\"search\",\"status\":429,\"tenant\":\"t-5649\"}",
+        "expected": "{\"latency_ms\":1508,\"level\":\"ERROR\",\"service\":\"search\",\"status\":429,\"tenant\":\"t-5649\"}",
+        "latency_ms": 4023.742,
+        "output_tokens": 443,
+        "category": "extraction",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0027",
+        "correct": true,
+        "predicted": "{\"latency_ms\":8337,\"level\":\"DEBUG\",\"service\":\"identity\",\"status\":500,\"tenant\":\"t-5422\"}",
+        "expected": "{\"latency_ms\":8337,\"level\":\"DEBUG\",\"service\":\"identity\",\"status\":500,\"tenant\":\"t-5422\"}",
+        "latency_ms": 3143.612,
+        "output_tokens": 346,
+        "category": "extraction",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0028",
+        "correct": true,
+        "predicted": "{\"latency_ms\":3642,\"level\":\"INFO\",\"service\":\"identity\",\"status\":200,\"tenant\":\"t-3827\"}",
+        "expected": "{\"latency_ms\":3642,\"level\":\"INFO\",\"service\":\"identity\",\"status\":200,\"tenant\":\"t-3827\"}",
+        "latency_ms": 5164.737,
+        "output_tokens": 569,
+        "category": "extraction",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0029",
+        "correct": true,
+        "predicted": "{\"latency_ms\":1571,\"level\":\"ERROR\",\"service\":\"media\",\"status\":404,\"tenant\":\"t-1804\"}",
+        "expected": "{\"latency_ms\":1571,\"level\":\"ERROR\",\"service\":\"media\",\"status\":404,\"tenant\":\"t-1804\"}",
+        "latency_ms": 4090.217,
+        "output_tokens": 452,
+        "category": "extraction",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0030",
+        "correct": true,
+        "predicted": "{\"latency_ms\":8597,\"level\":\"ERROR\",\"service\":\"billing\",\"status\":400,\"tenant\":\"t-7618\"}",
+        "expected": "{\"latency_ms\":8597,\"level\":\"ERROR\",\"service\":\"billing\",\"status\":400,\"tenant\":\"t-7618\"}",
+        "latency_ms": 3492.836,
+        "output_tokens": 381,
+        "category": "extraction",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0031",
+        "correct": true,
+        "predicted": "{\"latency_ms\":1804,\"level\":\"WARN\",\"service\":\"payments\",\"status\":500,\"tenant\":\"t-9922\"}",
+        "expected": "{\"latency_ms\":1804,\"level\":\"WARN\",\"service\":\"payments\",\"status\":500,\"tenant\":\"t-9922\"}",
+        "latency_ms": 11737.088,
+        "output_tokens": 1282,
+        "category": "extraction",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0032",
+        "correct": true,
+        "predicted": "{\"latency_ms\":7083,\"level\":\"WARN\",\"service\":\"notify\",\"status\":500,\"tenant\":\"t-8774\"}",
+        "expected": "{\"latency_ms\":7083,\"level\":\"WARN\",\"service\":\"notify\",\"status\":500,\"tenant\":\"t-8774\"}",
+        "latency_ms": 2560.18,
+        "output_tokens": 280,
+        "category": "extraction",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0033",
+        "correct": false,
+        "predicted": "",
+        "expected": "<json>",
+        "latency_ms": 18879.058,
+        "output_tokens": 2048,
+        "category": "extraction",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0034",
+        "correct": true,
+        "predicted": "{\"latency_ms\":2395,\"level\":\"WARN\",\"service\":\"billing\",\"status\":401,\"tenant\":\"t-9000\"}",
+        "expected": "{\"latency_ms\":2395,\"level\":\"WARN\",\"service\":\"billing\",\"status\":401,\"tenant\":\"t-9000\"}",
+        "latency_ms": 2399.224,
+        "output_tokens": 263,
+        "category": "extraction",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0035",
+        "correct": true,
+        "predicted": "{\"latency_ms\":6641,\"level\":\"DEBUG\",\"service\":\"payments\",\"status\":429,\"tenant\":\"t-9435\"}",
+        "expected": "{\"latency_ms\":6641,\"level\":\"DEBUG\",\"service\":\"payments\",\"status\":429,\"tenant\":\"t-9435\"}",
+        "latency_ms": 5877.637,
+        "output_tokens": 639,
+        "category": "extraction",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0036",
+        "correct": true,
+        "predicted": "{\"latency_ms\":3628,\"level\":\"ERROR\",\"service\":\"notify\",\"status\":400,\"tenant\":\"t-7170\"}",
+        "expected": "{\"latency_ms\":3628,\"level\":\"ERROR\",\"service\":\"notify\",\"status\":400,\"tenant\":\"t-7170\"}",
+        "latency_ms": 4338.807,
+        "output_tokens": 473,
+        "category": "extraction",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0037",
+        "correct": false,
+        "predicted": "{\"depth\":266,\"level\":\"high\",\"service\":\"search service\"}",
+        "expected": "{\"depth\":266,\"level\":\"high\",\"service\":\"search\"}",
+        "latency_ms": 2860.245,
+        "output_tokens": 309,
+        "category": "classification",
+        "difficulty": "easy"
+      },
+      {
+        "id": "json-0038",
+        "correct": true,
+        "predicted": "{\"depth\":302,\"level\":\"high\",\"service\":\"notify\"}",
+        "expected": "{\"depth\":302,\"level\":\"high\",\"service\":\"notify\"}",
+        "latency_ms": 2871.021,
+        "output_tokens": 311,
+        "category": "classification",
+        "difficulty": "easy"
+      },
+      {
+        "id": "json-0039",
+        "correct": false,
+        "predicted": "{\"depth\":320,\"level\":\"high\",\"service\":320}",
+        "expected": "{\"depth\":320,\"level\":\"high\",\"service\":\"payments\"}",
+        "latency_ms": 5710.494,
+        "output_tokens": 618,
+        "category": "classification",
+        "difficulty": "easy"
+      },
+      {
+        "id": "json-0040",
+        "correct": true,
+        "predicted": "{\"depth\":355,\"level\":\"high\",\"service\":\"media\"}",
+        "expected": "{\"depth\":355,\"level\":\"high\",\"service\":\"media\"}",
+        "latency_ms": 3114.494,
+        "output_tokens": 338,
+        "category": "classification",
+        "difficulty": "easy"
+      },
+      {
+        "id": "json-0041",
+        "correct": true,
+        "predicted": "{\"depth\":30,\"level\":\"low\",\"service\":\"notify\"}",
+        "expected": "{\"depth\":30,\"level\":\"low\",\"service\":\"notify\"}",
+        "latency_ms": 3750.197,
+        "output_tokens": 406,
+        "category": "classification",
+        "difficulty": "easy"
+      },
+      {
+        "id": "json-0042",
+        "correct": false,
+        "predicted": "{\"depth\":171,\"level\":\"low\",\"service\":\"media service\"}",
+        "expected": "{\"depth\":171,\"level\":\"low\",\"service\":\"media\"}",
+        "latency_ms": 4321.583,
+        "output_tokens": 466,
+        "category": "classification",
+        "difficulty": "easy"
+      },
+      {
+        "id": "json-0043",
+        "correct": false,
+        "predicted": "{\"depth\":257,\"level\":\"high\",\"service\":\"payments service\"}",
+        "expected": "{\"depth\":257,\"level\":\"high\",\"service\":\"payments\"}",
+        "latency_ms": 4349.518,
+        "output_tokens": 467,
+        "category": "classification",
+        "difficulty": "easy"
+      },
+      {
+        "id": "json-0044",
+        "correct": false,
+        "predicted": "{\"depth\":63,\"level\":\"low\",\"service\":63}",
+        "expected": "{\"depth\":63,\"level\":\"low\",\"service\":\"notify\"}",
+        "latency_ms": 3789.442,
+        "output_tokens": 409,
+        "category": "classification",
+        "difficulty": "easy"
+      },
+      {
+        "id": "json-0045",
+        "correct": false,
+        "predicted": "{\"depth\":60,\"level\":\"low\",\"service\":\"search_service\"}",
+        "expected": "{\"depth\":60,\"level\":\"low\",\"service\":\"search\"}",
+        "latency_ms": 3893.961,
+        "output_tokens": 428,
+        "category": "classification",
+        "difficulty": "easy"
+      },
+      {
+        "id": "json-0046",
+        "correct": false,
+        "predicted": "{\"depth\":20,\"level\":\"low\",\"service\":20}",
+        "expected": "{\"depth\":20,\"level\":\"low\",\"service\":\"billing\"}",
+        "latency_ms": 3530.113,
+        "output_tokens": 391,
+        "category": "classification",
+        "difficulty": "easy"
+      },
+      {
+        "id": "json-0047",
+        "correct": true,
+        "predicted": "{\"confident\":true,\"intent\":\"cancel\"}",
+        "expected": "{\"confident\":true,\"intent\":\"cancel\"}",
+        "latency_ms": 3192.979,
+        "output_tokens": 355,
+        "category": "classification",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0048",
+        "correct": true,
+        "predicted": "{\"confident\":true,\"intent\":\"track\"}",
+        "expected": "{\"confident\":true,\"intent\":\"track\"}",
+        "latency_ms": 3968.604,
+        "output_tokens": 443,
+        "category": "classification",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0049",
+        "correct": false,
+        "predicted": "{\"confident\":true,\"intent\":\"track\"}",
+        "expected": "{\"confident\":true,\"intent\":\"billing\"}",
+        "latency_ms": 11902.367,
+        "output_tokens": 1305,
+        "category": "classification",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0050",
+        "correct": true,
+        "predicted": "{\"confident\":true,\"intent\":\"reschedule\"}",
+        "expected": "{\"confident\":true,\"intent\":\"reschedule\"}",
+        "latency_ms": 3490.619,
+        "output_tokens": 388,
+        "category": "classification",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0051",
+        "correct": true,
+        "predicted": "{\"confident\":true,\"intent\":\"close_account\"}",
+        "expected": "{\"confident\":true,\"intent\":\"close_account\"}",
+        "latency_ms": 3759.489,
+        "output_tokens": 417,
+        "category": "classification",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0052",
+        "correct": true,
+        "predicted": "{\"confident\":true,\"intent\":\"return\"}",
+        "expected": "{\"confident\":true,\"intent\":\"return\"}",
+        "latency_ms": 2828.351,
+        "output_tokens": 314,
+        "category": "classification",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0053",
+        "correct": false,
+        "predicted": "{\"confident\":true,\"intent\":\"return\"}",
+        "expected": "{\"confident\":true,\"intent\":\"cancel\"}",
+        "latency_ms": 5517.443,
+        "output_tokens": 599,
+        "category": "classification",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0054",
+        "correct": true,
+        "predicted": "{\"confident\":true,\"intent\":\"track\"}",
+        "expected": "{\"confident\":true,\"intent\":\"track\"}",
+        "latency_ms": 3431.342,
+        "output_tokens": 373,
+        "category": "classification",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0055",
+        "correct": true,
+        "predicted": "{\"confident\":true,\"intent\":\"billing\"}",
+        "expected": "{\"confident\":true,\"intent\":\"billing\"}",
+        "latency_ms": 4288.916,
+        "output_tokens": 467,
+        "category": "classification",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0056",
+        "correct": true,
+        "predicted": "{\"confident\":true,\"intent\":\"reschedule\"}",
+        "expected": "{\"confident\":true,\"intent\":\"reschedule\"}",
+        "latency_ms": 5044.947,
+        "output_tokens": 547,
+        "category": "classification",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0057",
+        "correct": true,
+        "predicted": "{\"confident\":true,\"intent\":\"close_account\"}",
+        "expected": "{\"confident\":true,\"intent\":\"close_account\"}",
+        "latency_ms": 4313.506,
+        "output_tokens": 468,
+        "category": "classification",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0058",
+        "correct": true,
+        "predicted": "{\"confident\":true,\"intent\":\"return\"}",
+        "expected": "{\"confident\":true,\"intent\":\"return\"}",
+        "latency_ms": 2672.867,
+        "output_tokens": 291,
+        "category": "classification",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0059",
+        "correct": true,
+        "predicted": "{\"order\":{\"id\":\"ORD-730\",\"item_count\":9,\"ship_to\":\"Valcrest\"},\"user\":{\"id\":8899,\"name\":\"Priya Alder\"}}",
+        "expected": "{\"order\":{\"id\":\"ORD-730\",\"item_count\":9,\"ship_to\":\"Valcrest\"},\"user\":{\"id\":8899,\"name\":\"Priya Alder\"}}",
+        "latency_ms": 5643.062,
+        "output_tokens": 619,
+        "category": "nested",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0060",
+        "correct": false,
+        "predicted": "{\"order\":{\"id\":\"ORD-830\",\"item_count\":9,\"ship_to\":\"Threeford\"},\"user\":{\"id\":\"Fenna Fairbank\",\"name\":\"Fenna Fairbank\"}}",
+        "expected": "{\"order\":{\"id\":\"ORD-830\",\"item_count\":9,\"ship_to\":\"Threeford\"},\"user\":{\"id\":3305,\"name\":\"Fenna Fairbank\"}}",
+        "latency_ms": 6733.752,
+        "output_tokens": 740,
+        "category": "nested",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0061",
+        "correct": true,
+        "predicted": "{\"order\":{\"id\":\"ORD-990\",\"item_count\":2,\"ship_to\":\"Threeford\"},\"user\":{\"id\":1173,\"name\":\"Bo Ellery\"}}",
+        "expected": "{\"order\":{\"id\":\"ORD-990\",\"item_count\":2,\"ship_to\":\"Threeford\"},\"user\":{\"id\":1173,\"name\":\"Bo Ellery\"}}",
+        "latency_ms": 9777.568,
+        "output_tokens": 1071,
+        "category": "nested",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0062",
+        "correct": true,
+        "predicted": "{\"order\":{\"id\":\"ORD-833\",\"item_count\":8,\"ship_to\":\"Threeford\"},\"user\":{\"id\":7315,\"name\":\"Emre Ivers\"}}",
+        "expected": "{\"order\":{\"id\":\"ORD-833\",\"item_count\":8,\"ship_to\":\"Threeford\"},\"user\":{\"id\":7315,\"name\":\"Emre Ivers\"}}",
+        "latency_ms": 8057.964,
+        "output_tokens": 886,
+        "category": "nested",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0063",
+        "correct": true,
+        "predicted": "{\"order\":{\"id\":\"ORD-574\",\"item_count\":3,\"ship_to\":\"Threeford\"},\"user\":{\"id\":1379,\"name\":\"Mira Keswick\"}}",
+        "expected": "{\"order\":{\"id\":\"ORD-574\",\"item_count\":3,\"ship_to\":\"Threeford\"},\"user\":{\"id\":1379,\"name\":\"Mira Keswick\"}}",
+        "latency_ms": 5944.45,
+        "output_tokens": 649,
+        "category": "nested",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0064",
+        "correct": true,
+        "predicted": "{\"order\":{\"id\":\"ORD-462\",\"item_count\":2,\"ship_to\":\"Kesswater\"},\"user\":{\"id\":1731,\"name\":\"Bo Corvin\"}}",
+        "expected": "{\"order\":{\"id\":\"ORD-462\",\"item_count\":2,\"ship_to\":\"Kesswater\"},\"user\":{\"id\":1731,\"name\":\"Bo Corvin\"}}",
+        "latency_ms": 6565.459,
+        "output_tokens": 717,
+        "category": "nested",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0065",
+        "correct": false,
+        "predicted": "{\"user\":{\"id\":7418,\"name\":\"Bo Ellery\",\"order\":{\"id\":\"ORD-220\",\"item_count\":9,\"ship_to\":\"Valcrest\"}}}",
+        "expected": "{\"order\":{\"id\":\"ORD-220\",\"item_count\":9,\"ship_to\":\"Valcrest\"},\"user\":{\"id\":7418,\"name\":\"Bo Ellery\"}}",
+        "latency_ms": 4416.728,
+        "output_tokens": 484,
+        "category": "nested",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0066",
+        "correct": true,
+        "predicted": "{\"order\":{\"id\":\"ORD-855\",\"item_count\":2,\"ship_to\":\"Threeford\"},\"user\":{\"id\":3038,\"name\":\"Bo Gale\"}}",
+        "expected": "{\"order\":{\"id\":\"ORD-855\",\"item_count\":2,\"ship_to\":\"Threeford\"},\"user\":{\"id\":3038,\"name\":\"Bo Gale\"}}",
+        "latency_ms": 6404.627,
+        "output_tokens": 703,
+        "category": "nested",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0067",
+        "correct": false,
+        "predicted": "{\"order\":{\"id\":\"1558\",\"item_count\":8,\"ship_to\":\"Dunhallow\"},\"user\":{\"id\":1558,\"name\":\"Hana Lund\"}}",
+        "expected": "{\"order\":{\"id\":\"ORD-357\",\"item_count\":8,\"ship_to\":\"Dunhallow\"},\"user\":{\"id\":1558,\"name\":\"Hana Lund\"}}",
+        "latency_ms": 7067.097,
+        "output_tokens": 774,
+        "category": "nested",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0068",
+        "correct": true,
+        "predicted": "{\"order\":{\"id\":\"ORD-743\",\"item_count\":7,\"ship_to\":\"Kesswater\"},\"user\":{\"id\":4894,\"name\":\"Lars Ellery\"}}",
+        "expected": "{\"order\":{\"id\":\"ORD-743\",\"item_count\":7,\"ship_to\":\"Kesswater\"},\"user\":{\"id\":4894,\"name\":\"Lars Ellery\"}}",
+        "latency_ms": 7966.174,
+        "output_tokens": 868,
+        "category": "nested",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0069",
+        "correct": true,
+        "predicted": "{\"tenants\":[\"t-3547\",\"t-4456\",\"t-7824\",\"t-8174\",\"t-4279\",\"t-7816\"]}",
+        "expected": "{\"tenants\":[\"t-3547\",\"t-4456\",\"t-7824\",\"t-8174\",\"t-4279\",\"t-7816\"]}",
+        "latency_ms": 3702.535,
+        "output_tokens": 405,
+        "category": "arrays",
+        "difficulty": "easy"
+      },
+      {
+        "id": "json-0070",
+        "correct": true,
+        "predicted": "{\"tenants\":[\"t-7567\",\"t-7968\",\"t-8928\",\"t-7983\"]}",
+        "expected": "{\"tenants\":[\"t-7567\",\"t-7968\",\"t-8928\",\"t-7983\"]}",
+        "latency_ms": 3293.758,
+        "output_tokens": 359,
+        "category": "arrays",
+        "difficulty": "easy"
+      },
+      {
+        "id": "json-0071",
+        "correct": true,
+        "predicted": "{\"tenants\":[\"t-1022\",\"t-6879\",\"t-2365\",\"t-6799\"]}",
+        "expected": "{\"tenants\":[\"t-1022\",\"t-6879\",\"t-2365\",\"t-6799\"]}",
+        "latency_ms": 3929.254,
+        "output_tokens": 428,
+        "category": "arrays",
+        "difficulty": "easy"
+      },
+      {
+        "id": "json-0072",
+        "correct": true,
+        "predicted": "{\"tenants\":[\"t-2838\",\"t-4070\",\"t-8165\",\"t-3012\"]}",
+        "expected": "{\"tenants\":[\"t-2838\",\"t-4070\",\"t-8165\",\"t-3012\"]}",
+        "latency_ms": 3319.321,
+        "output_tokens": 360,
+        "category": "arrays",
+        "difficulty": "easy"
+      },
+      {
+        "id": "json-0073",
+        "correct": true,
+        "predicted": "{\"tenants\":[\"t-3759\",\"t-4899\",\"t-1657\",\"t-2263\"]}",
+        "expected": "{\"tenants\":[\"t-3759\",\"t-4899\",\"t-1657\",\"t-2263\"]}",
+        "latency_ms": 3316.55,
+        "output_tokens": 359,
+        "category": "arrays",
+        "difficulty": "easy"
+      },
+      {
+        "id": "json-0074",
+        "correct": true,
+        "predicted": "{\"tenants\":[\"t-6700\",\"t-3630\",\"t-3979\"]}",
+        "expected": "{\"tenants\":[\"t-6700\",\"t-3630\",\"t-3979\"]}",
+        "latency_ms": 3612.208,
+        "output_tokens": 393,
+        "category": "arrays",
+        "difficulty": "easy"
+      },
+      {
+        "id": "json-0075",
+        "correct": true,
+        "predicted": "{\"tenants\":[\"t-8440\",\"t-4890\",\"t-3932\",\"t-5058\",\"t-9497\",\"t-6146\"]}",
+        "expected": "{\"tenants\":[\"t-8440\",\"t-4890\",\"t-3932\",\"t-5058\",\"t-9497\",\"t-6146\"]}",
+        "latency_ms": 3853.627,
+        "output_tokens": 420,
+        "category": "arrays",
+        "difficulty": "easy"
+      },
+      {
+        "id": "json-0076",
+        "correct": true,
+        "predicted": "{\"tenants\":[\"t-8659\",\"t-6014\",\"t-6867\",\"t-8175\",\"t-9729\"]}",
+        "expected": "{\"tenants\":[\"t-8659\",\"t-6014\",\"t-6867\",\"t-8175\",\"t-9729\"]}",
+        "latency_ms": 4354.46,
+        "output_tokens": 474,
+        "category": "arrays",
+        "difficulty": "easy"
+      },
+      {
+        "id": "json-0077",
+        "correct": true,
+        "predicted": "{\"tenants\":[\"t-7083\",\"t-6458\",\"t-6179\"]}",
+        "expected": "{\"tenants\":[\"t-7083\",\"t-6458\",\"t-6179\"]}",
+        "latency_ms": 4095.37,
+        "output_tokens": 446,
+        "category": "arrays",
+        "difficulty": "easy"
+      },
+      {
+        "id": "json-0078",
+        "correct": true,
+        "predicted": "{\"tenants\":[\"t-7886\",\"t-2715\",\"t-8504\",\"t-4462\",\"t-1039\"]}",
+        "expected": "{\"tenants\":[\"t-7886\",\"t-2715\",\"t-8504\",\"t-4462\",\"t-1039\"]}",
+        "latency_ms": 3460.074,
+        "output_tokens": 377,
+        "category": "arrays",
+        "difficulty": "easy"
+      },
+      {
+        "id": "json-0079",
+        "correct": true,
+        "predicted": "{\"people\":[{\"age\":26,\"name\":\"Nadia Ivers\"},{\"age\":56,\"name\":\"Lars Corvin\"},{\"age\":34,\"name\":\"Juno Keswick\"}]}",
+        "expected": "{\"people\":[{\"age\":26,\"name\":\"Nadia Ivers\"},{\"age\":56,\"name\":\"Lars Corvin\"},{\"age\":34,\"name\":\"Juno Keswick\"}]}",
+        "latency_ms": 5172.727,
+        "output_tokens": 564,
+        "category": "arrays",
+        "difficulty": "hard"
+      },
+      {
+        "id": "json-0080",
+        "correct": true,
+        "predicted": "{\"people\":[{\"age\":53,\"name\":\"Tomas Lund\"},{\"age\":51,\"name\":\"Lars Ivers\"},{\"age\":27,\"name\":\"Cai Braith\"}]}",
+        "expected": "{\"people\":[{\"age\":53,\"name\":\"Tomas Lund\"},{\"age\":51,\"name\":\"Lars Ivers\"},{\"age\":27,\"name\":\"Cai Braith\"}]}",
+        "latency_ms": 4789.299,
+        "output_tokens": 523,
+        "category": "arrays",
+        "difficulty": "hard"
+      },
+      {
+        "id": "json-0081",
+        "correct": true,
+        "predicted": "{\"people\":[{\"age\":28,\"name\":\"Bo Jarrow\"},{\"age\":21,\"name\":\"Cai Braith\"},{\"age\":41,\"name\":\"Rafael Dunmore\"}]}",
+        "expected": "{\"people\":[{\"age\":28,\"name\":\"Bo Jarrow\"},{\"age\":21,\"name\":\"Cai Braith\"},{\"age\":41,\"name\":\"Rafael Dunmore\"}]}",
+        "latency_ms": 3772.932,
+        "output_tokens": 410,
+        "category": "arrays",
+        "difficulty": "hard"
+      },
+      {
+        "id": "json-0082",
+        "correct": true,
+        "predicted": "{\"people\":[{\"age\":52,\"name\":\"Mira Holt\"},{\"age\":51,\"name\":\"Cai Corvin\"},{\"age\":49,\"name\":\"Dana Keswick\"}]}",
+        "expected": "{\"people\":[{\"age\":52,\"name\":\"Mira Holt\"},{\"age\":51,\"name\":\"Cai Corvin\"},{\"age\":49,\"name\":\"Dana Keswick\"}]}",
+        "latency_ms": 5827.792,
+        "output_tokens": 638,
+        "category": "arrays",
+        "difficulty": "hard"
+      },
+      {
+        "id": "json-0083",
+        "correct": false,
+        "predicted": "{\"people\":[{\"age\":33,\"name\":\"Ines\"},{\"age\":29,\"name\":\"Hana\"},{\"age\":43,\"name\":\"Mira\"}]}",
+        "expected": "{\"people\":[{\"age\":33,\"name\":\"Ines Corvin\"},{\"age\":29,\"name\":\"Hana Corvin\"},{\"age\":43,\"name\":\"Mira Corvin\"}]}",
+        "latency_ms": 3886.261,
+        "output_tokens": 424,
+        "category": "arrays",
+        "difficulty": "hard"
+      },
+      {
+        "id": "json-0084",
+        "correct": true,
+        "predicted": "{\"people\":[{\"age\":31,\"name\":\"Ines Ivers\"},{\"age\":32,\"name\":\"Nadia Ellery\"},{\"age\":63,\"name\":\"Fenna Fairbank\"}]}",
+        "expected": "{\"people\":[{\"age\":31,\"name\":\"Ines Ivers\"},{\"age\":32,\"name\":\"Nadia Ellery\"},{\"age\":63,\"name\":\"Fenna Fairbank\"}]}",
+        "latency_ms": 6131.427,
+        "output_tokens": 672,
+        "category": "arrays",
+        "difficulty": "hard"
+      },
+      {
+        "id": "json-0085",
+        "correct": true,
+        "predicted": "{\"people\":[{\"age\":51,\"name\":\"Tomas Braith\"},{\"age\":22,\"name\":\"Bo Jarrow\"},{\"age\":46,\"name\":\"Fenna Fairbank\"}]}",
+        "expected": "{\"people\":[{\"age\":51,\"name\":\"Tomas Braith\"},{\"age\":22,\"name\":\"Bo Jarrow\"},{\"age\":46,\"name\":\"Fenna Fairbank\"}]}",
+        "latency_ms": 4890.572,
+        "output_tokens": 537,
+        "category": "arrays",
+        "difficulty": "hard"
+      },
+      {
+        "id": "json-0086",
+        "correct": true,
+        "predicted": "{\"people\":[{\"age\":55,\"name\":\"Cai Lund\"},{\"age\":63,\"name\":\"Emre Holt\"},{\"age\":39,\"name\":\"Mira Fairbank\"}]}",
+        "expected": "{\"people\":[{\"age\":55,\"name\":\"Cai Lund\"},{\"age\":63,\"name\":\"Emre Holt\"},{\"age\":39,\"name\":\"Mira Fairbank\"}]}",
+        "latency_ms": 5148.363,
+        "output_tokens": 562,
+        "category": "arrays",
+        "difficulty": "hard"
+      },
+      {
+        "id": "json-0087",
+        "correct": true,
+        "predicted": "{\"count\":4,\"max\":304,\"min\":58,\"total\":723}",
+        "expected": "{\"count\":4,\"max\":304,\"min\":58,\"total\":723}",
+        "latency_ms": 3741.349,
+        "output_tokens": 409,
+        "category": "aggregation",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0088",
+        "correct": true,
+        "predicted": "{\"count\":3,\"max\":298,\"min\":86,\"total\":651}",
+        "expected": "{\"count\":3,\"max\":298,\"min\":86,\"total\":651}",
+        "latency_ms": 3137.225,
+        "output_tokens": 342,
+        "category": "aggregation",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0089",
+        "correct": true,
+        "predicted": "{\"count\":6,\"max\":327,\"min\":89,\"total\":1519}",
+        "expected": "{\"count\":6,\"max\":327,\"min\":89,\"total\":1519}",
+        "latency_ms": 2705.939,
+        "output_tokens": 294,
+        "category": "aggregation",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0090",
+        "correct": true,
+        "predicted": "{\"count\":5,\"max\":211,\"min\":29,\"total\":560}",
+        "expected": "{\"count\":5,\"max\":211,\"min\":29,\"total\":560}",
+        "latency_ms": 2880.637,
+        "output_tokens": 315,
+        "category": "aggregation",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0091",
+        "correct": true,
+        "predicted": "{\"count\":4,\"max\":374,\"min\":63,\"total\":907}",
+        "expected": "{\"count\":4,\"max\":374,\"min\":63,\"total\":907}",
+        "latency_ms": 3055.275,
+        "output_tokens": 338,
+        "category": "aggregation",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0092",
+        "correct": true,
+        "predicted": "{\"count\":5,\"max\":331,\"min\":22,\"total\":756}",
+        "expected": "{\"count\":5,\"max\":331,\"min\":22,\"total\":756}",
+        "latency_ms": 3046.764,
+        "output_tokens": 337,
+        "category": "aggregation",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0093",
+        "correct": true,
+        "predicted": "{\"count\":3,\"max\":397,\"min\":354,\"total\":1135}",
+        "expected": "{\"count\":3,\"max\":397,\"min\":354,\"total\":1135}",
+        "latency_ms": 3566.645,
+        "output_tokens": 395,
+        "category": "aggregation",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0094",
+        "correct": true,
+        "predicted": "{\"count\":4,\"max\":334,\"min\":63,\"total\":741}",
+        "expected": "{\"count\":4,\"max\":334,\"min\":63,\"total\":741}",
+        "latency_ms": 3650.249,
+        "output_tokens": 403,
+        "category": "aggregation",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0095",
+        "correct": true,
+        "predicted": "{\"count\":6,\"max\":380,\"min\":130,\"total\":1638}",
+        "expected": "{\"count\":6,\"max\":380,\"min\":130,\"total\":1638}",
+        "latency_ms": 2792.953,
+        "output_tokens": 303,
+        "category": "aggregation",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0096",
+        "correct": true,
+        "predicted": "{\"count\":5,\"max\":359,\"min\":30,\"total\":1122}",
+        "expected": "{\"count\":5,\"max\":359,\"min\":30,\"total\":1122}",
+        "latency_ms": 2610.511,
+        "output_tokens": 284,
+        "category": "aggregation",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0097",
+        "correct": true,
+        "predicted": "{\"date\":\"2019-05-13\",\"weekday_known\":false}",
+        "expected": "{\"date\":\"2019-05-13\",\"weekday_known\":false}",
+        "latency_ms": 4076.329,
+        "output_tokens": 446,
+        "category": "normalisation",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0098",
+        "correct": true,
+        "predicted": "{\"date\":\"2025-03-15\",\"weekday_known\":false}",
+        "expected": "{\"date\":\"2025-03-15\",\"weekday_known\":false}",
+        "latency_ms": 2980.406,
+        "output_tokens": 325,
+        "category": "normalisation",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0099",
+        "correct": true,
+        "predicted": "{\"date\":\"2019-06-10\",\"weekday_known\":false}",
+        "expected": "{\"date\":\"2019-06-10\",\"weekday_known\":false}",
+        "latency_ms": 3203.014,
+        "output_tokens": 350,
+        "category": "normalisation",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0100",
+        "correct": true,
+        "predicted": "{\"date\":\"2023-11-15\",\"weekday_known\":false}",
+        "expected": "{\"date\":\"2023-11-15\",\"weekday_known\":false}",
+        "latency_ms": 3784.101,
+        "output_tokens": 415,
+        "category": "normalisation",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0101",
+        "correct": true,
+        "predicted": "{\"date\":\"2030-04-05\",\"weekday_known\":false}",
+        "expected": "{\"date\":\"2030-04-05\",\"weekday_known\":false}",
+        "latency_ms": 3826.577,
+        "output_tokens": 418,
+        "category": "normalisation",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0102",
+        "correct": true,
+        "predicted": "{\"date\":\"2029-04-04\",\"weekday_known\":false}",
+        "expected": "{\"date\":\"2029-04-04\",\"weekday_known\":false}",
+        "latency_ms": 3782.167,
+        "output_tokens": 413,
+        "category": "normalisation",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0103",
+        "correct": true,
+        "predicted": "{\"enabled\":true,\"region\":\"eu-west\",\"retries\":1}",
+        "expected": "{\"enabled\":true,\"region\":\"eu-west\",\"retries\":1}",
+        "latency_ms": 4348.982,
+        "output_tokens": 473,
+        "category": "transformation",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0104",
+        "correct": true,
+        "predicted": "{\"enabled\":true,\"region\":\"eu-central\",\"retries\":5}",
+        "expected": "{\"enabled\":true,\"region\":\"eu-central\",\"retries\":5}",
+        "latency_ms": 3725.08,
+        "output_tokens": 405,
+        "category": "transformation",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0105",
+        "correct": false,
+        "predicted": "{\"enabled\":\"true\",\"region\":\"eu-west\",\"retries\":0}",
+        "expected": "{\"enabled\":true,\"region\":\"eu-west\",\"retries\":0}",
+        "latency_ms": 5963.991,
+        "output_tokens": 650,
+        "category": "transformation",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0106",
+        "correct": false,
+        "predicted": "{\"enabled\":\"false\",\"region\":\"eu-central\",\"retries\":1}",
+        "expected": "{\"enabled\":false,\"region\":\"eu-central\",\"retries\":1}",
+        "latency_ms": 4922.565,
+        "output_tokens": 536,
+        "category": "transformation",
+        "difficulty": "medium"
+      },
+      {
+        "id": "json-0107",
+        "correct": true,
+        "predicted": "{\"name\":\"Cai Holt\",\"phone\":null}",
+        "expected": "{\"name\":\"Cai Holt\",\"phone\":null}",
+        "latency_ms": 3313.652,
+        "output_tokens": 362,
+        "category": "extraction",
+        "difficulty": "hard"
+      },
+      {
+        "id": "json-0108",
+        "correct": true,
+        "predicted": "{\"name\":\"Tomas Jarrow\",\"phone\":null}",
+        "expected": "{\"name\":\"Tomas Jarrow\",\"phone\":null}",
+        "latency_ms": 2743.95,
+        "output_tokens": 302,
+        "category": "extraction",
+        "difficulty": "hard"
+      },
+      {
+        "id": "json-0109",
+        "correct": true,
+        "predicted": "{\"name\":\"Hana Fairbank\",\"phone\":null}",
+        "expected": "{\"name\":\"Hana Fairbank\",\"phone\":null}",
+        "latency_ms": 3662.006,
+        "output_tokens": 390,
+        "category": "extraction",
+        "difficulty": "hard"
+      },
+      {
+        "id": "json-0110",
+        "correct": true,
+        "predicted": "{\"name\":\"Cai Ivers\",\"phone\":null}",
+        "expected": "{\"name\":\"Cai Ivers\",\"phone\":null}",
+        "latency_ms": 2445.398,
+        "output_tokens": 270,
+        "category": "extraction",
+        "difficulty": "hard"
+      }
+    ]
+  },
+  "failures": [],
+  "conditions": {
+    "dedicated": true,
+    "detail": "Only this SGLang server (and, for the speed and long-context rows, the small cache-busting proxy in front of it) was resident; the image server that normally runs on the box was stopped, and nvidia-smi listed no other compute process. The only other running container was a small host metrics exporter (python, about 10 MB, no GPU).",
+    "isolation_check": "nvidia-smi compute apps -> 1335306, .venv/bin/python 1335362, sglang::scheduler ; docker ps -> 1 containers; load1 at start 1.02"
+  },
+  "gotchas": [
+    {
+      "severity": "info",
+      "text": "Tool calling needs SGLang with the minicpm5 tool-call parser (sgl-project/sglang#25600). The openbmb cookbook says to install SGLang from main because v0.5.12.post1 lacked it; the PyPI 0.5.20 wheel used here ships it, so no source build is needed any more. The model writes XML tool calls (<function name=\"x\"><param name=\"k\">v</param></function>) and they come back as OpenAI tool_calls with finish_reason tool_calls, with thinking on and off."
+    },
+    {
+      "severity": "info",
+      "text": "SGLang has no MiniCPM5 reasoning parser, but the model uses plain <think> ... </think>, so --reasoning-parser qwen3 splits it into reasoning_content. With enable_thinking left unset the template adds no <think> prefix; the model opens the tag itself and the qwen3 parser still catches it."
+    },
+    {
+      "severity": "info",
+      "text": "flashinfer JIT-compiles its prefill kernels on the first request and shells out to ninja. In a venv that is not activated the first prefill dies with FileNotFoundError: ninja and the scheduler exits; put the venv bin directory on PATH before starting the server."
+    },
+    {
+      "severity": "info",
+      "text": "In a llama.cpp deployment the card warns that the default min_p 0.05 causes repetition and asks for min_p 0; the SGLang default min_p is already 0."
+    }
+  ],
+  "derived": {
+    "cost_per_1m_output_tokens_usd": null,
+    "tokens_per_watt": null,
+    "tok_s_per_gb_bandwidth": null,
+    "bandwidth_efficiency": null,
+    "memory_headroom_gb": 38.644
+  },
+  "raw": {
+    "harness": "atlas-bench",
+    "harness_version": "0.1.0",
+    "sha256": "92071d09337868c938482824efb966c1becd7873e59d9cdfa75c45f01d51ee50",
+    "payload_path": null,
+    "payload": {
+      "scorer": "json",
+      "scorers_used": [
+        "json"
+      ],
+      "engine_endpoint": {
+        "attached": true,
+        "base_url": "http://127.0.0.1:30000/v1",
+        "served_model_id": "MiniCPM5-1B",
+        "advertised_models": [
+          "MiniCPM5-1B"
+        ]
+      }
+    },
+    "truncated": false
+  },
+  "provenance": {
+    "github_login": "0xBakeer",
+    "github_user_id": 17404809,
+    "started_at": "2026-09-22T21:32:42Z",
+    "finished_at": "2026-09-22T21:34:50Z",
+    "submitted_at": null,
+    "commit": null,
+    "pr": null,
+    "method": "atlas-bench",
+    "agent": null,
+    "notes": "Weights: openbmb/MiniCPM5-1B at 87179e5c1f455ef22e6223592d2d61351b525bfc, BF16, one 2.16 GB safetensors shard, sha256 checked against the Hub. SGLang 0.5.20 from PyPI in a Python 3.12 venv (uv) with torch 2.13.0+cu130, flashinfer-python 0.6.18, sglang-kernel 0.4.7, triton 3.7.1, transformers 5.12.1, xgrammar 0.2.1; CUDA 13.0, driver 580.173.02, Ubuntu 24.04.4, kernel 6.17.0-1029-nvidia. Environment SGLANG_ALLOW_OVERWRITE_LONGER_CONTEXT_LEN=1 and SGLANG_DISABLE_CUDNN_CHECK=1 as the MiniCPM SGLang cookbook recommends, the venv bin directory on PATH (flashinfer JIT needs ninja). Server flags follow the openbmb SGLang cookbook (docs/deployment/sglang.md): --dtype bfloat16 --context-length 131072 --tool-call-parser minicpm5, plus --reasoning-parser qwen3 so the <think> block lands in reasoning_content; --mem-fraction-static 0.75 instead of the cookbook 0.85 to leave the unified-memory box about 20 GB of host headroom (the KV pool still holds about 2 million tokens). Radix prefix cache, chunked prefill 8192, CUDA graphs and the flashinfer attention backend are SGLang defaults. Every request sets temperature 0 and seed 42 as the workloads specify. The chat template has three thinking states: enable_thinking true prefills <think>, false prefills an empty think block, and unset lets the model decide, which on almost every prompt means it thinks. Speed and long-context depth rows send chat_template_kwargs enable_thinking false; eval and needle rows leave it unset (the template default). Load: weights 13.0 s (2.38 GB), KV cache allocation 3.2 s, CUDA graph capture 10.6 s, scheduler end to end 32.2 s; SGLang reported max_total_num_tokens 3,679,002 and chunked_prefill_size 8192, and 23.5 GB of GPU memory was still free after start. max_running_requests is passed explicitly as 512 (the SGLang default on this box was 4096) so the concurrency limit is recorded in the row args and can be read back from /get_server_info; it was confirmed at 512 on this server before the first concurrent row."
+  },
+  "verification": {
+    "level": "self-reported",
+    "reproduced_by": [],
+    "flags": []
+  }
+}

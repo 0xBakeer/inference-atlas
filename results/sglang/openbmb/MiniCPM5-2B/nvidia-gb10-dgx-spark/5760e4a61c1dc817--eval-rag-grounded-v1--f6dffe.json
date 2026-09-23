@@ -1,0 +1,1445 @@
+{
+  "schema_version": 1,
+  "run_id": "5760e4a61c1dc817--eval-rag-grounded-v1--f6dffe",
+  "config_id": "5760e4a61c1dc817",
+  "cell_id": "96f86b77bdb3",
+  "workload_id": "eval-rag-grounded-v1",
+  "kind": "eval",
+  "engine": {
+    "id": "sglang",
+    "version": "0.5.20",
+    "commit": null,
+    "build": "pypi sglang==0.5.20 (py3.12 venv, torch 2.13.0+cu130, flashinfer-python 0.6.18, sglang-kernel 0.4.7)",
+    "container": null,
+    "install_method": "pip"
+  },
+  "model": {
+    "id": "openbmb/MiniCPM5-2B",
+    "quant_id": "bf16",
+    "hf_id": "openbmb/MiniCPM5-2B",
+    "revision": "12a3808a956f869c767195e9266b59c4d21d92e2",
+    "dtype": "auto",
+    "local_path": null
+  },
+  "hardware": {
+    "id": "nvidia-gb10-dgx-spark",
+    "count": 1,
+    "driver": "580.173.02",
+    "cuda": "13.0",
+    "host": {
+      "cpu": "Cortex-A725",
+      "cpu_cores": 20,
+      "ram_gb": 121.6,
+      "os": "Ubuntu 24.04.4 LTS",
+      "kernel": "6.17.0-1029-nvidia",
+      "arch": "aarch64"
+    },
+    "fingerprint": "sha256:52ea2bdd513719724db88c162b6cc2c9fb4e5b67e02dbe41b9de00687acefb91",
+    "captured": {
+      "nvidia_smi": {
+        "driver": "580.173.02",
+        "cuda": "13.0",
+        "products": [
+          "NVIDIA GB10"
+        ],
+        "fb_memory_total_mib": 0
+      },
+      "lscpu": {
+        "architecture": "aarch64",
+        "cpus": "20",
+        "vendor_id": "ARM",
+        "model_name": "Cortex-A725",
+        "cores_per_socket": "10",
+        "sockets": "1",
+        "cpu_max_mhz": "2808.0000"
+      }
+    }
+  },
+  "args": {
+    "dtype": "bfloat16",
+    "context-length": 131072,
+    "mem-fraction-static": 0.75,
+    "tool-call-parser": "minicpm5",
+    "reasoning-parser": "qwen3",
+    "max-running-requests": 512,
+    "speculative-algorithm": "DSPARK",
+    "speculative-draft-model-path": "openbmb/MiniCPM5-2B-DSpark",
+    "speculative-dspark-block-size": 7,
+    "cuda-graph-max-bs-decode": 64
+  },
+  "args_canonical": "@build=pypi sglang==0.5.20 (py3.12 venv, torch 2.13.0+cu130, flashinfer-python 0.6.18, sglang-kernel 0.4.7);@dtype=auto;@quant=bf16;context-length=131072;cuda-graph-max-bs-decode=64;dtype=bfloat16;max-running-requests=512;mem-fraction-static=0.75;reasoning-parser=qwen3;speculative-algorithm=DSPARK;speculative-draft-model-path=openbmb/MiniCPM5-2B-DSpark;speculative-dspark-block-size=7;tool-call-parser=minicpm5",
+  "serve_command": null,
+  "workload": {
+    "id": "eval-rag-grounded-v1",
+    "resolved_params": {
+      "dataset_id": "eval-rag-grounded-v1",
+      "suite": "rag-grounded",
+      "scorer": "needle",
+      "items": 120,
+      "concurrency": 4,
+      "max_output_tokens": 2048,
+      "timeout_s": 300,
+      "temperature": 0,
+      "reasoning": "default",
+      "dataset_categories": null,
+      "dataset_target_tokens": null,
+      "pass_threshold": null,
+      "seed": 42
+    }
+  },
+  "env": {
+    "SGLANG_ALLOW_OVERWRITE_LONGER_CONTEXT_LEN": "1",
+    "SGLANG_DISABLE_CUDNN_CHECK": "1"
+  },
+  "metrics": {
+    "requests_total": 120,
+    "requests_ok": 120,
+    "requests_failed": 0,
+    "success_rate": 1,
+    "duration_s": 24.813,
+    "input_tokens_total": 23461,
+    "output_tokens_total": 13655,
+    "e2e_ms": {
+      "mean": 797.994,
+      "p50": 692.032,
+      "p90": 1376.519,
+      "p95": 1520.055,
+      "p99": 2053.931,
+      "min": 330.141,
+      "max": 2124.753
+    },
+    "vram_peak_gb": 94.356,
+    "ram_peak_gb": 103.329,
+    "power_avg_w": 40.55,
+    "power_peak_w": 42.4,
+    "energy_wh": 0.2742,
+    "gpu_util_avg_pct": 91.83,
+    "temp_max_c": 70,
+    "thermal_throttle_detected": false
+  },
+  "scores": {
+    "suite": "rag-grounded",
+    "total": 120,
+    "correct": 119,
+    "accuracy": 0.991667,
+    "success_rate": 1,
+    "by_category": {
+      "absent": {
+        "total": 30,
+        "correct": 30
+      },
+      "combine": {
+        "total": 15,
+        "correct": 15
+      },
+      "condition": {
+        "total": 15,
+        "correct": 15
+      },
+      "lookup": {
+        "total": 30,
+        "correct": 30
+      },
+      "near_miss": {
+        "total": 30,
+        "correct": 29
+      }
+    },
+    "by_difficulty": {
+      "easy": {
+        "total": 60,
+        "correct": 60
+      },
+      "hard": {
+        "total": 45,
+        "correct": 44
+      },
+      "medium": {
+        "total": 15,
+        "correct": 15
+      }
+    },
+    "avg_output_tokens": 113.79,
+    "avg_latency_ms": 797.99,
+    "failures": 0,
+    "items": [
+      {
+        "id": "rag-0001",
+        "correct": true,
+        "predicted": "46",
+        "expected": "46",
+        "latency_ms": 336.757,
+        "output_tokens": 55,
+        "category": "lookup",
+        "difficulty": "easy"
+      },
+      {
+        "id": "rag-0002",
+        "correct": true,
+        "predicted": "66",
+        "expected": "66",
+        "latency_ms": 606.652,
+        "output_tokens": 109,
+        "category": "combine",
+        "difficulty": "hard"
+      },
+      {
+        "id": "rag-0003",
+        "correct": true,
+        "predicted": "NOT IN PASSAGE",
+        "expected": "NOT IN PASSAGE",
+        "latency_ms": 781.869,
+        "output_tokens": 102,
+        "category": "absent",
+        "difficulty": "easy"
+      },
+      {
+        "id": "rag-0004",
+        "correct": true,
+        "predicted": "NOT IN PASSAGE",
+        "expected": "NOT IN PASSAGE",
+        "latency_ms": 1019.081,
+        "output_tokens": 137,
+        "category": "near_miss",
+        "difficulty": "hard"
+      },
+      {
+        "id": "rag-0005",
+        "correct": true,
+        "predicted": "34",
+        "expected": "34",
+        "latency_ms": 444.781,
+        "output_tokens": 65,
+        "category": "lookup",
+        "difficulty": "easy"
+      },
+      {
+        "id": "rag-0006",
+        "correct": true,
+        "predicted": "45",
+        "expected": "45",
+        "latency_ms": 658.572,
+        "output_tokens": 94,
+        "category": "condition",
+        "difficulty": "medium"
+      },
+      {
+        "id": "rag-0007",
+        "correct": true,
+        "predicted": "NOT IN PASSAGE",
+        "expected": "NOT IN PASSAGE",
+        "latency_ms": 596.852,
+        "output_tokens": 62,
+        "category": "absent",
+        "difficulty": "easy"
+      },
+      {
+        "id": "rag-0008",
+        "correct": true,
+        "predicted": "NOT IN PASSAGE",
+        "expected": "NOT IN PASSAGE",
+        "latency_ms": 1811.928,
+        "output_tokens": 266,
+        "category": "near_miss",
+        "difficulty": "hard"
+      },
+      {
+        "id": "rag-0009",
+        "correct": true,
+        "predicted": "48",
+        "expected": "48",
+        "latency_ms": 359.846,
+        "output_tokens": 55,
+        "category": "lookup",
+        "difficulty": "easy"
+      },
+      {
+        "id": "rag-0010",
+        "correct": true,
+        "predicted": "69",
+        "expected": "69",
+        "latency_ms": 471.938,
+        "output_tokens": 92,
+        "category": "combine",
+        "difficulty": "hard"
+      },
+      {
+        "id": "rag-0011",
+        "correct": true,
+        "predicted": "NOT IN PASSAGE",
+        "expected": "NOT IN PASSAGE",
+        "latency_ms": 694.978,
+        "output_tokens": 90,
+        "category": "absent",
+        "difficulty": "easy"
+      },
+      {
+        "id": "rag-0012",
+        "correct": true,
+        "predicted": "NOT IN PASSAGE",
+        "expected": "NOT IN PASSAGE",
+        "latency_ms": 1685.517,
+        "output_tokens": 258,
+        "category": "near_miss",
+        "difficulty": "hard"
+      },
+      {
+        "id": "rag-0013",
+        "correct": true,
+        "predicted": "29",
+        "expected": "29",
+        "latency_ms": 337.031,
+        "output_tokens": 55,
+        "category": "lookup",
+        "difficulty": "easy"
+      },
+      {
+        "id": "rag-0014",
+        "correct": true,
+        "predicted": "45",
+        "expected": "45",
+        "latency_ms": 489.675,
+        "output_tokens": 82,
+        "category": "condition",
+        "difficulty": "medium"
+      },
+      {
+        "id": "rag-0015",
+        "correct": true,
+        "predicted": "NOT IN PASSAGE",
+        "expected": "NOT IN PASSAGE",
+        "latency_ms": 818.948,
+        "output_tokens": 96,
+        "category": "absent",
+        "difficulty": "easy"
+      },
+      {
+        "id": "rag-0016",
+        "correct": true,
+        "predicted": "NOT IN PASSAGE",
+        "expected": "NOT IN PASSAGE",
+        "latency_ms": 1075.335,
+        "output_tokens": 151,
+        "category": "near_miss",
+        "difficulty": "hard"
+      },
+      {
+        "id": "rag-0017",
+        "correct": true,
+        "predicted": "34",
+        "expected": "34",
+        "latency_ms": 330.141,
+        "output_tokens": 55,
+        "category": "lookup",
+        "difficulty": "easy"
+      },
+      {
+        "id": "rag-0018",
+        "correct": true,
+        "predicted": "66",
+        "expected": "66",
+        "latency_ms": 625.787,
+        "output_tokens": 102,
+        "category": "combine",
+        "difficulty": "hard"
+      },
+      {
+        "id": "rag-0019",
+        "correct": true,
+        "predicted": "NOT IN PASSAGE",
+        "expected": "NOT IN PASSAGE",
+        "latency_ms": 566.063,
+        "output_tokens": 62,
+        "category": "absent",
+        "difficulty": "easy"
+      },
+      {
+        "id": "rag-0020",
+        "correct": true,
+        "predicted": "NOT IN PASSAGE",
+        "expected": "NOT IN PASSAGE",
+        "latency_ms": 1137.038,
+        "output_tokens": 158,
+        "category": "near_miss",
+        "difficulty": "hard"
+      },
+      {
+        "id": "rag-0021",
+        "correct": true,
+        "predicted": "53",
+        "expected": "53",
+        "latency_ms": 415.052,
+        "output_tokens": 62,
+        "category": "lookup",
+        "difficulty": "easy"
+      },
+      {
+        "id": "rag-0022",
+        "correct": true,
+        "predicted": "120 minutes",
+        "expected": "120",
+        "latency_ms": 1077.25,
+        "output_tokens": 140,
+        "category": "condition",
+        "difficulty": "medium"
+      },
+      {
+        "id": "rag-0023",
+        "correct": true,
+        "predicted": "NOT IN PASSAGE",
+        "expected": "NOT IN PASSAGE",
+        "latency_ms": 1186.19,
+        "output_tokens": 141,
+        "category": "absent",
+        "difficulty": "easy"
+      },
+      {
+        "id": "rag-0024",
+        "correct": true,
+        "predicted": "NOT IN PASSAGE",
+        "expected": "NOT IN PASSAGE",
+        "latency_ms": 1064.282,
+        "output_tokens": 139,
+        "category": "near_miss",
+        "difficulty": "hard"
+      },
+      {
+        "id": "rag-0025",
+        "correct": true,
+        "predicted": "41",
+        "expected": "41",
+        "latency_ms": 365.756,
+        "output_tokens": 60,
+        "category": "lookup",
+        "difficulty": "easy"
+      },
+      {
+        "id": "rag-0026",
+        "correct": true,
+        "predicted": "13",
+        "expected": "13",
+        "latency_ms": 1152.6,
+        "output_tokens": 161,
+        "category": "combine",
+        "difficulty": "hard"
+      },
+      {
+        "id": "rag-0027",
+        "correct": true,
+        "predicted": "NOT IN PASSAGE",
+        "expected": "NOT IN PASSAGE",
+        "latency_ms": 976.448,
+        "output_tokens": 138,
+        "category": "absent",
+        "difficulty": "easy"
+      },
+      {
+        "id": "rag-0028",
+        "correct": true,
+        "predicted": "NOT IN PASSAGE",
+        "expected": "NOT IN PASSAGE",
+        "latency_ms": 1196.624,
+        "output_tokens": 136,
+        "category": "near_miss",
+        "difficulty": "hard"
+      },
+      {
+        "id": "rag-0029",
+        "correct": true,
+        "predicted": "91",
+        "expected": "91",
+        "latency_ms": 363.014,
+        "output_tokens": 58,
+        "category": "lookup",
+        "difficulty": "easy"
+      },
+      {
+        "id": "rag-0030",
+        "correct": true,
+        "predicted": "90 minutes",
+        "expected": "90",
+        "latency_ms": 623.69,
+        "output_tokens": 98,
+        "category": "condition",
+        "difficulty": "medium"
+      },
+      {
+        "id": "rag-0031",
+        "correct": true,
+        "predicted": "NOT IN PASSAGE",
+        "expected": "NOT IN PASSAGE",
+        "latency_ms": 1158.352,
+        "output_tokens": 136,
+        "category": "absent",
+        "difficulty": "easy"
+      },
+      {
+        "id": "rag-0032",
+        "correct": true,
+        "predicted": "NOT IN PASSAGE",
+        "expected": "NOT IN PASSAGE",
+        "latency_ms": 1127.326,
+        "output_tokens": 153,
+        "category": "near_miss",
+        "difficulty": "hard"
+      },
+      {
+        "id": "rag-0033",
+        "correct": true,
+        "predicted": "69",
+        "expected": "69",
+        "latency_ms": 384.674,
+        "output_tokens": 60,
+        "category": "lookup",
+        "difficulty": "easy"
+      },
+      {
+        "id": "rag-0034",
+        "correct": true,
+        "predicted": "11",
+        "expected": "11",
+        "latency_ms": 1094.148,
+        "output_tokens": 163,
+        "category": "combine",
+        "difficulty": "hard"
+      },
+      {
+        "id": "rag-0035",
+        "correct": true,
+        "predicted": "NOT IN PASSAGE",
+        "expected": "NOT IN PASSAGE",
+        "latency_ms": 1034.413,
+        "output_tokens": 127,
+        "category": "absent",
+        "difficulty": "easy"
+      },
+      {
+        "id": "rag-0036",
+        "correct": true,
+        "predicted": "NOT IN PASSAGE",
+        "expected": "NOT IN PASSAGE",
+        "latency_ms": 1093.943,
+        "output_tokens": 137,
+        "category": "near_miss",
+        "difficulty": "hard"
+      },
+      {
+        "id": "rag-0037",
+        "correct": true,
+        "predicted": "45",
+        "expected": "45",
+        "latency_ms": 383.302,
+        "output_tokens": 62,
+        "category": "lookup",
+        "difficulty": "easy"
+      },
+      {
+        "id": "rag-0038",
+        "correct": true,
+        "predicted": "120 minutes",
+        "expected": "120",
+        "latency_ms": 828.721,
+        "output_tokens": 108,
+        "category": "condition",
+        "difficulty": "medium"
+      },
+      {
+        "id": "rag-0039",
+        "correct": true,
+        "predicted": "NOT IN PASSAGE",
+        "expected": "NOT IN PASSAGE",
+        "latency_ms": 778.23,
+        "output_tokens": 112,
+        "category": "absent",
+        "difficulty": "easy"
+      },
+      {
+        "id": "rag-0040",
+        "correct": true,
+        "predicted": "NOT IN PASSAGE",
+        "expected": "NOT IN PASSAGE",
+        "latency_ms": 1215.784,
+        "output_tokens": 169,
+        "category": "near_miss",
+        "difficulty": "hard"
+      },
+      {
+        "id": "rag-0041",
+        "correct": true,
+        "predicted": "D230",
+        "expected": "D230",
+        "latency_ms": 379.626,
+        "output_tokens": 53,
+        "category": "lookup",
+        "difficulty": "easy"
+      },
+      {
+        "id": "rag-0042",
+        "correct": true,
+        "predicted": "36",
+        "expected": "36",
+        "latency_ms": 796.364,
+        "output_tokens": 109,
+        "category": "combine",
+        "difficulty": "hard"
+      },
+      {
+        "id": "rag-0043",
+        "correct": true,
+        "predicted": "NOT IN PASSAGE",
+        "expected": "NOT IN PASSAGE",
+        "latency_ms": 1534.973,
+        "output_tokens": 250,
+        "category": "absent",
+        "difficulty": "easy"
+      },
+      {
+        "id": "rag-0044",
+        "correct": true,
+        "predicted": "NOT IN PASSAGE",
+        "expected": "NOT IN PASSAGE",
+        "latency_ms": 1519.27,
+        "output_tokens": 222,
+        "category": "near_miss",
+        "difficulty": "hard"
+      },
+      {
+        "id": "rag-0045",
+        "correct": true,
+        "predicted": "D252",
+        "expected": "D252",
+        "latency_ms": 391.144,
+        "output_tokens": 53,
+        "category": "lookup",
+        "difficulty": "easy"
+      },
+      {
+        "id": "rag-0046",
+        "correct": true,
+        "predicted": "86.26",
+        "expected": "86.26",
+        "latency_ms": 597.089,
+        "output_tokens": 95,
+        "category": "condition",
+        "difficulty": "medium"
+      },
+      {
+        "id": "rag-0047",
+        "correct": true,
+        "predicted": "NOT IN PASSAGE",
+        "expected": "NOT IN PASSAGE",
+        "latency_ms": 2124.753,
+        "output_tokens": 259,
+        "category": "absent",
+        "difficulty": "easy"
+      },
+      {
+        "id": "rag-0048",
+        "correct": true,
+        "predicted": "NOT IN PASSAGE",
+        "expected": "NOT IN PASSAGE",
+        "latency_ms": 1371.075,
+        "output_tokens": 217,
+        "category": "near_miss",
+        "difficulty": "hard"
+      },
+      {
+        "id": "rag-0049",
+        "correct": true,
+        "predicted": "C298",
+        "expected": "C298",
+        "latency_ms": 419.619,
+        "output_tokens": 66,
+        "category": "lookup",
+        "difficulty": "easy"
+      },
+      {
+        "id": "rag-0050",
+        "correct": true,
+        "predicted": "38",
+        "expected": "38",
+        "latency_ms": 596.748,
+        "output_tokens": 78,
+        "category": "combine",
+        "difficulty": "hard"
+      },
+      {
+        "id": "rag-0051",
+        "correct": true,
+        "predicted": "NOT IN PASSAGE",
+        "expected": "NOT IN PASSAGE",
+        "latency_ms": 1885.617,
+        "output_tokens": 245,
+        "category": "absent",
+        "difficulty": "easy"
+      },
+      {
+        "id": "rag-0052",
+        "correct": true,
+        "predicted": "NOT IN PASSAGE",
+        "expected": "NOT IN PASSAGE",
+        "latency_ms": 901.278,
+        "output_tokens": 131,
+        "category": "near_miss",
+        "difficulty": "hard"
+      },
+      {
+        "id": "rag-0053",
+        "correct": true,
+        "predicted": "F175",
+        "expected": "F175",
+        "latency_ms": 398.889,
+        "output_tokens": 66,
+        "category": "lookup",
+        "difficulty": "easy"
+      },
+      {
+        "id": "rag-0054",
+        "correct": true,
+        "predicted": "81.84",
+        "expected": "81.84",
+        "latency_ms": 502.76,
+        "output_tokens": 95,
+        "category": "condition",
+        "difficulty": "medium"
+      },
+      {
+        "id": "rag-0055",
+        "correct": true,
+        "predicted": "NOT IN PASSAGE",
+        "expected": "NOT IN PASSAGE",
+        "latency_ms": 624.849,
+        "output_tokens": 76,
+        "category": "absent",
+        "difficulty": "easy"
+      },
+      {
+        "id": "rag-0056",
+        "correct": false,
+        "predicted": "Ines Ivers",
+        "expected": "NOT IN PASSAGE",
+        "latency_ms": 387.591,
+        "output_tokens": 55,
+        "category": "near_miss",
+        "difficulty": "hard"
+      },
+      {
+        "id": "rag-0057",
+        "correct": true,
+        "predicted": "G300",
+        "expected": "G300",
+        "latency_ms": 442.005,
+        "output_tokens": 65,
+        "category": "lookup",
+        "difficulty": "easy"
+      },
+      {
+        "id": "rag-0058",
+        "correct": true,
+        "predicted": "37",
+        "expected": "37",
+        "latency_ms": 689.085,
+        "output_tokens": 100,
+        "category": "combine",
+        "difficulty": "hard"
+      },
+      {
+        "id": "rag-0059",
+        "correct": true,
+        "predicted": "NOT IN PASSAGE",
+        "expected": "NOT IN PASSAGE",
+        "latency_ms": 915.048,
+        "output_tokens": 115,
+        "category": "absent",
+        "difficulty": "easy"
+      },
+      {
+        "id": "rag-0060",
+        "correct": true,
+        "predicted": "NOT IN PASSAGE",
+        "expected": "NOT IN PASSAGE",
+        "latency_ms": 1185.941,
+        "output_tokens": 165,
+        "category": "near_miss",
+        "difficulty": "hard"
+      },
+      {
+        "id": "rag-0061",
+        "correct": true,
+        "predicted": "358",
+        "expected": "358",
+        "latency_ms": 360.98,
+        "output_tokens": 57,
+        "category": "lookup",
+        "difficulty": "easy"
+      },
+      {
+        "id": "rag-0062",
+        "correct": true,
+        "predicted": "95 hours",
+        "expected": "95",
+        "latency_ms": 462.695,
+        "output_tokens": 81,
+        "category": "condition",
+        "difficulty": "medium"
+      },
+      {
+        "id": "rag-0063",
+        "correct": true,
+        "predicted": "NOT IN PASSAGE",
+        "expected": "NOT IN PASSAGE",
+        "latency_ms": 1425.513,
+        "output_tokens": 155,
+        "category": "absent",
+        "difficulty": "easy"
+      },
+      {
+        "id": "rag-0064",
+        "correct": true,
+        "predicted": "NOT IN PASSAGE",
+        "expected": "NOT IN PASSAGE",
+        "latency_ms": 896.207,
+        "output_tokens": 127,
+        "category": "near_miss",
+        "difficulty": "hard"
+      },
+      {
+        "id": "rag-0065",
+        "correct": true,
+        "predicted": "342",
+        "expected": "342",
+        "latency_ms": 336.332,
+        "output_tokens": 57,
+        "category": "lookup",
+        "difficulty": "easy"
+      },
+      {
+        "id": "rag-0066",
+        "correct": true,
+        "predicted": "174",
+        "expected": "174",
+        "latency_ms": 924.809,
+        "output_tokens": 126,
+        "category": "combine",
+        "difficulty": "hard"
+      },
+      {
+        "id": "rag-0067",
+        "correct": true,
+        "predicted": "NOT IN PASSAGE",
+        "expected": "NOT IN PASSAGE",
+        "latency_ms": 1126.55,
+        "output_tokens": 152,
+        "category": "absent",
+        "difficulty": "easy"
+      },
+      {
+        "id": "rag-0068",
+        "correct": true,
+        "predicted": "NOT IN PASSAGE",
+        "expected": "NOT IN PASSAGE",
+        "latency_ms": 1004.382,
+        "output_tokens": 141,
+        "category": "near_miss",
+        "difficulty": "hard"
+      },
+      {
+        "id": "rag-0069",
+        "correct": true,
+        "predicted": "201",
+        "expected": "201",
+        "latency_ms": 356.347,
+        "output_tokens": 55,
+        "category": "lookup",
+        "difficulty": "easy"
+      },
+      {
+        "id": "rag-0070",
+        "correct": true,
+        "predicted": "82 hours",
+        "expected": "82",
+        "latency_ms": 468.887,
+        "output_tokens": 79,
+        "category": "condition",
+        "difficulty": "medium"
+      },
+      {
+        "id": "rag-0071",
+        "correct": true,
+        "predicted": "NOT IN PASSAGE",
+        "expected": "NOT IN PASSAGE",
+        "latency_ms": 733.756,
+        "output_tokens": 74,
+        "category": "absent",
+        "difficulty": "easy"
+      },
+      {
+        "id": "rag-0072",
+        "correct": true,
+        "predicted": "NOT IN PASSAGE",
+        "expected": "NOT IN PASSAGE",
+        "latency_ms": 909.038,
+        "output_tokens": 115,
+        "category": "near_miss",
+        "difficulty": "hard"
+      },
+      {
+        "id": "rag-0073",
+        "correct": true,
+        "predicted": "322",
+        "expected": "322",
+        "latency_ms": 355.569,
+        "output_tokens": 55,
+        "category": "lookup",
+        "difficulty": "easy"
+      },
+      {
+        "id": "rag-0074",
+        "correct": true,
+        "predicted": "97 grams",
+        "expected": "97",
+        "latency_ms": 826.802,
+        "output_tokens": 108,
+        "category": "combine",
+        "difficulty": "hard"
+      },
+      {
+        "id": "rag-0075",
+        "correct": true,
+        "predicted": "NOT IN PASSAGE",
+        "expected": "NOT IN PASSAGE",
+        "latency_ms": 1188.383,
+        "output_tokens": 141,
+        "category": "absent",
+        "difficulty": "easy"
+      },
+      {
+        "id": "rag-0076",
+        "correct": true,
+        "predicted": "NOT IN PASSAGE",
+        "expected": "NOT IN PASSAGE",
+        "latency_ms": 892.594,
+        "output_tokens": 116,
+        "category": "near_miss",
+        "difficulty": "hard"
+      },
+      {
+        "id": "rag-0077",
+        "correct": true,
+        "predicted": "378",
+        "expected": "378",
+        "latency_ms": 361.625,
+        "output_tokens": 57,
+        "category": "lookup",
+        "difficulty": "easy"
+      },
+      {
+        "id": "rag-0078",
+        "correct": true,
+        "predicted": "84 hours",
+        "expected": "84",
+        "latency_ms": 445.832,
+        "output_tokens": 81,
+        "category": "condition",
+        "difficulty": "medium"
+      },
+      {
+        "id": "rag-0079",
+        "correct": true,
+        "predicted": "NOT IN PASSAGE",
+        "expected": "NOT IN PASSAGE",
+        "latency_ms": 622.495,
+        "output_tokens": 80,
+        "category": "absent",
+        "difficulty": "easy"
+      },
+      {
+        "id": "rag-0080",
+        "correct": true,
+        "predicted": "NOT IN PASSAGE",
+        "expected": "NOT IN PASSAGE",
+        "latency_ms": 1078.184,
+        "output_tokens": 129,
+        "category": "near_miss",
+        "difficulty": "hard"
+      },
+      {
+        "id": "rag-0081",
+        "correct": true,
+        "predicted": "WH-7247",
+        "expected": "WH-7247",
+        "latency_ms": 652.301,
+        "output_tokens": 100,
+        "category": "lookup",
+        "difficulty": "easy"
+      },
+      {
+        "id": "rag-0082",
+        "correct": true,
+        "predicted": "39",
+        "expected": "39",
+        "latency_ms": 532.359,
+        "output_tokens": 92,
+        "category": "combine",
+        "difficulty": "hard"
+      },
+      {
+        "id": "rag-0083",
+        "correct": true,
+        "predicted": "NOT IN PASSAGE",
+        "expected": "NOT IN PASSAGE",
+        "latency_ms": 2093.412,
+        "output_tokens": 303,
+        "category": "absent",
+        "difficulty": "easy"
+      },
+      {
+        "id": "rag-0084",
+        "correct": true,
+        "predicted": "NOT IN PASSAGE",
+        "expected": "NOT IN PASSAGE",
+        "latency_ms": 1505.245,
+        "output_tokens": 247,
+        "category": "near_miss",
+        "difficulty": "hard"
+      },
+      {
+        "id": "rag-0085",
+        "correct": true,
+        "predicted": "WH-1652",
+        "expected": "WH-1652",
+        "latency_ms": 600.335,
+        "output_tokens": 91,
+        "category": "lookup",
+        "difficulty": "easy"
+      },
+      {
+        "id": "rag-0086",
+        "correct": true,
+        "predicted": "11:15",
+        "expected": "11:15",
+        "latency_ms": 562.247,
+        "output_tokens": 92,
+        "category": "condition",
+        "difficulty": "medium"
+      },
+      {
+        "id": "rag-0087",
+        "correct": true,
+        "predicted": "NOT IN PASSAGE",
+        "expected": "NOT IN PASSAGE",
+        "latency_ms": 723.511,
+        "output_tokens": 103,
+        "category": "absent",
+        "difficulty": "easy"
+      },
+      {
+        "id": "rag-0088",
+        "correct": true,
+        "predicted": "NOT IN PASSAGE",
+        "expected": "NOT IN PASSAGE",
+        "latency_ms": 548.501,
+        "output_tokens": 79,
+        "category": "near_miss",
+        "difficulty": "hard"
+      },
+      {
+        "id": "rag-0089",
+        "correct": true,
+        "predicted": "WH-4261",
+        "expected": "WH-4261",
+        "latency_ms": 647.381,
+        "output_tokens": 95,
+        "category": "lookup",
+        "difficulty": "easy"
+      },
+      {
+        "id": "rag-0090",
+        "correct": true,
+        "predicted": "49",
+        "expected": "49",
+        "latency_ms": 648.198,
+        "output_tokens": 92,
+        "category": "combine",
+        "difficulty": "hard"
+      },
+      {
+        "id": "rag-0091",
+        "correct": true,
+        "predicted": "NOT IN PASSAGE",
+        "expected": "NOT IN PASSAGE",
+        "latency_ms": 768.631,
+        "output_tokens": 103,
+        "category": "absent",
+        "difficulty": "easy"
+      },
+      {
+        "id": "rag-0092",
+        "correct": true,
+        "predicted": "NOT IN PASSAGE",
+        "expected": "NOT IN PASSAGE",
+        "latency_ms": 803.62,
+        "output_tokens": 126,
+        "category": "near_miss",
+        "difficulty": "hard"
+      },
+      {
+        "id": "rag-0093",
+        "correct": true,
+        "predicted": "WH-5845",
+        "expected": "WH-5845",
+        "latency_ms": 683.951,
+        "output_tokens": 99,
+        "category": "lookup",
+        "difficulty": "easy"
+      },
+      {
+        "id": "rag-0094",
+        "correct": true,
+        "predicted": "13:50",
+        "expected": "13:50",
+        "latency_ms": 594.703,
+        "output_tokens": 99,
+        "category": "condition",
+        "difficulty": "medium"
+      },
+      {
+        "id": "rag-0095",
+        "correct": true,
+        "predicted": "NOT IN PASSAGE",
+        "expected": "NOT IN PASSAGE",
+        "latency_ms": 764.03,
+        "output_tokens": 80,
+        "category": "absent",
+        "difficulty": "easy"
+      },
+      {
+        "id": "rag-0096",
+        "correct": true,
+        "predicted": "NOT IN PASSAGE",
+        "expected": "NOT IN PASSAGE",
+        "latency_ms": 672.911,
+        "output_tokens": 80,
+        "category": "near_miss",
+        "difficulty": "hard"
+      },
+      {
+        "id": "rag-0097",
+        "correct": true,
+        "predicted": "WH-9095",
+        "expected": "WH-9095",
+        "latency_ms": 647.248,
+        "output_tokens": 95,
+        "category": "lookup",
+        "difficulty": "easy"
+      },
+      {
+        "id": "rag-0098",
+        "correct": true,
+        "predicted": "59",
+        "expected": "59",
+        "latency_ms": 584.559,
+        "output_tokens": 94,
+        "category": "combine",
+        "difficulty": "hard"
+      },
+      {
+        "id": "rag-0099",
+        "correct": true,
+        "predicted": "NOT IN PASSAGE",
+        "expected": "NOT IN PASSAGE",
+        "latency_ms": 964.883,
+        "output_tokens": 91,
+        "category": "absent",
+        "difficulty": "easy"
+      },
+      {
+        "id": "rag-0100",
+        "correct": true,
+        "predicted": "NOT IN PASSAGE",
+        "expected": "NOT IN PASSAGE",
+        "latency_ms": 1516.499,
+        "output_tokens": 251,
+        "category": "near_miss",
+        "difficulty": "hard"
+      },
+      {
+        "id": "rag-0101",
+        "correct": true,
+        "predicted": "SB-1567",
+        "expected": "SB-1567",
+        "latency_ms": 464.195,
+        "output_tokens": 76,
+        "category": "lookup",
+        "difficulty": "easy"
+      },
+      {
+        "id": "rag-0102",
+        "correct": true,
+        "predicted": "61 days",
+        "expected": "61",
+        "latency_ms": 463.319,
+        "output_tokens": 86,
+        "category": "condition",
+        "difficulty": "medium"
+      },
+      {
+        "id": "rag-0103",
+        "correct": true,
+        "predicted": "NOT IN PASSAGE",
+        "expected": "NOT IN PASSAGE",
+        "latency_ms": 1469.745,
+        "output_tokens": 167,
+        "category": "absent",
+        "difficulty": "easy"
+      },
+      {
+        "id": "rag-0104",
+        "correct": true,
+        "predicted": "NOT IN PASSAGE",
+        "expected": "NOT IN PASSAGE",
+        "latency_ms": 903.149,
+        "output_tokens": 153,
+        "category": "near_miss",
+        "difficulty": "hard"
+      },
+      {
+        "id": "rag-0105",
+        "correct": true,
+        "predicted": "SB-3287",
+        "expected": "SB-3287",
+        "latency_ms": 459.331,
+        "output_tokens": 76,
+        "category": "lookup",
+        "difficulty": "easy"
+      },
+      {
+        "id": "rag-0106",
+        "correct": true,
+        "predicted": "27",
+        "expected": "27",
+        "latency_ms": 528.275,
+        "output_tokens": 95,
+        "category": "combine",
+        "difficulty": "hard"
+      },
+      {
+        "id": "rag-0107",
+        "correct": true,
+        "predicted": "NOT IN PASSAGE",
+        "expected": "NOT IN PASSAGE",
+        "latency_ms": 1012.833,
+        "output_tokens": 140,
+        "category": "absent",
+        "difficulty": "easy"
+      },
+      {
+        "id": "rag-0108",
+        "correct": true,
+        "predicted": "NOT IN PASSAGE",
+        "expected": "NOT IN PASSAGE",
+        "latency_ms": 773.569,
+        "output_tokens": 113,
+        "category": "near_miss",
+        "difficulty": "hard"
+      },
+      {
+        "id": "rag-0109",
+        "correct": true,
+        "predicted": "SB-6005",
+        "expected": "SB-6005",
+        "latency_ms": 481.839,
+        "output_tokens": 76,
+        "category": "lookup",
+        "difficulty": "easy"
+      },
+      {
+        "id": "rag-0110",
+        "correct": true,
+        "predicted": "85 days",
+        "expected": "85",
+        "latency_ms": 568.723,
+        "output_tokens": 88,
+        "category": "condition",
+        "difficulty": "medium"
+      },
+      {
+        "id": "rag-0111",
+        "correct": true,
+        "predicted": "NOT IN PASSAGE",
+        "expected": "NOT IN PASSAGE",
+        "latency_ms": 857.168,
+        "output_tokens": 101,
+        "category": "absent",
+        "difficulty": "easy"
+      },
+      {
+        "id": "rag-0112",
+        "correct": true,
+        "predicted": "NOT IN PASSAGE",
+        "expected": "NOT IN PASSAGE",
+        "latency_ms": 717.075,
+        "output_tokens": 113,
+        "category": "near_miss",
+        "difficulty": "hard"
+      },
+      {
+        "id": "rag-0113",
+        "correct": true,
+        "predicted": "SB-1005",
+        "expected": "SB-1005",
+        "latency_ms": 477.69,
+        "output_tokens": 76,
+        "category": "lookup",
+        "difficulty": "easy"
+      },
+      {
+        "id": "rag-0114",
+        "correct": true,
+        "predicted": "38",
+        "expected": "38",
+        "latency_ms": 525.516,
+        "output_tokens": 95,
+        "category": "combine",
+        "difficulty": "hard"
+      },
+      {
+        "id": "rag-0115",
+        "correct": true,
+        "predicted": "NOT IN PASSAGE",
+        "expected": "NOT IN PASSAGE",
+        "latency_ms": 700.838,
+        "output_tokens": 90,
+        "category": "absent",
+        "difficulty": "easy"
+      },
+      {
+        "id": "rag-0116",
+        "correct": true,
+        "predicted": "NOT IN PASSAGE",
+        "expected": "NOT IN PASSAGE",
+        "latency_ms": 726.699,
+        "output_tokens": 113,
+        "category": "near_miss",
+        "difficulty": "hard"
+      },
+      {
+        "id": "rag-0117",
+        "correct": true,
+        "predicted": "SB-4679",
+        "expected": "SB-4679",
+        "latency_ms": 635.937,
+        "output_tokens": 95,
+        "category": "lookup",
+        "difficulty": "easy"
+      },
+      {
+        "id": "rag-0118",
+        "correct": true,
+        "predicted": "77 days",
+        "expected": "77",
+        "latency_ms": 467.114,
+        "output_tokens": 85,
+        "category": "condition",
+        "difficulty": "medium"
+      },
+      {
+        "id": "rag-0119",
+        "correct": true,
+        "predicted": "NOT IN PASSAGE",
+        "expected": "NOT IN PASSAGE",
+        "latency_ms": 1503.635,
+        "output_tokens": 285,
+        "category": "absent",
+        "difficulty": "easy"
+      },
+      {
+        "id": "rag-0120",
+        "correct": true,
+        "predicted": "NOT IN PASSAGE",
+        "expected": "NOT IN PASSAGE",
+        "latency_ms": 698.793,
+        "output_tokens": 113,
+        "category": "near_miss",
+        "difficulty": "hard"
+      }
+    ]
+  },
+  "failures": [],
+  "conditions": {
+    "dedicated": true,
+    "detail": "Only this SGLang server (and, for the speed and long-context rows, the small cache-busting proxy in front of it) was resident; the image server that normally runs on the box was stopped, and nvidia-smi listed no other compute process. The only other running container was a small host metrics exporter (python, about 10 MB, no GPU).",
+    "isolation_check": "nvidia-smi compute apps -> 1532664, .venv/bin/python 1532720, sglang::scheduler ; docker ps -> 1 containers; load1 at start 1.21"
+  },
+  "gotchas": [
+    {
+      "severity": "info",
+      "text": "Tool calling needs SGLang with the minicpm5 tool-call parser (sgl-project/sglang#25600). The openbmb cookbook says to install SGLang from main because v0.5.12.post1 lacked it; the PyPI 0.5.20 wheel used here ships it, so no source build is needed any more. The model writes XML tool calls (<function name=\"x\"><param name=\"k\">v</param></function>) and they come back as OpenAI tool_calls with finish_reason tool_calls, with thinking on and off."
+    },
+    {
+      "severity": "info",
+      "text": "SGLang has no MiniCPM5 reasoning parser, but the model uses plain <think> ... </think>, so --reasoning-parser qwen3 splits it into reasoning_content. With enable_thinking left unset the template adds no <think> prefix; the model opens the tag itself and the qwen3 parser still catches it."
+    },
+    {
+      "severity": "info",
+      "text": "flashinfer JIT-compiles its prefill kernels on the first request and shells out to ninja. In a venv that is not activated the first prefill dies with FileNotFoundError: ninja and the scheduler exits; put the venv bin directory on PATH before starting the server."
+    },
+    {
+      "severity": "info",
+      "text": "In a llama.cpp deployment the card warns that the default min_p 0.05 causes repetition and asks for min_p 0; the SGLang default min_p is already 0."
+    },
+    {
+      "severity": "info",
+      "text": "DSpark does not start on this box with SGLang 0.5.20 at the default decode CUDA-graph size. DSpark verifies block_size+1 = 8 tokens per sequence, so capturing the decode graph at its default max batch of 256 asks flashinfer for a 3,137,536-byte prefill workspace out of a fixed 1,048,576-byte AlignedAllocator and capture fails with a buffer overflow, taking the scheduler with it. 0.5.20 exposes no workspace-size flag, so the only knob is --cuda-graph-max-bs-decode; it is set to 64 here and recorded in the args. That leaves admission alone - max_running_requests is still 512 and still confirmed from /get_server_info - but batches above 64 run without a captured decode graph, so the concurrency points above 64 in this config are NOT arg-identical to the plain bf16 2B rows and the two should not be diffed at those points. The single-user and low-concurrency rows are the comparable ones."
+    },
+    {
+      "severity": "info",
+      "text": "The DSpark drafter costs KV pool: max_total_num_tokens falls from 2,034,852 on the plain 2B to 1,798,013 here at the same --mem-fraction-static 0.75, and the drafter itself loads as a separate 0.93 GB Qwen3DSparkModel."
+    }
+  ],
+  "derived": {
+    "cost_per_1m_output_tokens_usd": null,
+    "tokens_per_watt": null,
+    "tok_s_per_gb_bandwidth": null,
+    "bandwidth_efficiency": null,
+    "memory_headroom_gb": 33.644
+  },
+  "raw": {
+    "harness": "atlas-bench",
+    "harness_version": "0.1.0",
+    "sha256": "b2614af43a132f9cb2d9c175bd639d0fc09d67633b7b5ddba2d17776ee7be915",
+    "payload_path": null,
+    "payload": {
+      "scorer": "needle",
+      "scorers_used": [
+        "needle"
+      ],
+      "engine_endpoint": {
+        "attached": true,
+        "base_url": "http://127.0.0.1:30000/v1",
+        "served_model_id": "MiniCPM5-2B",
+        "advertised_models": [
+          "MiniCPM5-2B"
+        ]
+      }
+    },
+    "truncated": false
+  },
+  "provenance": {
+    "github_login": "0xBakeer",
+    "github_user_id": 17404809,
+    "started_at": "2026-09-23T01:20:20Z",
+    "finished_at": "2026-09-23T01:20:44Z",
+    "submitted_at": null,
+    "commit": null,
+    "pr": null,
+    "method": "atlas-bench",
+    "agent": null,
+    "notes": "Weights: openbmb/MiniCPM5-2B at 12a3808a956f869c767195e9266b59c4d21d92e2, BF16, sha256 checked against the Hub. Speculative decoding with the card-recommended DSpark drafter openbmb/MiniCPM5-2B-DSpark at 114a20fdbf53220712c7fbdd7dccddbf1dedebb4 (BF16, 5 layers, 324M parameters, 0.65 GB), --speculative-algorithm DSPARK --speculative-dspark-block-size 7 as in the model card. SGLang 0.5.20 from PyPI in a Python 3.12 venv (uv) with torch 2.13.0+cu130, flashinfer-python 0.6.18, sglang-kernel 0.4.7, triton 3.7.1, transformers 5.12.1, xgrammar 0.2.1; CUDA 13.0, driver 580.173.02, Ubuntu 24.04.4, kernel 6.17.0-1029-nvidia. Environment SGLANG_ALLOW_OVERWRITE_LONGER_CONTEXT_LEN=1 and SGLANG_DISABLE_CUDNN_CHECK=1 as the MiniCPM SGLang cookbook recommends, the venv bin directory on PATH (flashinfer JIT needs ninja). Server flags follow the openbmb SGLang cookbook (docs/deployment/sglang.md): --dtype bfloat16 --context-length 131072 --tool-call-parser minicpm5, plus --reasoning-parser qwen3 so the <think> block lands in reasoning_content; --mem-fraction-static 0.75 instead of the cookbook 0.85 to leave the unified-memory box about 20 GB of host headroom (the KV pool still holds about 2 million tokens). Radix prefix cache, chunked prefill 8192, CUDA graphs and the flashinfer attention backend are SGLang defaults. Every request sets temperature 0 and seed 42 as the workloads specify. The chat template has three thinking states: enable_thinking true prefills <think>, false prefills an empty think block, and unset lets the model decide, which on almost every prompt means it thinks. Speed and long-context depth rows send chat_template_kwargs enable_thinking false; eval and needle rows leave it unset (the template default). Load: target weights 36.8 s (5.01 GB) plus the DSpark drafter 3.5 s (0.93 GB, loaded as Qwen3DSparkModel), KV allocation 3.6 s, CUDA graphs prefill 17.4 s / target-verify 2.5 s / draft-decode 1.7 s, scheduler end to end 71.2 s; SGLang reported max_total_num_tokens 1,798,013 (down from the plain 2B's 2,034,852 because the drafter and the verify buffers take their share) and 22.7 GB of GPU memory still free. max_running_requests is passed explicitly as 512 and confirmed at 512 from /get_server_info before the first concurrent row."
+  },
+  "verification": {
+    "level": "self-reported",
+    "reproduced_by": [],
+    "flags": []
+  }
+}

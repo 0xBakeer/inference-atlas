@@ -47,7 +47,35 @@ export interface CanonicalizeInput {
    * registered as a fork; absent for upstream releases, whose version string is sufficient.
    */
   build?: string | null;
+  /**
+   * Request options sent with every request of the run — the result's `request` block
+   * (SPEC §3, decision 28). Options left at their harness default contribute nothing, so
+   * every result recorded before the block existed keeps its id; anything else folds in as
+   * `@req.<name>`, because `chat_template_kwargs {"enable_thinking": false}` is a different
+   * configuration of the same server and may not share its fingerprint.
+   */
+  request?: Record<string, ArgValue> | null;
 }
+
+/**
+ * Harness defaults for the request block (`RequestOptions` in `bench/atlas_bench/spec.py`).
+ * A value equal to its default is dropped, exactly as an engine flag equal to the version's
+ * default is dropped.
+ */
+export const REQUEST_DEFAULTS: Readonly<Record<string, ArgValue>> = Object.freeze({
+  temperature: 0,
+  top_p: null,
+  seed: 42,
+  max_tokens: null,
+  stop: null,
+  timeout_s: 600,
+  extra_body: {},
+  chat_template_kwargs: null,
+  reasoning_effort: null,
+});
+
+/** Credentials never reach a fingerprint or a result file, the same way `api-key` never does. */
+export const REQUEST_DROP: readonly string[] = Object.freeze(['api_key']);
 
 export interface CanonicalizeResult {
   /** `k=v;k=v`, sorted, including the `@quant` / `@dtype` / `@build` pseudo-params. */
@@ -172,7 +200,8 @@ function tryParseJson(s: string): ArgValue | undefined {
  * SPEC §3 steps 1–6.
  *
  * 1. resolve aliases, 2. drop values equal to the version default, 3. normalize values and
- * remove `drop_params`, 4. prepend `@quant` / `@dtype` / `@build`, 5. sort, 6. hash.
+ * remove `drop_params`, 4. prepend `@quant` / `@dtype` / `@build` and append the non-default
+ * request options as `@req.*`, 5. sort, 6. hash.
  *
  * Steps 2 and 3 are fused: the default is normalized with the same rules as the value and
  * the two canonical *strings* are compared, so `"0.90"` matches a default of `0.9` and
@@ -225,6 +254,19 @@ export function canonicalizeArgs(input: CanonicalizeInput): CanonicalizeResult {
   // absent, so every result recorded before this existed keeps its id.
   const build = (input.build ?? '').trim().toLowerCase();
   if (build) resolved['@build'] = build;
+
+  // `@req.*` carries the request options that were actually sent (SPEC §3, decision 28).
+  // Option names are API field names, not CLI flags, so they keep their snake_case spelling.
+  for (const [name, value] of Object.entries(input.request ?? {})) {
+    if (REQUEST_DROP.includes(name)) continue;
+    if (value === null || value === undefined) continue;
+    const rendered = normalizeValue(value);
+    const fallback = REQUEST_DEFAULTS[name];
+    if (fallback !== null && fallback !== undefined && rendered === normalizeValue(fallback)) {
+      continue;
+    }
+    resolved[`@req.${name}`] = rendered;
+  }
 
   const canonical = Object.keys(resolved)
     .sort(byteCompare)
