@@ -148,9 +148,9 @@ describe('registry edits', () => {
     });
     const outcome = check('stranger');
     expect(codes(outcome)).toContain('registry-edit-foreign');
-    expect(outcome.issues.find((i) => i.code === 'registry-edit-foreign')?.message).toContain(
-      '"released"',
-    );
+    const message = outcome.issues.find((i) => i.code === 'registry-edit-foreign')?.message;
+    expect(message).toContain('"released"');
+    expect(message).toContain('@maintainer');
   });
 
   it('lets the code owner named at the base ref edit it', () => {
@@ -222,7 +222,7 @@ describe('registry edits', () => {
 
   it('parses CODEOWNERS with last-match-wins', () => {
     const rules = parseCodeowners('*  @a\n/models/ @b @C\n# comment\n');
-    expect(ownersOf(rules, 'models/x/y/model.json')).toEqual(['b', 'c']);
+    expect(ownersOf(rules, 'models/x/y/model.json')).toEqual(['b', 'C']);
     expect(ownersOf(rules, 'README.md')).toEqual(['a']);
     expect(changedKeys({ a: 1, b: [1] }, { a: 1, b: [2], c: 3 })).toEqual(['b', 'c']);
   });
