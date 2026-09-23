@@ -56,6 +56,10 @@ def _resolve_hardware(spec: TaskSpec, registry: Registry, host: hwinfo.HostInfo)
     return warnings
 
 
+class AmbiguousServedModelError(RuntimeError):
+    """Several models are loaded, none is the one in the packet, and nothing says which."""
+
+
 async def _served_model(client: ChatClient, spec: TaskSpec) -> tuple[str, list[str], list[str]]:
     """Pick the model name to send in requests: ``(served_model_id, advertised, warnings)``.
 
@@ -65,8 +69,8 @@ async def _served_model(client: ChatClient, spec: TaskSpec) -> tuple[str, list[s
     ``model.served_model_id``, and it is used verbatim.
 
     Without one we look for the model id in ``/v1/models`` (case-insensitively, since that is
-    exactly the kind of difference this field exists for) and only then fall back to the first
-    advertised model, which is a guess and says so.
+    exactly the kind of difference this field exists for). A server with exactly one model loaded
+    serves that one. A server with several and no match is an error, not a guess.
     """
     advertised = await client.list_models()
     warnings: list[str] = []
@@ -85,12 +89,15 @@ async def _served_model(client: ChatClient, spec: TaskSpec) -> tuple[str, list[s
         for name in advertised:
             if name.casefold() == str(candidate).casefold():
                 return name, advertised, warnings
+    if len(advertised) > 1:
+        # This used to pick advertised[0] and warn. Behind a proxy that serves several models,
+        # that measures whichever one is listed first and files it under the packet's model;
+        # a warning at the end of the run is not enough to stop that row being submitted.
+        raise AmbiguousServedModelError(
+            f"{len(advertised)} models are loaded ({', '.join(advertised)}) and none matches "
+            f"'{spec.model.id}'. Set model.served_model_id in the packet to the one to measure."
+        )
     if advertised:
-        if len(advertised) > 1:
-            warnings.append(
-                f"served-model-guessed: {advertised} are loaded and none matches "
-                f"'{spec.model.id}'; using '{advertised[0]}'. Set model.served_model_id."
-            )
         return advertised[0], advertised, warnings
     return spec.model.hf_id or spec.model.id, advertised, warnings
 
@@ -200,6 +207,14 @@ async def run_spec(
     ) as client:
         client.model, advertised, model_warnings = await _served_model(client, spec)
         output.warnings.extend(model_warnings)
+        server_build = None
+        if spec.engine.id == "llamacpp":
+            server_build = await client.server_build(client.model)
+        if server_build and spec.engine.version.lower() not in server_build.lower().split("-"):
+            output.warnings.append(
+                f"engine-version-mismatch: the packet says {spec.engine.id} {spec.engine.version} "
+                f"but the server reports build {server_build}; record the build you measured"
+            )
         for ref in spec.workloads:
             workload, params = resolve_workload(registry, ref)
             started_at = utc_now()
@@ -227,6 +242,7 @@ async def run_spec(
                     install_method=spec.engine.install_method,
                     served_model_id=client.model,
                     advertised_models=advertised,
+                    server_build=server_build,
                     attached=attached,
                     extra_gotchas=list(gotchas or []),
                     notes=notes,

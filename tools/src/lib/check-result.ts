@@ -19,6 +19,7 @@ import {
 import type { ArgValue, ResultRecord } from '@atlas/core';
 import type { Repo } from './repo.js';
 import type { Reporter } from './report.js';
+import { checkReportedBuild, checkServedModel } from './served-model.js';
 
 /** SPEC §4: a payload above this must be truncated, with the aggregates kept. */
 const MAX_RAW_PAYLOAD_BYTES = 100 * 1024;
@@ -188,6 +189,13 @@ export function checkResult(
       'quant-engine-mismatch',
       `quant "${result.model.quant_id}" does not list engine "${result.engine.id}" in its engines[] — either the run used a format this engine cannot load, or the quant record is wrong`,
     );
+  }
+
+  // What the server said it was, against what the file says it is. Only for files under
+  // review: the rule was calibrated on merged rows and holds for all of them (decision 29).
+  if (options.underReview) {
+    checkServedModel(file, result, quant, reporter);
+    checkReportedBuild(file, result, reporter);
   }
 
   const workload = repo.workloads.get(result.workload_id) ?? null;

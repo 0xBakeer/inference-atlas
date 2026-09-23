@@ -66,6 +66,10 @@ jobs:
 
       - name: Validate
         id: validate
+        # --check-hf asks the Hugging Face API whether the model and quant records this pull
+        # request adds or changes point at a repo and files that exist. No token: a fork's
+        # workflow gets none, and public metadata does not need one. An unreachable Hub is a
+        # warning, never a failure.
         run: |
           # --json-out, not `--json > validate.json`: on a failing validation pnpm appends its
           # own ELIFECYCLE block to the same stdout, which left the file as JSON plus trailing
@@ -81,6 +85,7 @@ jobs:
             --pr-author '${{ github.event.pull_request.user.login }}' \
             --base '${{ steps.changed.outputs.base }}' \
             ${{ contains(github.event.pull_request.labels.*.name, 'maintainer-override') && '--allow-override' || '' }} \
+            --check-hf \
             --json-out "$GITHUB_WORKSPACE/validate.json"
           echo "exit=$?" >> "$GITHUB_OUTPUT"
           set -e

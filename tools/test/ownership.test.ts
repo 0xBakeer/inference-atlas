@@ -134,10 +134,10 @@ describe('flags and escapes', () => {
 
   it('warns about a pull request that mixes results with other files', () => {
     repo.writeResult(makeResult(repo, { login: 'bob', startedAt: '2026-08-03T09:00:00Z' }));
-    const hardware = repo.read<Record<string, unknown>>('hardware/nvidia-rtx-4090.json');
-    hardware.notes = 'Added a note in the same pull request.';
-    repo.write('hardware/nvidia-rtx-4090.json', hardware);
-    repo.commit('results + registry in one pull request');
+    // Not a registry record: editing an existing one is a maintainer change of its own
+    // (registry-edit-foreign), which would mask what this test is about.
+    repo.write('docs/measuring-notes.json', { note: 'Added in the same pull request.' });
+    repo.commit('results + docs in one pull request');
     const outcome = check({ author: 'bob' });
     expect(codes(outcome)).toEqual([]);
     expect(codes(outcome, 'warn')).toContain('mixed-pr');
