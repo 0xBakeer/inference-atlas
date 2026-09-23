@@ -20,12 +20,35 @@ from typing import Any
 import httpx
 
 __all__ = [
+    "POOL_HEADROOM",
+    "POOL_MINIMUM",
     "ChatClient",
     "ErrorCategory",
     "RequestResult",
     "categorize_error",
+    "pool_limits",
     "utc_now",
 ]
+
+#: Smallest connection pool the client ever opens, so short runs keep httpx's own default.
+POOL_MINIMUM = 100
+#: Spare connections above the widest workload, for the health checks, ``/v1/models`` and
+#: ``/tokenize`` calls that share the client with the measured requests.
+POOL_HEADROOM = 16
+
+
+def pool_limits(max_connections: int | None = None) -> httpx.Limits:
+    """Connection-pool limits for a run that drives ``max_connections`` requests at once.
+
+    httpx defaults to ``max_connections=100`` and, just as importantly, to
+    ``max_keepalive_connections=20``: past either one the surplus requests block inside the
+    client. Nothing in a result file records that, so the run looks like a slow server —
+    ``#running-req`` flattens at the pool size while the engine's own queue stays empty.
+    Both numbers therefore follow the workload, never the library default.
+    """
+    wanted = max(POOL_MINIMUM, int(max_connections or 0) + POOL_HEADROOM)
+    return httpx.Limits(max_connections=wanted, max_keepalive_connections=wanted)
+
 
 #: Failure buckets recorded in ``result.failures[].category`` (SPEC §4).
 ErrorCategory = str
@@ -217,6 +240,7 @@ class ChatClient:
         client: httpx.AsyncClient | None = None,
         tokenizer: Any | None = None,
         extra_body: dict[str, Any] | None = None,
+        max_connections: int | None = None,
     ) -> None:
         # Every request path this client builds already starts with `/v1`, so a base URL that
         # ends in `/v1` — which is exactly what an engine's docs and LM Studio's UI hand you —
@@ -230,10 +254,16 @@ class ChatClient:
         headers = {"content-type": "application/json"}
         if api_key:
             headers["authorization"] = f"Bearer {api_key}"
+        # httpx caps its connection pool at 100 by default. Above that the extra requests
+        # wait inside the client, so the server never sees them: its own queue stays empty,
+        # #running-req flattens at 100, and a sweep point past 100 reads as an engine knee
+        # that is really the benchmark's own pool. Size the pool from the widest workload
+        # the run will drive and leave headroom on top of it.
         self._client = client or httpx.AsyncClient(
             base_url=self.base_url,
             headers=headers,
             timeout=httpx.Timeout(timeout_s, connect=min(timeout_s, 30.0)),
+            limits=pool_limits(max_connections),
             transport=transport,
         )
         self._owns_client = client is None

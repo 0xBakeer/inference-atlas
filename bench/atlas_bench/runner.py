@@ -24,6 +24,7 @@ from .result import ResultInputs, build_result, output_path
 from .spec import RunConditions, TaskSpec
 from .telemetry import TelemetrySampler
 from .workloads import RunContext, get_runner, resolve_workload
+from .workloads.sweep import sweep_axis
 
 __all__ = ["RunOutput", "plan_spec", "run_spec", "run_spec_sync"]
 
@@ -129,6 +130,25 @@ def plan_spec(spec: TaskSpec, registry: Registry) -> list[dict[str, Any]]:
     return plan
 
 
+def max_concurrency(spec: TaskSpec, registry: Registry) -> int:
+    """Largest number of requests any workload in ``spec`` will have in flight at once.
+
+    One client serves every workload of a packet, so the pool has to fit the widest of
+    them — and for a sweep that is the top of its axis, not the ``concurrency`` in its
+    params, which is only the first level.
+    """
+    widest = 1
+    for ref in spec.workloads:
+        workload, params = resolve_workload(registry, ref)
+        levels = [int(params.get("concurrency") or 1)]
+        if str(workload.get("kind") or "") == "sweep":
+            axis, values = sweep_axis(workload)
+            if axis == "concurrency":
+                levels += [int(v) for v in values]
+        widest = max(widest, *levels)
+    return widest
+
+
 async def run_spec(
     spec: TaskSpec,
     *,
@@ -176,6 +196,7 @@ async def run_spec(
         transport=transport,
         tokenizer=tokenizer,
         extra_body=extra_body,
+        max_connections=max_concurrency(spec, registry),
     ) as client:
         client.model, advertised, model_warnings = await _served_model(client, spec)
         output.warnings.extend(model_warnings)

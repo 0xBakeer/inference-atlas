@@ -12,7 +12,7 @@ from atlas_bench.canonical import canonicalize
 from atlas_bench.hwinfo import GpuInfo, HostInfo
 from atlas_bench.ids import cell_id, config_id_from_canonical, run_id
 from atlas_bench.registry import Registry
-from atlas_bench.runner import plan_spec, run_spec
+from atlas_bench.runner import max_concurrency, plan_spec, run_spec
 from atlas_bench.spec import TaskSpec
 from atlas_bench.validate import validate_file
 from atlas_bench.scorers import get_scorer
@@ -599,3 +599,28 @@ async def test_two_workloads_produce_two_files(
     assert len(output.paths) == 2
     cells = {json.loads(p.read_text())["cell_id"] for p in output.paths}
     assert len(cells) == 1
+
+
+# --------------------------------------------------- client connection pool
+
+
+def test_max_concurrency_reads_the_top_of_a_sweep_axis(atlas_repo: Path) -> None:
+    """A sweep's widest point, not the ``concurrency`` in its params, sizes the pool.
+
+    ``sweep-test-1-4-v1`` declares no ``concurrency`` param at all and sweeps to 4; the
+    shipped ``sweep-parallel-1-256-i512-o256-v1`` declares ``concurrency: 1`` and sweeps
+    to 256. Reading the param alone would size the pool at 1 for both.
+    """
+    registry = Registry(atlas_repo)
+    assert max_concurrency(make_spec("sweep-test-1-4-v1"), registry) == 4
+    assert max_concurrency(make_spec("serve-test-c2-v1"), registry) == 2
+    assert max_concurrency(make_spec(), registry) >= 1
+
+
+def test_run_sizes_the_pool_for_the_whole_packet(
+    atlas_repo: Path, fake_server: FakeOpenAIServer
+) -> None:
+    """Every workload of a packet shares one client, so the widest of them wins."""
+    registry = Registry(atlas_repo)
+    spec = make_spec(workloads=["serve-test-c2-v1", "sweep-test-1-4-v1"])
+    assert max_concurrency(spec, registry) == 4
