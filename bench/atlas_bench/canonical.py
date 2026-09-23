@@ -10,7 +10,8 @@ Pipeline (SPEC §3):
 1. normalize keys (trim, lowercase, strip leading dashes, ``_`` → ``-``) and resolve aliases
 2. drop ``drop_params`` and any value equal to the engine version's default
 3. normalize values to strings, using the declared/inferred param type
-4. prepend the pseudo params ``@quant`` and ``@dtype``
+4. prepend the pseudo params ``@quant`` and ``@dtype`` and append the non-default request
+   options as ``@req.<name>``
 5. sort keys by byte order and join as ``k=v;k=v``
 6. ``config_id = sha256(canonical)[:16]``
 """
@@ -26,6 +27,8 @@ from typing import Any
 
 __all__ = [
     "MAX_DECIMALS",
+    "REQUEST_DEFAULTS",
+    "REQUEST_DROP",
     "CanonicalInput",
     "CanonicalResult",
     "ParamSpec",
@@ -40,6 +43,23 @@ __all__ = [
 
 #: Numbers keep at most this many decimal places (``Math.round(n * 1e6) / 1e6`` in TS).
 MAX_DECIMALS = 6
+
+#: Harness defaults for the request block (:class:`atlas_bench.spec.RequestOptions`). A value
+#: equal to its default is dropped, exactly as a flag equal to the version default is dropped.
+REQUEST_DEFAULTS: dict[str, Any] = {
+    "temperature": 0,
+    "top_p": None,
+    "seed": 42,
+    "max_tokens": None,
+    "stop": None,
+    "timeout_s": 600,
+    "extra_body": {},
+    "chat_template_kwargs": None,
+    "reasoning_effort": None,
+}
+
+#: Credentials never reach a fingerprint or a result file, as ``api-key`` never does.
+REQUEST_DROP: tuple[str, ...] = ("api_key",)
 
 _TRUEISH = frozenset({"true", "yes", "on", "1"})
 _FALSEISH = frozenset({"false", "no", "off", "0"})
@@ -74,6 +94,10 @@ class CanonicalInput:
     #: Identity of the engine BUILD when the version string alone does not pin it: a container
     #: digest, or ``<fork repo>@<fork ref>``. Required for engine versions registered as forks.
     build: str | None = None
+    #: Request options sent with every request of the run (SPEC §3, decision 28). Options left
+    #: at the harness default contribute nothing, so results recorded before the block existed
+    #: keep their id; anything else folds in as ``@req.<name>``.
+    request: dict[str, Any] | None = None
 
     @classmethod
     def from_dict(cls, raw: dict[str, Any]) -> CanonicalInput:
@@ -101,6 +125,7 @@ class CanonicalInput:
             drop_params=tuple(str(d) for d in raw.get("drop_params") or ()),
             param_aliases={str(k): str(v) for k, v in (raw.get("param_aliases") or {}).items()},
             build=raw.get("build"),
+            request=dict(raw["request"]) if raw.get("request") is not None else None,
         )
 
 
@@ -364,6 +389,17 @@ def canonicalize_full(inp: CanonicalInput) -> CanonicalResult:
     build = (getattr(inp, "build", None) or "").strip().lower()
     if build:
         resolved["@build"] = build
+
+    # ``@req.*`` carries the request options that were actually sent (SPEC §3, decision 28).
+    # Option names are API field names, not CLI flags, so they keep their snake_case spelling.
+    for name, value in (inp.request or {}).items():
+        if name in REQUEST_DROP or value is None:
+            continue
+        rendered = normalize_value(value)
+        fallback = REQUEST_DEFAULTS.get(name)
+        if fallback is not None and rendered == normalize_value(fallback):
+            continue
+        resolved[f"@req.{name}"] = rendered
 
     canonical = ";".join(f"{key}={resolved[key]}" for key in sorted(resolved))
     return CanonicalResult(

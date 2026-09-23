@@ -14,6 +14,8 @@ export {
   normalizeValue,
   normalizeNumber,
   byteCompare,
+  REQUEST_DEFAULTS,
+  REQUEST_DROP,
 } from './canonical.js';
 export type { CanonicalizeInput, CanonicalizeResult, CanonicalParam } from './canonical.js';
 export {

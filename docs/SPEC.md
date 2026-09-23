@@ -105,8 +105,8 @@ Hugging Face repo id verbatim (see below). Registry ids are chosen by humans and
 ## 3. Canonicalization (`config_id`)
 
 Input: `engine_id`, `engine_version`, `args` (object of flag→value as passed to the engine),
-`quant_id`, `dtype`. Steps, in order, implemented in `packages/core/src/canonical.ts` and
-`bench/atlas_bench/canonical.py`:
+`quant_id`, `dtype`, `request` (the run's request block). Steps, in order, implemented in
+`packages/core/src/canonical.ts` and `bench/atlas_bench/canonical.py`:
 
 1. Resolve aliases: `engines/<id>/versions/<ver>.json` params carry `aliases: ["-tp"]`; map
    every alias to the canonical `name`. Unknown flags are kept verbatim (lowercased,
@@ -118,8 +118,11 @@ Input: `engine_id`, `engine_version`, `args` (object of flag→value as passed t
    scalar elements; objects → JSON with sorted keys. Params in `drop_params` of the engine
    meta (paths, ports, host, api-key, served-model-name, download-dir, model, revision) are
    removed entirely.
-4. Prepend two pseudo-params: `@quant=<quant_id>` and `@dtype=<dtype|auto>`. (They sort
-   first because `@` < `a`.)
+4. Prepend the pseudo-params: `@quant=<quant_id>`, `@dtype=<dtype|auto>`, `@build=<build>`
+   when the result names one, and `@req.<name>=<value>` for every request option that
+   differs from the harness default (decision 28). Request options keep the API's own
+   spelling (`chat_template_kwargs`, not `chat-template-kwargs`); `api_key` is never
+   fingerprinted. (They sort first because `@` < `a`.)
 5. Sort keys lexicographically (byte order), join as `k=v;k=v`. Empty set → `@dtype=auto;@quant=bf16`-style string still non-empty.
 6. `config_id = sha256(utf8(canonical))[:16]`.
 
@@ -334,6 +337,7 @@ Eval rows: `{ "id", "category", "difficulty", "prompt"|"messages", "answer", "sc
   "args": { "gpu-memory-utilization": 0.44, "max-model-len": 262144, "enable-prefix-caching": true,
             "speculative-config": { "method": "mtp", "num_speculative_tokens": 3 } },
   "args_canonical": "@dtype=auto;@quant=fp8;enable-prefix-caching=true;…",
+  "request": { "chat_template_kwargs": { "enable_thinking": false } },   // options sent with every request that differ from the harness default; null when none did
   "serve_command": "docker run … vllm serve …",              // exact reproducible command line
   "workload": { "id": "...", "resolved_params": { ... } },   // snapshot of what was run
   "metrics": {                                                // serving/prefill/longctx kinds
@@ -788,3 +792,35 @@ or where reality disagreed with it. Each one is binding until superseded here.
     is worth knowing before anyone compares their PSNR tables. The cost is real and stated:
     a fidelity number is only meaningful relative to a reference the same contributor made,
     and the result names it (`workload.resolved_params.reference_run_id`).
+
+**2026-09-23 — the request block (decision 28)**
+
+28. **What was sent with every request is part of the configuration, so it is in the
+    result and in `config_id`.** The packet has carried a `request` block since §7 was
+    written — temperature, seed, `chat_template_kwargs`, `reasoning_effort` — and the
+    harness applied it to every request and then dropped it on the floor: it appeared in
+    no result file and in no fingerprint. That is not a cosmetic gap. A thinking model
+    measured twice, once with `chat_template_kwargs {"enable_thinking": false}` and once
+    without, produced two rows for the same cell and workload that shared a `config_id`,
+    carried identical engine args, and differed by up to 0.46 in accuracy. Nothing in the
+    data said which was which; the pair read as noise on one configuration.
+
+    So `results/…json` gains a `request` block and canonicalization gains a family of
+    pseudo-params, `@req.<name>`. Three rules keep it honest:
+
+    - **Only what was chosen is recorded.** An option equal to the harness default
+      (`RequestOptions` in `bench/atlas_bench/spec.py`: temperature 0, seed 42,
+      `timeout_s` 600, everything else unset) says nothing about the run, so it is neither
+      written nor hashed. The block is `null` when nothing survives. This is step 2 of this
+      section applied to requests instead of flags, and it is what lets every result
+      recorded before this existed keep its id — verified by the `request-block-all-defaults`
+      golden vector, which hashes to the same value as `empty-args`.
+    - **Names keep the API's spelling.** These are wire fields, not CLI flags, so
+      `chat_template_kwargs` is not lowercased into a dash-separated flag name. `@req.` is
+      what marks the namespace.
+    - **A credential is not a measurement input.** `api_key` is dropped from the record and
+      from the hash, the way `api-key` already is from `args`.
+
+    A setting the harness applied through a proxy rather than through the request body is
+    still a request option and still belongs here, with a gotcha naming the proxy — where
+    the bytes were rewritten is provenance, not a reason to omit what the model was asked.

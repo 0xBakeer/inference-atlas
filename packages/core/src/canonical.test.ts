@@ -110,3 +110,51 @@ describe('normalization rules', () => {
     expect(known.configId).not.toBe(unknown.configId);
   });
 });
+
+describe('request options in the fingerprint (SPEC §3, decision 28)', () => {
+  const base: CanonicalizeInput = {
+    engine_id: 'sglang',
+    engine_version: '0.5.20',
+    args: {},
+    quant_id: 'bf16',
+  };
+
+  it('ignores a request block that is entirely at the harness defaults', () => {
+    const plain = canonicalizeArgs(base);
+    const defaulted = canonicalizeArgs({
+      ...base,
+      request: { temperature: 0, seed: 42, timeout_s: 600, extra_body: {} },
+    });
+    expect(defaulted.canonical).toBe(plain.canonical);
+    expect(defaulted.configId).toBe(plain.configId);
+  });
+
+  it('gives thinking-off its own config_id', () => {
+    const thinkingOn = canonicalizeArgs({ ...base, request: { temperature: 0, seed: 42 } });
+    const thinkingOff = canonicalizeArgs({
+      ...base,
+      request: { temperature: 0, seed: 42, chat_template_kwargs: { enable_thinking: false } },
+    });
+    expect(thinkingOff.canonical).toBe(
+      '@dtype=auto;@quant=bf16;@req.chat_template_kwargs={"enable_thinking":false}',
+    );
+    expect(thinkingOff.configId).not.toBe(thinkingOn.configId);
+  });
+
+  it('never fingerprints a credential', () => {
+    const withKey = canonicalizeArgs({ ...base, request: { api_key: 'sk-secret' } });
+    expect(withKey.canonical).toBe(canonicalizeArgs(base).canonical);
+    expect(withKey.canonical).not.toContain('sk-secret');
+  });
+
+  it('keeps the option names as the API spells them and sorts them last', () => {
+    const { canonical } = canonicalizeArgs({
+      ...base,
+      args: { 'tensor-parallel-size': 2 },
+      request: { reasoning_effort: 'max', temperature: 0.7 },
+    });
+    expect(canonical).toBe(
+      '@dtype=auto;@quant=bf16;@req.reasoning_effort=max;@req.temperature=0.7;tensor-parallel-size=2',
+    );
+  });
+});

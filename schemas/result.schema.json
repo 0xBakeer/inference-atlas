@@ -231,6 +231,38 @@
       "minLength": 1,
       "description": "The canonical string that hashes to config_id. The validator recomputes it and fails on mismatch."
     },
+    "request": {
+      "description": "Sampling and transport options sent with EVERY request of the run — the harness packet's `request` block. Only options that differ from the harness default are recorded; each one folds into config_id as `@req.<name>` (SPEC §3, decision 28), so a run whose requests switched thinking off through chat_template_kwargs cannot share a fingerprint with one that left it alone. `api_key` is never recorded. Absent (or null) on results recorded before this field existed — for those, whatever provenance.notes says is the only record.",
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "temperature": { "$ref": "#/$defs/nnum" },
+            "top_p": { "$ref": "#/$defs/nnum" },
+            "seed": { "$ref": "#/$defs/nint" },
+            "max_tokens": { "$ref": "#/$defs/nint" },
+            "stop": {
+              "type": ["array", "null"],
+              "items": { "type": "string" }
+            },
+            "timeout_s": { "$ref": "#/$defs/nnum" },
+            "extra_body": {
+              "type": ["object", "null"],
+              "description": "Engine-specific body fields the OpenAI schema has no room for."
+            },
+            "chat_template_kwargs": {
+              "type": ["object", "null"],
+              "description": "Passed to the model's chat template. `{\"enable_thinking\": false}` is how a thinking model's thinking is switched off for a run."
+            },
+            "reasoning_effort": { "$ref": "#/$defs/nstr" }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
     "env": {
       "type": [
         "object",

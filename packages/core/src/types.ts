@@ -461,6 +461,24 @@ export interface Provenance {
   notes?: string | null;
 }
 
+/**
+ * Request options applied to every request of a run (`RequestOptions` in
+ * `bench/atlas_bench/spec.py`, minus `api_key` — a credential is never recorded).
+ * Only the options that differ from the harness default are written.
+ */
+export interface RequestBlock {
+  temperature?: number | null;
+  top_p?: number | null;
+  seed?: number | null;
+  max_tokens?: number | null;
+  stop?: string[] | null;
+  timeout_s?: number | null;
+  extra_body?: Record<string, unknown> | null;
+  /** How a thinking model's thinking is switched off: `{ "enable_thinking": false }`. */
+  chat_template_kwargs?: Record<string, unknown> | null;
+  reasoning_effort?: string | null;
+}
+
 export interface ResultRecord {
   schema_version: 1;
   run_id: string;
@@ -509,6 +527,14 @@ export interface ResultRecord {
   };
   args: Args;
   args_canonical: string;
+  /**
+   * Sampling and transport options sent with every request of the run, as the harness packet
+   * carried them. Options left at the harness default are omitted; anything else folds into
+   * `config_id` as `@req.<name>`, so a run with thinking switched off through
+   * `chat_template_kwargs` cannot share a fingerprint with one that left it alone. Absent on
+   * results recorded before the block existed.
+   */
+  request?: RequestBlock | null;
   env?: Record<string, string | number | boolean | null> | null;
   serve_command?: string | null;
   workload?: {

@@ -16,7 +16,7 @@ import {
   resultPath,
   runId,
 } from '@atlas/core';
-import type { ResultRecord } from '@atlas/core';
+import type { ArgValue, ResultRecord } from '@atlas/core';
 import type { Repo } from './repo.js';
 import type { Reporter } from './report.js';
 
@@ -112,6 +112,9 @@ export function checkResult(
     drop_params: engine?.meta.drop_params ?? [],
     param_aliases: engine?.meta.param_aliases ?? null,
     build,
+    // Request options are part of the configuration: a run that switched thinking off sent a
+    // different thing to the same server, so it may not share the fingerprint (SPEC §3, decision 28).
+    request: (result.request ?? null) as Record<string, ArgValue> | null,
   });
 
   if (canonical !== result.args_canonical) {

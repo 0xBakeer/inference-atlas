@@ -125,6 +125,13 @@ Full shape: `schemas/result.schema.json` and `docs/SPEC.md` §4. The parts you m
   — it is a Hugging Face repo id, so it spends two directory levels.
 - `args` is what you actually passed. Not what you meant to pass, not what the packet asked
   for if you had to deviate.
+- `request` is what you sent with every request — the packet's `request` block. Anything
+  that is not the harness default belongs here, `chat_template_kwargs
+{"enable_thinking": false}` above all: it folds into `config_id`, so a run with a model's
+  thinking switched off can never be confused with one that left it on. If a setting reached
+  the server through a proxy rather than the request body, it still goes here, plus a gotcha
+  naming the proxy. Two rows for the same cell and workload that differ only in the file name
+  are not a measurement, they are a puzzle.
 - Metrics you did not measure stay `null`. A `null` is information; a plausible-looking
   invented number is not. Filling a metric you did not measure is the single worst thing you
   can do in this repository.

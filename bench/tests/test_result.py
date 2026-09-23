@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from dataclasses import replace
 from pathlib import Path
 
 import pytest
@@ -261,3 +262,45 @@ def test_engine_build_reaches_the_fingerprint_and_the_record() -> None:
     # And a run that declares nothing hashes exactly as it did before the field existed.
     assert canonicalize(CanonicalInput(**base)) == canonicalize(CanonicalInput(**base, build=None))
     assert canonicalize(CanonicalInput(**base)) == "@dtype=auto;@quant=nvfp4"
+
+
+def test_request_block_is_recorded_and_fingerprinted(atlas_repo: Path) -> None:
+    """The packet said thinking was off; the row has to say so too, and in its config_id.
+
+    Regression test for the harness dropping the packet's ``request`` block: the two rows of
+    a thinking-on/thinking-off pair then differed only by the contributor hash in the file
+    name, which makes neither of them reproducible.
+    """
+    base = inputs(atlas_repo, WorkloadOutcome(kind="serving"))
+    on = build_result(base)
+    off = build_result(
+        replace(
+            base,
+            spec=make_spec(
+                request={
+                    "temperature": 0,
+                    "seed": 42,
+                    "chat_template_kwargs": {"enable_thinking": False},
+                }
+            ),
+        )
+    )
+
+    # Everything at the harness default says nothing about the run and is not recorded.
+    assert on["request"] is None
+    assert off["request"] == {"chat_template_kwargs": {"enable_thinking": False}}
+    assert '@req.chat_template_kwargs={"enable_thinking":false}' in off["args_canonical"]
+    assert off["config_id"] != on["config_id"]
+    assert off["run_id"].startswith(off["config_id"])
+
+
+def test_request_block_never_records_a_credential(atlas_repo: Path) -> None:
+    """An api_key is not a measurement input and never lands in a public file."""
+    record = build_result(
+        replace(
+            inputs(atlas_repo, WorkloadOutcome(kind="serving")),
+            spec=make_spec(request={"temperature": 0, "seed": 42, "api_key": "sk-secret"}),
+        )
+    )
+    assert record["request"] is None
+    assert "sk-secret" not in json.dumps(record)

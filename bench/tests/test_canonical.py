@@ -206,3 +206,34 @@ def test_normalize_key_and_value_basics() -> None:
     assert normalize_value(" text ") == "text"
     assert normalize_value("TRUE") == "true"
     assert normalize_value(3) == "3"
+
+
+def test_request_options_at_the_default_change_nothing() -> None:
+    """A run that took every default hashes as it did before the request block existed."""
+    plain = canonicalize(vllm({}))
+    defaulted = canonicalize(
+        vllm({}, request={"temperature": 0, "seed": 42, "timeout_s": 600, "extra_body": {}})
+    )
+    assert defaulted == plain
+
+
+def test_thinking_off_gets_its_own_config_id() -> None:
+    on = canonicalize_full(vllm({}, request={"temperature": 0, "seed": 42}))
+    off = canonicalize_full(
+        vllm(
+            {},
+            request={
+                "temperature": 0,
+                "seed": 42,
+                "chat_template_kwargs": {"enable_thinking": False},
+            },
+        )
+    )
+    assert off.canonical.endswith('@req.chat_template_kwargs={"enable_thinking":false}')
+    assert off.config_id != on.config_id
+
+
+def test_api_key_never_reaches_the_hash() -> None:
+    canonical = canonicalize(vllm({}, request={"api_key": "sk-secret"}))
+    assert "sk-secret" not in canonical
+    assert canonical == canonicalize(vllm({}))
