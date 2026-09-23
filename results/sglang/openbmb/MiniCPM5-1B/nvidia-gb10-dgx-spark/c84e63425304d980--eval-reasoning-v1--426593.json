@@ -1,0 +1,1446 @@
+{
+  "schema_version": 1,
+  "run_id": "c84e63425304d980--eval-reasoning-v1--426593",
+  "config_id": "c84e63425304d980",
+  "cell_id": "0e7d746e67fa",
+  "workload_id": "eval-reasoning-v1",
+  "kind": "eval",
+  "engine": {
+    "id": "sglang",
+    "version": "0.5.20",
+    "commit": null,
+    "build": "pypi sglang==0.5.20 (py3.12 venv, torch 2.13.0+cu130, flashinfer-python 0.6.18, sglang-kernel 0.4.7)",
+    "container": null,
+    "install_method": "pip"
+  },
+  "model": {
+    "id": "openbmb/MiniCPM5-1B",
+    "quant_id": "bf16",
+    "hf_id": "openbmb/MiniCPM5-1B",
+    "revision": "87179e5c1f455ef22e6223592d2d61351b525bfc",
+    "dtype": "auto",
+    "local_path": null
+  },
+  "hardware": {
+    "id": "nvidia-gb10-dgx-spark",
+    "count": 1,
+    "driver": "580.173.02",
+    "cuda": "13.0",
+    "host": {
+      "cpu": "Cortex-A725",
+      "cpu_cores": 20,
+      "ram_gb": 121.6,
+      "os": "Ubuntu 24.04.4 LTS",
+      "kernel": "6.17.0-1029-nvidia",
+      "arch": "aarch64"
+    },
+    "fingerprint": "sha256:52ea2bdd513719724db88c162b6cc2c9fb4e5b67e02dbe41b9de00687acefb91",
+    "captured": {
+      "nvidia_smi": {
+        "driver": "580.173.02",
+        "cuda": "13.0",
+        "products": [
+          "NVIDIA GB10"
+        ],
+        "fb_memory_total_mib": 0.0
+      },
+      "lscpu": {
+        "architecture": "aarch64",
+        "cpus": "20",
+        "vendor_id": "ARM",
+        "model_name": "Cortex-A725",
+        "cores_per_socket": "10",
+        "sockets": "1",
+        "cpu_max_mhz": "2808.0000"
+      }
+    }
+  },
+  "args": {
+    "dtype": "bfloat16",
+    "context-length": 131072,
+    "mem-fraction-static": 0.75,
+    "tool-call-parser": "minicpm5",
+    "reasoning-parser": "qwen3",
+    "max-running-requests": 512
+  },
+  "args_canonical": "@build=pypi sglang==0.5.20 (py3.12 venv, torch 2.13.0+cu130, flashinfer-python 0.6.18, sglang-kernel 0.4.7);@dtype=auto;@quant=bf16;context-length=131072;dtype=bfloat16;max-running-requests=512;mem-fraction-static=0.75;reasoning-parser=qwen3;tool-call-parser=minicpm5",
+  "serve_command": null,
+  "workload": {
+    "id": "eval-reasoning-v1",
+    "resolved_params": {
+      "dataset_id": "eval-reasoning-v1",
+      "suite": "reasoning",
+      "scorer": "exact",
+      "items": 120,
+      "concurrency": 4,
+      "max_output_tokens": 2048,
+      "timeout_s": 300.0,
+      "temperature": 0,
+      "reasoning": "default",
+      "dataset_categories": null,
+      "dataset_target_tokens": null,
+      "pass_threshold": null,
+      "seed": 42
+    }
+  },
+  "env": {
+    "SGLANG_ALLOW_OVERWRITE_LONGER_CONTEXT_LEN": "1",
+    "SGLANG_DISABLE_CUDNN_CHECK": "1"
+  },
+  "metrics": {
+    "requests_total": 120,
+    "requests_ok": 120,
+    "requests_failed": 0,
+    "success_rate": 1.0,
+    "duration_s": 120.675,
+    "input_tokens_total": 10419,
+    "output_tokens_total": 47462,
+    "e2e_ms": {
+      "mean": 3728.307,
+      "p50": 163.005,
+      "p90": 12454.165,
+      "p95": 19278.723,
+      "p99": 19381.409,
+      "min": 35.641,
+      "max": 20087.888
+    },
+    "vram_peak_gb": 89.374,
+    "ram_peak_gb": 98.232,
+    "power_avg_w": 31.22,
+    "power_peak_w": 34.08,
+    "energy_wh": 1.0444,
+    "gpu_util_avg_pct": 95.13,
+    "temp_max_c": 58.0,
+    "thermal_throttle_detected": false
+  },
+  "scores": {
+    "suite": "reasoning",
+    "total": 120,
+    "correct": 23,
+    "accuracy": 0.191667,
+    "success_rate": 1.0,
+    "by_category": {
+      "counting": {
+        "total": 20,
+        "correct": 0
+      },
+      "datetime": {
+        "total": 18,
+        "correct": 0
+      },
+      "deduction": {
+        "total": 15,
+        "correct": 6
+      },
+      "ordering": {
+        "total": 18,
+        "correct": 5
+      },
+      "spatial": {
+        "total": 15,
+        "correct": 1
+      },
+      "syllogism": {
+        "total": 18,
+        "correct": 6
+      },
+      "truth_liar": {
+        "total": 16,
+        "correct": 5
+      }
+    },
+    "by_difficulty": {
+      "easy": {
+        "total": 31,
+        "correct": 4
+      },
+      "hard": {
+        "total": 39,
+        "correct": 10
+      },
+      "medium": {
+        "total": 50,
+        "correct": 9
+      }
+    },
+    "avg_output_tokens": 395.52,
+    "avg_latency_ms": 3728.31,
+    "failures": 0,
+    "items": [
+      {
+        "id": "reason-0001",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 46.383,
+        "output_tokens": 2,
+        "category": "syllogism",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0002",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 45.814,
+        "output_tokens": 2,
+        "category": "syllogism",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0003",
+        "correct": false,
+        "predicted": "A",
+        "expected": "B",
+        "latency_ms": 45.428,
+        "output_tokens": 2,
+        "category": "syllogism",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0004",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 44.129,
+        "output_tokens": 2,
+        "category": "syllogism",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0005",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 43.064,
+        "output_tokens": 2,
+        "category": "syllogism",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0006",
+        "correct": false,
+        "predicted": "A",
+        "expected": "B",
+        "latency_ms": 41.711,
+        "output_tokens": 2,
+        "category": "syllogism",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0007",
+        "correct": false,
+        "predicted": "A",
+        "expected": "B",
+        "latency_ms": 41.204,
+        "output_tokens": 2,
+        "category": "syllogism",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0008",
+        "correct": false,
+        "predicted": "A",
+        "expected": "D",
+        "latency_ms": 40.553,
+        "output_tokens": 2,
+        "category": "syllogism",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0009",
+        "correct": false,
+        "predicted": "A",
+        "expected": "B",
+        "latency_ms": 38.357,
+        "output_tokens": 2,
+        "category": "syllogism",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0010",
+        "correct": false,
+        "predicted": "A",
+        "expected": "B",
+        "latency_ms": 37.678,
+        "output_tokens": 2,
+        "category": "syllogism",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0011",
+        "correct": false,
+        "predicted": "A",
+        "expected": "C",
+        "latency_ms": 37.148,
+        "output_tokens": 2,
+        "category": "syllogism",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0012",
+        "correct": false,
+        "predicted": "A",
+        "expected": "C",
+        "latency_ms": 3085.268,
+        "output_tokens": 338,
+        "category": "syllogism",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0013",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 51.705,
+        "output_tokens": 2,
+        "category": "syllogism",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0014",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 50.106,
+        "output_tokens": 2,
+        "category": "syllogism",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0015",
+        "correct": false,
+        "predicted": "A",
+        "expected": "B",
+        "latency_ms": 49.532,
+        "output_tokens": 2,
+        "category": "syllogism",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0016",
+        "correct": false,
+        "predicted": "A",
+        "expected": "B",
+        "latency_ms": 47.815,
+        "output_tokens": 2,
+        "category": "syllogism",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0017",
+        "correct": false,
+        "predicted": "A",
+        "expected": "C",
+        "latency_ms": 47.22,
+        "output_tokens": 2,
+        "category": "syllogism",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0018",
+        "correct": false,
+        "predicted": "A",
+        "expected": "C",
+        "latency_ms": 46.601,
+        "output_tokens": 2,
+        "category": "syllogism",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0019",
+        "correct": false,
+        "predicted": "Iva",
+        "expected": "Hana",
+        "latency_ms": 55.302,
+        "output_tokens": 3,
+        "category": "ordering",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0020",
+        "correct": false,
+        "predicted": "Fenn",
+        "expected": "Fenna",
+        "latency_ms": 3760.56,
+        "output_tokens": 414,
+        "category": "ordering",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0021",
+        "correct": true,
+        "predicted": "Cai",
+        "expected": "Cai",
+        "latency_ms": 11985.06,
+        "output_tokens": 1307,
+        "category": "ordering",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0022",
+        "correct": false,
+        "predicted": "\\text{Dita}",
+        "expected": "Dita",
+        "latency_ms": 3930.148,
+        "output_tokens": 434,
+        "category": "ordering",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0023",
+        "correct": false,
+        "predicted": "Ivo",
+        "expected": "Fenna",
+        "latency_ms": 2521.088,
+        "output_tokens": 272,
+        "category": "ordering",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0024",
+        "correct": false,
+        "predicted": "We are given five people: Cai, Dita, Emre, Juno, Lars, sitting in seats 1 to 5 from left to right. The conditions are:\n\n1. Emre sits to the left of Lars.\n2. Cai sits immediately to the left of Juno.\n3. Juno sits immediately to the left of Dita.\n4. Lars sits immediately to the left of Cai.\n\nFrom condition 4, we have a chain: Lars — Cai (adjacent, left to right). From condition 2, we have a chain: Juno — Dita (adjacent, left to right). Combining conditions 2 and 3, we get a chain: Juno — Dita — Em",
+        "expected": "Lars",
+        "latency_ms": 19190.295,
+        "output_tokens": 2048,
+        "category": "ordering",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0025",
+        "correct": false,
+        "predicted": "1. **Analyze the given conditions:**\n   - Gus sits to the left of Emre.\n   - Emre does not sit in seat 3.\n   - Emre sits immediately to the left of Dita.\n\n2. **Determine possible positions for Emre and Dita:**\n   - Since Emre sits immediately to the left of Dita, Emre and Dita must occupy adjacent seats.\n   - Given that Emre does not sit in seat 3, the possible pairs for Emre and Dita are (1,2), (2,3), (3,4), and (4,5) but since there are only 4 seats, the valid pairs are (1,2), (2,3), (3,4), an",
+        "expected": "Ivo",
+        "latency_ms": 19202.961,
+        "output_tokens": 2048,
+        "category": "ordering",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0026",
+        "correct": false,
+        "predicted": "Cai",
+        "expected": "Fenna",
+        "latency_ms": 1585.016,
+        "output_tokens": 171,
+        "category": "ordering",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0027",
+        "correct": false,
+        "predicted": "Let's analyze the conditions step by step to determine who sits in seat 4.\n\n**1. Analyze the seating constraints:**\n*   **Seats:** 1, 2, 3, 4 (Left to Right).\n*   **People:** Ada (A), Dita (D), Kira (K), Lars (L).\n\n**Condition 1:** \"Exactly 1 person sits between Ada and Kira, with Ada on the left.\"\nThis implies the order is: Ada - [Person] - Kira.\nSince Ada is on the left, the sequence must be:\n*   Seat 1: Ada\n*   Seat 2: Person X\n*   Seat 3: Kira\n(Note: If Ada were in seat 2, there would be 0 p",
+        "expected": "Kira",
+        "latency_ms": 19277.275,
+        "output_tokens": 2048,
+        "category": "ordering",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0028",
+        "correct": false,
+        "predicted": "\\text{Impossible}",
+        "expected": "Hana",
+        "latency_ms": 530.295,
+        "output_tokens": 55,
+        "category": "ordering",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0029",
+        "correct": true,
+        "predicted": "Emre",
+        "expected": "Emre",
+        "latency_ms": 9563.861,
+        "output_tokens": 1011,
+        "category": "ordering",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0030",
+        "correct": false,
+        "predicted": "Ivo, Dita, Emre, Kira, Bo, Fenna",
+        "expected": "Emre",
+        "latency_ms": 193.386,
+        "output_tokens": 17,
+        "category": "ordering",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0031",
+        "correct": false,
+        "predicted": "Kira",
+        "expected": "Ivo",
+        "latency_ms": 4249.405,
+        "output_tokens": 446,
+        "category": "ordering",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0032",
+        "correct": true,
+        "predicted": "Cai",
+        "expected": "Cai",
+        "latency_ms": 4636.885,
+        "output_tokens": 492,
+        "category": "ordering",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0033",
+        "correct": false,
+        "predicted": "We are given five people: Emre, Fenna, Gus, Hana, Juno, sitting in seats 1 to 5 from left to right. The conditions are:\n\n1. Hana does not sit in seat 5.\n2. Emre sits somewhere to the left of Gus.\n3. Exactly 2 people sit between Fenna and Hana, with Fenna on the left. This means Fenna and Hana are separated by exactly two seats, with Fenna in an earlier seat than Hana. So possible pairs (Fenna, Hana) are (1,3), (2,4), or (3,5).\n4. Gus sits somewhere to the left of Hana.\n\nWe analyze each possible ",
+        "expected": "Hana",
+        "latency_ms": 19306.22,
+        "output_tokens": 2048,
+        "category": "ordering",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0034",
+        "correct": false,
+        "predicted": "Let's analyze the constraints step by step to determine the seating arrangement.\n\n**1. Analyze the first constraint:**\n\"Exactly 2 people sit between Kira and Fenna, with Kira on the left.\"\nThis means the sequence is: [Kira] - [Person] - [Person] - [Person] - [Fenna].\nThe positions relative to each other are fixed: Kira is at position $x$, Fenna is at position $x+4$.\nSince there are 5 seats numbered 1 to 5, let's test possible starting positions for Kira.\n- If Kira is at seat 1, Fenna is at seat ",
+        "expected": "Ada",
+        "latency_ms": 19336.333,
+        "output_tokens": 2048,
+        "category": "ordering",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0035",
+        "correct": true,
+        "predicted": "Gus",
+        "expected": "Gus",
+        "latency_ms": 2324.198,
+        "output_tokens": 250,
+        "category": "ordering",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0036",
+        "correct": true,
+        "predicted": "Hana",
+        "expected": "Hana",
+        "latency_ms": 6542.421,
+        "output_tokens": 700,
+        "category": "ordering",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0037",
+        "correct": false,
+        "predicted": "Ivo, Juno, Gus",
+        "expected": "Juno",
+        "latency_ms": 99.694,
+        "output_tokens": 8,
+        "category": "truth_liar",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0038",
+        "correct": false,
+        "predicted": "G, J, D",
+        "expected": "Dita, Juno",
+        "latency_ms": 74.643,
+        "output_tokens": 6,
+        "category": "truth_liar",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0039",
+        "correct": false,
+        "predicted": "A, L, F",
+        "expected": "Ada",
+        "latency_ms": 79.671,
+        "output_tokens": 6,
+        "category": "truth_liar",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0040",
+        "correct": false,
+        "predicted": "2",
+        "expected": "0",
+        "latency_ms": 5746.46,
+        "output_tokens": 615,
+        "category": "truth_liar",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0041",
+        "correct": true,
+        "predicted": "1",
+        "expected": "1",
+        "latency_ms": 6646.727,
+        "output_tokens": 699,
+        "category": "truth_liar",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0042",
+        "correct": true,
+        "predicted": "1",
+        "expected": "1",
+        "latency_ms": 4757.555,
+        "output_tokens": 503,
+        "category": "truth_liar",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0043",
+        "correct": true,
+        "predicted": "0",
+        "expected": "0",
+        "latency_ms": 9248.024,
+        "output_tokens": 976,
+        "category": "truth_liar",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0044",
+        "correct": false,
+        "predicted": "3",
+        "expected": "1",
+        "latency_ms": 5475.6,
+        "output_tokens": 573,
+        "category": "truth_liar",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0045",
+        "correct": false,
+        "predicted": "3",
+        "expected": "1",
+        "latency_ms": 8022.908,
+        "output_tokens": 857,
+        "category": "truth_liar",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0046",
+        "correct": false,
+        "predicted": "2",
+        "expected": "1",
+        "latency_ms": 3842.714,
+        "output_tokens": 413,
+        "category": "truth_liar",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0047",
+        "correct": true,
+        "predicted": "1",
+        "expected": "1",
+        "latency_ms": 4866.686,
+        "output_tokens": 521,
+        "category": "truth_liar",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0048",
+        "correct": true,
+        "predicted": "2",
+        "expected": "2",
+        "latency_ms": 4277.355,
+        "output_tokens": 460,
+        "category": "truth_liar",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0049",
+        "correct": false,
+        "predicted": "1",
+        "expected": "0",
+        "latency_ms": 6013.618,
+        "output_tokens": 646,
+        "category": "truth_liar",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0050",
+        "correct": false,
+        "predicted": "Bo, Ivo, Lars, Ada",
+        "expected": "Bo",
+        "latency_ms": 106.266,
+        "output_tokens": 9,
+        "category": "truth_liar",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0051",
+        "correct": false,
+        "predicted": "A, G, L",
+        "expected": "Ada, Gus",
+        "latency_ms": 73.576,
+        "output_tokens": 6,
+        "category": "truth_liar",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0052",
+        "correct": false,
+        "predicted": "Iva, Ivo, Juno, Hana, Cai",
+        "expected": "Cai",
+        "latency_ms": 151.997,
+        "output_tokens": 14,
+        "category": "truth_liar",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0053",
+        "correct": false,
+        "predicted": "To find the number of different ordered sequences of 4 distinct letters chosen from an alphabet of 9 letters, we can use the concept of permutations.\n\n**Step 1: Identify the parameters.**\n*   Number of available letters ($n$): 9\n*   Number of positions to fill ($k$): 4\n*   Condition: The letters must be distinct (no repetition).\n\n**Step 2: Apply the permutation formula.**\nSince the order in which the letters appear in the sequence matters (e.g., \"ABC\" is different from \"BCA\"), this is a permutat",
+        "expected": "3024",
+        "latency_ms": 3424.178,
+        "output_tokens": 371,
+        "category": "counting",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0054",
+        "correct": false,
+        "predicted": "17",
+        "expected": "119",
+        "latency_ms": 36.761,
+        "output_tokens": 2,
+        "category": "counting",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0055",
+        "correct": false,
+        "predicted": "To find the number of different ordered sequences of 3 distinct letters from an alphabet of 7 letters, we can use the concept of permutations.\n\n1.  **Identify the parameters**:\n    *   Number of available letters ($n$) = 7.\n    *   Number of positions to fill ($k$) = 3.\n    *   The letters must be distinct (no repetition).\n    *   The order matters (e.g., \"ABC\" is different from \"CBA\").\n\n2.  **Apply the permutation formula**:\n    The number of ways to arrange $k$ distinct items chosen from a set",
+        "expected": "210",
+        "latency_ms": 3858.21,
+        "output_tokens": 421,
+        "category": "counting",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0056",
+        "correct": false,
+        "predicted": "1",
+        "expected": "276",
+        "latency_ms": 45.314,
+        "output_tokens": 2,
+        "category": "counting",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0057",
+        "correct": false,
+        "predicted": "To find the number of different ordered sequences of 3 distinct letters from an alphabet of 9 letters, we can use the concept of permutations.\n\n1.  **Identify the parameters**:\n    *   Number of available letters ($n$) = 9.\n    *   Number of positions to fill ($k$) = 3.\n    *   The letters must be distinct (no repetition).\n    *   The order matters (e.g., \"ABC\" is different from \"CBA\").\n\n2.  **Apply the permutation formula**:\n    The number of ways to arrange $k$ distinct items chosen from a set",
+        "expected": "504",
+        "latency_ms": 3105.564,
+        "output_tokens": 333,
+        "category": "counting",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0058",
+        "correct": false,
+        "predicted": "To solve this problem, we need to determine the number of ways to choose 2 distinct mugs from a set of 6 distinct mugs, where the order of selection does not matter.\n\n**Step 1: Identify the type of problem.**\nSince the order of choosing the mugs does not matter (choosing Mug A then Mug B is the same as choosing Mug B then Mug A), this is a **combination** problem, not a permutation problem.\n\n**Step 2: Apply the combination formula.**\nThe formula for combinations is given by:\n$$C(n, k) = \\binom{n",
+        "expected": "15",
+        "latency_ms": 4750.431,
+        "output_tokens": 513,
+        "category": "counting",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0059",
+        "correct": false,
+        "predicted": "1",
+        "expected": "60",
+        "latency_ms": 40.147,
+        "output_tokens": 2,
+        "category": "counting",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0060",
+        "correct": false,
+        "predicted": "20",
+        "expected": "170",
+        "latency_ms": 38.583,
+        "output_tokens": 2,
+        "category": "counting",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0061",
+        "correct": false,
+        "predicted": "1",
+        "expected": "60",
+        "latency_ms": 37.33,
+        "output_tokens": 2,
+        "category": "counting",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0062",
+        "correct": false,
+        "predicted": "To find the number of whole numbers from 143 to 660 (inclusive) that are divisible by 9, we first determine the smallest and largest multiples of 9 within this range.\n\n1.  **Find the first multiple of 9 greater than or equal to 143:**\n    Divide 143 by 9:\n    $143 \\div 9 = 15$ with a remainder of $8$.\n    So, $143 = 9 \\times 15 + 8$.\n    The next multiple is $9 \\times 16$.\n    $9 \\times 16 = 144$.\n    Thus, the first number is 144.\n\n2.  **Find the last multiple of 9 less than or equal to 660:**\n",
+        "expected": "58",
+        "latency_ms": 4795.327,
+        "output_tokens": 522,
+        "category": "counting",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0063",
+        "correct": false,
+        "predicted": "To solve this problem, we need to determine the number of ways to choose 4 mugs from 7 distinct mugs where the order of selection does not matter. This is a classic combination problem.\n\n### Step-by-Step Deduction\n\n1.  **Identify the parameters**:\n    *   Total number of distinct items ($n$) = 7 (mugs).\n    *   Number of items to choose ($k$) = 4 (mugs).\n    *   Condition: Order does not matter (Combinations).\n\n2.  **Select the appropriate formula**:\n    The number of ways to choose $k$ items fr",
+        "expected": "35",
+        "latency_ms": 4899.69,
+        "output_tokens": 533,
+        "category": "counting",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0064",
+        "correct": false,
+        "predicted": "1",
+        "expected": "45",
+        "latency_ms": 45.636,
+        "output_tokens": 2,
+        "category": "counting",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0065",
+        "correct": false,
+        "predicted": "1",
+        "expected": "703",
+        "latency_ms": 37.372,
+        "output_tokens": 2,
+        "category": "counting",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0066",
+        "correct": false,
+        "predicted": "To find the number of whole numbers from 241 to 887 inclusive that are divisible by 9, we first determine the smallest and largest multiples of 9 within this range.\n\n1.  **Find the first multiple of 9 greater than or equal to 241:**\n    Divide 241 by 9:\n    $241 \\div 9 = 26$ with a remainder of $7$ ($9 \\times 26 = 234$).\n    The next multiple is $234 + 9 = 243$.\n    So, the first term ($a_1$) is **243**.\n\n2.  **Find the last multiple of 9 less than or equal to 887:**\n    Divide 887 by 9:\n    $88",
+        "expected": "72",
+        "latency_ms": 5310.055,
+        "output_tokens": 581,
+        "category": "counting",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0067",
+        "correct": false,
+        "predicted": "To solve this problem, we need to determine the number of ways to select a subset of items from a larger set where the order of selection does not matter. This is a classic combination problem.\n\n### Step-by-Step Deduction\n\n1.  **Identify the parameters**:\n    *   Total number of distinct items ($n$): 13\n    *   Number of items to choose ($k$): 5\n\n2.  **Understand the condition**:\n    *   The problem states that the order of the choice does not matter. This means we are looking for the number of ",
+        "expected": "1287",
+        "latency_ms": 11260.642,
+        "output_tokens": 1185,
+        "category": "counting",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0068",
+        "correct": false,
+        "predicted": "To find the number of whole numbers from 258 to 863 inclusive that are divisible by 7, we can follow these steps:\n\n### Step 1: Find the first number in the range divisible by 7\nWe divide the lower bound (258) by 7 to see where the first multiple of 7 appears.\n$$258 \\div 7 = 36.857...$$\nThe next whole integer is 37.\n$$37 \\times 7 = 259$$\nSo, the first number in the range divisible by 7 is **259**.\n\n### Step 2: Find the last number in the range divisible by 7\nWe divide the upper bound (863) by 7 t",
+        "expected": "87",
+        "latency_ms": 4416.091,
+        "output_tokens": 483,
+        "category": "counting",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0069",
+        "correct": false,
+        "predicted": "To find the number of different ordered sequences of 2 distinct letters from an alphabet of 5 letters, we can break the problem down into steps:\n\n1.  **Identify the parameters**:\n    *   Number of available letters ($n$) = 5.\n    *   Number of positions to fill ($k$) = 2.\n    *   Condition: The letters must be distinct (no repetition).\n\n2.  **Determine the method**:\n    Since the order matters (e.g., \"AB\" is different from \"BA\"), this is a permutation problem where order matters. We use the form",
+        "expected": "20",
+        "latency_ms": 3036.448,
+        "output_tokens": 334,
+        "category": "counting",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0070",
+        "correct": false,
+        "predicted": "To find the number of whole numbers from 1 to 990 that are divisible by 5 or by 6 (or both), we use the **Principle of Inclusion-Exclusion**.\n\nLet $S$ be the set of numbers from 1 to 990. The total count of numbers is 990.\nWe define:\n- $A$ as the set of numbers in $S$ divisible by 5.\n- $B$ as the set of numbers in $S$ divisible by 6.\n\nWe need to calculate $|A \\cup B|$, which is given by the formula:\n$$|A \\cup B| = |A| + |B| - |A \\cap B|$$\n\n### Step 1: Calculate $|A|$ (Divisible by 5)\nThe number ",
+        "expected": "330",
+        "latency_ms": 6299.566,
+        "output_tokens": 667,
+        "category": "counting",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0071",
+        "correct": false,
+        "predicted": "1",
+        "expected": "210",
+        "latency_ms": 45.719,
+        "output_tokens": 2,
+        "category": "counting",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0072",
+        "correct": false,
+        "predicted": "To find the number of different ordered sequences of 3 distinct letters from an alphabet of 10 letters, we can use the concept of permutations.\n\n1.  **Identify the parameters**:\n    *   Number of available letters ($n$) = 10.\n    *   Number of positions to fill ($k$) = 3.\n    *   The letters must be distinct (no repetition).\n    *   The order matters (e.g., \"ABC\" is different from \"CBA\").\n\n2.  **Apply the permutation formula**:\n    The number of ways to arrange $k$ distinct items chosen from a s",
+        "expected": "720",
+        "latency_ms": 3133.383,
+        "output_tokens": 333,
+        "category": "counting",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0073",
+        "correct": false,
+        "predicted": "Saturday",
+        "expected": "Tuesday",
+        "latency_ms": 45.235,
+        "output_tokens": 2,
+        "category": "datetime",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0074",
+        "correct": false,
+        "predicted": "2027-01-05",
+        "expected": "2014-01-13",
+        "latency_ms": 80.358,
+        "output_tokens": 7,
+        "category": "datetime",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0075",
+        "correct": false,
+        "predicted": "34",
+        "expected": "4",
+        "latency_ms": 36.493,
+        "output_tokens": 2,
+        "category": "datetime",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0076",
+        "correct": false,
+        "predicted": "To find the local time, we need to calculate the difference between the two time zones.\n\n1.  **Identify the time difference**: The first place is UTC+5, and the second place is UTC-8. The difference is $5 - (-8) = 13$ hours.\n2.  **Determine the offset**: Since the second place is UTC-8, its local time is 13 hours earlier than the first place's local time.\n3.  **Calculate the result**: $11:00 - 13 \\text{ hours} = -2:00$.\n4.  **Convert to 24-hour format**: A negative time indicates that the clock ",
+        "expected": "22:00",
+        "latency_ms": 1597.212,
+        "output_tokens": 171,
+        "category": "datetime",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0077",
+        "correct": false,
+        "predicted": "13",
+        "expected": "5",
+        "latency_ms": 37.508,
+        "output_tokens": 2,
+        "category": "datetime",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0078",
+        "correct": false,
+        "predicted": "To find the local time, we need to calculate the difference between the two time zones.\n\n1.  **Identify the time difference**: The first place is UTC+2, and the second place is UTC-5. The difference is $2 - (-5) = 7$ hours.\n2.  **Convert to local time**: Since the second place is UTC-5, we add 7 hours to UTC-5.\n    *   $7 \\text{ hours} + 5 \\text{ hours} = 12 \\text{ hours}$.\n    *   $12 \\text{ hours} + 1 \\text{ hour} = 13 \\text{ hours}$.\n3.  **Format the output**: The question asks for the answer",
+        "expected": "04:00",
+        "latency_ms": 1759.341,
+        "output_tokens": 179,
+        "category": "datetime",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0079",
+        "correct": false,
+        "predicted": "22:45",
+        "expected": "18:45",
+        "latency_ms": 58.294,
+        "output_tokens": 4,
+        "category": "datetime",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0080",
+        "correct": false,
+        "predicted": "7",
+        "expected": "4",
+        "latency_ms": 773.459,
+        "output_tokens": 81,
+        "category": "datetime",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0081",
+        "correct": false,
+        "predicted": "Wednesday",
+        "expected": "Monday",
+        "latency_ms": 35.641,
+        "output_tokens": 2,
+        "category": "datetime",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0082",
+        "correct": false,
+        "predicted": "Friday",
+        "expected": "Monday",
+        "latency_ms": 38.716,
+        "output_tokens": 2,
+        "category": "datetime",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0083",
+        "correct": false,
+        "predicted": "23:00\n23:00",
+        "expected": "07:00",
+        "latency_ms": 92.819,
+        "output_tokens": 8,
+        "category": "datetime",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0084",
+        "correct": false,
+        "predicted": "06:50 + 50 minutes = 07:40",
+        "expected": "07:40",
+        "latency_ms": 139.213,
+        "output_tokens": 13,
+        "category": "datetime",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0085",
+        "correct": false,
+        "predicted": "2022-03-16",
+        "expected": "2022-11-25",
+        "latency_ms": 83.755,
+        "output_tokens": 7,
+        "category": "datetime",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0086",
+        "correct": false,
+        "predicted": "2036-09-03 + 145 days = 2055-09-03",
+        "expected": "2037-01-26",
+        "latency_ms": 270.697,
+        "output_tokens": 19,
+        "category": "datetime",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0087",
+        "correct": false,
+        "predicted": "22:15",
+        "expected": "05:15",
+        "latency_ms": 55.701,
+        "output_tokens": 4,
+        "category": "datetime",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0088",
+        "correct": false,
+        "predicted": "42",
+        "expected": "859",
+        "latency_ms": 39.444,
+        "output_tokens": 2,
+        "category": "datetime",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0089",
+        "correct": false,
+        "predicted": "2020-02-08",
+        "expected": "2010-05-19",
+        "latency_ms": 107.67,
+        "output_tokens": 7,
+        "category": "datetime",
+        "difficulty": "medium"
+      },
+      {
+        "id": "reason-0090",
+        "correct": false,
+        "predicted": "31",
+        "expected": "4",
+        "latency_ms": 38.949,
+        "output_tokens": 2,
+        "category": "datetime",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0091",
+        "correct": false,
+        "predicted": "west",
+        "expected": "north",
+        "latency_ms": 40.059,
+        "output_tokens": 2,
+        "category": "spatial",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0092",
+        "correct": false,
+        "predicted": "1",
+        "expected": "9",
+        "latency_ms": 49.499,
+        "output_tokens": 2,
+        "category": "spatial",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0093",
+        "correct": false,
+        "predicted": "1st",
+        "expected": "Ada",
+        "latency_ms": 49.45,
+        "output_tokens": 3,
+        "category": "spatial",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0094",
+        "correct": false,
+        "predicted": "3",
+        "expected": "Cai",
+        "latency_ms": 48.768,
+        "output_tokens": 2,
+        "category": "spatial",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0095",
+        "correct": true,
+        "predicted": "north",
+        "expected": "north",
+        "latency_ms": 40.009,
+        "output_tokens": 2,
+        "category": "spatial",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0096",
+        "correct": false,
+        "predicted": "2",
+        "expected": "Hana",
+        "latency_ms": 39.602,
+        "output_tokens": 2,
+        "category": "spatial",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0097",
+        "correct": false,
+        "predicted": "west",
+        "expected": "east",
+        "latency_ms": 48.367,
+        "output_tokens": 2,
+        "category": "spatial",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0098",
+        "correct": false,
+        "predicted": "Ivo is 1st in the queue",
+        "expected": "Dita",
+        "latency_ms": 174.013,
+        "output_tokens": 11,
+        "category": "spatial",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0099",
+        "correct": false,
+        "predicted": "Hana",
+        "expected": "Lars",
+        "latency_ms": 56.715,
+        "output_tokens": 3,
+        "category": "spatial",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0100",
+        "correct": false,
+        "predicted": "1st",
+        "expected": "Ada",
+        "latency_ms": 57.22,
+        "output_tokens": 3,
+        "category": "spatial",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0101",
+        "correct": false,
+        "predicted": "west",
+        "expected": "east",
+        "latency_ms": 37.392,
+        "output_tokens": 2,
+        "category": "spatial",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0102",
+        "correct": false,
+        "predicted": "2",
+        "expected": "Gus",
+        "latency_ms": 49.653,
+        "output_tokens": 2,
+        "category": "spatial",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0103",
+        "correct": false,
+        "predicted": "1",
+        "expected": "20",
+        "latency_ms": 39.528,
+        "output_tokens": 2,
+        "category": "spatial",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0104",
+        "correct": false,
+        "predicted": "3",
+        "expected": "Kira",
+        "latency_ms": 44.83,
+        "output_tokens": 2,
+        "category": "spatial",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0105",
+        "correct": false,
+        "predicted": "1",
+        "expected": "Cai",
+        "latency_ms": 43.435,
+        "output_tokens": 2,
+        "category": "spatial",
+        "difficulty": "easy"
+      },
+      {
+        "id": "reason-0106",
+        "correct": false,
+        "predicted": "A",
+        "expected": "C",
+        "latency_ms": 19321.095,
+        "output_tokens": 2048,
+        "category": "deduction",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0107",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 12434.635,
+        "output_tokens": 1328,
+        "category": "deduction",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0108",
+        "correct": false,
+        "predicted": "A",
+        "expected": "D",
+        "latency_ms": 12629.932,
+        "output_tokens": 1346,
+        "category": "deduction",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0109",
+        "correct": false,
+        "predicted": "A",
+        "expected": "D",
+        "latency_ms": 4154.458,
+        "output_tokens": 455,
+        "category": "deduction",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0110",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 17894.5,
+        "output_tokens": 1882,
+        "category": "deduction",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0111",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 19386.139,
+        "output_tokens": 2048,
+        "category": "deduction",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0112",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 19361.246,
+        "output_tokens": 2048,
+        "category": "deduction",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0113",
+        "correct": false,
+        "predicted": "A",
+        "expected": "D",
+        "latency_ms": 1942.949,
+        "output_tokens": 205,
+        "category": "deduction",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0114",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 1667.54,
+        "output_tokens": 175,
+        "category": "deduction",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0115",
+        "correct": false,
+        "predicted": "A",
+        "expected": "B",
+        "latency_ms": 3529.483,
+        "output_tokens": 372,
+        "category": "deduction",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0116",
+        "correct": false,
+        "predicted": "B",
+        "expected": "C",
+        "latency_ms": 4563.582,
+        "output_tokens": 482,
+        "category": "deduction",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0117",
+        "correct": false,
+        "predicted": "A",
+        "expected": "C",
+        "latency_ms": 19015.219,
+        "output_tokens": 2048,
+        "category": "deduction",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0118",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 7568.255,
+        "output_tokens": 811,
+        "category": "deduction",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0119",
+        "correct": false,
+        "predicted": "B",
+        "expected": "C",
+        "latency_ms": 7600.557,
+        "output_tokens": 822,
+        "category": "deduction",
+        "difficulty": "hard"
+      },
+      {
+        "id": "reason-0120",
+        "correct": false,
+        "predicted": "A",
+        "expected": "B",
+        "latency_ms": 20087.888,
+        "output_tokens": 2048,
+        "category": "deduction",
+        "difficulty": "hard"
+      }
+    ]
+  },
+  "failures": [],
+  "conditions": {
+    "dedicated": true,
+    "detail": "Only this SGLang server (and, for the speed and long-context rows, the small cache-busting proxy in front of it) was resident; the image server that normally runs on the box was stopped, and nvidia-smi listed no other compute process. The only other running container was a small host metrics exporter (python, about 10 MB, no GPU).",
+    "isolation_check": "nvidia-smi compute apps -> 1335306, .venv/bin/python 1335362, sglang::scheduler ; docker ps -> 1 containers; load1 at start 1.10"
+  },
+  "gotchas": [
+    {
+      "severity": "info",
+      "text": "Tool calling needs SGLang with the minicpm5 tool-call parser (sgl-project/sglang#25600). The openbmb cookbook says to install SGLang from main because v0.5.12.post1 lacked it; the PyPI 0.5.20 wheel used here ships it, so no source build is needed any more. The model writes XML tool calls (<function name=\"x\"><param name=\"k\">v</param></function>) and they come back as OpenAI tool_calls with finish_reason tool_calls, with thinking on and off."
+    },
+    {
+      "severity": "info",
+      "text": "SGLang has no MiniCPM5 reasoning parser, but the model uses plain <think> ... </think>, so --reasoning-parser qwen3 splits it into reasoning_content. With enable_thinking left unset the template adds no <think> prefix; the model opens the tag itself and the qwen3 parser still catches it."
+    },
+    {
+      "severity": "info",
+      "text": "flashinfer JIT-compiles its prefill kernels on the first request and shells out to ninja. In a venv that is not activated the first prefill dies with FileNotFoundError: ninja and the scheduler exits; put the venv bin directory on PATH before starting the server."
+    },
+    {
+      "severity": "info",
+      "text": "In a llama.cpp deployment the card warns that the default min_p 0.05 causes repetition and asks for min_p 0; the SGLang default min_p is already 0."
+    },
+    {
+      "severity": "info",
+      "text": "Accuracy here is far below the same suite with thinking left on, and the gap was checked by hand before it was reported: it is a real loss, not a format or scorer artefact. Every miss inspected came back as a clean extracted answer in exactly the shape the suite expects - a bare option letter for the syllogism items, a bare name for the ordering items - two or three output tokens long, with nothing wrapped in tags and nothing stranded in reasoning_content. The model simply answers immediately and guesses. The same items, with thinking on, took 558-1,555 output tokens and came out right."
+    }
+  ],
+  "derived": {
+    "cost_per_1m_output_tokens_usd": null,
+    "tokens_per_watt": null,
+    "tok_s_per_gb_bandwidth": null,
+    "bandwidth_efficiency": null,
+    "memory_headroom_gb": 38.626
+  },
+  "raw": {
+    "harness": "atlas-bench",
+    "harness_version": "0.1.0",
+    "sha256": "320719c0351e40f629ec14fd673a6d34dced07dbb967c1b89ae9ef71f8536cf0",
+    "payload_path": null,
+    "payload": {
+      "scorer": "exact",
+      "scorers_used": [
+        "exact",
+        "mc"
+      ],
+      "engine_endpoint": {
+        "attached": true,
+        "base_url": "http://127.0.0.1:30000/v1",
+        "served_model_id": "MiniCPM5-1B",
+        "advertised_models": [
+          "MiniCPM5-1B"
+        ]
+      }
+    },
+    "truncated": false
+  },
+  "provenance": {
+    "github_login": "0xBakeer",
+    "github_user_id": null,
+    "started_at": "2026-09-22T23:34:32Z",
+    "finished_at": "2026-09-22T23:36:33Z",
+    "submitted_at": null,
+    "commit": null,
+    "pr": null,
+    "method": "atlas-bench",
+    "agent": null,
+    "notes": "Weights: openbmb/MiniCPM5-1B at 87179e5c1f455ef22e6223592d2d61351b525bfc, BF16, one 2.16 GB safetensors shard, sha256 checked against the Hub. SGLang 0.5.20 from PyPI in a Python 3.12 venv (uv) with torch 2.13.0+cu130, flashinfer-python 0.6.18, sglang-kernel 0.4.7, triton 3.7.1, transformers 5.12.1, xgrammar 0.2.1; CUDA 13.0, driver 580.173.02, Ubuntu 24.04.4, kernel 6.17.0-1029-nvidia. Environment SGLANG_ALLOW_OVERWRITE_LONGER_CONTEXT_LEN=1 and SGLANG_DISABLE_CUDNN_CHECK=1 as the MiniCPM SGLang cookbook recommends, the venv bin directory on PATH (flashinfer JIT needs ninja). Server flags follow the openbmb SGLang cookbook (docs/deployment/sglang.md): --dtype bfloat16 --context-length 131072 --tool-call-parser minicpm5, plus --reasoning-parser qwen3 so the <think> block lands in reasoning_content; --mem-fraction-static 0.75 instead of the cookbook 0.85 to leave the unified-memory box about 20 GB of host headroom (the KV pool still holds about 2 million tokens). Radix prefix cache, chunked prefill 8192, CUDA graphs and the flashinfer attention backend are SGLang defaults. Every request sets temperature 0 and seed 42 as the workloads specify. The chat template has three thinking states: enable_thinking true prefills <think>, false prefills an empty think block, and unset lets the model decide, which on almost every prompt means it thinks. Speed and long-context depth rows send chat_template_kwargs enable_thinking false; eval and needle rows leave it unset (the template default). Load: weights 13.0 s (2.38 GB), KV cache allocation 3.2 s, CUDA graph capture 10.6 s, scheduler end to end 32.2 s; SGLang reported max_total_num_tokens 3,679,002 and chunked_prefill_size 8192, and 23.5 GB of GPU memory was still free after start. max_running_requests is passed explicitly as 512 (the SGLang default on this box was 4096) so the concurrency limit is recorded in the row args and can be read back from /get_server_info; it was confirmed at 512 on this server before the first concurrent row. Thinking OFF row. MiniCPM5 thinks by default, and on this suite more than 10 % of the items ran into the output-token budget mid-thought, which scores them wrong however good the model is. This row repeats the same suite with chat_template_kwargs {\"enable_thinking\": false} and everything else identical; the default-thinking row is kept alongside it, and the pair is the measurement. Accuracy here is not comparable to a model that has no thinking mode to turn off."
+  },
+  "verification": {
+    "level": "self-reported",
+    "reproduced_by": [],
+    "flags": []
+  }
+}

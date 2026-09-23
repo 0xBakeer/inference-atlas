@@ -1,0 +1,367 @@
+{
+  "schema_version": 1,
+  "run_id": "c84e63425304d980--prefill-32k-v1--6fc1a1",
+  "config_id": "c84e63425304d980",
+  "cell_id": "96f86b77bdb3",
+  "workload_id": "prefill-32k-v1",
+  "kind": "prefill",
+  "engine": {
+    "id": "sglang",
+    "version": "0.5.20",
+    "commit": null,
+    "build": "pypi sglang==0.5.20 (py3.12 venv, torch 2.13.0+cu130, flashinfer-python 0.6.18, sglang-kernel 0.4.7)",
+    "container": null,
+    "install_method": "pip"
+  },
+  "model": {
+    "id": "openbmb/MiniCPM5-2B",
+    "quant_id": "bf16",
+    "hf_id": "openbmb/MiniCPM5-2B",
+    "revision": "12a3808a956f869c767195e9266b59c4d21d92e2",
+    "dtype": "auto",
+    "local_path": null
+  },
+  "hardware": {
+    "id": "nvidia-gb10-dgx-spark",
+    "count": 1,
+    "driver": "580.173.02",
+    "cuda": "13.0",
+    "host": {
+      "cpu": "Cortex-A725",
+      "cpu_cores": 20,
+      "ram_gb": 121.6,
+      "os": "Ubuntu 24.04.4 LTS",
+      "kernel": "6.17.0-1029-nvidia",
+      "arch": "aarch64"
+    },
+    "fingerprint": "sha256:52ea2bdd513719724db88c162b6cc2c9fb4e5b67e02dbe41b9de00687acefb91",
+    "captured": {
+      "nvidia_smi": {
+        "driver": "580.173.02",
+        "cuda": "13.0",
+        "products": [
+          "NVIDIA GB10"
+        ],
+        "fb_memory_total_mib": 0.0
+      },
+      "lscpu": {
+        "architecture": "aarch64",
+        "cpus": "20",
+        "vendor_id": "ARM",
+        "model_name": "Cortex-A725",
+        "cores_per_socket": "10",
+        "sockets": "1",
+        "cpu_max_mhz": "2808.0000"
+      }
+    }
+  },
+  "args": {
+    "dtype": "bfloat16",
+    "context-length": 131072,
+    "mem-fraction-static": 0.75,
+    "tool-call-parser": "minicpm5",
+    "reasoning-parser": "qwen3",
+    "max-running-requests": 512
+  },
+  "args_canonical": "@build=pypi sglang==0.5.20 (py3.12 venv, torch 2.13.0+cu130, flashinfer-python 0.6.18, sglang-kernel 0.4.7);@dtype=auto;@quant=bf16;context-length=131072;dtype=bfloat16;max-running-requests=512;mem-fraction-static=0.75;reasoning-parser=qwen3;tool-call-parser=minicpm5",
+  "serve_command": null,
+  "workload": {
+    "id": "prefill-32k-v1",
+    "resolved_params": {
+      "concurrency": 1,
+      "num_requests": 10,
+      "input_tokens": 32768,
+      "output_tokens": 16,
+      "warmup_requests": 1,
+      "prompts_padded": false,
+      "needle_check": false,
+      "timeout_s": 900.0,
+      "seed": 42
+    }
+  },
+  "env": {
+    "SGLANG_ALLOW_OVERWRITE_LONGER_CONTEXT_LEN": "1",
+    "SGLANG_DISABLE_CUDNN_CHECK": "1"
+  },
+  "metrics": {
+    "requests_total": 10,
+    "requests_ok": 10,
+    "requests_failed": 0,
+    "success_rate": 1.0,
+    "duration_s": 43.493,
+    "input_tokens_total": 311544,
+    "output_tokens_total": 69,
+    "output_tok_s": 1.586,
+    "total_tok_s": 7164.71,
+    "req_s": 0.23,
+    "prefill_tok_s": 7506.378,
+    "ttft_ms": {
+      "mean": 4150.39,
+      "p50": 4155.313,
+      "p90": 4178.4,
+      "p95": 4182.215,
+      "p99": 4185.267,
+      "min": 4110.462,
+      "max": 4186.03
+    },
+    "tpot_ms": {
+      "mean": 33.925,
+      "p50": 34.174,
+      "p90": 34.424,
+      "p95": 34.437,
+      "p99": 34.448,
+      "min": 32.742,
+      "max": 34.451
+    },
+    "itl_ms": {
+      "mean": 33.335,
+      "p50": 33.626,
+      "p90": 35.018,
+      "p95": 35.332,
+      "p99": 36.537,
+      "min": 15.14,
+      "max": 37.294
+    },
+    "e2e_ms": {
+      "mean": 4349.201,
+      "p50": 4228.343,
+      "p90": 4670.649,
+      "p95": 4673.902,
+      "p99": 4676.504,
+      "min": 4179.364,
+      "max": 4677.155
+    },
+    "decode_tok_s_per_request": {
+      "mean": 29.485,
+      "p50": 29.262,
+      "p90": 30.261,
+      "p95": 30.402,
+      "p99": 30.514,
+      "min": 29.027,
+      "max": 30.542
+    },
+    "vram_peak_gb": 89.329,
+    "ram_peak_gb": 97.756,
+    "kv_cache_tokens": null,
+    "power_avg_w": 90.5,
+    "power_peak_w": 96.91,
+    "energy_wh": 1.1855,
+    "gpu_util_avg_pct": 93.69,
+    "temp_max_c": 81.0,
+    "thermal_throttle_detected": false
+  },
+  "failures": [],
+  "conditions": {
+    "dedicated": true,
+    "detail": "Only this SGLang server (and, for the speed and long-context rows, the small cache-busting proxy in front of it) was resident; the image server that normally runs on the box was stopped, and nvidia-smi listed no other compute process. The only other running container was a small host metrics exporter (python, about 10 MB, no GPU).",
+    "isolation_check": "nvidia-smi compute apps -> 1074847, .venv/bin/python 1074909, sglang::scheduler ; docker ps -> 1 containers; load1 at start 0.97"
+  },
+  "gotchas": [
+    {
+      "severity": "info",
+      "text": "Tool calling needs SGLang with the minicpm5 tool-call parser (sgl-project/sglang#25600). The openbmb cookbook says to install SGLang from main because v0.5.12.post1 lacked it; the PyPI 0.5.20 wheel used here ships it, so no source build is needed any more. The model writes XML tool calls (<function name=\"x\"><param name=\"k\">v</param></function>) and they come back as OpenAI tool_calls with finish_reason tool_calls, with thinking on and off."
+    },
+    {
+      "severity": "info",
+      "text": "SGLang has no MiniCPM5 reasoning parser, but the model uses plain <think> ... </think>, so --reasoning-parser qwen3 splits it into reasoning_content. With enable_thinking left unset the template adds no <think> prefix; the model opens the tag itself and the qwen3 parser still catches it."
+    },
+    {
+      "severity": "info",
+      "text": "flashinfer JIT-compiles its prefill kernels on the first request and shells out to ninja. In a venv that is not activated the first prefill dies with FileNotFoundError: ninja and the scheduler exits; put the venv bin directory on PATH before starting the server."
+    },
+    {
+      "severity": "info",
+      "text": "In a llama.cpp deployment the card warns that the default min_p 0.05 causes repetition and asks for min_p 0; the SGLang default min_p is already 0."
+    },
+    {
+      "severity": "info",
+      "text": "SGLang RadixAttention reuses any cached prefix and has no per-request switch to skip it, and the prefill, long-context and serving workloads reuse the same prompts and haystacks. To keep prefill cold without turning the cache off for the whole server, the speed and long-context rows went through a small proxy on the box that prepends a unique HTML comment (<!-- 12 hex chars -->, about 12 tokens) to the first message of every request, so the shared prefix is only the few chat-template tokens before it. Input token counts include the comment."
+    }
+  ],
+  "derived": {
+    "cost_per_1m_output_tokens_usd": null,
+    "tokens_per_watt": 0.0175,
+    "tok_s_per_gb_bandwidth": 0.108004,
+    "bandwidth_efficiency": 0.544338,
+    "memory_headroom_gb": 38.671
+  },
+  "raw": {
+    "harness": "atlas-bench",
+    "harness_version": "0.1.0",
+    "sha256": "84c0bcd110017d9f6ba336e9ceb0b2ff2e33f10daa7c5d20da671dade04a3bcd",
+    "payload_path": null,
+    "payload": {
+      "requests": [
+        {
+          "id": "prefill-w00000",
+          "prompt_id": "hay-32k-d10",
+          "warmup": true,
+          "status": "ok",
+          "ttft_ms": 4137.625,
+          "e2e_ms": 4206.951,
+          "prompt_tokens": 31116,
+          "completion_tokens": 3,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00000",
+          "prompt_id": "hay-32k-d10",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 4130.744,
+          "e2e_ms": 4199.13,
+          "prompt_tokens": 31114,
+          "completion_tokens": 3,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00001",
+          "prompt_id": "hay-32k-multi",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 4145.964,
+          "e2e_ms": 4660.375,
+          "prompt_tokens": 31237,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00002",
+          "prompt_id": "hay-32k-d50",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 4110.462,
+          "e2e_ms": 4179.364,
+          "prompt_tokens": 31098,
+          "completion_tokens": 3,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00003",
+          "prompt_id": "hay-32k-d90",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 4151.034,
+          "e2e_ms": 4219.875,
+          "prompt_tokens": 31146,
+          "completion_tokens": 3,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00004",
+          "prompt_id": "hay-32k-d10",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 4177.552,
+          "e2e_ms": 4245.864,
+          "prompt_tokens": 31114,
+          "completion_tokens": 3,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00005",
+          "prompt_id": "hay-32k-multi",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 4164.385,
+          "e2e_ms": 4669.926,
+          "prompt_tokens": 31236,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00006",
+          "prompt_id": "hay-32k-d50",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 4117.472,
+          "e2e_ms": 4183.631,
+          "prompt_tokens": 31101,
+          "completion_tokens": 3,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00007",
+          "prompt_id": "hay-32k-d90",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 4159.591,
+          "e2e_ms": 4228.064,
+          "prompt_tokens": 31144,
+          "completion_tokens": 3,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00008",
+          "prompt_id": "hay-32k-d10",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 4160.67,
+          "e2e_ms": 4228.623,
+          "prompt_tokens": 31118,
+          "completion_tokens": 3,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00009",
+          "prompt_id": "hay-32k-multi",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 4186.03,
+          "e2e_ms": 4677.155,
+          "prompt_tokens": 31236,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        }
+      ],
+      "engine_endpoint": {
+        "attached": true,
+        "base_url": "http://127.0.0.1:30001/v1",
+        "served_model_id": "MiniCPM5-2B",
+        "advertised_models": [
+          "MiniCPM5-2B"
+        ]
+      }
+    },
+    "truncated": false
+  },
+  "provenance": {
+    "github_login": "0xBakeer",
+    "github_user_id": null,
+    "started_at": "2026-09-22T15:59:24Z",
+    "finished_at": "2026-09-22T16:00:13Z",
+    "submitted_at": null,
+    "commit": null,
+    "pr": null,
+    "method": "atlas-bench",
+    "agent": null,
+    "notes": "Weights: openbmb/MiniCPM5-2B at 12a3808a956f869c767195e9266b59c4d21d92e2, BF16, one 5.03 GB safetensors shard, sha256 checked against the Hub. SGLang 0.5.20 from PyPI in a Python 3.12 venv (uv) with torch 2.13.0+cu130, flashinfer-python 0.6.18, sglang-kernel 0.4.7, triton 3.7.1, transformers 5.12.1, xgrammar 0.2.1; CUDA 13.0, driver 580.173.02, Ubuntu 24.04.4, kernel 6.17.0-1029-nvidia. Environment SGLANG_ALLOW_OVERWRITE_LONGER_CONTEXT_LEN=1 and SGLANG_DISABLE_CUDNN_CHECK=1 as the MiniCPM SGLang cookbook recommends, the venv bin directory on PATH (flashinfer JIT needs ninja). Server flags follow the openbmb SGLang cookbook (docs/deployment/sglang.md): --dtype bfloat16 --context-length 131072 --tool-call-parser minicpm5, plus --reasoning-parser qwen3 so the <think> block lands in reasoning_content; --mem-fraction-static 0.75 instead of the cookbook 0.85 to leave the unified-memory box about 20 GB of host headroom (the KV pool still holds about 2 million tokens). Radix prefix cache, chunked prefill 8192, CUDA graphs and the flashinfer attention backend are SGLang defaults. Every request sets temperature 0 and seed 42 as the workloads specify. The chat template has three thinking states: enable_thinking true prefills <think>, false prefills an empty think block, and unset lets the model decide, which on almost every prompt means it thinks. Speed and long-context depth rows send chat_template_kwargs enable_thinking false; eval and needle rows leave it unset (the template default). Load: weights 35.8 s, then CUDA graph capture; SGLang reported max_total_num_tokens 2,035,807 and chunked_prefill_size 8192, and the box had about 21 GB of host memory available after start. max_running_requests is passed explicitly as 512 (the SGLang default on this box was 4096) so the concurrency limit is recorded in the row args and can be read back from /get_server_info."
+  },
+  "verification": {
+    "level": "self-reported",
+    "reproduced_by": [],
+    "flags": []
+  }
+}

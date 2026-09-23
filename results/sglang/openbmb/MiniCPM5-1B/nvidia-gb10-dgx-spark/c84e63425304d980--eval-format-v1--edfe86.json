@@ -1,0 +1,533 @@
+{
+  "schema_version": 1,
+  "run_id": "c84e63425304d980--eval-format-v1--edfe86",
+  "config_id": "c84e63425304d980",
+  "cell_id": "0e7d746e67fa",
+  "workload_id": "eval-format-v1",
+  "kind": "eval",
+  "engine": {
+    "id": "sglang",
+    "version": "0.5.20",
+    "commit": null,
+    "build": "pypi sglang==0.5.20 (py3.12 venv, torch 2.13.0+cu130, flashinfer-python 0.6.18, sglang-kernel 0.4.7)",
+    "container": null,
+    "install_method": "pip"
+  },
+  "model": {
+    "id": "openbmb/MiniCPM5-1B",
+    "quant_id": "bf16",
+    "hf_id": "openbmb/MiniCPM5-1B",
+    "revision": "87179e5c1f455ef22e6223592d2d61351b525bfc",
+    "dtype": "auto",
+    "local_path": null
+  },
+  "hardware": {
+    "id": "nvidia-gb10-dgx-spark",
+    "count": 1,
+    "driver": "580.173.02",
+    "cuda": "13.0",
+    "host": {
+      "cpu": "Cortex-A725",
+      "cpu_cores": 20,
+      "ram_gb": 121.6,
+      "os": "Ubuntu 24.04.4 LTS",
+      "kernel": "6.17.0-1029-nvidia",
+      "arch": "aarch64"
+    },
+    "fingerprint": "sha256:52ea2bdd513719724db88c162b6cc2c9fb4e5b67e02dbe41b9de00687acefb91",
+    "captured": {
+      "nvidia_smi": {
+        "driver": "580.173.02",
+        "cuda": "13.0",
+        "products": [
+          "NVIDIA GB10"
+        ],
+        "fb_memory_total_mib": 0.0
+      },
+      "lscpu": {
+        "architecture": "aarch64",
+        "cpus": "20",
+        "vendor_id": "ARM",
+        "model_name": "Cortex-A725",
+        "cores_per_socket": "10",
+        "sockets": "1",
+        "cpu_max_mhz": "2808.0000"
+      }
+    }
+  },
+  "args": {
+    "dtype": "bfloat16",
+    "context-length": 131072,
+    "mem-fraction-static": 0.75,
+    "tool-call-parser": "minicpm5",
+    "reasoning-parser": "qwen3",
+    "max-running-requests": 512
+  },
+  "args_canonical": "@build=pypi sglang==0.5.20 (py3.12 venv, torch 2.13.0+cu130, flashinfer-python 0.6.18, sglang-kernel 0.4.7);@dtype=auto;@quant=bf16;context-length=131072;dtype=bfloat16;max-running-requests=512;mem-fraction-static=0.75;reasoning-parser=qwen3;tool-call-parser=minicpm5",
+  "serve_command": null,
+  "workload": {
+    "id": "eval-format-v1",
+    "resolved_params": {
+      "dataset_id": "eval-format-v1",
+      "suite": "format",
+      "scorer": "exact",
+      "items": 30,
+      "concurrency": 4,
+      "max_output_tokens": 256,
+      "timeout_s": 300.0,
+      "temperature": 0,
+      "reasoning": "default",
+      "dataset_categories": null,
+      "dataset_target_tokens": null,
+      "pass_threshold": null,
+      "seed": 42
+    }
+  },
+  "env": {
+    "SGLANG_ALLOW_OVERWRITE_LONGER_CONTEXT_LEN": "1",
+    "SGLANG_DISABLE_CUDNN_CHECK": "1"
+  },
+  "metrics": {
+    "requests_total": 30,
+    "requests_ok": 30,
+    "requests_failed": 0,
+    "success_rate": 1.0,
+    "duration_s": 11.085,
+    "input_tokens_total": 783,
+    "output_tokens_total": 4381,
+    "e2e_ms": {
+      "mean": 1343.933,
+      "p50": 1169.14,
+      "p90": 2270.84,
+      "p95": 2314.364,
+      "p99": 2416.037,
+      "min": 538.18,
+      "max": 2456.119
+    },
+    "vram_peak_gb": 89.356,
+    "ram_peak_gb": 97.769,
+    "power_avg_w": 31.43,
+    "power_peak_w": 33.84,
+    "energy_wh": 0.0954,
+    "gpu_util_avg_pct": 96.0,
+    "temp_max_c": 61.0,
+    "thermal_throttle_detected": false
+  },
+  "scores": {
+    "suite": "format",
+    "total": 30,
+    "correct": 24,
+    "accuracy": 0.8,
+    "success_rate": 1.0,
+    "by_category": {
+      "boolean": {
+        "total": 4,
+        "correct": 4
+      },
+      "number_only": {
+        "total": 8,
+        "correct": 7
+      },
+      "one_word": {
+        "total": 8,
+        "correct": 4
+      },
+      "pattern": {
+        "total": 3,
+        "correct": 2
+      },
+      "token": {
+        "total": 7,
+        "correct": 7
+      }
+    },
+    "by_difficulty": {
+      "easy": {
+        "total": 12,
+        "correct": 11
+      },
+      "hard": {
+        "total": 3,
+        "correct": 2
+      },
+      "medium": {
+        "total": 15,
+        "correct": 11
+      }
+    },
+    "avg_output_tokens": 146.03,
+    "avg_latency_ms": 1343.93,
+    "failures": 0,
+    "items": [
+      {
+        "id": "fmt-0001",
+        "correct": true,
+        "predicted": "42",
+        "expected": "42",
+        "latency_ms": 670.275,
+        "output_tokens": 75,
+        "category": "number_only",
+        "difficulty": "easy"
+      },
+      {
+        "id": "fmt-0002",
+        "correct": true,
+        "predicted": "25",
+        "expected": "25",
+        "latency_ms": 994.794,
+        "output_tokens": 110,
+        "category": "number_only",
+        "difficulty": "easy"
+      },
+      {
+        "id": "fmt-0003",
+        "correct": true,
+        "predicted": "8",
+        "expected": "8",
+        "latency_ms": 1474.529,
+        "output_tokens": 163,
+        "category": "number_only",
+        "difficulty": "easy"
+      },
+      {
+        "id": "fmt-0004",
+        "correct": true,
+        "predicted": "42",
+        "expected": "42",
+        "latency_ms": 854.244,
+        "output_tokens": 95,
+        "category": "number_only",
+        "difficulty": "easy"
+      },
+      {
+        "id": "fmt-0005",
+        "correct": false,
+        "predicted": "11",
+        "expected": "9",
+        "latency_ms": 2060.438,
+        "output_tokens": 221,
+        "category": "number_only",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0006",
+        "correct": true,
+        "predicted": "30",
+        "expected": "30",
+        "latency_ms": 804.607,
+        "output_tokens": 87,
+        "category": "number_only",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0007",
+        "correct": true,
+        "predicted": "13",
+        "expected": "13",
+        "latency_ms": 1512.085,
+        "output_tokens": 164,
+        "category": "number_only",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0008",
+        "correct": true,
+        "predicted": "150",
+        "expected": "150",
+        "latency_ms": 950.083,
+        "output_tokens": 103,
+        "category": "number_only",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0009",
+        "correct": true,
+        "predicted": "OK",
+        "expected": "OK",
+        "latency_ms": 920.413,
+        "output_tokens": 98,
+        "category": "one_word",
+        "difficulty": "easy"
+      },
+      {
+        "id": "fmt-0010",
+        "correct": true,
+        "predicted": "Tokyo",
+        "expected": "Tokyo",
+        "latency_ms": 663.963,
+        "output_tokens": 70,
+        "category": "one_word",
+        "difficulty": "easy"
+      },
+      {
+        "id": "fmt-0011",
+        "correct": false,
+        "predicted": "",
+        "expected": "green",
+        "latency_ms": 2317.905,
+        "output_tokens": 256,
+        "category": "one_word",
+        "difficulty": "easy"
+      },
+      {
+        "id": "fmt-0012",
+        "correct": true,
+        "predicted": "cold",
+        "expected": "cold",
+        "latency_ms": 838.979,
+        "output_tokens": 90,
+        "category": "one_word",
+        "difficulty": "easy"
+      },
+      {
+        "id": "fmt-0013",
+        "correct": false,
+        "predicted": "",
+        "expected": "mice",
+        "latency_ms": 2310.037,
+        "output_tokens": 256,
+        "category": "one_word",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0014",
+        "correct": false,
+        "predicted": "atlas",
+        "expected": "salta",
+        "latency_ms": 2042.405,
+        "output_tokens": 224,
+        "category": "one_word",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0015",
+        "correct": true,
+        "predicted": "jumps",
+        "expected": "jumps",
+        "latency_ms": 1236.353,
+        "output_tokens": 138,
+        "category": "one_word",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0016",
+        "correct": false,
+        "predicted": "infer",
+        "expected": "inf",
+        "latency_ms": 2116.121,
+        "output_tokens": 229,
+        "category": "one_word",
+        "difficulty": "hard"
+      },
+      {
+        "id": "fmt-0017",
+        "correct": true,
+        "predicted": "Fe",
+        "expected": "Fe",
+        "latency_ms": 550.104,
+        "output_tokens": 58,
+        "category": "token",
+        "difficulty": "easy"
+      },
+      {
+        "id": "fmt-0018",
+        "correct": true,
+        "predicted": "DE",
+        "expected": "DE",
+        "latency_ms": 1320.131,
+        "output_tokens": 145,
+        "category": "token",
+        "difficulty": "easy"
+      },
+      {
+        "id": "fmt-0019",
+        "correct": true,
+        "predicted": "ja",
+        "expected": "ja",
+        "latency_ms": 1818.794,
+        "output_tokens": 199,
+        "category": "token",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0020",
+        "correct": true,
+        "predicted": "s",
+        "expected": "s",
+        "latency_ms": 776.755,
+        "output_tokens": 86,
+        "category": "token",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0021",
+        "correct": true,
+        "predicted": "ff",
+        "expected": "ff",
+        "latency_ms": 1643.372,
+        "output_tokens": 177,
+        "category": "token",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0022",
+        "correct": true,
+        "predicted": "IX",
+        "expected": "IX",
+        "latency_ms": 2266.485,
+        "output_tokens": 244,
+        "category": "token",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0023",
+        "correct": true,
+        "predicted": "l",
+        "expected": "l",
+        "latency_ms": 1532.995,
+        "output_tokens": 164,
+        "category": "token",
+        "difficulty": "hard"
+      },
+      {
+        "id": "fmt-0024",
+        "correct": true,
+        "predicted": "yes",
+        "expected": "yes",
+        "latency_ms": 538.18,
+        "output_tokens": 58,
+        "category": "boolean",
+        "difficulty": "easy"
+      },
+      {
+        "id": "fmt-0025",
+        "correct": true,
+        "predicted": "true",
+        "expected": "true",
+        "latency_ms": 574.589,
+        "output_tokens": 60,
+        "category": "boolean",
+        "difficulty": "easy"
+      },
+      {
+        "id": "fmt-0026",
+        "correct": true,
+        "predicted": "yes",
+        "expected": "yes",
+        "latency_ms": 1082.147,
+        "output_tokens": 115,
+        "category": "boolean",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0027",
+        "correct": true,
+        "predicted": "false",
+        "expected": "false",
+        "latency_ms": 1101.926,
+        "output_tokens": 118,
+        "category": "boolean",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0028",
+        "correct": true,
+        "predicted": "2026-03-01",
+        "expected": "2026-03-01",
+        "latency_ms": 1839.329,
+        "output_tokens": 204,
+        "category": "pattern",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0029",
+        "correct": false,
+        "predicted": "",
+        "expected": "00:15",
+        "latency_ms": 2456.119,
+        "output_tokens": 256,
+        "category": "pattern",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0030",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 1049.842,
+        "output_tokens": 118,
+        "category": "pattern",
+        "difficulty": "hard"
+      }
+    ]
+  },
+  "failures": [],
+  "conditions": {
+    "dedicated": true,
+    "detail": "Only this SGLang server (and, for the speed and long-context rows, the small cache-busting proxy in front of it) was resident; the image server that normally runs on the box was stopped, and nvidia-smi listed no other compute process. The only other running container was a small host metrics exporter (python, about 10 MB, no GPU).",
+    "isolation_check": "nvidia-smi compute apps -> 1335306, .venv/bin/python 1335362, sglang::scheduler ; docker ps -> 1 containers; load1 at start 1.02"
+  },
+  "gotchas": [
+    {
+      "severity": "info",
+      "text": "Tool calling needs SGLang with the minicpm5 tool-call parser (sgl-project/sglang#25600). The openbmb cookbook says to install SGLang from main because v0.5.12.post1 lacked it; the PyPI 0.5.20 wheel used here ships it, so no source build is needed any more. The model writes XML tool calls (<function name=\"x\"><param name=\"k\">v</param></function>) and they come back as OpenAI tool_calls with finish_reason tool_calls, with thinking on and off."
+    },
+    {
+      "severity": "info",
+      "text": "SGLang has no MiniCPM5 reasoning parser, but the model uses plain <think> ... </think>, so --reasoning-parser qwen3 splits it into reasoning_content. With enable_thinking left unset the template adds no <think> prefix; the model opens the tag itself and the qwen3 parser still catches it."
+    },
+    {
+      "severity": "info",
+      "text": "flashinfer JIT-compiles its prefill kernels on the first request and shells out to ninja. In a venv that is not activated the first prefill dies with FileNotFoundError: ninja and the scheduler exits; put the venv bin directory on PATH before starting the server."
+    },
+    {
+      "severity": "info",
+      "text": "In a llama.cpp deployment the card warns that the default min_p 0.05 causes repetition and asks for min_p 0; the SGLang default min_p is already 0."
+    }
+  ],
+  "derived": {
+    "cost_per_1m_output_tokens_usd": null,
+    "tokens_per_watt": null,
+    "tok_s_per_gb_bandwidth": null,
+    "bandwidth_efficiency": null,
+    "memory_headroom_gb": 38.644
+  },
+  "raw": {
+    "harness": "atlas-bench",
+    "harness_version": "0.1.0",
+    "sha256": "167041bfda680f274828bfc627d950b4d897352a8ff1f2caf2c3b1f551faf33b",
+    "payload_path": null,
+    "payload": {
+      "scorer": "exact",
+      "scorers_used": [
+        "exact"
+      ],
+      "engine_endpoint": {
+        "attached": true,
+        "base_url": "http://127.0.0.1:30000/v1",
+        "served_model_id": "MiniCPM5-1B",
+        "advertised_models": [
+          "MiniCPM5-1B"
+        ]
+      }
+    },
+    "truncated": false
+  },
+  "provenance": {
+    "github_login": "0xBakeer",
+    "github_user_id": null,
+    "started_at": "2026-09-22T21:38:07Z",
+    "finished_at": "2026-09-22T21:38:18Z",
+    "submitted_at": null,
+    "commit": null,
+    "pr": null,
+    "method": "atlas-bench",
+    "agent": null,
+    "notes": "Weights: openbmb/MiniCPM5-1B at 87179e5c1f455ef22e6223592d2d61351b525bfc, BF16, one 2.16 GB safetensors shard, sha256 checked against the Hub. SGLang 0.5.20 from PyPI in a Python 3.12 venv (uv) with torch 2.13.0+cu130, flashinfer-python 0.6.18, sglang-kernel 0.4.7, triton 3.7.1, transformers 5.12.1, xgrammar 0.2.1; CUDA 13.0, driver 580.173.02, Ubuntu 24.04.4, kernel 6.17.0-1029-nvidia. Environment SGLANG_ALLOW_OVERWRITE_LONGER_CONTEXT_LEN=1 and SGLANG_DISABLE_CUDNN_CHECK=1 as the MiniCPM SGLang cookbook recommends, the venv bin directory on PATH (flashinfer JIT needs ninja). Server flags follow the openbmb SGLang cookbook (docs/deployment/sglang.md): --dtype bfloat16 --context-length 131072 --tool-call-parser minicpm5, plus --reasoning-parser qwen3 so the <think> block lands in reasoning_content; --mem-fraction-static 0.75 instead of the cookbook 0.85 to leave the unified-memory box about 20 GB of host headroom (the KV pool still holds about 2 million tokens). Radix prefix cache, chunked prefill 8192, CUDA graphs and the flashinfer attention backend are SGLang defaults. Every request sets temperature 0 and seed 42 as the workloads specify. The chat template has three thinking states: enable_thinking true prefills <think>, false prefills an empty think block, and unset lets the model decide, which on almost every prompt means it thinks. Speed and long-context depth rows send chat_template_kwargs enable_thinking false; eval and needle rows leave it unset (the template default). Load: weights 13.0 s (2.38 GB), KV cache allocation 3.2 s, CUDA graph capture 10.6 s, scheduler end to end 32.2 s; SGLang reported max_total_num_tokens 3,679,002 and chunked_prefill_size 8192, and 23.5 GB of GPU memory was still free after start. max_running_requests is passed explicitly as 512 (the SGLang default on this box was 4096) so the concurrency limit is recorded in the row args and can be read back from /get_server_info; it was confirmed at 512 on this server before the first concurrent row."
+  },
+  "verification": {
+    "level": "self-reported",
+    "reproduced_by": [],
+    "flags": []
+  }
+}

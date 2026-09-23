@@ -1,0 +1,1747 @@
+{
+  "schema_version": 1,
+  "run_id": "c84e63425304d980--eval-knowledge-v2--ba51ac",
+  "config_id": "c84e63425304d980",
+  "cell_id": "0e7d746e67fa",
+  "workload_id": "eval-knowledge-v2",
+  "kind": "eval",
+  "engine": {
+    "id": "sglang",
+    "version": "0.5.20",
+    "commit": null,
+    "build": "pypi sglang==0.5.20 (py3.12 venv, torch 2.13.0+cu130, flashinfer-python 0.6.18, sglang-kernel 0.4.7)",
+    "container": null,
+    "install_method": "pip"
+  },
+  "model": {
+    "id": "openbmb/MiniCPM5-1B",
+    "quant_id": "bf16",
+    "hf_id": "openbmb/MiniCPM5-1B",
+    "revision": "87179e5c1f455ef22e6223592d2d61351b525bfc",
+    "dtype": "auto",
+    "local_path": null
+  },
+  "hardware": {
+    "id": "nvidia-gb10-dgx-spark",
+    "count": 1,
+    "driver": "580.173.02",
+    "cuda": "13.0",
+    "host": {
+      "cpu": "Cortex-A725",
+      "cpu_cores": 20,
+      "ram_gb": 121.6,
+      "os": "Ubuntu 24.04.4 LTS",
+      "kernel": "6.17.0-1029-nvidia",
+      "arch": "aarch64"
+    },
+    "fingerprint": "sha256:52ea2bdd513719724db88c162b6cc2c9fb4e5b67e02dbe41b9de00687acefb91",
+    "captured": {
+      "nvidia_smi": {
+        "driver": "580.173.02",
+        "cuda": "13.0",
+        "products": [
+          "NVIDIA GB10"
+        ],
+        "fb_memory_total_mib": 0.0
+      },
+      "lscpu": {
+        "architecture": "aarch64",
+        "cpus": "20",
+        "vendor_id": "ARM",
+        "model_name": "Cortex-A725",
+        "cores_per_socket": "10",
+        "sockets": "1",
+        "cpu_max_mhz": "2808.0000"
+      }
+    }
+  },
+  "args": {
+    "dtype": "bfloat16",
+    "context-length": 131072,
+    "mem-fraction-static": 0.75,
+    "tool-call-parser": "minicpm5",
+    "reasoning-parser": "qwen3",
+    "max-running-requests": 512
+  },
+  "args_canonical": "@build=pypi sglang==0.5.20 (py3.12 venv, torch 2.13.0+cu130, flashinfer-python 0.6.18, sglang-kernel 0.4.7);@dtype=auto;@quant=bf16;context-length=131072;dtype=bfloat16;max-running-requests=512;mem-fraction-static=0.75;reasoning-parser=qwen3;tool-call-parser=minicpm5",
+  "serve_command": null,
+  "workload": {
+    "id": "eval-knowledge-v2",
+    "resolved_params": {
+      "dataset_id": "eval-knowledge-v2",
+      "suite": "knowledge",
+      "scorer": "mc",
+      "items": 151,
+      "concurrency": 4,
+      "max_output_tokens": 1024,
+      "timeout_s": 300.0,
+      "temperature": 0,
+      "reasoning": "default",
+      "dataset_categories": null,
+      "dataset_target_tokens": null,
+      "pass_threshold": null,
+      "seed": 42
+    }
+  },
+  "env": {
+    "SGLANG_ALLOW_OVERWRITE_LONGER_CONTEXT_LEN": "1",
+    "SGLANG_DISABLE_CUDNN_CHECK": "1"
+  },
+  "metrics": {
+    "requests_total": 151,
+    "requests_ok": 151,
+    "requests_failed": 0,
+    "success_rate": 1.0,
+    "duration_s": 101.942,
+    "input_tokens_total": 8881,
+    "output_tokens_total": 42352,
+    "e2e_ms": {
+      "mean": 2653.272,
+      "p50": 1690.01,
+      "p90": 7698.197,
+      "p95": 9649.725,
+      "p99": 9710.962,
+      "min": 685.637,
+      "max": 9995.386
+    },
+    "vram_peak_gb": 89.374,
+    "ram_peak_gb": 97.851,
+    "power_avg_w": 31.55,
+    "power_peak_w": 34.14,
+    "energy_wh": 0.8925,
+    "gpu_util_avg_pct": 93.97,
+    "temp_max_c": 59.0,
+    "thermal_throttle_detected": false
+  },
+  "scores": {
+    "suite": "knowledge",
+    "total": 151,
+    "correct": 128,
+    "accuracy": 0.847682,
+    "success_rate": 1.0,
+    "by_category": {
+      "astronomy": {
+        "total": 25,
+        "correct": 22
+      },
+      "biology": {
+        "total": 25,
+        "correct": 22
+      },
+      "chemistry": {
+        "total": 25,
+        "correct": 24
+      },
+      "geography": {
+        "total": 25,
+        "correct": 20
+      },
+      "history_biography": {
+        "total": 25,
+        "correct": 23
+      },
+      "physics": {
+        "total": 26,
+        "correct": 17
+      }
+    },
+    "by_difficulty": {
+      "easy": {
+        "total": 5,
+        "correct": 4
+      },
+      "hard": {
+        "total": 42,
+        "correct": 31
+      },
+      "medium": {
+        "total": 104,
+        "correct": 93
+      }
+    },
+    "avg_output_tokens": 280.48,
+    "avg_latency_ms": 2653.27,
+    "failures": 0,
+    "items": [
+      {
+        "id": "know2-0001",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 816.483,
+        "output_tokens": 87,
+        "category": "chemistry",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0002",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 1906.45,
+        "output_tokens": 205,
+        "category": "history_biography",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0003",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 784.746,
+        "output_tokens": 84,
+        "category": "chemistry",
+        "difficulty": "hard"
+      },
+      {
+        "id": "know2-0004",
+        "correct": false,
+        "predicted": "",
+        "expected": "D",
+        "latency_ms": 9553.695,
+        "output_tokens": 1024,
+        "category": "geography",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0005",
+        "correct": false,
+        "predicted": "",
+        "expected": "A",
+        "latency_ms": 9584.692,
+        "output_tokens": 1024,
+        "category": "astronomy",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0006",
+        "correct": false,
+        "predicted": "D",
+        "expected": "B",
+        "latency_ms": 2509.087,
+        "output_tokens": 270,
+        "category": "geography",
+        "difficulty": "hard"
+      },
+      {
+        "id": "know2-0007",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 3010.402,
+        "output_tokens": 324,
+        "category": "geography",
+        "difficulty": "hard"
+      },
+      {
+        "id": "know2-0008",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 2458.841,
+        "output_tokens": 263,
+        "category": "history_biography",
+        "difficulty": "hard"
+      },
+      {
+        "id": "know2-0009",
+        "correct": false,
+        "predicted": "C",
+        "expected": "A",
+        "latency_ms": 1587.55,
+        "output_tokens": 168,
+        "category": "geography",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0010",
+        "correct": false,
+        "predicted": "C",
+        "expected": "B",
+        "latency_ms": 6606.527,
+        "output_tokens": 701,
+        "category": "astronomy",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0011",
+        "correct": false,
+        "predicted": "",
+        "expected": "C",
+        "latency_ms": 9686.737,
+        "output_tokens": 1024,
+        "category": "geography",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0012",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 1161.147,
+        "output_tokens": 120,
+        "category": "astronomy",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0013",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 2293.65,
+        "output_tokens": 240,
+        "category": "biology",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0014",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 1697.982,
+        "output_tokens": 179,
+        "category": "history_biography",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0015",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 3012.845,
+        "output_tokens": 317,
+        "category": "astronomy",
+        "difficulty": "easy"
+      },
+      {
+        "id": "know2-0016",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 1322.181,
+        "output_tokens": 138,
+        "category": "astronomy",
+        "difficulty": "easy"
+      },
+      {
+        "id": "know2-0017",
+        "correct": false,
+        "predicted": "",
+        "expected": "A",
+        "latency_ms": 9631.503,
+        "output_tokens": 1024,
+        "category": "biology",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0018",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 1889.183,
+        "output_tokens": 198,
+        "category": "history_biography",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0019",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 1061.057,
+        "output_tokens": 109,
+        "category": "astronomy",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0020",
+        "correct": false,
+        "predicted": "",
+        "expected": "D",
+        "latency_ms": 9658.677,
+        "output_tokens": 1024,
+        "category": "physics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0021",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 1695.783,
+        "output_tokens": 181,
+        "category": "chemistry",
+        "difficulty": "easy"
+      },
+      {
+        "id": "know2-0022",
+        "correct": false,
+        "predicted": "D",
+        "expected": "B",
+        "latency_ms": 778.863,
+        "output_tokens": 83,
+        "category": "chemistry",
+        "difficulty": "hard"
+      },
+      {
+        "id": "know2-0023",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 844.159,
+        "output_tokens": 89,
+        "category": "chemistry",
+        "difficulty": "hard"
+      },
+      {
+        "id": "know2-0024",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 1155.958,
+        "output_tokens": 123,
+        "category": "astronomy",
+        "difficulty": "hard"
+      },
+      {
+        "id": "know2-0025",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 1483.052,
+        "output_tokens": 158,
+        "category": "astronomy",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0026",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 1443.454,
+        "output_tokens": 154,
+        "category": "geography",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0027",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 981.637,
+        "output_tokens": 104,
+        "category": "astronomy",
+        "difficulty": "easy"
+      },
+      {
+        "id": "know2-0028",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 2371.617,
+        "output_tokens": 249,
+        "category": "geography",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0029",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 873.366,
+        "output_tokens": 92,
+        "category": "astronomy",
+        "difficulty": "hard"
+      },
+      {
+        "id": "know2-0030",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 1690.01,
+        "output_tokens": 177,
+        "category": "astronomy",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0031",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 1078.855,
+        "output_tokens": 112,
+        "category": "astronomy",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0032",
+        "correct": false,
+        "predicted": "B",
+        "expected": "D",
+        "latency_ms": 2196.265,
+        "output_tokens": 229,
+        "category": "physics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0033",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 1812.373,
+        "output_tokens": 192,
+        "category": "physics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0034",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 1643.285,
+        "output_tokens": 173,
+        "category": "geography",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0035",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 1116.086,
+        "output_tokens": 116,
+        "category": "chemistry",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0036",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 7698.197,
+        "output_tokens": 819,
+        "category": "geography",
+        "difficulty": "hard"
+      },
+      {
+        "id": "know2-0037",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 1441.886,
+        "output_tokens": 152,
+        "category": "astronomy",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0038",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 872.09,
+        "output_tokens": 93,
+        "category": "chemistry",
+        "difficulty": "hard"
+      },
+      {
+        "id": "know2-0039",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 1632.869,
+        "output_tokens": 175,
+        "category": "biology",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0040",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 1586.974,
+        "output_tokens": 169,
+        "category": "history_biography",
+        "difficulty": "hard"
+      },
+      {
+        "id": "know2-0041",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 1976.799,
+        "output_tokens": 213,
+        "category": "biology",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0042",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 1879.926,
+        "output_tokens": 201,
+        "category": "history_biography",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0043",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 1945.455,
+        "output_tokens": 208,
+        "category": "geography",
+        "difficulty": "hard"
+      },
+      {
+        "id": "know2-0044",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 1936.414,
+        "output_tokens": 206,
+        "category": "astronomy",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0045",
+        "correct": false,
+        "predicted": "",
+        "expected": "A",
+        "latency_ms": 9691.541,
+        "output_tokens": 1024,
+        "category": "physics",
+        "difficulty": "hard"
+      },
+      {
+        "id": "know2-0046",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 1266.547,
+        "output_tokens": 134,
+        "category": "geography",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0047",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 2010.717,
+        "output_tokens": 212,
+        "category": "biology",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0048",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 971.483,
+        "output_tokens": 102,
+        "category": "astronomy",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0049",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 5163.556,
+        "output_tokens": 545,
+        "category": "physics",
+        "difficulty": "hard"
+      },
+      {
+        "id": "know2-0050",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 1103.886,
+        "output_tokens": 116,
+        "category": "chemistry",
+        "difficulty": "hard"
+      },
+      {
+        "id": "know2-0051",
+        "correct": false,
+        "predicted": "B",
+        "expected": "C",
+        "latency_ms": 1212.812,
+        "output_tokens": 127,
+        "category": "astronomy",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0052",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 1527.157,
+        "output_tokens": 160,
+        "category": "history_biography",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0053",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 2392.31,
+        "output_tokens": 253,
+        "category": "biology",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0054",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 1194.358,
+        "output_tokens": 126,
+        "category": "geography",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0055",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 1389.901,
+        "output_tokens": 145,
+        "category": "geography",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0056",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 2935.392,
+        "output_tokens": 310,
+        "category": "history_biography",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0057",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 1286.248,
+        "output_tokens": 134,
+        "category": "physics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0058",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 1713.275,
+        "output_tokens": 180,
+        "category": "geography",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0059",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 2524.429,
+        "output_tokens": 267,
+        "category": "chemistry",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0060",
+        "correct": false,
+        "predicted": "",
+        "expected": "D",
+        "latency_ms": 9644.799,
+        "output_tokens": 1024,
+        "category": "geography",
+        "difficulty": "hard"
+      },
+      {
+        "id": "know2-0061",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 1845.507,
+        "output_tokens": 195,
+        "category": "history_biography",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0062",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 994.849,
+        "output_tokens": 105,
+        "category": "biology",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0063",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 2281.282,
+        "output_tokens": 242,
+        "category": "history_biography",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0064",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 1127.565,
+        "output_tokens": 119,
+        "category": "chemistry",
+        "difficulty": "hard"
+      },
+      {
+        "id": "know2-0065",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 8013.764,
+        "output_tokens": 851,
+        "category": "physics",
+        "difficulty": "hard"
+      },
+      {
+        "id": "know2-0066",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 2383.96,
+        "output_tokens": 253,
+        "category": "geography",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0067",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 3658.733,
+        "output_tokens": 389,
+        "category": "biology",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0068",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 2801.921,
+        "output_tokens": 296,
+        "category": "history_biography",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0069",
+        "correct": false,
+        "predicted": "",
+        "expected": "A",
+        "latency_ms": 9697.292,
+        "output_tokens": 1024,
+        "category": "biology",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0070",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 1959.657,
+        "output_tokens": 206,
+        "category": "history_biography",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0071",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 1209.679,
+        "output_tokens": 125,
+        "category": "astronomy",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0072",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 1684.767,
+        "output_tokens": 176,
+        "category": "biology",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0073",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 864.669,
+        "output_tokens": 91,
+        "category": "chemistry",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0074",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 2894.962,
+        "output_tokens": 304,
+        "category": "physics",
+        "difficulty": "hard"
+      },
+      {
+        "id": "know2-0075",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 1589.826,
+        "output_tokens": 168,
+        "category": "geography",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0076",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 1455.199,
+        "output_tokens": 153,
+        "category": "astronomy",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0077",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 1553.678,
+        "output_tokens": 161,
+        "category": "physics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0078",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 935.406,
+        "output_tokens": 96,
+        "category": "astronomy",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0079",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 1025.185,
+        "output_tokens": 106,
+        "category": "chemistry",
+        "difficulty": "hard"
+      },
+      {
+        "id": "know2-0080",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 1247.381,
+        "output_tokens": 129,
+        "category": "physics",
+        "difficulty": "hard"
+      },
+      {
+        "id": "know2-0081",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 1736.377,
+        "output_tokens": 183,
+        "category": "biology",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0082",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 2004.605,
+        "output_tokens": 212,
+        "category": "history_biography",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0083",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 1683.699,
+        "output_tokens": 177,
+        "category": "geography",
+        "difficulty": "hard"
+      },
+      {
+        "id": "know2-0084",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 1650.643,
+        "output_tokens": 173,
+        "category": "biology",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0085",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 1232.465,
+        "output_tokens": 128,
+        "category": "history_biography",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0086",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 1991.412,
+        "output_tokens": 209,
+        "category": "history_biography",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0087",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 1622.15,
+        "output_tokens": 171,
+        "category": "astronomy",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0088",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 925.311,
+        "output_tokens": 98,
+        "category": "chemistry",
+        "difficulty": "hard"
+      },
+      {
+        "id": "know2-0089",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 2703.189,
+        "output_tokens": 282,
+        "category": "biology",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0090",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 1399.893,
+        "output_tokens": 146,
+        "category": "physics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0091",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 841.603,
+        "output_tokens": 88,
+        "category": "chemistry",
+        "difficulty": "hard"
+      },
+      {
+        "id": "know2-0092",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 1760.157,
+        "output_tokens": 184,
+        "category": "physics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0093",
+        "correct": false,
+        "predicted": "D",
+        "expected": "A",
+        "latency_ms": 1089.488,
+        "output_tokens": 113,
+        "category": "physics",
+        "difficulty": "hard"
+      },
+      {
+        "id": "know2-0094",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 1057.051,
+        "output_tokens": 109,
+        "category": "biology",
+        "difficulty": "hard"
+      },
+      {
+        "id": "know2-0095",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 1631.198,
+        "output_tokens": 174,
+        "category": "history_biography",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0096",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 826.487,
+        "output_tokens": 89,
+        "category": "chemistry",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0097",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 1589.171,
+        "output_tokens": 172,
+        "category": "physics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0098",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 1653.98,
+        "output_tokens": 179,
+        "category": "biology",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0099",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 1770.146,
+        "output_tokens": 190,
+        "category": "history_biography",
+        "difficulty": "hard"
+      },
+      {
+        "id": "know2-0100",
+        "correct": false,
+        "predicted": "",
+        "expected": "D",
+        "latency_ms": 9566.023,
+        "output_tokens": 1024,
+        "category": "physics",
+        "difficulty": "hard"
+      },
+      {
+        "id": "know2-0101",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 1068.21,
+        "output_tokens": 114,
+        "category": "chemistry",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0102",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 1102.71,
+        "output_tokens": 118,
+        "category": "chemistry",
+        "difficulty": "hard"
+      },
+      {
+        "id": "know2-0103",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 685.637,
+        "output_tokens": 70,
+        "category": "chemistry",
+        "difficulty": "hard"
+      },
+      {
+        "id": "know2-0104",
+        "correct": false,
+        "predicted": "C",
+        "expected": "D",
+        "latency_ms": 2313.374,
+        "output_tokens": 251,
+        "category": "history_biography",
+        "difficulty": "hard"
+      },
+      {
+        "id": "know2-0105",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 3491.052,
+        "output_tokens": 376,
+        "category": "astronomy",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0106",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 2062.1,
+        "output_tokens": 223,
+        "category": "biology",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0107",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 1606.89,
+        "output_tokens": 169,
+        "category": "physics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0108",
+        "correct": false,
+        "predicted": "B",
+        "expected": "D",
+        "latency_ms": 7270.203,
+        "output_tokens": 774,
+        "category": "biology",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0109",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 1494.49,
+        "output_tokens": 157,
+        "category": "biology",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0110",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 6262.351,
+        "output_tokens": 664,
+        "category": "chemistry",
+        "difficulty": "hard"
+      },
+      {
+        "id": "know2-0111",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 2222.343,
+        "output_tokens": 237,
+        "category": "geography",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0112",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 1565.694,
+        "output_tokens": 164,
+        "category": "astronomy",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0113",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 5197.342,
+        "output_tokens": 550,
+        "category": "history_biography",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0114",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 1015.58,
+        "output_tokens": 106,
+        "category": "biology",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0115",
+        "correct": false,
+        "predicted": "",
+        "expected": "C",
+        "latency_ms": 9654.652,
+        "output_tokens": 1024,
+        "category": "history_biography",
+        "difficulty": "hard"
+      },
+      {
+        "id": "know2-0116",
+        "correct": false,
+        "predicted": "",
+        "expected": "D",
+        "latency_ms": 9656.619,
+        "output_tokens": 1024,
+        "category": "physics",
+        "difficulty": "hard"
+      },
+      {
+        "id": "know2-0117",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 2171.32,
+        "output_tokens": 232,
+        "category": "chemistry",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0118",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 2324.829,
+        "output_tokens": 247,
+        "category": "geography",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0119",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 8221.668,
+        "output_tokens": 872,
+        "category": "geography",
+        "difficulty": "hard"
+      },
+      {
+        "id": "know2-0120",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 1185.655,
+        "output_tokens": 125,
+        "category": "chemistry",
+        "difficulty": "hard"
+      },
+      {
+        "id": "know2-0121",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 2307.17,
+        "output_tokens": 243,
+        "category": "biology",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0122",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 3271.46,
+        "output_tokens": 346,
+        "category": "geography",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0123",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 2258.452,
+        "output_tokens": 238,
+        "category": "biology",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0124",
+        "correct": false,
+        "predicted": "",
+        "expected": "D",
+        "latency_ms": 9724.632,
+        "output_tokens": 1024,
+        "category": "physics",
+        "difficulty": "hard"
+      },
+      {
+        "id": "know2-0125",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 1714.98,
+        "output_tokens": 178,
+        "category": "geography",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0126",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 930.36,
+        "output_tokens": 96,
+        "category": "biology",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0127",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 1470.951,
+        "output_tokens": 153,
+        "category": "biology",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0128",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 2176.3,
+        "output_tokens": 228,
+        "category": "physics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0129",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 2309.946,
+        "output_tokens": 243,
+        "category": "astronomy",
+        "difficulty": "hard"
+      },
+      {
+        "id": "know2-0130",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 1287.849,
+        "output_tokens": 137,
+        "category": "geography",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0131",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 1409.904,
+        "output_tokens": 146,
+        "category": "biology",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0132",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 1735.45,
+        "output_tokens": 182,
+        "category": "physics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0133",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 1714.498,
+        "output_tokens": 178,
+        "category": "history_biography",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0134",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 922.842,
+        "output_tokens": 96,
+        "category": "chemistry",
+        "difficulty": "hard"
+      },
+      {
+        "id": "know2-0135",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 7565.208,
+        "output_tokens": 796,
+        "category": "biology",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0136",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 1051.357,
+        "output_tokens": 109,
+        "category": "chemistry",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0137",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 827.575,
+        "output_tokens": 85,
+        "category": "chemistry",
+        "difficulty": "hard"
+      },
+      {
+        "id": "know2-0138",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 1001.437,
+        "output_tokens": 103,
+        "category": "chemistry",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0139",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 1271.332,
+        "output_tokens": 133,
+        "category": "astronomy",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0140",
+        "correct": false,
+        "predicted": "C",
+        "expected": "D",
+        "latency_ms": 957.562,
+        "output_tokens": 97,
+        "category": "physics",
+        "difficulty": "easy"
+      },
+      {
+        "id": "know2-0141",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 1015.081,
+        "output_tokens": 105,
+        "category": "physics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0142",
+        "correct": false,
+        "predicted": "",
+        "expected": "B",
+        "latency_ms": 9995.386,
+        "output_tokens": 1024,
+        "category": "physics",
+        "difficulty": "hard"
+      },
+      {
+        "id": "know2-0143",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 1552.148,
+        "output_tokens": 164,
+        "category": "geography",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0144",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 1700.06,
+        "output_tokens": 180,
+        "category": "physics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0145",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 1964.775,
+        "output_tokens": 208,
+        "category": "physics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0146",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 3631.516,
+        "output_tokens": 385,
+        "category": "physics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0147",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 2124.662,
+        "output_tokens": 226,
+        "category": "history_biography",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0148",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 2013.902,
+        "output_tokens": 213,
+        "category": "history_biography",
+        "difficulty": "hard"
+      },
+      {
+        "id": "know2-0149",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 1015.239,
+        "output_tokens": 104,
+        "category": "astronomy",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0150",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 1653.693,
+        "output_tokens": 175,
+        "category": "history_biography",
+        "difficulty": "medium"
+      },
+      {
+        "id": "know2-0151",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 1138.135,
+        "output_tokens": 120,
+        "category": "history_biography",
+        "difficulty": "medium"
+      }
+    ]
+  },
+  "failures": [],
+  "conditions": {
+    "dedicated": true,
+    "detail": "Only this SGLang server (and, for the speed and long-context rows, the small cache-busting proxy in front of it) was resident; the image server that normally runs on the box was stopped, and nvidia-smi listed no other compute process. The only other running container was a small host metrics exporter (python, about 10 MB, no GPU).",
+    "isolation_check": "nvidia-smi compute apps -> 1335306, .venv/bin/python 1335362, sglang::scheduler ; docker ps -> 1 containers; load1 at start 1.02"
+  },
+  "gotchas": [
+    {
+      "severity": "info",
+      "text": "Tool calling needs SGLang with the minicpm5 tool-call parser (sgl-project/sglang#25600). The openbmb cookbook says to install SGLang from main because v0.5.12.post1 lacked it; the PyPI 0.5.20 wheel used here ships it, so no source build is needed any more. The model writes XML tool calls (<function name=\"x\"><param name=\"k\">v</param></function>) and they come back as OpenAI tool_calls with finish_reason tool_calls, with thinking on and off."
+    },
+    {
+      "severity": "info",
+      "text": "SGLang has no MiniCPM5 reasoning parser, but the model uses plain <think> ... </think>, so --reasoning-parser qwen3 splits it into reasoning_content. With enable_thinking left unset the template adds no <think> prefix; the model opens the tag itself and the qwen3 parser still catches it."
+    },
+    {
+      "severity": "info",
+      "text": "flashinfer JIT-compiles its prefill kernels on the first request and shells out to ninja. In a venv that is not activated the first prefill dies with FileNotFoundError: ninja and the scheduler exits; put the venv bin directory on PATH before starting the server."
+    },
+    {
+      "severity": "info",
+      "text": "In a llama.cpp deployment the card warns that the default min_p 0.05 causes repetition and asks for min_p 0; the SGLang default min_p is already 0."
+    }
+  ],
+  "derived": {
+    "cost_per_1m_output_tokens_usd": null,
+    "tokens_per_watt": null,
+    "tok_s_per_gb_bandwidth": null,
+    "bandwidth_efficiency": null,
+    "memory_headroom_gb": 38.626
+  },
+  "raw": {
+    "harness": "atlas-bench",
+    "harness_version": "0.1.0",
+    "sha256": "503a8992bdc2eda5d7ce686dccf1ca06cfc70410b03251c1ef7172de9ae58361",
+    "payload_path": null,
+    "payload": {
+      "scorer": "mc",
+      "scorers_used": [
+        "mc"
+      ],
+      "engine_endpoint": {
+        "attached": true,
+        "base_url": "http://127.0.0.1:30000/v1",
+        "served_model_id": "MiniCPM5-1B",
+        "advertised_models": [
+          "MiniCPM5-1B"
+        ]
+      }
+    },
+    "truncated": false
+  },
+  "provenance": {
+    "github_login": "0xBakeer",
+    "github_user_id": null,
+    "started_at": "2026-09-22T23:11:21Z",
+    "finished_at": "2026-09-22T23:13:03Z",
+    "submitted_at": null,
+    "commit": null,
+    "pr": null,
+    "method": "atlas-bench",
+    "agent": null,
+    "notes": "Weights: openbmb/MiniCPM5-1B at 87179e5c1f455ef22e6223592d2d61351b525bfc, BF16, one 2.16 GB safetensors shard, sha256 checked against the Hub. SGLang 0.5.20 from PyPI in a Python 3.12 venv (uv) with torch 2.13.0+cu130, flashinfer-python 0.6.18, sglang-kernel 0.4.7, triton 3.7.1, transformers 5.12.1, xgrammar 0.2.1; CUDA 13.0, driver 580.173.02, Ubuntu 24.04.4, kernel 6.17.0-1029-nvidia. Environment SGLANG_ALLOW_OVERWRITE_LONGER_CONTEXT_LEN=1 and SGLANG_DISABLE_CUDNN_CHECK=1 as the MiniCPM SGLang cookbook recommends, the venv bin directory on PATH (flashinfer JIT needs ninja). Server flags follow the openbmb SGLang cookbook (docs/deployment/sglang.md): --dtype bfloat16 --context-length 131072 --tool-call-parser minicpm5, plus --reasoning-parser qwen3 so the <think> block lands in reasoning_content; --mem-fraction-static 0.75 instead of the cookbook 0.85 to leave the unified-memory box about 20 GB of host headroom (the KV pool still holds about 2 million tokens). Radix prefix cache, chunked prefill 8192, CUDA graphs and the flashinfer attention backend are SGLang defaults. Every request sets temperature 0 and seed 42 as the workloads specify. The chat template has three thinking states: enable_thinking true prefills <think>, false prefills an empty think block, and unset lets the model decide, which on almost every prompt means it thinks. Speed and long-context depth rows send chat_template_kwargs enable_thinking false; eval and needle rows leave it unset (the template default). Load: weights 13.0 s (2.38 GB), KV cache allocation 3.2 s, CUDA graph capture 10.6 s, scheduler end to end 32.2 s; SGLang reported max_total_num_tokens 3,679,002 and chunked_prefill_size 8192, and 23.5 GB of GPU memory was still free after start. max_running_requests is passed explicitly as 512 (the SGLang default on this box was 4096) so the concurrency limit is recorded in the row args and can be read back from /get_server_info; it was confirmed at 512 on this server before the first concurrent row."
+  },
+  "verification": {
+    "level": "self-reported",
+    "reproduced_by": [],
+    "flags": []
+  }
+}

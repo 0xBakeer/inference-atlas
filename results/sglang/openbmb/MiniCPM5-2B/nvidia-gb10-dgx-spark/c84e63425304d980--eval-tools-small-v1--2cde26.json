@@ -1,0 +1,1237 @@
+{
+  "schema_version": 1,
+  "run_id": "c84e63425304d980--eval-tools-small-v1--2cde26",
+  "config_id": "c84e63425304d980",
+  "cell_id": "96f86b77bdb3",
+  "workload_id": "eval-tools-small-v1",
+  "kind": "eval",
+  "engine": {
+    "id": "sglang",
+    "version": "0.5.20",
+    "commit": null,
+    "build": "pypi sglang==0.5.20 (py3.12 venv, torch 2.13.0+cu130, flashinfer-python 0.6.18, sglang-kernel 0.4.7)",
+    "container": null,
+    "install_method": "pip"
+  },
+  "model": {
+    "id": "openbmb/MiniCPM5-2B",
+    "quant_id": "bf16",
+    "hf_id": "openbmb/MiniCPM5-2B",
+    "revision": "12a3808a956f869c767195e9266b59c4d21d92e2",
+    "dtype": "auto",
+    "local_path": null
+  },
+  "hardware": {
+    "id": "nvidia-gb10-dgx-spark",
+    "count": 1,
+    "driver": "580.173.02",
+    "cuda": "13.0",
+    "host": {
+      "cpu": "Cortex-A725",
+      "cpu_cores": 20,
+      "ram_gb": 121.6,
+      "os": "Ubuntu 24.04.4 LTS",
+      "kernel": "6.17.0-1029-nvidia",
+      "arch": "aarch64"
+    },
+    "fingerprint": "sha256:52ea2bdd513719724db88c162b6cc2c9fb4e5b67e02dbe41b9de00687acefb91",
+    "captured": {
+      "nvidia_smi": {
+        "driver": "580.173.02",
+        "cuda": "13.0",
+        "products": [
+          "NVIDIA GB10"
+        ],
+        "fb_memory_total_mib": 0.0
+      },
+      "lscpu": {
+        "architecture": "aarch64",
+        "cpus": "20",
+        "vendor_id": "ARM",
+        "model_name": "Cortex-A725",
+        "cores_per_socket": "10",
+        "sockets": "1",
+        "cpu_max_mhz": "2808.0000"
+      }
+    }
+  },
+  "args": {
+    "dtype": "bfloat16",
+    "context-length": 131072,
+    "mem-fraction-static": 0.75,
+    "tool-call-parser": "minicpm5",
+    "reasoning-parser": "qwen3",
+    "max-running-requests": 512
+  },
+  "args_canonical": "@build=pypi sglang==0.5.20 (py3.12 venv, torch 2.13.0+cu130, flashinfer-python 0.6.18, sglang-kernel 0.4.7);@dtype=auto;@quant=bf16;context-length=131072;dtype=bfloat16;max-running-requests=512;mem-fraction-static=0.75;reasoning-parser=qwen3;tool-call-parser=minicpm5",
+  "serve_command": null,
+  "workload": {
+    "id": "eval-tools-small-v1",
+    "resolved_params": {
+      "dataset_id": "eval-tools-small-v1",
+      "suite": "tools-small",
+      "scorer": "json",
+      "items": 100,
+      "concurrency": 4,
+      "max_output_tokens": 2048,
+      "timeout_s": 300.0,
+      "temperature": 0,
+      "reasoning": "default",
+      "dataset_categories": null,
+      "dataset_target_tokens": null,
+      "pass_threshold": null,
+      "seed": 42
+    }
+  },
+  "env": {
+    "SGLANG_ALLOW_OVERWRITE_LONGER_CONTEXT_LEN": "1",
+    "SGLANG_DISABLE_CUDNN_CHECK": "1"
+  },
+  "metrics": {
+    "requests_total": 100,
+    "requests_ok": 100,
+    "requests_failed": 0,
+    "success_rate": 1.0,
+    "duration_s": 98.072,
+    "input_tokens_total": 42366,
+    "output_tokens_total": 14675,
+    "e2e_ms": {
+      "mean": 3717.163,
+      "p50": 2185.104,
+      "p90": 7668.651,
+      "p95": 11143.263,
+      "p99": 26694.783,
+      "min": 538.547,
+      "max": 34492.078
+    },
+    "vram_peak_gb": 89.345,
+    "ram_peak_gb": 97.922,
+    "power_avg_w": 33.16,
+    "power_peak_w": 40.37,
+    "energy_wh": 0.8992,
+    "gpu_util_avg_pct": 96.0,
+    "temp_max_c": 65.0,
+    "thermal_throttle_detected": false
+  },
+  "scores": {
+    "suite": "tools-small",
+    "total": 100,
+    "correct": 86,
+    "accuracy": 0.86,
+    "success_rate": 1.0,
+    "by_category": {
+      "chain": {
+        "total": 20,
+        "correct": 14
+      },
+      "clarify": {
+        "total": 15,
+        "correct": 15
+      },
+      "derive_args": {
+        "total": 20,
+        "correct": 15
+      },
+      "pick_tool": {
+        "total": 20,
+        "correct": 18
+      },
+      "revise": {
+        "total": 10,
+        "correct": 9
+      },
+      "use_result": {
+        "total": 15,
+        "correct": 15
+      }
+    },
+    "by_difficulty": {
+      "easy": {
+        "total": 31,
+        "correct": 28
+      },
+      "hard": {
+        "total": 30,
+        "correct": 23
+      },
+      "medium": {
+        "total": 39,
+        "correct": 35
+      }
+    },
+    "avg_output_tokens": 146.75,
+    "avg_latency_ms": 3717.16,
+    "failures": 0,
+    "items": [
+      {
+        "id": "tsm-0001",
+        "correct": false,
+        "predicted": "{\"arguments\": {\"date\": \"2026-10-25\", \"note\": \"Call the landlord\", \"time\": \"19:45\"}, \"name\": \"set_reminder\"}",
+        "expected": "{\"arguments\": {\"date\": \"2026-10-25\", \"time\": \"19:15\"}, \"name\": \"set_reminder\"}",
+        "latency_ms": 3664.843,
+        "output_tokens": 150,
+        "category": "derive_args",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tsm-0002",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"date\": \"2026-10-26\", \"note\": \"Renew parking permit\", \"time\": \"10:00\"}, \"name\": \"set_reminder\"}",
+        "expected": "{\"arguments\": {\"date\": \"2026-10-26\", \"time\": \"10:00\"}, \"name\": \"set_reminder\"}",
+        "latency_ms": 3794.87,
+        "output_tokens": 154,
+        "category": "derive_args",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tsm-0003",
+        "correct": false,
+        "predicted": "{\"arguments\": {\"date\": \"2026-11-03\", \"note\": \"Water the plants\", \"time\": \"9:15\"}, \"name\": \"set_reminder\"}",
+        "expected": "{\"arguments\": {\"date\": \"2026-11-03\", \"time\": \"08:45\"}, \"name\": \"set_reminder\"}",
+        "latency_ms": 3794.839,
+        "output_tokens": 154,
+        "category": "derive_args",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tsm-0004",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"date\": \"2026-11-22\", \"note\": \"send the meter reading\", \"time\": \"13:30\"}, \"name\": \"set_reminder\"}",
+        "expected": "{\"arguments\": {\"date\": \"2026-11-22\", \"time\": \"13:30\"}, \"name\": \"set_reminder\"}",
+        "latency_ms": 5397.827,
+        "output_tokens": 221,
+        "category": "derive_args",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tsm-0005",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"minutes\": 75}, \"name\": \"start_timer\"}",
+        "expected": "{\"arguments\": {\"minutes\": 75}, \"name\": \"start_timer\"}",
+        "latency_ms": 2055.529,
+        "output_tokens": 82,
+        "category": "derive_args",
+        "difficulty": "easy"
+      },
+      {
+        "id": "tsm-0006",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"minutes\": 150}, \"name\": \"start_timer\"}",
+        "expected": "{\"arguments\": {\"minutes\": 150}, \"name\": \"start_timer\"}",
+        "latency_ms": 2527.117,
+        "output_tokens": 102,
+        "category": "derive_args",
+        "difficulty": "easy"
+      },
+      {
+        "id": "tsm-0007",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"minutes\": 45}, \"name\": \"start_timer\"}",
+        "expected": "{\"arguments\": {\"minutes\": 45}, \"name\": \"start_timer\"}",
+        "latency_ms": 2850.389,
+        "output_tokens": 114,
+        "category": "derive_args",
+        "difficulty": "easy"
+      },
+      {
+        "id": "tsm-0008",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"minutes\": 100}, \"name\": \"start_timer\"}",
+        "expected": "{\"arguments\": {\"minutes\": 100}, \"name\": \"start_timer\"}",
+        "latency_ms": 2887.559,
+        "output_tokens": 115,
+        "category": "derive_args",
+        "difficulty": "easy"
+      },
+      {
+        "id": "tsm-0009",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"item\": \"eggs\", \"quantity\": 12}, \"name\": \"order_groceries\"}",
+        "expected": "{\"arguments\": {\"item\": \"eggs\", \"quantity\": 12}, \"name\": \"order_groceries\"}",
+        "latency_ms": 2931.751,
+        "output_tokens": 117,
+        "category": "derive_args",
+        "difficulty": "easy"
+      },
+      {
+        "id": "tsm-0010",
+        "correct": false,
+        "predicted": "{\"arguments\": {\"item\": \"apples\", \"quantity\": 15}, \"name\": \"order_groceries\"}",
+        "expected": "{\"arguments\": {\"item\": \"apples\", \"quantity\": 18}, \"name\": \"order_groceries\"}",
+        "latency_ms": 5066.884,
+        "output_tokens": 205,
+        "category": "derive_args",
+        "difficulty": "easy"
+      },
+      {
+        "id": "tsm-0011",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"item\": \"bread rolls\", \"quantity\": 24}, \"name\": \"order_groceries\"}",
+        "expected": "{\"arguments\": {\"item\": \"bread rolls\", \"quantity\": 24}, \"name\": \"order_groceries\"}",
+        "latency_ms": 3990.812,
+        "output_tokens": 163,
+        "category": "derive_args",
+        "difficulty": "easy"
+      },
+      {
+        "id": "tsm-0012",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"item\": \"lemons\", \"quantity\": 36}, \"name\": \"order_groceries\"}",
+        "expected": "{\"arguments\": {\"item\": \"lemons\", \"quantity\": 36}, \"name\": \"order_groceries\"}",
+        "latency_ms": 3352.006,
+        "output_tokens": 134,
+        "category": "derive_args",
+        "difficulty": "easy"
+      },
+      {
+        "id": "tsm-0013",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"celsius\": 10.0}, \"name\": \"set_thermostat\"}",
+        "expected": "{\"arguments\": {\"celsius\": 10}, \"name\": \"set_thermostat\"}",
+        "latency_ms": 5009.954,
+        "output_tokens": 204,
+        "category": "derive_args",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tsm-0014",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"celsius\": 15.0}, \"name\": \"set_thermostat\"}",
+        "expected": "{\"arguments\": {\"celsius\": 15}, \"name\": \"set_thermostat\"}",
+        "latency_ms": 9209.721,
+        "output_tokens": 380,
+        "category": "derive_args",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tsm-0015",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"celsius\": 20.0}, \"name\": \"set_thermostat\"}",
+        "expected": "{\"arguments\": {\"celsius\": 20}, \"name\": \"set_thermostat\"}",
+        "latency_ms": 8600.353,
+        "output_tokens": 353,
+        "category": "derive_args",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tsm-0016",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"celsius\": 25.0}, \"name\": \"set_thermostat\"}",
+        "expected": "{\"arguments\": {\"celsius\": 25}, \"name\": \"set_thermostat\"}",
+        "latency_ms": 4695.769,
+        "output_tokens": 195,
+        "category": "derive_args",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tsm-0017",
+        "correct": false,
+        "predicted": "{\"arguments\": {\"date\": \"2026-11-31\", \"party_size\": 4, \"restaurant\": \"Ferro\", \"time\": \"18:30\"}, \"name\": \"book_table\"}",
+        "expected": "{\"arguments\": {\"date\": \"2026-12-01\", \"party_size\": 4, \"restaurant\": \"Ferro\", \"time\": \"18:30\"}, \"name\": \"book_table\"}",
+        "latency_ms": 34492.078,
+        "output_tokens": 1380,
+        "category": "derive_args",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tsm-0018",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"date\": \"2026-10-03\", \"party_size\": 6, \"restaurant\": \"Olmo\", \"time\": \"20:30\"}, \"name\": \"book_table\"}",
+        "expected": "{\"arguments\": {\"date\": \"2026-10-03\", \"party_size\": 6, \"restaurant\": \"Olmo\", \"time\": \"20:30\"}, \"name\": \"book_table\"}",
+        "latency_ms": 3460.97,
+        "output_tokens": 143,
+        "category": "derive_args",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tsm-0019",
+        "correct": false,
+        "predicted": "{\"arguments\": {\"date\": \"2026-11-19\", \"party_size\": 7, \"restaurant\": \"Brasa\", \"time\": \"19:00\"}, \"name\": \"book_table\"}",
+        "expected": "{\"arguments\": {\"date\": \"2026-10-29\", \"party_size\": 7, \"restaurant\": \"Brasa\", \"time\": \"19:00\"}, \"name\": \"book_table\"}",
+        "latency_ms": 4118.965,
+        "output_tokens": 165,
+        "category": "derive_args",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tsm-0020",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"date\": \"2026-10-18\", \"party_size\": 8, \"restaurant\": \"Saltrock\", \"time\": \"19:30\"}, \"name\": \"book_table\"}",
+        "expected": "{\"arguments\": {\"date\": \"2026-10-18\", \"party_size\": 8, \"restaurant\": \"Saltrock\", \"time\": \"19:30\"}, \"name\": \"book_table\"}",
+        "latency_ms": 3251.05,
+        "output_tokens": 133,
+        "category": "derive_args",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tsm-0021",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"city\": \"Kesswater\", \"date\": \"2026-12-01\"}, \"name\": \"get_forecast\"}",
+        "expected": "{\"arguments\": {\"city\": \"Kesswater\", \"date\": \"2026-12-01\"}, \"name\": \"get_forecast\"}",
+        "latency_ms": 3451.748,
+        "output_tokens": 142,
+        "category": "pick_tool",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tsm-0022",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"city\": \"Aberholt\"}, \"name\": \"get_current_weather\"}",
+        "expected": "{\"arguments\": {\"city\": \"Aberholt\"}, \"name\": \"get_current_weather\"}",
+        "latency_ms": 2013.207,
+        "output_tokens": 78,
+        "category": "pick_tool",
+        "difficulty": "easy"
+      },
+      {
+        "id": "tsm-0023",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"city\": \"Valcrest\", \"date\": \"2026-11-21\"}, \"name\": \"get_forecast\"}",
+        "expected": "{\"arguments\": {\"city\": \"Valcrest\", \"date\": \"2026-11-21\"}, \"name\": \"get_forecast\"}",
+        "latency_ms": 2354.0,
+        "output_tokens": 90,
+        "category": "pick_tool",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tsm-0024",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"city\": \"Threeford\"}, \"name\": \"get_current_weather\"}",
+        "expected": "{\"arguments\": {\"city\": \"Threeford\"}, \"name\": \"get_current_weather\"}",
+        "latency_ms": 1625.51,
+        "output_tokens": 63,
+        "category": "pick_tool",
+        "difficulty": "easy"
+      },
+      {
+        "id": "tsm-0025",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"city\": \"Marren Bay\", \"date\": \"2026-10-29\"}, \"name\": \"get_forecast\"}",
+        "expected": "{\"arguments\": {\"city\": \"Marren Bay\", \"date\": \"2026-10-29\"}, \"name\": \"get_forecast\"}",
+        "latency_ms": 3410.578,
+        "output_tokens": 129,
+        "category": "pick_tool",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tsm-0026",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"order_id\": \"ORD-41583\"}, \"name\": \"lookup_order\"}",
+        "expected": "{\"arguments\": {\"order_id\": \"ORD-41583\"}, \"name\": \"lookup_order\"}",
+        "latency_ms": 1383.683,
+        "output_tokens": 53,
+        "category": "pick_tool",
+        "difficulty": "easy"
+      },
+      {
+        "id": "tsm-0027",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"email\": \"ines.braith@example.org\"}, \"name\": \"list_orders\"}",
+        "expected": "{\"arguments\": {\"email\": \"ines.braith@example.org\"}, \"name\": \"list_orders\"}",
+        "latency_ms": 1236.438,
+        "output_tokens": 47,
+        "category": "pick_tool",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tsm-0028",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"order_id\": \"ORD-42839\"}, \"name\": \"lookup_order\"}",
+        "expected": "{\"arguments\": {\"order_id\": \"ORD-42839\"}, \"name\": \"lookup_order\"}",
+        "latency_ms": 1278.078,
+        "output_tokens": 49,
+        "category": "pick_tool",
+        "difficulty": "easy"
+      },
+      {
+        "id": "tsm-0029",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"email\": \"lars.ellery@example.org\"}, \"name\": \"list_orders\"}",
+        "expected": "{\"arguments\": {\"email\": \"lars.ellery@example.org\"}, \"name\": \"list_orders\"}",
+        "latency_ms": 1194.111,
+        "output_tokens": 47,
+        "category": "pick_tool",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tsm-0030",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"order_id\": \"ORD-17827\"}, \"name\": \"lookup_order\"}",
+        "expected": "{\"arguments\": {\"order_id\": \"ORD-17827\"}, \"name\": \"lookup_order\"}",
+        "latency_ms": 1415.678,
+        "output_tokens": 53,
+        "category": "pick_tool",
+        "difficulty": "easy"
+      },
+      {
+        "id": "tsm-0031",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"phone\": \"+4915122752490\", \"text\": \"Running ten minutes late\"}, \"name\": \"send_sms\"}",
+        "expected": "{\"arguments\": {\"phone\": \"+4915122752490\", \"text\": \"Running ten minutes late\"}, \"name\": \"send_sms\"}",
+        "latency_ms": 3220.262,
+        "output_tokens": 124,
+        "category": "pick_tool",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tsm-0032",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"body\": \"Dinner is at eight\", \"subject\": \"Update\", \"to\": \"priya.braith@example.org\"}, \"name\": \"send_email\"}",
+        "expected": "{\"arguments\": {\"body\": \"Dinner is at eight\", \"subject\": \"Update\", \"to\": \"priya.braith@example.org\"}, \"name\": \"send_email\"}",
+        "latency_ms": 1589.283,
+        "output_tokens": 62,
+        "category": "pick_tool",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tsm-0033",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"phone\": \"+4915148485548\", \"text\": \"Parcel is at the door\"}, \"name\": \"send_sms\"}",
+        "expected": "{\"arguments\": {\"phone\": \"+4915148485548\", \"text\": \"Parcel is at the door\"}, \"name\": \"send_sms\"}",
+        "latency_ms": 3092.34,
+        "output_tokens": 119,
+        "category": "pick_tool",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tsm-0034",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"body\": \"Meeting moved to Friday\", \"subject\": \"Update\", \"to\": \"dana.fairbank@example.org\"}, \"name\": \"send_email\"}",
+        "expected": "{\"arguments\": {\"body\": \"Meeting moved to Friday\", \"subject\": \"Update\", \"to\": \"dana.fairbank@example.org\"}, \"name\": \"send_email\"}",
+        "latency_ms": 1642.814,
+        "output_tokens": 62,
+        "category": "pick_tool",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tsm-0035",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"phone\": \"+4915171789722\", \"text\": \"Call me when you land\"}, \"name\": \"send_sms\"}",
+        "expected": "{\"arguments\": {\"phone\": \"+4915171789722\", \"text\": \"Call me when you land\"}, \"name\": \"send_sms\"}",
+        "latency_ms": 3001.418,
+        "output_tokens": 118,
+        "category": "pick_tool",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tsm-0036",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"amount\": 260.0, \"from_currency\": \"USD\", \"to_currency\": \"CHF\"}, \"name\": \"convert_amount\"}",
+        "expected": "{\"arguments\": {\"amount\": 260, \"from_currency\": \"USD\", \"to_currency\": \"CHF\"}, \"name\": \"convert_amount\"}",
+        "latency_ms": 3931.264,
+        "output_tokens": 155,
+        "category": "pick_tool",
+        "difficulty": "easy"
+      },
+      {
+        "id": "tsm-0037",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"from_currency\": \"GBP\", \"to_currency\": \"EUR\"}, \"name\": \"get_exchange_rate\"}",
+        "expected": "{\"arguments\": {\"from_currency\": \"GBP\", \"to_currency\": \"EUR\"}, \"name\": \"get_exchange_rate\"}",
+        "latency_ms": 2171.719,
+        "output_tokens": 85,
+        "category": "pick_tool",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tsm-0038",
+        "correct": false,
+        "predicted": "{\"arguments\": {\"from_currency\": \"GBP\", \"to_currency\": \"EUR\"}, \"name\": \"get_exchange_rate\"}",
+        "expected": "{\"arguments\": {\"amount\": 125, \"from_currency\": \"GBP\", \"to_currency\": \"EUR\"}, \"name\": \"convert_amount\"}",
+        "latency_ms": 4033.788,
+        "output_tokens": 159,
+        "category": "pick_tool",
+        "difficulty": "easy"
+      },
+      {
+        "id": "tsm-0039",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"from_currency\": \"CHF\", \"to_currency\": \"EUR\"}, \"name\": \"get_exchange_rate\"}",
+        "expected": "{\"arguments\": {\"from_currency\": \"CHF\", \"to_currency\": \"EUR\"}, \"name\": \"get_exchange_rate\"}",
+        "latency_ms": 2404.772,
+        "output_tokens": 95,
+        "category": "pick_tool",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tsm-0040",
+        "correct": false,
+        "predicted": "{\"arguments\": {\"from_currency\": \"GBP\", \"to_currency\": \"SEK\"}, \"name\": \"get_exchange_rate\"}",
+        "expected": "{\"arguments\": {\"amount\": 1200, \"from_currency\": \"GBP\", \"to_currency\": \"SEK\"}, \"name\": \"convert_amount\"}",
+        "latency_ms": 4159.14,
+        "output_tokens": 166,
+        "category": "pick_tool",
+        "difficulty": "easy"
+      },
+      {
+        "id": "tsm-0041",
+        "correct": true,
+        "predicted": "no tool call",
+        "expected": "no tool call",
+        "latency_ms": 12753.149,
+        "output_tokens": 509,
+        "category": "clarify",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tsm-0042",
+        "correct": true,
+        "predicted": "no tool call",
+        "expected": "no tool call",
+        "latency_ms": 6895.376,
+        "output_tokens": 276,
+        "category": "clarify",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tsm-0043",
+        "correct": true,
+        "predicted": "no tool call",
+        "expected": "no tool call",
+        "latency_ms": 2915.957,
+        "output_tokens": 118,
+        "category": "clarify",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tsm-0044",
+        "correct": true,
+        "predicted": "no tool call",
+        "expected": "no tool call",
+        "latency_ms": 1098.712,
+        "output_tokens": 43,
+        "category": "clarify",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tsm-0045",
+        "correct": true,
+        "predicted": "no tool call",
+        "expected": "no tool call",
+        "latency_ms": 1048.007,
+        "output_tokens": 40,
+        "category": "clarify",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tsm-0046",
+        "correct": true,
+        "predicted": "no tool call",
+        "expected": "no tool call",
+        "latency_ms": 11058.533,
+        "output_tokens": 443,
+        "category": "clarify",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tsm-0047",
+        "correct": true,
+        "predicted": "no tool call",
+        "expected": "no tool call",
+        "latency_ms": 5027.998,
+        "output_tokens": 198,
+        "category": "clarify",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tsm-0048",
+        "correct": true,
+        "predicted": "no tool call",
+        "expected": "no tool call",
+        "latency_ms": 1289.681,
+        "output_tokens": 51,
+        "category": "clarify",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tsm-0049",
+        "correct": true,
+        "predicted": "no tool call",
+        "expected": "no tool call",
+        "latency_ms": 15891.094,
+        "output_tokens": 631,
+        "category": "clarify",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tsm-0050",
+        "correct": true,
+        "predicted": "no tool call",
+        "expected": "no tool call",
+        "latency_ms": 3778.952,
+        "output_tokens": 152,
+        "category": "clarify",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tsm-0051",
+        "correct": true,
+        "predicted": "no tool call",
+        "expected": "no tool call",
+        "latency_ms": 2070.633,
+        "output_tokens": 84,
+        "category": "clarify",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tsm-0052",
+        "correct": true,
+        "predicted": "no tool call",
+        "expected": "no tool call",
+        "latency_ms": 5431.177,
+        "output_tokens": 219,
+        "category": "clarify",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tsm-0053",
+        "correct": true,
+        "predicted": "no tool call",
+        "expected": "no tool call",
+        "latency_ms": 2949.257,
+        "output_tokens": 119,
+        "category": "clarify",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tsm-0054",
+        "correct": true,
+        "predicted": "no tool call",
+        "expected": "no tool call",
+        "latency_ms": 3309.417,
+        "output_tokens": 132,
+        "category": "clarify",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tsm-0055",
+        "correct": true,
+        "predicted": "no tool call",
+        "expected": "no tool call",
+        "latency_ms": 7144.312,
+        "output_tokens": 282,
+        "category": "clarify",
+        "difficulty": "medium"
+      },
+      {
+        "id": "tsm-0056",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"customer_id\": \"C-83855\", \"status\": \"unpaid\"}, \"name\": \"list_invoices\"}",
+        "expected": "{\"arguments\": {\"customer_id\": \"C-83855\", \"status\": \"unpaid\"}, \"name\": \"list_invoices\"}",
+        "latency_ms": 2037.557,
+        "output_tokens": 80,
+        "category": "chain",
+        "difficulty": "hard"
+      },
+      {
+        "id": "tsm-0057",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"customer_id\": \"C-32311\", \"status\": \"overdue\"}, \"name\": \"list_invoices\"}",
+        "expected": "{\"arguments\": {\"customer_id\": \"C-32311\", \"status\": \"overdue\"}, \"name\": \"list_invoices\"}",
+        "latency_ms": 1815.412,
+        "output_tokens": 71,
+        "category": "chain",
+        "difficulty": "hard"
+      },
+      {
+        "id": "tsm-0058",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"customer_id\": \"C-63081\", \"status\": \"paid\"}, \"name\": \"list_invoices\"}",
+        "expected": "{\"arguments\": {\"customer_id\": \"C-63081\", \"status\": \"paid\"}, \"name\": \"list_invoices\"}",
+        "latency_ms": 2198.489,
+        "output_tokens": 87,
+        "category": "chain",
+        "difficulty": "hard"
+      },
+      {
+        "id": "tsm-0059",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"customer_id\": \"C-93831\", \"status\": \"unpaid\"}, \"name\": \"list_invoices\"}",
+        "expected": "{\"arguments\": {\"customer_id\": \"C-93831\", \"status\": \"unpaid\"}, \"name\": \"list_invoices\"}",
+        "latency_ms": 2010.617,
+        "output_tokens": 77,
+        "category": "chain",
+        "difficulty": "hard"
+      },
+      {
+        "id": "tsm-0060",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"customer_id\": \"C-63968\", \"status\": \"overdue\"}, \"name\": \"list_invoices\"}",
+        "expected": "{\"arguments\": {\"customer_id\": \"C-63968\", \"status\": \"overdue\"}, \"name\": \"list_invoices\"}",
+        "latency_ms": 1964.965,
+        "output_tokens": 73,
+        "category": "chain",
+        "difficulty": "hard"
+      },
+      {
+        "id": "tsm-0061",
+        "correct": false,
+        "predicted": "The cheapest flight from Dunhallow to Kesswater on 2026-12-09 is flight FL-838 at 126 EUR, departing at 13:15. Would you like me to book this flight?",
+        "expected": "{\"arguments\": {\"flight_id\": \"FL-838\"}, \"name\": \"book_flight\"}",
+        "latency_ms": 1361.912,
+        "output_tokens": 50,
+        "category": "chain",
+        "difficulty": "hard"
+      },
+      {
+        "id": "tsm-0062",
+        "correct": false,
+        "predicted": "The earliest flight from Aberholt to Valcrest on 2026-11-09 departs at 15:15 (Flight ID: FL-120) and costs 391 EUR. Would you like me to book this flight?",
+        "expected": "{\"arguments\": {\"flight_id\": \"FL-120\"}, \"name\": \"book_flight\"}",
+        "latency_ms": 1398.464,
+        "output_tokens": 51,
+        "category": "chain",
+        "difficulty": "hard"
+      },
+      {
+        "id": "tsm-0063",
+        "correct": false,
+        "predicted": "The cheapest flight from Brightwell to Valcrest on 2026-11-02 is flight FL-827 at 18:30 for €217. Would you like me to book this flight for you?",
+        "expected": "{\"arguments\": {\"flight_id\": \"FL-827\"}, \"name\": \"book_flight\"}",
+        "latency_ms": 1255.36,
+        "output_tokens": 47,
+        "category": "chain",
+        "difficulty": "hard"
+      },
+      {
+        "id": "tsm-0064",
+        "correct": false,
+        "predicted": "The earliest flight from Oldmarsh to Valcrest on 2026-11-24 is **FL-480** departing at **11:15** for **€190**. Would you like me to book this flight?",
+        "expected": "{\"arguments\": {\"flight_id\": \"FL-480\"}, \"name\": \"book_flight\"}",
+        "latency_ms": 1365.612,
+        "output_tokens": 49,
+        "category": "chain",
+        "difficulty": "hard"
+      },
+      {
+        "id": "tsm-0065",
+        "correct": false,
+        "predicted": "The cheapest flight from Oldmarsh to Kesswater on 2026-11-22 is flight **FL-151** at **€97** (departing at 09:45). Would you like me to book this flight?",
+        "expected": "{\"arguments\": {\"flight_id\": \"FL-151\"}, \"name\": \"book_flight\"}",
+        "latency_ms": 1540.1,
+        "output_tokens": 54,
+        "category": "chain",
+        "difficulty": "hard"
+      },
+      {
+        "id": "tsm-0066",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"order_id\": \"ORD-49791\", \"reason\": \"damaged\"}, \"name\": \"create_return\"}",
+        "expected": "{\"arguments\": {\"order_id\": \"ORD-49791\", \"reason\": \"damaged\"}, \"name\": \"create_return\"}",
+        "latency_ms": 1649.3,
+        "output_tokens": 58,
+        "category": "chain",
+        "difficulty": "hard"
+      },
+      {
+        "id": "tsm-0067",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"order_id\": \"ORD-39053\", \"reason\": \"wrong_item\"}, \"name\": \"create_return\"}",
+        "expected": "{\"arguments\": {\"order_id\": \"ORD-39053\", \"reason\": \"wrong_item\"}, \"name\": \"create_return\"}",
+        "latency_ms": 864.192,
+        "output_tokens": 31,
+        "category": "chain",
+        "difficulty": "hard"
+      },
+      {
+        "id": "tsm-0068",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"order_id\": \"ORD-53585\", \"reason\": \"not_needed\"}, \"name\": \"create_return\"}",
+        "expected": "{\"arguments\": {\"order_id\": \"ORD-53585\", \"reason\": \"not_needed\"}, \"name\": \"create_return\"}",
+        "latency_ms": 863.622,
+        "output_tokens": 32,
+        "category": "chain",
+        "difficulty": "hard"
+      },
+      {
+        "id": "tsm-0069",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"order_id\": \"ORD-81781\", \"reason\": \"damaged\"}, \"name\": \"create_return\"}",
+        "expected": "{\"arguments\": {\"order_id\": \"ORD-81781\", \"reason\": \"damaged\"}, \"name\": \"create_return\"}",
+        "latency_ms": 914.258,
+        "output_tokens": 31,
+        "category": "chain",
+        "difficulty": "hard"
+      },
+      {
+        "id": "tsm-0070",
+        "correct": false,
+        "predicted": "{\"arguments\": {\"order_id\": \"ORD-47345\", \"reason\": \"not_needed\"}, \"name\": \"create_return\"}",
+        "expected": "{\"arguments\": {\"order_id\": \"ORD-47345\", \"reason\": \"wrong_item\"}, \"name\": \"create_return\"}",
+        "latency_ms": 947.731,
+        "output_tokens": 32,
+        "category": "chain",
+        "difficulty": "hard"
+      },
+      {
+        "id": "tsm-0071",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"lat\": 50.0876, \"lon\": 6.5332}, \"name\": \"get_air_quality\"}",
+        "expected": "{\"arguments\": {\"lat\": 50.0876, \"lon\": 6.5332}, \"name\": \"get_air_quality\"}",
+        "latency_ms": 1016.178,
+        "output_tokens": 35,
+        "category": "chain",
+        "difficulty": "hard"
+      },
+      {
+        "id": "tsm-0072",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"lat\": 48.171, \"lon\": 16.658}, \"name\": \"get_air_quality\"}",
+        "expected": "{\"arguments\": {\"lat\": 48.171, \"lon\": 16.658}, \"name\": \"get_air_quality\"}",
+        "latency_ms": 933.685,
+        "output_tokens": 33,
+        "category": "chain",
+        "difficulty": "hard"
+      },
+      {
+        "id": "tsm-0073",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"lat\": 51.2273, \"lon\": 16.8891}, \"name\": \"get_air_quality\"}",
+        "expected": "{\"arguments\": {\"lat\": 51.2273, \"lon\": 16.8891}, \"name\": \"get_air_quality\"}",
+        "latency_ms": 1011.706,
+        "output_tokens": 35,
+        "category": "chain",
+        "difficulty": "hard"
+      },
+      {
+        "id": "tsm-0074",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"lat\": 43.3085, \"lon\": 14.1422}, \"name\": \"get_air_quality\"}",
+        "expected": "{\"arguments\": {\"lat\": 43.3085, \"lon\": 14.1422}, \"name\": \"get_air_quality\"}",
+        "latency_ms": 1002.193,
+        "output_tokens": 35,
+        "category": "chain",
+        "difficulty": "hard"
+      },
+      {
+        "id": "tsm-0075",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"lat\": 53.9073, \"lon\": 0.774}, \"name\": \"get_air_quality\"}",
+        "expected": "{\"arguments\": {\"lat\": 53.9073, \"lon\": 0.774}, \"name\": \"get_air_quality\"}",
+        "latency_ms": 1008.207,
+        "output_tokens": 34,
+        "category": "chain",
+        "difficulty": "hard"
+      },
+      {
+        "id": "tsm-0076",
+        "correct": true,
+        "predicted": "Right now in Threeford, the temperature is 12°C with light rain. Wind speeds are about 49 km/h.",
+        "expected": "no tool call; reply contains [\"12\"]",
+        "latency_ms": 856.178,
+        "output_tokens": 30,
+        "category": "use_result",
+        "difficulty": "easy"
+      },
+      {
+        "id": "tsm-0077",
+        "correct": true,
+        "predicted": "Right now in Marren Bay, the temperature is 23°C with overcast conditions and a wind speed of 43 km/h.",
+        "expected": "no tool call; reply contains [\"23\"]",
+        "latency_ms": 929.516,
+        "output_tokens": 32,
+        "category": "use_result",
+        "difficulty": "easy"
+      },
+      {
+        "id": "tsm-0078",
+        "correct": true,
+        "predicted": "Right now in Dunhallow, the temperature is 20°C with sunny conditions and a wind speed of 48 km/h.",
+        "expected": "no tool call; reply contains [\"20\"]",
+        "latency_ms": 916.871,
+        "output_tokens": 31,
+        "category": "use_result",
+        "difficulty": "easy"
+      },
+      {
+        "id": "tsm-0079",
+        "correct": true,
+        "predicted": "Right now in Oldmarsh, the temperature is 12°C with fog in the sky. The wind is blowing at 36 km/h.",
+        "expected": "no tool call; reply contains [\"12\"]",
+        "latency_ms": 969.037,
+        "output_tokens": 33,
+        "category": "use_result",
+        "difficulty": "easy"
+      },
+      {
+        "id": "tsm-0080",
+        "correct": true,
+        "predicted": "Right now in Brightwell, the temperature is 6°C with showers. Let me know if you'd like more details!",
+        "expected": "no tool call; reply contains [\"6\"]",
+        "latency_ms": 868.596,
+        "output_tokens": 30,
+        "category": "use_result",
+        "difficulty": "easy"
+      },
+      {
+        "id": "tsm-0081",
+        "correct": true,
+        "predicted": "Your order ORD-64605 is out for delivery today at 10:50.",
+        "expected": "no tool call; reply contains [\"10:50\"]",
+        "latency_ms": 634.134,
+        "output_tokens": 22,
+        "category": "use_result",
+        "difficulty": "easy"
+      },
+      {
+        "id": "tsm-0082",
+        "correct": true,
+        "predicted": "Order ORD-67900 is out for delivery today with an estimated arrival time of 13:35.",
+        "expected": "no tool call; reply contains [\"13:35\"]",
+        "latency_ms": 781.157,
+        "output_tokens": 26,
+        "category": "use_result",
+        "difficulty": "easy"
+      },
+      {
+        "id": "tsm-0083",
+        "correct": true,
+        "predicted": "Order ORD-42677 is out for delivery today with an estimated arrival time of 15:20.",
+        "expected": "no tool call; reply contains [\"15:20\"]",
+        "latency_ms": 782.303,
+        "output_tokens": 26,
+        "category": "use_result",
+        "difficulty": "easy"
+      },
+      {
+        "id": "tsm-0084",
+        "correct": true,
+        "predicted": "Your order ORD-19684 is out for delivery today with an estimated arrival time of 12:50.",
+        "expected": "no tool call; reply contains [\"12:50\"]",
+        "latency_ms": 778.769,
+        "output_tokens": 27,
+        "category": "use_result",
+        "difficulty": "easy"
+      },
+      {
+        "id": "tsm-0085",
+        "correct": true,
+        "predicted": "Order ORD-74466 is out for delivery today with an estimated arrival time of 11:05.",
+        "expected": "no tool call; reply contains [\"11:05\"]",
+        "latency_ms": 756.722,
+        "output_tokens": 26,
+        "category": "use_result",
+        "difficulty": "easy"
+      },
+      {
+        "id": "tsm-0086",
+        "correct": true,
+        "predicted": "310 SEK converts to 511.64 JPY.",
+        "expected": "no tool call; reply contains [\"511.64\"]",
+        "latency_ms": 574.492,
+        "output_tokens": 17,
+        "category": "use_result",
+        "difficulty": "easy"
+      },
+      {
+        "id": "tsm-0087",
+        "correct": true,
+        "predicted": "85 CHF is equivalent to 74.12 SEK at today's exchange rate.",
+        "expected": "no tool call; reply contains [\"74.12\"]",
+        "latency_ms": 2457.7,
+        "output_tokens": 89,
+        "category": "use_result",
+        "difficulty": "easy"
+      },
+      {
+        "id": "tsm-0088",
+        "correct": true,
+        "predicted": "125 JPY is equivalent to 811.79 CHF.",
+        "expected": "no tool call; reply contains [\"811.79\"]",
+        "latency_ms": 572.398,
+        "output_tokens": 17,
+        "category": "use_result",
+        "difficulty": "easy"
+      },
+      {
+        "id": "tsm-0089",
+        "correct": true,
+        "predicted": "260 CHF is equivalent to 294.39 SEK.",
+        "expected": "no tool call; reply contains [\"294.39\"]",
+        "latency_ms": 551.85,
+        "output_tokens": 17,
+        "category": "use_result",
+        "difficulty": "easy"
+      },
+      {
+        "id": "tsm-0090",
+        "correct": true,
+        "predicted": "310 EUR is equivalent to 447.29 JPY.",
+        "expected": "no tool call; reply contains [\"447.29\"]",
+        "latency_ms": 538.547,
+        "output_tokens": 17,
+        "category": "use_result",
+        "difficulty": "easy"
+      },
+      {
+        "id": "tsm-0091",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"date\": \"2026-11-25\", \"party_size\": 8, \"restaurant\": \"Brasa\", \"time\": \"20:00\"}, \"name\": \"book_table\"}",
+        "expected": "{\"arguments\": {\"date\": \"2026-11-25\", \"party_size\": 8, \"restaurant\": \"Brasa\", \"time\": \"20:00\"}, \"name\": \"book_table\"}",
+        "latency_ms": 8317.335,
+        "output_tokens": 330,
+        "category": "revise",
+        "difficulty": "hard"
+      },
+      {
+        "id": "tsm-0092",
+        "correct": false,
+        "predicted": "{\"arguments\": {\"date\": \"2026-10-29\", \"party_size\": 6, \"restaurant\": \"Saltrock\", \"time\": \"19:45\"}, \"name\": \"book_table\"}",
+        "expected": "{\"arguments\": {\"date\": \"2026-10-29\", \"party_size\": 6, \"restaurant\": \"Saltrock\", \"time\": \"20:00\"}, \"name\": \"book_table\"}",
+        "latency_ms": 1312.075,
+        "output_tokens": 49,
+        "category": "revise",
+        "difficulty": "hard"
+      },
+      {
+        "id": "tsm-0093",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"date\": \"2026-11-29\", \"party_size\": 6, \"restaurant\": \"Juniper\", \"time\": \"19:30\"}, \"name\": \"book_table\"}",
+        "expected": "{\"arguments\": {\"date\": \"2026-11-29\", \"party_size\": 6, \"restaurant\": \"Juniper\", \"time\": \"19:30\"}, \"name\": \"book_table\"}",
+        "latency_ms": 26616.022,
+        "output_tokens": 1039,
+        "category": "revise",
+        "difficulty": "hard"
+      },
+      {
+        "id": "tsm-0094",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"date\": \"2026-10-11\", \"party_size\": 5, \"restaurant\": \"Lanterna\", \"time\": \"20:30\"}, \"name\": \"book_table\"}",
+        "expected": "{\"arguments\": {\"date\": \"2026-10-11\", \"party_size\": 5, \"restaurant\": \"Lanterna\", \"time\": \"20:30\"}, \"name\": \"book_table\"}",
+        "latency_ms": 14089.697,
+        "output_tokens": 568,
+        "category": "revise",
+        "difficulty": "hard"
+      },
+      {
+        "id": "tsm-0095",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"date\": \"2026-10-08\", \"party_size\": 5, \"restaurant\": \"Ferro\", \"time\": \"19:30\"}, \"name\": \"book_table\"}",
+        "expected": "{\"arguments\": {\"date\": \"2026-10-08\", \"party_size\": 5, \"restaurant\": \"Ferro\", \"time\": \"19:30\"}, \"name\": \"book_table\"}",
+        "latency_ms": 1263.67,
+        "output_tokens": 49,
+        "category": "revise",
+        "difficulty": "hard"
+      },
+      {
+        "id": "tsm-0096",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"date\": \"2026-11-07\", \"note\": \"call the landlord\", \"time\": \"17:45\"}, \"name\": \"set_reminder\"}",
+        "expected": "{\"arguments\": {\"date\": \"2026-11-07\", \"time\": \"17:45\"}, \"name\": \"set_reminder\"}",
+        "latency_ms": 4954.344,
+        "output_tokens": 201,
+        "category": "revise",
+        "difficulty": "hard"
+      },
+      {
+        "id": "tsm-0097",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"date\": \"2026-10-12\", \"note\": \"renew the parking permit\", \"time\": \"17:45\"}, \"name\": \"set_reminder\"}",
+        "expected": "{\"arguments\": {\"date\": \"2026-10-12\", \"time\": \"17:45\"}, \"name\": \"set_reminder\"}",
+        "latency_ms": 9399.822,
+        "output_tokens": 376,
+        "category": "revise",
+        "difficulty": "hard"
+      },
+      {
+        "id": "tsm-0098",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"date\": \"2026-11-26\", \"note\": \"water the plants\", \"time\": \"16:15\"}, \"name\": \"set_reminder\"}",
+        "expected": "{\"arguments\": {\"date\": \"2026-11-26\", \"time\": \"16:15\"}, \"name\": \"set_reminder\"}",
+        "latency_ms": 7596.575,
+        "output_tokens": 306,
+        "category": "revise",
+        "difficulty": "hard"
+      },
+      {
+        "id": "tsm-0099",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"date\": \"2026-10-22\", \"note\": \"send the meter reading\", \"time\": \"17:45\"}, \"name\": \"set_reminder\"}",
+        "expected": "{\"arguments\": {\"date\": \"2026-10-22\", \"time\": \"17:45\"}, \"name\": \"set_reminder\"}",
+        "latency_ms": 4960.69,
+        "output_tokens": 197,
+        "category": "revise",
+        "difficulty": "hard"
+      },
+      {
+        "id": "tsm-0100",
+        "correct": true,
+        "predicted": "{\"arguments\": {\"date\": \"2026-11-12\", \"note\": \"pick up the dry cleaning\", \"time\": \"16:15\"}, \"name\": \"set_reminder\"}",
+        "expected": "{\"arguments\": {\"date\": \"2026-11-12\", \"time\": \"16:15\"}, \"name\": \"set_reminder\"}",
+        "latency_ms": 6652.825,
+        "output_tokens": 268,
+        "category": "revise",
+        "difficulty": "hard"
+      }
+    ]
+  },
+  "failures": [],
+  "conditions": {
+    "dedicated": true,
+    "detail": "Only this SGLang server (and, for the speed and long-context rows, the small cache-busting proxy in front of it) was resident; the image server that normally runs on the box was stopped, and nvidia-smi listed no other compute process. The only other running container was a small host metrics exporter (python, about 10 MB, no GPU).",
+    "isolation_check": "nvidia-smi compute apps -> 1074847, .venv/bin/python 1074909, sglang::scheduler ; docker ps -> 1 containers; load1 at start 1.32"
+  },
+  "gotchas": [
+    {
+      "severity": "info",
+      "text": "Tool calling needs SGLang with the minicpm5 tool-call parser (sgl-project/sglang#25600). The openbmb cookbook says to install SGLang from main because v0.5.12.post1 lacked it; the PyPI 0.5.20 wheel used here ships it, so no source build is needed any more. The model writes XML tool calls (<function name=\"x\"><param name=\"k\">v</param></function>) and they come back as OpenAI tool_calls with finish_reason tool_calls, with thinking on and off."
+    },
+    {
+      "severity": "info",
+      "text": "SGLang has no MiniCPM5 reasoning parser, but the model uses plain <think> ... </think>, so --reasoning-parser qwen3 splits it into reasoning_content. With enable_thinking left unset the template adds no <think> prefix; the model opens the tag itself and the qwen3 parser still catches it."
+    },
+    {
+      "severity": "info",
+      "text": "flashinfer JIT-compiles its prefill kernels on the first request and shells out to ninja. In a venv that is not activated the first prefill dies with FileNotFoundError: ninja and the scheduler exits; put the venv bin directory on PATH before starting the server."
+    },
+    {
+      "severity": "info",
+      "text": "In a llama.cpp deployment the card warns that the default min_p 0.05 causes repetition and asks for min_p 0; the SGLang default min_p is already 0."
+    }
+  ],
+  "derived": {
+    "cost_per_1m_output_tokens_usd": null,
+    "tokens_per_watt": null,
+    "tok_s_per_gb_bandwidth": null,
+    "bandwidth_efficiency": null,
+    "memory_headroom_gb": 38.655
+  },
+  "raw": {
+    "harness": "atlas-bench",
+    "harness_version": "0.1.0",
+    "sha256": "cc568c4aa6b5a00a89de8b5047552774da58dd3633230e37696aa1d6a98b92a5",
+    "payload_path": null,
+    "payload": {
+      "scorer": "json",
+      "scorers_used": [
+        "json"
+      ],
+      "engine_endpoint": {
+        "attached": true,
+        "base_url": "http://127.0.0.1:30000/v1",
+        "served_model_id": "MiniCPM5-2B",
+        "advertised_models": [
+          "MiniCPM5-2B"
+        ]
+      }
+    },
+    "truncated": false
+  },
+  "provenance": {
+    "github_login": "0xBakeer",
+    "github_user_id": null,
+    "started_at": "2026-09-22T17:06:42Z",
+    "finished_at": "2026-09-22T17:08:20Z",
+    "submitted_at": null,
+    "commit": null,
+    "pr": null,
+    "method": "atlas-bench",
+    "agent": null,
+    "notes": "Weights: openbmb/MiniCPM5-2B at 12a3808a956f869c767195e9266b59c4d21d92e2, BF16, one 5.03 GB safetensors shard, sha256 checked against the Hub. SGLang 0.5.20 from PyPI in a Python 3.12 venv (uv) with torch 2.13.0+cu130, flashinfer-python 0.6.18, sglang-kernel 0.4.7, triton 3.7.1, transformers 5.12.1, xgrammar 0.2.1; CUDA 13.0, driver 580.173.02, Ubuntu 24.04.4, kernel 6.17.0-1029-nvidia. Environment SGLANG_ALLOW_OVERWRITE_LONGER_CONTEXT_LEN=1 and SGLANG_DISABLE_CUDNN_CHECK=1 as the MiniCPM SGLang cookbook recommends, the venv bin directory on PATH (flashinfer JIT needs ninja). Server flags follow the openbmb SGLang cookbook (docs/deployment/sglang.md): --dtype bfloat16 --context-length 131072 --tool-call-parser minicpm5, plus --reasoning-parser qwen3 so the <think> block lands in reasoning_content; --mem-fraction-static 0.75 instead of the cookbook 0.85 to leave the unified-memory box about 20 GB of host headroom (the KV pool still holds about 2 million tokens). Radix prefix cache, chunked prefill 8192, CUDA graphs and the flashinfer attention backend are SGLang defaults. Every request sets temperature 0 and seed 42 as the workloads specify. The chat template has three thinking states: enable_thinking true prefills <think>, false prefills an empty think block, and unset lets the model decide, which on almost every prompt means it thinks. Speed and long-context depth rows send chat_template_kwargs enable_thinking false; eval and needle rows leave it unset (the template default). Load: weights 35.8 s, then CUDA graph capture; SGLang reported max_total_num_tokens 2,035,807 and chunked_prefill_size 8192, and the box had about 21 GB of host memory available after start. max_running_requests is passed explicitly as 512 (the SGLang default on this box was 4096) so the concurrency limit is recorded in the row args and can be read back from /get_server_info."
+  },
+  "verification": {
+    "level": "self-reported",
+    "reproduced_by": [],
+    "flags": []
+  }
+}

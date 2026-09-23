@@ -1,0 +1,379 @@
+{
+  "schema_version": 1,
+  "run_id": "5760e4a61c1dc817--prefill-32k-v1--c1fb30",
+  "config_id": "5760e4a61c1dc817",
+  "cell_id": "96f86b77bdb3",
+  "workload_id": "prefill-32k-v1",
+  "kind": "prefill",
+  "engine": {
+    "id": "sglang",
+    "version": "0.5.20",
+    "commit": null,
+    "build": "pypi sglang==0.5.20 (py3.12 venv, torch 2.13.0+cu130, flashinfer-python 0.6.18, sglang-kernel 0.4.7)",
+    "container": null,
+    "install_method": "pip"
+  },
+  "model": {
+    "id": "openbmb/MiniCPM5-2B",
+    "quant_id": "bf16",
+    "hf_id": "openbmb/MiniCPM5-2B",
+    "revision": "12a3808a956f869c767195e9266b59c4d21d92e2",
+    "dtype": "auto",
+    "local_path": null
+  },
+  "hardware": {
+    "id": "nvidia-gb10-dgx-spark",
+    "count": 1,
+    "driver": "580.173.02",
+    "cuda": "13.0",
+    "host": {
+      "cpu": "Cortex-A725",
+      "cpu_cores": 20,
+      "ram_gb": 121.6,
+      "os": "Ubuntu 24.04.4 LTS",
+      "kernel": "6.17.0-1029-nvidia",
+      "arch": "aarch64"
+    },
+    "fingerprint": "sha256:52ea2bdd513719724db88c162b6cc2c9fb4e5b67e02dbe41b9de00687acefb91",
+    "captured": {
+      "nvidia_smi": {
+        "driver": "580.173.02",
+        "cuda": "13.0",
+        "products": [
+          "NVIDIA GB10"
+        ],
+        "fb_memory_total_mib": 0.0
+      },
+      "lscpu": {
+        "architecture": "aarch64",
+        "cpus": "20",
+        "vendor_id": "ARM",
+        "model_name": "Cortex-A725",
+        "cores_per_socket": "10",
+        "sockets": "1",
+        "cpu_max_mhz": "2808.0000"
+      }
+    }
+  },
+  "args": {
+    "dtype": "bfloat16",
+    "context-length": 131072,
+    "mem-fraction-static": 0.75,
+    "tool-call-parser": "minicpm5",
+    "reasoning-parser": "qwen3",
+    "max-running-requests": 512,
+    "speculative-algorithm": "DSPARK",
+    "speculative-draft-model-path": "openbmb/MiniCPM5-2B-DSpark",
+    "speculative-dspark-block-size": 7,
+    "cuda-graph-max-bs-decode": 64
+  },
+  "args_canonical": "@build=pypi sglang==0.5.20 (py3.12 venv, torch 2.13.0+cu130, flashinfer-python 0.6.18, sglang-kernel 0.4.7);@dtype=auto;@quant=bf16;context-length=131072;cuda-graph-max-bs-decode=64;dtype=bfloat16;max-running-requests=512;mem-fraction-static=0.75;reasoning-parser=qwen3;speculative-algorithm=DSPARK;speculative-draft-model-path=openbmb/MiniCPM5-2B-DSpark;speculative-dspark-block-size=7;tool-call-parser=minicpm5",
+  "serve_command": null,
+  "workload": {
+    "id": "prefill-32k-v1",
+    "resolved_params": {
+      "concurrency": 1,
+      "num_requests": 10,
+      "input_tokens": 32768,
+      "output_tokens": 16,
+      "warmup_requests": 1,
+      "prompts_padded": false,
+      "needle_check": false,
+      "timeout_s": 900.0,
+      "seed": 42
+    }
+  },
+  "env": {
+    "SGLANG_ALLOW_OVERWRITE_LONGER_CONTEXT_LEN": "1",
+    "SGLANG_DISABLE_CUDNN_CHECK": "1"
+  },
+  "metrics": {
+    "requests_total": 10,
+    "requests_ok": 10,
+    "requests_failed": 0,
+    "success_rate": 1.0,
+    "duration_s": 43.264,
+    "input_tokens_total": 311548,
+    "output_tokens_total": 69,
+    "output_tok_s": 1.595,
+    "total_tok_s": 7202.661,
+    "req_s": 0.231,
+    "prefill_tok_s": 7383.424,
+    "ttft_ms": {
+      "mean": 4219.56,
+      "p50": 4229.315,
+      "p90": 4237.796,
+      "p95": 4240.759,
+      "p99": 4243.129,
+      "min": 4176.42,
+      "max": 4243.722
+    },
+    "tpot_ms": {
+      "mean": 24.77,
+      "p50": 23.689,
+      "p90": 36.743,
+      "p95": 37.034,
+      "p99": 37.267,
+      "min": 14.348,
+      "max": 37.325
+    },
+    "itl_ms": {
+      "mean": 34.888,
+      "p50": 36.148,
+      "p90": 37.932,
+      "p95": 38.614,
+      "p99": 39.41,
+      "min": 17.179,
+      "max": 39.646
+    },
+    "e2e_ms": {
+      "mean": 4326.309,
+      "p50": 4279.547,
+      "p90": 4447.27,
+      "p95": 4455.338,
+      "p99": 4461.792,
+      "min": 4249.776,
+      "max": 4463.405
+    },
+    "decode_tok_s_per_request": {
+      "mean": 46.637,
+      "p50": 44.028,
+      "p90": 68.719,
+      "p95": 69.209,
+      "p99": 69.6,
+      "min": 26.792,
+      "max": 69.698
+    },
+    "vram_peak_gb": 90.665,
+    "ram_peak_gb": 100.57,
+    "kv_cache_tokens": null,
+    "power_avg_w": 91.52,
+    "power_peak_w": 97.91,
+    "energy_wh": 1.1995,
+    "gpu_util_avg_pct": 93.87,
+    "temp_max_c": 77.0,
+    "thermal_throttle_detected": false
+  },
+  "failures": [],
+  "conditions": {
+    "dedicated": true,
+    "detail": "Only this SGLang server (and, for the speed and long-context rows, the small cache-busting proxy in front of it) was resident; the image server that normally runs on the box was stopped, and nvidia-smi listed no other compute process. The only other running container was a small host metrics exporter (python, about 10 MB, no GPU).",
+    "isolation_check": "nvidia-smi compute apps -> 1532664, .venv/bin/python 1532720, sglang::scheduler ; docker ps -> 1 containers; load1 at start 0.92"
+  },
+  "gotchas": [
+    {
+      "severity": "info",
+      "text": "Tool calling needs SGLang with the minicpm5 tool-call parser (sgl-project/sglang#25600). The openbmb cookbook says to install SGLang from main because v0.5.12.post1 lacked it; the PyPI 0.5.20 wheel used here ships it, so no source build is needed any more. The model writes XML tool calls (<function name=\"x\"><param name=\"k\">v</param></function>) and they come back as OpenAI tool_calls with finish_reason tool_calls, with thinking on and off."
+    },
+    {
+      "severity": "info",
+      "text": "SGLang has no MiniCPM5 reasoning parser, but the model uses plain <think> ... </think>, so --reasoning-parser qwen3 splits it into reasoning_content. With enable_thinking left unset the template adds no <think> prefix; the model opens the tag itself and the qwen3 parser still catches it."
+    },
+    {
+      "severity": "info",
+      "text": "flashinfer JIT-compiles its prefill kernels on the first request and shells out to ninja. In a venv that is not activated the first prefill dies with FileNotFoundError: ninja and the scheduler exits; put the venv bin directory on PATH before starting the server."
+    },
+    {
+      "severity": "info",
+      "text": "In a llama.cpp deployment the card warns that the default min_p 0.05 causes repetition and asks for min_p 0; the SGLang default min_p is already 0."
+    },
+    {
+      "severity": "info",
+      "text": "SGLang RadixAttention reuses any cached prefix and has no per-request switch to skip it, and the prefill, long-context and serving workloads reuse the same prompts and haystacks. To keep prefill cold without turning the cache off for the whole server, the speed and long-context rows went through a small proxy on the box that prepends a unique HTML comment (<!-- 12 hex chars -->, about 12 tokens) to the first message of every request, so the shared prefix is only the few chat-template tokens before it. Input token counts include the comment."
+    },
+    {
+      "severity": "info",
+      "text": "DSpark does not start on this box with SGLang 0.5.20 at the default decode CUDA-graph size. DSpark verifies block_size+1 = 8 tokens per sequence, so capturing the decode graph at its default max batch of 256 asks flashinfer for a 3,137,536-byte prefill workspace out of a fixed 1,048,576-byte AlignedAllocator and capture fails with a buffer overflow, taking the scheduler with it. 0.5.20 exposes no workspace-size flag, so the only knob is --cuda-graph-max-bs-decode; it is set to 64 here and recorded in the args. That leaves admission alone - max_running_requests is still 512 and still confirmed from /get_server_info - but batches above 64 run without a captured decode graph, so the concurrency points above 64 in this config are NOT arg-identical to the plain bf16 2B rows and the two should not be diffed at those points. The single-user and low-concurrency rows are the comparable ones."
+    },
+    {
+      "severity": "info",
+      "text": "The DSpark drafter costs KV pool: max_total_num_tokens falls from 2,034,852 on the plain 2B to 1,798,013 here at the same --mem-fraction-static 0.75, and the drafter itself loads as a separate 0.93 GB Qwen3DSparkModel."
+    }
+  ],
+  "derived": {
+    "cost_per_1m_output_tokens_usd": null,
+    "tokens_per_watt": 0.0174,
+    "tok_s_per_gb_bandwidth": 0.170832,
+    "bandwidth_efficiency": 0.860991,
+    "memory_headroom_gb": 37.335
+  },
+  "raw": {
+    "harness": "atlas-bench",
+    "harness_version": "0.1.0",
+    "sha256": "4ad3eae7eb5878b46c61c776c950252dead59bd12ef24f62dc3d4ce049299f5c",
+    "payload_path": null,
+    "payload": {
+      "requests": [
+        {
+          "id": "prefill-w00000",
+          "prompt_id": "hay-32k-d10",
+          "warmup": true,
+          "status": "ok",
+          "ttft_ms": 4171.422,
+          "e2e_ms": 4243.752,
+          "prompt_tokens": 31116,
+          "completion_tokens": 3,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00000",
+          "prompt_id": "hay-32k-d10",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 4199.298,
+          "e2e_ms": 4271.784,
+          "prompt_tokens": 31118,
+          "completion_tokens": 3,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00001",
+          "prompt_id": "hay-32k-multi",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 4237.137,
+          "e2e_ms": 4463.405,
+          "prompt_tokens": 31239,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00002",
+          "prompt_id": "hay-32k-d50",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 4176.42,
+          "e2e_ms": 4249.776,
+          "prompt_tokens": 31099,
+          "completion_tokens": 3,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00003",
+          "prompt_id": "hay-32k-d90",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 4232.796,
+          "e2e_ms": 4270.557,
+          "prompt_tokens": 31144,
+          "completion_tokens": 3,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00004",
+          "prompt_id": "hay-32k-d10",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 4230.316,
+          "e2e_ms": 4287.31,
+          "prompt_tokens": 31115,
+          "completion_tokens": 3,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00005",
+          "prompt_id": "hay-32k-multi",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 4221.106,
+          "e2e_ms": 4439.733,
+          "prompt_tokens": 31237,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00006",
+          "prompt_id": "hay-32k-d50",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 4196.176,
+          "e2e_ms": 4270.826,
+          "prompt_tokens": 31100,
+          "completion_tokens": 3,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00007",
+          "prompt_id": "hay-32k-d90",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 4228.365,
+          "e2e_ms": 4263.451,
+          "prompt_tokens": 31146,
+          "completion_tokens": 3,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00008",
+          "prompt_id": "hay-32k-d10",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 4243.722,
+          "e2e_ms": 4300.767,
+          "prompt_tokens": 31115,
+          "completion_tokens": 3,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00009",
+          "prompt_id": "hay-32k-multi",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 4230.264,
+          "e2e_ms": 4445.477,
+          "prompt_tokens": 31235,
+          "completion_tokens": 16,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        }
+      ],
+      "engine_endpoint": {
+        "attached": true,
+        "base_url": "http://127.0.0.1:30001/v1",
+        "served_model_id": "MiniCPM5-2B",
+        "advertised_models": [
+          "MiniCPM5-2B"
+        ]
+      }
+    },
+    "truncated": false
+  },
+  "provenance": {
+    "github_login": "0xBakeer",
+    "github_user_id": null,
+    "started_at": "2026-09-23T00:45:52Z",
+    "finished_at": "2026-09-23T00:46:40Z",
+    "submitted_at": null,
+    "commit": null,
+    "pr": null,
+    "method": "atlas-bench",
+    "agent": null,
+    "notes": "Weights: openbmb/MiniCPM5-2B at 12a3808a956f869c767195e9266b59c4d21d92e2, BF16, sha256 checked against the Hub. Speculative decoding with the card-recommended DSpark drafter openbmb/MiniCPM5-2B-DSpark at 114a20fdbf53220712c7fbdd7dccddbf1dedebb4 (BF16, 5 layers, 324M parameters, 0.65 GB), --speculative-algorithm DSPARK --speculative-dspark-block-size 7 as in the model card. SGLang 0.5.20 from PyPI in a Python 3.12 venv (uv) with torch 2.13.0+cu130, flashinfer-python 0.6.18, sglang-kernel 0.4.7, triton 3.7.1, transformers 5.12.1, xgrammar 0.2.1; CUDA 13.0, driver 580.173.02, Ubuntu 24.04.4, kernel 6.17.0-1029-nvidia. Environment SGLANG_ALLOW_OVERWRITE_LONGER_CONTEXT_LEN=1 and SGLANG_DISABLE_CUDNN_CHECK=1 as the MiniCPM SGLang cookbook recommends, the venv bin directory on PATH (flashinfer JIT needs ninja). Server flags follow the openbmb SGLang cookbook (docs/deployment/sglang.md): --dtype bfloat16 --context-length 131072 --tool-call-parser minicpm5, plus --reasoning-parser qwen3 so the <think> block lands in reasoning_content; --mem-fraction-static 0.75 instead of the cookbook 0.85 to leave the unified-memory box about 20 GB of host headroom (the KV pool still holds about 2 million tokens). Radix prefix cache, chunked prefill 8192, CUDA graphs and the flashinfer attention backend are SGLang defaults. Every request sets temperature 0 and seed 42 as the workloads specify. The chat template has three thinking states: enable_thinking true prefills <think>, false prefills an empty think block, and unset lets the model decide, which on almost every prompt means it thinks. Speed and long-context depth rows send chat_template_kwargs enable_thinking false; eval and needle rows leave it unset (the template default). Load: target weights 36.8 s (5.01 GB) plus the DSpark drafter 3.5 s (0.93 GB, loaded as Qwen3DSparkModel), KV allocation 3.6 s, CUDA graphs prefill 17.4 s / target-verify 2.5 s / draft-decode 1.7 s, scheduler end to end 71.2 s; SGLang reported max_total_num_tokens 1,798,013 (down from the plain 2B's 2,034,852 because the drafter and the verify buffers take their share) and 22.7 GB of GPU memory still free. max_running_requests is passed explicitly as 512 and confirmed at 512 from /get_server_info before the first concurrent row."
+  },
+  "verification": {
+    "level": "self-reported",
+    "reproduced_by": [],
+    "flags": []
+  }
+}

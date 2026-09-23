@@ -1,0 +1,1537 @@
+{
+  "schema_version": 1,
+  "run_id": "c84e63425304d980--eval-math-v1--34f51b",
+  "config_id": "c84e63425304d980",
+  "cell_id": "96f86b77bdb3",
+  "workload_id": "eval-math-v1",
+  "kind": "eval",
+  "engine": {
+    "id": "sglang",
+    "version": "0.5.20",
+    "commit": null,
+    "build": "pypi sglang==0.5.20 (py3.12 venv, torch 2.13.0+cu130, flashinfer-python 0.6.18, sglang-kernel 0.4.7)",
+    "container": null,
+    "install_method": "pip"
+  },
+  "model": {
+    "id": "openbmb/MiniCPM5-2B",
+    "quant_id": "bf16",
+    "hf_id": "openbmb/MiniCPM5-2B",
+    "revision": "12a3808a956f869c767195e9266b59c4d21d92e2",
+    "dtype": "auto",
+    "local_path": null
+  },
+  "hardware": {
+    "id": "nvidia-gb10-dgx-spark",
+    "count": 1,
+    "driver": "580.173.02",
+    "cuda": "13.0",
+    "host": {
+      "cpu": "Cortex-A725",
+      "cpu_cores": 20,
+      "ram_gb": 121.6,
+      "os": "Ubuntu 24.04.4 LTS",
+      "kernel": "6.17.0-1029-nvidia",
+      "arch": "aarch64"
+    },
+    "fingerprint": "sha256:52ea2bdd513719724db88c162b6cc2c9fb4e5b67e02dbe41b9de00687acefb91",
+    "captured": {
+      "nvidia_smi": {
+        "driver": "580.173.02",
+        "cuda": "13.0",
+        "products": [
+          "NVIDIA GB10"
+        ],
+        "fb_memory_total_mib": 0.0
+      },
+      "lscpu": {
+        "architecture": "aarch64",
+        "cpus": "20",
+        "vendor_id": "ARM",
+        "model_name": "Cortex-A725",
+        "cores_per_socket": "10",
+        "sockets": "1",
+        "cpu_max_mhz": "2808.0000"
+      }
+    }
+  },
+  "args": {
+    "dtype": "bfloat16",
+    "context-length": 131072,
+    "mem-fraction-static": 0.75,
+    "tool-call-parser": "minicpm5",
+    "reasoning-parser": "qwen3",
+    "max-running-requests": 512
+  },
+  "args_canonical": "@build=pypi sglang==0.5.20 (py3.12 venv, torch 2.13.0+cu130, flashinfer-python 0.6.18, sglang-kernel 0.4.7);@dtype=auto;@quant=bf16;context-length=131072;dtype=bfloat16;max-running-requests=512;mem-fraction-static=0.75;reasoning-parser=qwen3;tool-call-parser=minicpm5",
+  "serve_command": null,
+  "workload": {
+    "id": "eval-math-v1",
+    "resolved_params": {
+      "dataset_id": "eval-math-v1",
+      "suite": "math",
+      "scorer": "numeric",
+      "items": 130,
+      "concurrency": 4,
+      "max_output_tokens": 4096,
+      "timeout_s": 300.0,
+      "temperature": 0,
+      "reasoning": "default",
+      "dataset_categories": null,
+      "dataset_target_tokens": null,
+      "pass_threshold": null,
+      "seed": 42
+    }
+  },
+  "env": {
+    "SGLANG_ALLOW_OVERWRITE_LONGER_CONTEXT_LEN": "1",
+    "SGLANG_DISABLE_CUDNN_CHECK": "1"
+  },
+  "metrics": {
+    "requests_total": 130,
+    "requests_ok": 130,
+    "requests_failed": 0,
+    "success_rate": 1.0,
+    "duration_s": 339.755,
+    "input_tokens_total": 6690,
+    "output_tokens_total": 55598,
+    "e2e_ms": {
+      "mean": 10201.82,
+      "p50": 5679.721,
+      "p90": 21500.517,
+      "p95": 26174.154,
+      "p99": 85640.331,
+      "min": 90.057,
+      "max": 99492.181
+    },
+    "vram_peak_gb": 89.345,
+    "ram_peak_gb": 97.983,
+    "power_avg_w": 31.94,
+    "power_peak_w": 34.12,
+    "energy_wh": 3.0127,
+    "gpu_util_avg_pct": 95.97,
+    "temp_max_c": 61.0,
+    "thermal_throttle_detected": false
+  },
+  "scores": {
+    "suite": "math",
+    "total": 130,
+    "correct": 122,
+    "accuracy": 0.938462,
+    "success_rate": 1.0,
+    "by_category": {
+      "algebra": {
+        "total": 24,
+        "correct": 24
+      },
+      "arithmetic": {
+        "total": 24,
+        "correct": 21
+      },
+      "geometry": {
+        "total": 20,
+        "correct": 19
+      },
+      "number_theory": {
+        "total": 20,
+        "correct": 18
+      },
+      "sequences": {
+        "total": 18,
+        "correct": 17
+      },
+      "word_problems": {
+        "total": 24,
+        "correct": 23
+      }
+    },
+    "by_difficulty": {
+      "easy": {
+        "total": 49,
+        "correct": 45
+      },
+      "hard": {
+        "total": 31,
+        "correct": 28
+      },
+      "medium": {
+        "total": 50,
+        "correct": 49
+      }
+    },
+    "avg_output_tokens": 427.68,
+    "avg_latency_ms": 10201.82,
+    "failures": 0,
+    "items": [
+      {
+        "id": "math-0001",
+        "correct": true,
+        "predicted": "193950",
+        "expected": "193950",
+        "latency_ms": 3440.088,
+        "output_tokens": 146,
+        "category": "arithmetic",
+        "difficulty": "easy"
+      },
+      {
+        "id": "math-0002",
+        "correct": true,
+        "predicted": "773409",
+        "expected": "773409",
+        "latency_ms": 6493.4,
+        "output_tokens": 274,
+        "category": "arithmetic",
+        "difficulty": "easy"
+      },
+      {
+        "id": "math-0003",
+        "correct": false,
+        "predicted": "",
+        "expected": "316140",
+        "latency_ms": 107.413,
+        "output_tokens": 3,
+        "category": "arithmetic",
+        "difficulty": "easy"
+      },
+      {
+        "id": "math-0004",
+        "correct": false,
+        "predicted": "244005",
+        "expected": "244305",
+        "latency_ms": 1208.933,
+        "output_tokens": 51,
+        "category": "arithmetic",
+        "difficulty": "easy"
+      },
+      {
+        "id": "math-0005",
+        "correct": true,
+        "predicted": "22",
+        "expected": "22",
+        "latency_ms": 6131.384,
+        "output_tokens": 260,
+        "category": "arithmetic",
+        "difficulty": "easy"
+      },
+      {
+        "id": "math-0006",
+        "correct": true,
+        "predicted": "12",
+        "expected": "12",
+        "latency_ms": 3747.394,
+        "output_tokens": 158,
+        "category": "arithmetic",
+        "difficulty": "easy"
+      },
+      {
+        "id": "math-0007",
+        "correct": true,
+        "predicted": "19",
+        "expected": "19",
+        "latency_ms": 3467.616,
+        "output_tokens": 144,
+        "category": "arithmetic",
+        "difficulty": "easy"
+      },
+      {
+        "id": "math-0008",
+        "correct": true,
+        "predicted": "25",
+        "expected": "25",
+        "latency_ms": 4936.882,
+        "output_tokens": 206,
+        "category": "arithmetic",
+        "difficulty": "easy"
+      },
+      {
+        "id": "math-0009",
+        "correct": true,
+        "predicted": "420",
+        "expected": "420",
+        "latency_ms": 934.334,
+        "output_tokens": 37,
+        "category": "arithmetic",
+        "difficulty": "easy"
+      },
+      {
+        "id": "math-0010",
+        "correct": true,
+        "predicted": "126",
+        "expected": "126",
+        "latency_ms": 1224.255,
+        "output_tokens": 49,
+        "category": "arithmetic",
+        "difficulty": "easy"
+      },
+      {
+        "id": "math-0011",
+        "correct": true,
+        "predicted": "12",
+        "expected": "12",
+        "latency_ms": 925.257,
+        "output_tokens": 36,
+        "category": "arithmetic",
+        "difficulty": "easy"
+      },
+      {
+        "id": "math-0012",
+        "correct": false,
+        "predicted": "",
+        "expected": "684",
+        "latency_ms": 90.057,
+        "output_tokens": 2,
+        "category": "arithmetic",
+        "difficulty": "easy"
+      },
+      {
+        "id": "math-0013",
+        "correct": true,
+        "predicted": "1327.63",
+        "expected": "1327.62",
+        "latency_ms": 20044.434,
+        "output_tokens": 842,
+        "category": "arithmetic",
+        "difficulty": "hard"
+      },
+      {
+        "id": "math-0014",
+        "correct": true,
+        "predicted": "344.38",
+        "expected": "344.38",
+        "latency_ms": 20953.544,
+        "output_tokens": 878,
+        "category": "arithmetic",
+        "difficulty": "hard"
+      },
+      {
+        "id": "math-0015",
+        "correct": true,
+        "predicted": "1599",
+        "expected": "1599",
+        "latency_ms": 13509.796,
+        "output_tokens": 573,
+        "category": "arithmetic",
+        "difficulty": "hard"
+      },
+      {
+        "id": "math-0016",
+        "correct": true,
+        "predicted": "312",
+        "expected": "312",
+        "latency_ms": 10466.141,
+        "output_tokens": 444,
+        "category": "arithmetic",
+        "difficulty": "hard"
+      },
+      {
+        "id": "math-0017",
+        "correct": true,
+        "predicted": "1.1525",
+        "expected": "1.1525",
+        "latency_ms": 11109.609,
+        "output_tokens": 456,
+        "category": "arithmetic",
+        "difficulty": "medium"
+      },
+      {
+        "id": "math-0018",
+        "correct": true,
+        "predicted": "0.9",
+        "expected": "0.9",
+        "latency_ms": 2855.582,
+        "output_tokens": 118,
+        "category": "arithmetic",
+        "difficulty": "medium"
+      },
+      {
+        "id": "math-0019",
+        "correct": true,
+        "predicted": "0.45",
+        "expected": "0.45",
+        "latency_ms": 2716.742,
+        "output_tokens": 111,
+        "category": "arithmetic",
+        "difficulty": "medium"
+      },
+      {
+        "id": "math-0020",
+        "correct": true,
+        "predicted": "0.19",
+        "expected": "0.19",
+        "latency_ms": 5184.986,
+        "output_tokens": 210,
+        "category": "arithmetic",
+        "difficulty": "medium"
+      },
+      {
+        "id": "math-0021",
+        "correct": true,
+        "predicted": "-163",
+        "expected": "-163",
+        "latency_ms": 3021.083,
+        "output_tokens": 123,
+        "category": "arithmetic",
+        "difficulty": "easy"
+      },
+      {
+        "id": "math-0022",
+        "correct": true,
+        "predicted": "87",
+        "expected": "87",
+        "latency_ms": 3241.4,
+        "output_tokens": 133,
+        "category": "arithmetic",
+        "difficulty": "easy"
+      },
+      {
+        "id": "math-0023",
+        "correct": true,
+        "predicted": "-39",
+        "expected": "-39",
+        "latency_ms": 2931.94,
+        "output_tokens": 122,
+        "category": "arithmetic",
+        "difficulty": "easy"
+      },
+      {
+        "id": "math-0024",
+        "correct": true,
+        "predicted": "79",
+        "expected": "79",
+        "latency_ms": 3012.313,
+        "output_tokens": 126,
+        "category": "arithmetic",
+        "difficulty": "easy"
+      },
+      {
+        "id": "math-0025",
+        "correct": true,
+        "predicted": "2",
+        "expected": "2",
+        "latency_ms": 2570.509,
+        "output_tokens": 108,
+        "category": "algebra",
+        "difficulty": "easy"
+      },
+      {
+        "id": "math-0026",
+        "correct": true,
+        "predicted": "20",
+        "expected": "20",
+        "latency_ms": 2639.009,
+        "output_tokens": 111,
+        "category": "algebra",
+        "difficulty": "easy"
+      },
+      {
+        "id": "math-0027",
+        "correct": true,
+        "predicted": "0",
+        "expected": "0",
+        "latency_ms": 2952.295,
+        "output_tokens": 120,
+        "category": "algebra",
+        "difficulty": "easy"
+      },
+      {
+        "id": "math-0028",
+        "correct": true,
+        "predicted": "26",
+        "expected": "26",
+        "latency_ms": 3202.875,
+        "output_tokens": 130,
+        "category": "algebra",
+        "difficulty": "easy"
+      },
+      {
+        "id": "math-0029",
+        "correct": true,
+        "predicted": "28",
+        "expected": "28",
+        "latency_ms": 2737.663,
+        "output_tokens": 112,
+        "category": "algebra",
+        "difficulty": "easy"
+      },
+      {
+        "id": "math-0030",
+        "correct": true,
+        "predicted": "3",
+        "expected": "3",
+        "latency_ms": 2503.359,
+        "output_tokens": 103,
+        "category": "algebra",
+        "difficulty": "medium"
+      },
+      {
+        "id": "math-0031",
+        "correct": true,
+        "predicted": "12",
+        "expected": "12",
+        "latency_ms": 3163.821,
+        "output_tokens": 133,
+        "category": "algebra",
+        "difficulty": "medium"
+      },
+      {
+        "id": "math-0032",
+        "correct": true,
+        "predicted": "13",
+        "expected": "13",
+        "latency_ms": 4122.374,
+        "output_tokens": 172,
+        "category": "algebra",
+        "difficulty": "medium"
+      },
+      {
+        "id": "math-0033",
+        "correct": true,
+        "predicted": "21",
+        "expected": "21",
+        "latency_ms": 3907.762,
+        "output_tokens": 165,
+        "category": "algebra",
+        "difficulty": "medium"
+      },
+      {
+        "id": "math-0034",
+        "correct": true,
+        "predicted": "11",
+        "expected": "11",
+        "latency_ms": 11977.862,
+        "output_tokens": 504,
+        "category": "algebra",
+        "difficulty": "medium"
+      },
+      {
+        "id": "math-0035",
+        "correct": true,
+        "predicted": "2",
+        "expected": "2",
+        "latency_ms": 13605.295,
+        "output_tokens": 568,
+        "category": "algebra",
+        "difficulty": "medium"
+      },
+      {
+        "id": "math-0036",
+        "correct": true,
+        "predicted": "0",
+        "expected": "0",
+        "latency_ms": 14117.732,
+        "output_tokens": 589,
+        "category": "algebra",
+        "difficulty": "medium"
+      },
+      {
+        "id": "math-0037",
+        "correct": true,
+        "predicted": "0",
+        "expected": "0",
+        "latency_ms": 17965.135,
+        "output_tokens": 750,
+        "category": "algebra",
+        "difficulty": "medium"
+      },
+      {
+        "id": "math-0038",
+        "correct": true,
+        "predicted": "2",
+        "expected": "2",
+        "latency_ms": 23072.787,
+        "output_tokens": 953,
+        "category": "algebra",
+        "difficulty": "medium"
+      },
+      {
+        "id": "math-0039",
+        "correct": true,
+        "predicted": "4",
+        "expected": "4",
+        "latency_ms": 3016.212,
+        "output_tokens": 125,
+        "category": "algebra",
+        "difficulty": "medium"
+      },
+      {
+        "id": "math-0040",
+        "correct": true,
+        "predicted": "10",
+        "expected": "10",
+        "latency_ms": 4752.302,
+        "output_tokens": 195,
+        "category": "algebra",
+        "difficulty": "medium"
+      },
+      {
+        "id": "math-0041",
+        "correct": true,
+        "predicted": "10",
+        "expected": "10",
+        "latency_ms": 3216.006,
+        "output_tokens": 134,
+        "category": "algebra",
+        "difficulty": "medium"
+      },
+      {
+        "id": "math-0042",
+        "correct": true,
+        "predicted": "6",
+        "expected": "6",
+        "latency_ms": 4826.456,
+        "output_tokens": 195,
+        "category": "algebra",
+        "difficulty": "medium"
+      },
+      {
+        "id": "math-0043",
+        "correct": true,
+        "predicted": "8",
+        "expected": "8",
+        "latency_ms": 4995.903,
+        "output_tokens": 202,
+        "category": "algebra",
+        "difficulty": "medium"
+      },
+      {
+        "id": "math-0044",
+        "correct": true,
+        "predicted": "380",
+        "expected": "380",
+        "latency_ms": 3421.573,
+        "output_tokens": 140,
+        "category": "algebra",
+        "difficulty": "easy"
+      },
+      {
+        "id": "math-0045",
+        "correct": true,
+        "predicted": "322",
+        "expected": "322",
+        "latency_ms": 2776.387,
+        "output_tokens": 114,
+        "category": "algebra",
+        "difficulty": "easy"
+      },
+      {
+        "id": "math-0046",
+        "correct": true,
+        "predicted": "-3",
+        "expected": "-3",
+        "latency_ms": 2278.216,
+        "output_tokens": 93,
+        "category": "algebra",
+        "difficulty": "easy"
+      },
+      {
+        "id": "math-0047",
+        "correct": true,
+        "predicted": "14",
+        "expected": "14",
+        "latency_ms": 7502.336,
+        "output_tokens": 311,
+        "category": "algebra",
+        "difficulty": "hard"
+      },
+      {
+        "id": "math-0048",
+        "correct": true,
+        "predicted": "7",
+        "expected": "7",
+        "latency_ms": 10137.952,
+        "output_tokens": 420,
+        "category": "algebra",
+        "difficulty": "hard"
+      },
+      {
+        "id": "math-0049",
+        "correct": true,
+        "predicted": "2",
+        "expected": "2",
+        "latency_ms": 10867.57,
+        "output_tokens": 452,
+        "category": "number_theory",
+        "difficulty": "easy"
+      },
+      {
+        "id": "math-0050",
+        "correct": true,
+        "predicted": "1",
+        "expected": "1",
+        "latency_ms": 12818.373,
+        "output_tokens": 540,
+        "category": "number_theory",
+        "difficulty": "easy"
+      },
+      {
+        "id": "math-0051",
+        "correct": true,
+        "predicted": "1",
+        "expected": "1",
+        "latency_ms": 11310.041,
+        "output_tokens": 478,
+        "category": "number_theory",
+        "difficulty": "easy"
+      },
+      {
+        "id": "math-0052",
+        "correct": true,
+        "predicted": "1",
+        "expected": "1",
+        "latency_ms": 12049.932,
+        "output_tokens": 513,
+        "category": "number_theory",
+        "difficulty": "easy"
+      },
+      {
+        "id": "math-0053",
+        "correct": true,
+        "predicted": "2745",
+        "expected": "2745",
+        "latency_ms": 1109.867,
+        "output_tokens": 46,
+        "category": "number_theory",
+        "difficulty": "medium"
+      },
+      {
+        "id": "math-0054",
+        "correct": true,
+        "predicted": "3690",
+        "expected": "3690",
+        "latency_ms": 1107.022,
+        "output_tokens": 46,
+        "category": "number_theory",
+        "difficulty": "medium"
+      },
+      {
+        "id": "math-0055",
+        "correct": true,
+        "predicted": "470",
+        "expected": "470",
+        "latency_ms": 1077.23,
+        "output_tokens": 45,
+        "category": "number_theory",
+        "difficulty": "medium"
+      },
+      {
+        "id": "math-0056",
+        "correct": false,
+        "predicted": "",
+        "expected": "9",
+        "latency_ms": 99287.431,
+        "output_tokens": 4096,
+        "category": "number_theory",
+        "difficulty": "hard"
+      },
+      {
+        "id": "math-0057",
+        "correct": true,
+        "predicted": "21",
+        "expected": "21",
+        "latency_ms": 52228.466,
+        "output_tokens": 2179,
+        "category": "number_theory",
+        "difficulty": "hard"
+      },
+      {
+        "id": "math-0058",
+        "correct": false,
+        "predicted": "",
+        "expected": "13",
+        "latency_ms": 99492.181,
+        "output_tokens": 4096,
+        "category": "number_theory",
+        "difficulty": "hard"
+      },
+      {
+        "id": "math-0059",
+        "correct": true,
+        "predicted": "9",
+        "expected": "9",
+        "latency_ms": 23206.721,
+        "output_tokens": 977,
+        "category": "number_theory",
+        "difficulty": "hard"
+      },
+      {
+        "id": "math-0060",
+        "correct": true,
+        "predicted": "16",
+        "expected": "16",
+        "latency_ms": 21464.231,
+        "output_tokens": 885,
+        "category": "number_theory",
+        "difficulty": "hard"
+      },
+      {
+        "id": "math-0061",
+        "correct": true,
+        "predicted": "13",
+        "expected": "13",
+        "latency_ms": 23956.724,
+        "output_tokens": 976,
+        "category": "number_theory",
+        "difficulty": "hard"
+      },
+      {
+        "id": "math-0062",
+        "correct": true,
+        "predicted": "4",
+        "expected": "4",
+        "latency_ms": 21284.936,
+        "output_tokens": 867,
+        "category": "number_theory",
+        "difficulty": "hard"
+      },
+      {
+        "id": "math-0063",
+        "correct": true,
+        "predicted": "6",
+        "expected": "6",
+        "latency_ms": 14154.718,
+        "output_tokens": 575,
+        "category": "number_theory",
+        "difficulty": "medium"
+      },
+      {
+        "id": "math-0064",
+        "correct": true,
+        "predicted": "4",
+        "expected": "4",
+        "latency_ms": 17437.174,
+        "output_tokens": 705,
+        "category": "number_theory",
+        "difficulty": "medium"
+      },
+      {
+        "id": "math-0065",
+        "correct": true,
+        "predicted": "16",
+        "expected": "16",
+        "latency_ms": 11067.886,
+        "output_tokens": 441,
+        "category": "number_theory",
+        "difficulty": "medium"
+      },
+      {
+        "id": "math-0066",
+        "correct": true,
+        "predicted": "3870",
+        "expected": "3870",
+        "latency_ms": 27464.078,
+        "output_tokens": 1123,
+        "category": "number_theory",
+        "difficulty": "easy"
+      },
+      {
+        "id": "math-0067",
+        "correct": true,
+        "predicted": "586",
+        "expected": "586",
+        "latency_ms": 4347.166,
+        "output_tokens": 175,
+        "category": "number_theory",
+        "difficulty": "easy"
+      },
+      {
+        "id": "math-0068",
+        "correct": true,
+        "predicted": "1015",
+        "expected": "1015",
+        "latency_ms": 21827.09,
+        "output_tokens": 898,
+        "category": "number_theory",
+        "difficulty": "easy"
+      },
+      {
+        "id": "math-0069",
+        "correct": true,
+        "predicted": "1927",
+        "expected": "1927",
+        "latency_ms": 4181.696,
+        "output_tokens": 173,
+        "category": "geometry",
+        "difficulty": "easy"
+      },
+      {
+        "id": "math-0070",
+        "correct": true,
+        "predicted": "351",
+        "expected": "351",
+        "latency_ms": 2744.983,
+        "output_tokens": 114,
+        "category": "geometry",
+        "difficulty": "easy"
+      },
+      {
+        "id": "math-0071",
+        "correct": false,
+        "predicted": "",
+        "expected": "1845.0",
+        "latency_ms": 120.078,
+        "output_tokens": 3,
+        "category": "geometry",
+        "difficulty": "easy"
+      },
+      {
+        "id": "math-0072",
+        "correct": true,
+        "predicted": "520",
+        "expected": "520",
+        "latency_ms": 2506.738,
+        "output_tokens": 103,
+        "category": "geometry",
+        "difficulty": "easy"
+      },
+      {
+        "id": "math-0073",
+        "correct": true,
+        "predicted": "72",
+        "expected": "72",
+        "latency_ms": 5482.425,
+        "output_tokens": 226,
+        "category": "geometry",
+        "difficulty": "medium"
+      },
+      {
+        "id": "math-0074",
+        "correct": true,
+        "predicted": "333",
+        "expected": "333",
+        "latency_ms": 7570.463,
+        "output_tokens": 313,
+        "category": "geometry",
+        "difficulty": "easy"
+      },
+      {
+        "id": "math-0075",
+        "correct": true,
+        "predicted": "105",
+        "expected": "105",
+        "latency_ms": 7037.016,
+        "output_tokens": 289,
+        "category": "geometry",
+        "difficulty": "medium"
+      },
+      {
+        "id": "math-0076",
+        "correct": true,
+        "predicted": "102",
+        "expected": "102",
+        "latency_ms": 4507.084,
+        "output_tokens": 183,
+        "category": "geometry",
+        "difficulty": "easy"
+      },
+      {
+        "id": "math-0077",
+        "correct": true,
+        "predicted": "5026.54",
+        "expected": "5026.54",
+        "latency_ms": 7724.902,
+        "output_tokens": 327,
+        "category": "geometry",
+        "difficulty": "medium"
+      },
+      {
+        "id": "math-0078",
+        "correct": true,
+        "predicted": "1661.9",
+        "expected": "1661.9",
+        "latency_ms": 25002.681,
+        "output_tokens": 1055,
+        "category": "geometry",
+        "difficulty": "medium"
+      },
+      {
+        "id": "math-0079",
+        "correct": true,
+        "predicted": "37.7",
+        "expected": "37.7",
+        "latency_ms": 5877.017,
+        "output_tokens": 253,
+        "category": "geometry",
+        "difficulty": "medium"
+      },
+      {
+        "id": "math-0080",
+        "correct": true,
+        "predicted": "615.75",
+        "expected": "615.75",
+        "latency_ms": 9248.814,
+        "output_tokens": 399,
+        "category": "geometry",
+        "difficulty": "medium"
+      },
+      {
+        "id": "math-0081",
+        "correct": true,
+        "predicted": "1385.44",
+        "expected": "1385.44",
+        "latency_ms": 11738.583,
+        "output_tokens": 493,
+        "category": "geometry",
+        "difficulty": "medium"
+      },
+      {
+        "id": "math-0082",
+        "correct": true,
+        "predicted": "3888",
+        "expected": "3888",
+        "latency_ms": 4599.359,
+        "output_tokens": 197,
+        "category": "geometry",
+        "difficulty": "easy"
+      },
+      {
+        "id": "math-0083",
+        "correct": true,
+        "predicted": "13520",
+        "expected": "13520",
+        "latency_ms": 2100.891,
+        "output_tokens": 86,
+        "category": "geometry",
+        "difficulty": "easy"
+      },
+      {
+        "id": "math-0084",
+        "correct": true,
+        "predicted": "1260",
+        "expected": "1260",
+        "latency_ms": 3299.113,
+        "output_tokens": 137,
+        "category": "geometry",
+        "difficulty": "medium"
+      },
+      {
+        "id": "math-0085",
+        "correct": true,
+        "predicted": "2700",
+        "expected": "2700",
+        "latency_ms": 4517.981,
+        "output_tokens": 188,
+        "category": "geometry",
+        "difficulty": "medium"
+      },
+      {
+        "id": "math-0086",
+        "correct": true,
+        "predicted": "900",
+        "expected": "900",
+        "latency_ms": 4006.635,
+        "output_tokens": 165,
+        "category": "geometry",
+        "difficulty": "easy"
+      },
+      {
+        "id": "math-0087",
+        "correct": true,
+        "predicted": "1159",
+        "expected": "1159",
+        "latency_ms": 7066.266,
+        "output_tokens": 292,
+        "category": "geometry",
+        "difficulty": "easy"
+      },
+      {
+        "id": "math-0088",
+        "correct": true,
+        "predicted": "1128",
+        "expected": "1128",
+        "latency_ms": 7722.743,
+        "output_tokens": 321,
+        "category": "geometry",
+        "difficulty": "easy"
+      },
+      {
+        "id": "math-0089",
+        "correct": true,
+        "predicted": "37.5",
+        "expected": "37.5",
+        "latency_ms": 2214.449,
+        "output_tokens": 92,
+        "category": "word_problems",
+        "difficulty": "easy"
+      },
+      {
+        "id": "math-0090",
+        "correct": true,
+        "predicted": "45",
+        "expected": "45",
+        "latency_ms": 2768.12,
+        "output_tokens": 116,
+        "category": "word_problems",
+        "difficulty": "easy"
+      },
+      {
+        "id": "math-0091",
+        "correct": true,
+        "predicted": "192",
+        "expected": "192",
+        "latency_ms": 971.216,
+        "output_tokens": 39,
+        "category": "word_problems",
+        "difficulty": "easy"
+      },
+      {
+        "id": "math-0092",
+        "correct": true,
+        "predicted": "120",
+        "expected": "120",
+        "latency_ms": 2755.814,
+        "output_tokens": 115,
+        "category": "word_problems",
+        "difficulty": "easy"
+      },
+      {
+        "id": "math-0093",
+        "correct": true,
+        "predicted": "3.43",
+        "expected": "3.43",
+        "latency_ms": 10209.617,
+        "output_tokens": 441,
+        "category": "word_problems",
+        "difficulty": "hard"
+      },
+      {
+        "id": "math-0094",
+        "correct": true,
+        "predicted": "2",
+        "expected": "2",
+        "latency_ms": 10115.796,
+        "output_tokens": 437,
+        "category": "word_problems",
+        "difficulty": "hard"
+      },
+      {
+        "id": "math-0095",
+        "correct": true,
+        "predicted": "1.33",
+        "expected": "1.33",
+        "latency_ms": 9427.789,
+        "output_tokens": 407,
+        "category": "word_problems",
+        "difficulty": "hard"
+      },
+      {
+        "id": "math-0096",
+        "correct": false,
+        "predicted": "4.8",
+        "expected": "2.18",
+        "latency_ms": 8956.892,
+        "output_tokens": 385,
+        "category": "word_problems",
+        "difficulty": "hard"
+      },
+      {
+        "id": "math-0097",
+        "correct": true,
+        "predicted": "1143",
+        "expected": "1142.99",
+        "latency_ms": 31481.603,
+        "output_tokens": 1344,
+        "category": "word_problems",
+        "difficulty": "hard"
+      },
+      {
+        "id": "math-0098",
+        "correct": true,
+        "predicted": "2095.2",
+        "expected": "2095.2",
+        "latency_ms": 7513.438,
+        "output_tokens": 321,
+        "category": "word_problems",
+        "difficulty": "hard"
+      },
+      {
+        "id": "math-0099",
+        "correct": true,
+        "predicted": "659.12",
+        "expected": "659.12",
+        "latency_ms": 7532.307,
+        "output_tokens": 322,
+        "category": "word_problems",
+        "difficulty": "hard"
+      },
+      {
+        "id": "math-0100",
+        "correct": true,
+        "predicted": "377.4",
+        "expected": "377.4",
+        "latency_ms": 8101.113,
+        "output_tokens": 348,
+        "category": "word_problems",
+        "difficulty": "hard"
+      },
+      {
+        "id": "math-0101",
+        "correct": true,
+        "predicted": "32.5",
+        "expected": "32.5",
+        "latency_ms": 9203.108,
+        "output_tokens": 394,
+        "category": "word_problems",
+        "difficulty": "hard"
+      },
+      {
+        "id": "math-0102",
+        "correct": true,
+        "predicted": "44.57",
+        "expected": "44.57",
+        "latency_ms": 35463.266,
+        "output_tokens": 1508,
+        "category": "word_problems",
+        "difficulty": "hard"
+      },
+      {
+        "id": "math-0103",
+        "correct": true,
+        "predicted": "34.57",
+        "expected": "34.57",
+        "latency_ms": 18325.508,
+        "output_tokens": 785,
+        "category": "word_problems",
+        "difficulty": "hard"
+      },
+      {
+        "id": "math-0104",
+        "correct": true,
+        "predicted": "23.57",
+        "expected": "23.57",
+        "latency_ms": 12885.757,
+        "output_tokens": 549,
+        "category": "word_problems",
+        "difficulty": "hard"
+      },
+      {
+        "id": "math-0105",
+        "correct": true,
+        "predicted": "49",
+        "expected": "49",
+        "latency_ms": 3596.935,
+        "output_tokens": 150,
+        "category": "word_problems",
+        "difficulty": "medium"
+      },
+      {
+        "id": "math-0106",
+        "correct": true,
+        "predicted": "31",
+        "expected": "31",
+        "latency_ms": 4960.047,
+        "output_tokens": 207,
+        "category": "word_problems",
+        "difficulty": "medium"
+      },
+      {
+        "id": "math-0107",
+        "correct": true,
+        "predicted": "43",
+        "expected": "43",
+        "latency_ms": 3200.01,
+        "output_tokens": 133,
+        "category": "word_problems",
+        "difficulty": "medium"
+      },
+      {
+        "id": "math-0108",
+        "correct": true,
+        "predicted": "22",
+        "expected": "22",
+        "latency_ms": 4501.682,
+        "output_tokens": 188,
+        "category": "word_problems",
+        "difficulty": "medium"
+      },
+      {
+        "id": "math-0109",
+        "correct": true,
+        "predicted": "2850",
+        "expected": "2850",
+        "latency_ms": 4257.416,
+        "output_tokens": 178,
+        "category": "word_problems",
+        "difficulty": "medium"
+      },
+      {
+        "id": "math-0110",
+        "correct": true,
+        "predicted": "3072",
+        "expected": "3072",
+        "latency_ms": 3674.595,
+        "output_tokens": 156,
+        "category": "word_problems",
+        "difficulty": "medium"
+      },
+      {
+        "id": "math-0111",
+        "correct": true,
+        "predicted": "984",
+        "expected": "984",
+        "latency_ms": 2425.214,
+        "output_tokens": 103,
+        "category": "word_problems",
+        "difficulty": "medium"
+      },
+      {
+        "id": "math-0112",
+        "correct": true,
+        "predicted": "1995",
+        "expected": "1995",
+        "latency_ms": 1973.384,
+        "output_tokens": 81,
+        "category": "word_problems",
+        "difficulty": "medium"
+      },
+      {
+        "id": "math-0113",
+        "correct": true,
+        "predicted": "-29",
+        "expected": "-29",
+        "latency_ms": 2897.643,
+        "output_tokens": 121,
+        "category": "sequences",
+        "difficulty": "easy"
+      },
+      {
+        "id": "math-0114",
+        "correct": true,
+        "predicted": "-643",
+        "expected": "-643",
+        "latency_ms": 7148.915,
+        "output_tokens": 303,
+        "category": "sequences",
+        "difficulty": "easy"
+      },
+      {
+        "id": "math-0115",
+        "correct": true,
+        "predicted": "-157",
+        "expected": "-157",
+        "latency_ms": 5457.027,
+        "output_tokens": 232,
+        "category": "sequences",
+        "difficulty": "easy"
+      },
+      {
+        "id": "math-0116",
+        "correct": true,
+        "predicted": "1536",
+        "expected": "1536",
+        "latency_ms": 3439.079,
+        "output_tokens": 147,
+        "category": "sequences",
+        "difficulty": "medium"
+      },
+      {
+        "id": "math-0117",
+        "correct": true,
+        "predicted": "17578125",
+        "expected": "17578125",
+        "latency_ms": 10870.336,
+        "output_tokens": 475,
+        "category": "sequences",
+        "difficulty": "medium"
+      },
+      {
+        "id": "math-0118",
+        "correct": false,
+        "predicted": "128",
+        "expected": "1024",
+        "latency_ms": 948.721,
+        "output_tokens": 40,
+        "category": "sequences",
+        "difficulty": "medium"
+      },
+      {
+        "id": "math-0119",
+        "correct": true,
+        "predicted": "5797",
+        "expected": "5797",
+        "latency_ms": 18443.596,
+        "output_tokens": 801,
+        "category": "sequences",
+        "difficulty": "hard"
+      },
+      {
+        "id": "math-0120",
+        "correct": true,
+        "predicted": "16965",
+        "expected": "16965",
+        "latency_ms": 14033.748,
+        "output_tokens": 614,
+        "category": "sequences",
+        "difficulty": "hard"
+      },
+      {
+        "id": "math-0121",
+        "correct": true,
+        "predicted": "3553",
+        "expected": "3553",
+        "latency_ms": 14700.089,
+        "output_tokens": 643,
+        "category": "sequences",
+        "difficulty": "hard"
+      },
+      {
+        "id": "math-0122",
+        "correct": true,
+        "predicted": "5778",
+        "expected": "5778",
+        "latency_ms": 14980.045,
+        "output_tokens": 647,
+        "category": "sequences",
+        "difficulty": "medium"
+      },
+      {
+        "id": "math-0123",
+        "correct": true,
+        "predicted": "2495",
+        "expected": "2495",
+        "latency_ms": 13057.18,
+        "output_tokens": 561,
+        "category": "sequences",
+        "difficulty": "medium"
+      },
+      {
+        "id": "math-0124",
+        "correct": true,
+        "predicted": "2385",
+        "expected": "2385",
+        "latency_ms": 13509.178,
+        "output_tokens": 580,
+        "category": "sequences",
+        "difficulty": "medium"
+      },
+      {
+        "id": "math-0125",
+        "correct": true,
+        "predicted": "226",
+        "expected": "226",
+        "latency_ms": 11655.76,
+        "output_tokens": 500,
+        "category": "sequences",
+        "difficulty": "hard"
+      },
+      {
+        "id": "math-0126",
+        "correct": true,
+        "predicted": "131",
+        "expected": "131",
+        "latency_ms": 8641.505,
+        "output_tokens": 367,
+        "category": "sequences",
+        "difficulty": "hard"
+      },
+      {
+        "id": "math-0127",
+        "correct": true,
+        "predicted": "68",
+        "expected": "68",
+        "latency_ms": 13251.196,
+        "output_tokens": 569,
+        "category": "sequences",
+        "difficulty": "hard"
+      },
+      {
+        "id": "math-0128",
+        "correct": true,
+        "predicted": "2470",
+        "expected": "2470",
+        "latency_ms": 15040.347,
+        "output_tokens": 650,
+        "category": "sequences",
+        "difficulty": "medium"
+      },
+      {
+        "id": "math-0129",
+        "correct": true,
+        "predicted": "16206",
+        "expected": "16206",
+        "latency_ms": 27132.631,
+        "output_tokens": 1171,
+        "category": "sequences",
+        "difficulty": "medium"
+      },
+      {
+        "id": "math-0130",
+        "correct": true,
+        "predicted": "10416",
+        "expected": "10416",
+        "latency_ms": 22683.857,
+        "output_tokens": 999,
+        "category": "sequences",
+        "difficulty": "medium"
+      }
+    ]
+  },
+  "failures": [],
+  "conditions": {
+    "dedicated": true,
+    "detail": "Only this SGLang server (and, for the speed and long-context rows, the small cache-busting proxy in front of it) was resident; the image server that normally runs on the box was stopped, and nvidia-smi listed no other compute process. The only other running container was a small host metrics exporter (python, about 10 MB, no GPU).",
+    "isolation_check": "nvidia-smi compute apps -> 1074847, .venv/bin/python 1074909, sglang::scheduler ; docker ps -> 1 containers; load1 at start 1.32"
+  },
+  "gotchas": [
+    {
+      "severity": "info",
+      "text": "Tool calling needs SGLang with the minicpm5 tool-call parser (sgl-project/sglang#25600). The openbmb cookbook says to install SGLang from main because v0.5.12.post1 lacked it; the PyPI 0.5.20 wheel used here ships it, so no source build is needed any more. The model writes XML tool calls (<function name=\"x\"><param name=\"k\">v</param></function>) and they come back as OpenAI tool_calls with finish_reason tool_calls, with thinking on and off."
+    },
+    {
+      "severity": "info",
+      "text": "SGLang has no MiniCPM5 reasoning parser, but the model uses plain <think> ... </think>, so --reasoning-parser qwen3 splits it into reasoning_content. With enable_thinking left unset the template adds no <think> prefix; the model opens the tag itself and the qwen3 parser still catches it."
+    },
+    {
+      "severity": "info",
+      "text": "flashinfer JIT-compiles its prefill kernels on the first request and shells out to ninja. In a venv that is not activated the first prefill dies with FileNotFoundError: ninja and the scheduler exits; put the venv bin directory on PATH before starting the server."
+    },
+    {
+      "severity": "info",
+      "text": "In a llama.cpp deployment the card warns that the default min_p 0.05 causes repetition and asks for min_p 0; the SGLang default min_p is already 0."
+    }
+  ],
+  "derived": {
+    "cost_per_1m_output_tokens_usd": null,
+    "tokens_per_watt": null,
+    "tok_s_per_gb_bandwidth": null,
+    "bandwidth_efficiency": null,
+    "memory_headroom_gb": 38.655
+  },
+  "raw": {
+    "harness": "atlas-bench",
+    "harness_version": "0.1.0",
+    "sha256": "605cb5ce9c3c48d99c2c740349a676fd8bc296aa271335ec6bbd006485c8d05d",
+    "payload_path": null,
+    "payload": {
+      "scorer": "numeric",
+      "scorers_used": [
+        "numeric"
+      ],
+      "engine_endpoint": {
+        "attached": true,
+        "base_url": "http://127.0.0.1:30000/v1",
+        "served_model_id": "MiniCPM5-2B",
+        "advertised_models": [
+          "MiniCPM5-2B"
+        ]
+      }
+    },
+    "truncated": false
+  },
+  "provenance": {
+    "github_login": "0xBakeer",
+    "github_user_id": null,
+    "started_at": "2026-09-22T17:14:33Z",
+    "finished_at": "2026-09-22T17:20:13Z",
+    "submitted_at": null,
+    "commit": null,
+    "pr": null,
+    "method": "atlas-bench",
+    "agent": null,
+    "notes": "Weights: openbmb/MiniCPM5-2B at 12a3808a956f869c767195e9266b59c4d21d92e2, BF16, one 5.03 GB safetensors shard, sha256 checked against the Hub. SGLang 0.5.20 from PyPI in a Python 3.12 venv (uv) with torch 2.13.0+cu130, flashinfer-python 0.6.18, sglang-kernel 0.4.7, triton 3.7.1, transformers 5.12.1, xgrammar 0.2.1; CUDA 13.0, driver 580.173.02, Ubuntu 24.04.4, kernel 6.17.0-1029-nvidia. Environment SGLANG_ALLOW_OVERWRITE_LONGER_CONTEXT_LEN=1 and SGLANG_DISABLE_CUDNN_CHECK=1 as the MiniCPM SGLang cookbook recommends, the venv bin directory on PATH (flashinfer JIT needs ninja). Server flags follow the openbmb SGLang cookbook (docs/deployment/sglang.md): --dtype bfloat16 --context-length 131072 --tool-call-parser minicpm5, plus --reasoning-parser qwen3 so the <think> block lands in reasoning_content; --mem-fraction-static 0.75 instead of the cookbook 0.85 to leave the unified-memory box about 20 GB of host headroom (the KV pool still holds about 2 million tokens). Radix prefix cache, chunked prefill 8192, CUDA graphs and the flashinfer attention backend are SGLang defaults. Every request sets temperature 0 and seed 42 as the workloads specify. The chat template has three thinking states: enable_thinking true prefills <think>, false prefills an empty think block, and unset lets the model decide, which on almost every prompt means it thinks. Speed and long-context depth rows send chat_template_kwargs enable_thinking false; eval and needle rows leave it unset (the template default). Load: weights 35.8 s, then CUDA graph capture; SGLang reported max_total_num_tokens 2,035,807 and chunked_prefill_size 8192, and the box had about 21 GB of host memory available after start. max_running_requests is passed explicitly as 512 (the SGLang default on this box was 4096) so the concurrency limit is recorded in the row args and can be read back from /get_server_info."
+  },
+  "verification": {
+    "level": "self-reported",
+    "reproduced_by": [],
+    "flags": []
+  }
+}

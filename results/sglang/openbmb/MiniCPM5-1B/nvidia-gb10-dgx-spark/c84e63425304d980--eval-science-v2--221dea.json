@@ -1,0 +1,1437 @@
+{
+  "schema_version": 1,
+  "run_id": "c84e63425304d980--eval-science-v2--221dea",
+  "config_id": "c84e63425304d980",
+  "cell_id": "0e7d746e67fa",
+  "workload_id": "eval-science-v2",
+  "kind": "eval",
+  "engine": {
+    "id": "sglang",
+    "version": "0.5.20",
+    "commit": null,
+    "build": "pypi sglang==0.5.20 (py3.12 venv, torch 2.13.0+cu130, flashinfer-python 0.6.18, sglang-kernel 0.4.7)",
+    "container": null,
+    "install_method": "pip"
+  },
+  "model": {
+    "id": "openbmb/MiniCPM5-1B",
+    "quant_id": "bf16",
+    "hf_id": "openbmb/MiniCPM5-1B",
+    "revision": "87179e5c1f455ef22e6223592d2d61351b525bfc",
+    "dtype": "auto",
+    "local_path": null
+  },
+  "hardware": {
+    "id": "nvidia-gb10-dgx-spark",
+    "count": 1,
+    "driver": "580.173.02",
+    "cuda": "13.0",
+    "host": {
+      "cpu": "Cortex-A725",
+      "cpu_cores": 20,
+      "ram_gb": 121.6,
+      "os": "Ubuntu 24.04.4 LTS",
+      "kernel": "6.17.0-1029-nvidia",
+      "arch": "aarch64"
+    },
+    "fingerprint": "sha256:52ea2bdd513719724db88c162b6cc2c9fb4e5b67e02dbe41b9de00687acefb91",
+    "captured": {
+      "nvidia_smi": {
+        "driver": "580.173.02",
+        "cuda": "13.0",
+        "products": [
+          "NVIDIA GB10"
+        ],
+        "fb_memory_total_mib": 0.0
+      },
+      "lscpu": {
+        "architecture": "aarch64",
+        "cpus": "20",
+        "vendor_id": "ARM",
+        "model_name": "Cortex-A725",
+        "cores_per_socket": "10",
+        "sockets": "1",
+        "cpu_max_mhz": "2808.0000"
+      }
+    }
+  },
+  "args": {
+    "dtype": "bfloat16",
+    "context-length": 131072,
+    "mem-fraction-static": 0.75,
+    "tool-call-parser": "minicpm5",
+    "reasoning-parser": "qwen3",
+    "max-running-requests": 512
+  },
+  "args_canonical": "@build=pypi sglang==0.5.20 (py3.12 venv, torch 2.13.0+cu130, flashinfer-python 0.6.18, sglang-kernel 0.4.7);@dtype=auto;@quant=bf16;context-length=131072;dtype=bfloat16;max-running-requests=512;mem-fraction-static=0.75;reasoning-parser=qwen3;tool-call-parser=minicpm5",
+  "serve_command": null,
+  "workload": {
+    "id": "eval-science-v2",
+    "resolved_params": {
+      "dataset_id": "eval-science-v2",
+      "suite": "science",
+      "scorer": "numeric",
+      "items": 120,
+      "concurrency": 4,
+      "max_output_tokens": 4096,
+      "timeout_s": 300.0,
+      "temperature": 0,
+      "reasoning": "default",
+      "dataset_categories": null,
+      "dataset_target_tokens": null,
+      "pass_threshold": null,
+      "seed": 42
+    }
+  },
+  "env": {
+    "SGLANG_ALLOW_OVERWRITE_LONGER_CONTEXT_LEN": "1",
+    "SGLANG_DISABLE_CUDNN_CHECK": "1"
+  },
+  "metrics": {
+    "requests_total": 120,
+    "requests_ok": 120,
+    "requests_failed": 0,
+    "success_rate": 1.0,
+    "duration_s": 238.23,
+    "input_tokens_total": 10076,
+    "output_tokens_total": 95142,
+    "e2e_ms": {
+      "mean": 7698.133,
+      "p50": 4970.579,
+      "p90": 16612.418,
+      "p95": 40151.181,
+      "p99": 40720.762,
+      "min": 38.207,
+      "max": 40771.39
+    },
+    "vram_peak_gb": 89.374,
+    "ram_peak_gb": 97.894,
+    "power_avg_w": 31.62,
+    "power_peak_w": 34.53,
+    "energy_wh": 2.09,
+    "gpu_util_avg_pct": 96.0,
+    "temp_max_c": 59.0,
+    "thermal_throttle_detected": false
+  },
+  "scores": {
+    "suite": "science",
+    "total": 120,
+    "correct": 58,
+    "accuracy": 0.483333,
+    "success_rate": 1.0,
+    "by_category": {
+      "chemistry": {
+        "total": 20,
+        "correct": 8
+      },
+      "electricity": {
+        "total": 20,
+        "correct": 7
+      },
+      "mechanics": {
+        "total": 20,
+        "correct": 10
+      },
+      "radioactivity_units": {
+        "total": 20,
+        "correct": 15
+      },
+      "thermodynamics": {
+        "total": 20,
+        "correct": 10
+      },
+      "waves_optics": {
+        "total": 20,
+        "correct": 8
+      }
+    },
+    "by_difficulty": {
+      "easy": {
+        "total": 22,
+        "correct": 0
+      },
+      "hard": {
+        "total": 51,
+        "correct": 27
+      },
+      "medium": {
+        "total": 47,
+        "correct": 31
+      }
+    },
+    "avg_output_tokens": 792.85,
+    "avg_latency_ms": 7698.13,
+    "failures": 0,
+    "items": [
+      {
+        "id": "sci-0001",
+        "correct": false,
+        "predicted": "2000",
+        "expected": "2",
+        "latency_ms": 54.392,
+        "output_tokens": 3,
+        "category": "mechanics",
+        "difficulty": "easy"
+      },
+      {
+        "id": "sci-0002",
+        "correct": false,
+        "predicted": "2000",
+        "expected": "4",
+        "latency_ms": 53.928,
+        "output_tokens": 3,
+        "category": "mechanics",
+        "difficulty": "easy"
+      },
+      {
+        "id": "sci-0003",
+        "correct": false,
+        "predicted": "2000",
+        "expected": "3",
+        "latency_ms": 52.441,
+        "output_tokens": 3,
+        "category": "mechanics",
+        "difficulty": "easy"
+      },
+      {
+        "id": "sci-0004",
+        "correct": true,
+        "predicted": "120",
+        "expected": "120",
+        "latency_ms": 4307.785,
+        "output_tokens": 459,
+        "category": "mechanics",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sci-0005",
+        "correct": true,
+        "predicted": "96",
+        "expected": "96",
+        "latency_ms": 4641.905,
+        "output_tokens": 493,
+        "category": "mechanics",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sci-0006",
+        "correct": true,
+        "predicted": "32",
+        "expected": "32",
+        "latency_ms": 4333.501,
+        "output_tokens": 461,
+        "category": "mechanics",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sci-0007",
+        "correct": true,
+        "predicted": "5",
+        "expected": "5",
+        "latency_ms": 10964.547,
+        "output_tokens": 1179,
+        "category": "mechanics",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sci-0008",
+        "correct": false,
+        "predicted": "6.5",
+        "expected": "4",
+        "latency_ms": 7900.661,
+        "output_tokens": 849,
+        "category": "mechanics",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sci-0009",
+        "correct": true,
+        "predicted": "5",
+        "expected": "5",
+        "latency_ms": 7913.42,
+        "output_tokens": 852,
+        "category": "mechanics",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sci-0010",
+        "correct": true,
+        "predicted": "5",
+        "expected": "5",
+        "latency_ms": 9155.268,
+        "output_tokens": 986,
+        "category": "mechanics",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sci-0011",
+        "correct": true,
+        "predicted": "3",
+        "expected": "3",
+        "latency_ms": 6368.943,
+        "output_tokens": 679,
+        "category": "mechanics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sci-0012",
+        "correct": true,
+        "predicted": "4",
+        "expected": "4",
+        "latency_ms": 6754.405,
+        "output_tokens": 721,
+        "category": "mechanics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sci-0013",
+        "correct": true,
+        "predicted": "1",
+        "expected": "1",
+        "latency_ms": 5027.435,
+        "output_tokens": 540,
+        "category": "mechanics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sci-0014",
+        "correct": true,
+        "predicted": "4",
+        "expected": "4",
+        "latency_ms": 5924.379,
+        "output_tokens": 631,
+        "category": "mechanics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sci-0015",
+        "correct": false,
+        "predicted": "1200",
+        "expected": "108",
+        "latency_ms": 50.332,
+        "output_tokens": 3,
+        "category": "mechanics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sci-0016",
+        "correct": false,
+        "predicted": "1200",
+        "expected": "72",
+        "latency_ms": 58.672,
+        "output_tokens": 3,
+        "category": "mechanics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sci-0017",
+        "correct": false,
+        "predicted": "1200",
+        "expected": "28.8",
+        "latency_ms": 49.768,
+        "output_tokens": 3,
+        "category": "mechanics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sci-0018",
+        "correct": false,
+        "predicted": "0",
+        "expected": "8",
+        "latency_ms": 40144.803,
+        "output_tokens": 4096,
+        "category": "mechanics",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sci-0019",
+        "correct": false,
+        "predicted": "0.5",
+        "expected": "16",
+        "latency_ms": 40143.112,
+        "output_tokens": 4096,
+        "category": "mechanics",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sci-0020",
+        "correct": false,
+        "predicted": "0",
+        "expected": "10",
+        "latency_ms": 40272.365,
+        "output_tokens": 4096,
+        "category": "mechanics",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sci-0021",
+        "correct": true,
+        "predicted": "1",
+        "expected": "1",
+        "latency_ms": 7014.731,
+        "output_tokens": 759,
+        "category": "electricity",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sci-0022",
+        "correct": false,
+        "predicted": "3.5",
+        "expected": "2",
+        "latency_ms": 7402.961,
+        "output_tokens": 765,
+        "category": "electricity",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sci-0023",
+        "correct": true,
+        "predicted": "1",
+        "expected": "1",
+        "latency_ms": 8097.9,
+        "output_tokens": 814,
+        "category": "electricity",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sci-0024",
+        "correct": false,
+        "predicted": "2",
+        "expected": "1",
+        "latency_ms": 40771.39,
+        "output_tokens": 4096,
+        "category": "electricity",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sci-0025",
+        "correct": false,
+        "predicted": "8",
+        "expected": "1",
+        "latency_ms": 40476.107,
+        "output_tokens": 4096,
+        "category": "electricity",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sci-0026",
+        "correct": false,
+        "predicted": "90",
+        "expected": "72",
+        "latency_ms": 5964.781,
+        "output_tokens": 616,
+        "category": "electricity",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sci-0027",
+        "correct": false,
+        "predicted": "72",
+        "expected": "27",
+        "latency_ms": 6157.557,
+        "output_tokens": 643,
+        "category": "electricity",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sci-0028",
+        "correct": false,
+        "predicted": "27",
+        "expected": "3",
+        "latency_ms": 7252.344,
+        "output_tokens": 747,
+        "category": "electricity",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sci-0029",
+        "correct": true,
+        "predicted": "27",
+        "expected": "27",
+        "latency_ms": 6642.792,
+        "output_tokens": 678,
+        "category": "electricity",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sci-0030",
+        "correct": false,
+        "predicted": "2",
+        "expected": "4.11",
+        "latency_ms": 68.207,
+        "output_tokens": 4,
+        "category": "electricity",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sci-0031",
+        "correct": false,
+        "predicted": "0",
+        "expected": "4.12",
+        "latency_ms": 57.424,
+        "output_tokens": 4,
+        "category": "electricity",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sci-0032",
+        "correct": false,
+        "predicted": "2",
+        "expected": "6.86",
+        "latency_ms": 59.264,
+        "output_tokens": 4,
+        "category": "electricity",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sci-0033",
+        "correct": false,
+        "predicted": "2",
+        "expected": "5.74",
+        "latency_ms": 58.672,
+        "output_tokens": 4,
+        "category": "electricity",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sci-0034",
+        "correct": true,
+        "predicted": "14.4",
+        "expected": "14.4",
+        "latency_ms": 4291.037,
+        "output_tokens": 436,
+        "category": "electricity",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sci-0035",
+        "correct": true,
+        "predicted": "8",
+        "expected": "8",
+        "latency_ms": 4538.425,
+        "output_tokens": 460,
+        "category": "electricity",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sci-0036",
+        "correct": true,
+        "predicted": "10",
+        "expected": "10",
+        "latency_ms": 4443.5,
+        "output_tokens": 444,
+        "category": "electricity",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sci-0037",
+        "correct": true,
+        "predicted": "67.5",
+        "expected": "67.5",
+        "latency_ms": 4687.928,
+        "output_tokens": 462,
+        "category": "electricity",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sci-0038",
+        "correct": false,
+        "predicted": "0",
+        "expected": "8",
+        "latency_ms": 39.345,
+        "output_tokens": 2,
+        "category": "electricity",
+        "difficulty": "easy"
+      },
+      {
+        "id": "sci-0039",
+        "correct": false,
+        "predicted": "0",
+        "expected": "6",
+        "latency_ms": 39.132,
+        "output_tokens": 2,
+        "category": "electricity",
+        "difficulty": "easy"
+      },
+      {
+        "id": "sci-0040",
+        "correct": false,
+        "predicted": "50",
+        "expected": "10",
+        "latency_ms": 39.823,
+        "output_tokens": 2,
+        "category": "electricity",
+        "difficulty": "easy"
+      },
+      {
+        "id": "sci-0041",
+        "correct": true,
+        "predicted": "43",
+        "expected": "43",
+        "latency_ms": 5092.003,
+        "output_tokens": 514,
+        "category": "thermodynamics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sci-0042",
+        "correct": true,
+        "predicted": "32",
+        "expected": "32",
+        "latency_ms": 6450.041,
+        "output_tokens": 660,
+        "category": "thermodynamics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sci-0043",
+        "correct": true,
+        "predicted": "44",
+        "expected": "44",
+        "latency_ms": 6902.903,
+        "output_tokens": 709,
+        "category": "thermodynamics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sci-0044",
+        "correct": true,
+        "predicted": "34",
+        "expected": "34",
+        "latency_ms": 9383.092,
+        "output_tokens": 944,
+        "category": "thermodynamics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sci-0045",
+        "correct": true,
+        "predicted": "30",
+        "expected": "30",
+        "latency_ms": 9421.575,
+        "output_tokens": 933,
+        "category": "thermodynamics",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sci-0046",
+        "correct": true,
+        "predicted": "30",
+        "expected": "30",
+        "latency_ms": 15336.639,
+        "output_tokens": 1558,
+        "category": "thermodynamics",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sci-0047",
+        "correct": false,
+        "predicted": "8.18",
+        "expected": "30",
+        "latency_ms": 8242.336,
+        "output_tokens": 839,
+        "category": "thermodynamics",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sci-0048",
+        "correct": false,
+        "predicted": "7",
+        "expected": "80",
+        "latency_ms": 39142.069,
+        "output_tokens": 4096,
+        "category": "thermodynamics",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sci-0049",
+        "correct": false,
+        "predicted": "1890",
+        "expected": "1995",
+        "latency_ms": 6870.144,
+        "output_tokens": 725,
+        "category": "thermodynamics",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sci-0050",
+        "correct": false,
+        "predicted": "2190",
+        "expected": "2310",
+        "latency_ms": 6876.781,
+        "output_tokens": 737,
+        "category": "thermodynamics",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sci-0051",
+        "correct": false,
+        "predicted": "2235",
+        "expected": "2835",
+        "latency_ms": 6274.1,
+        "output_tokens": 677,
+        "category": "thermodynamics",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sci-0052",
+        "correct": false,
+        "predicted": "714",
+        "expected": "1050",
+        "latency_ms": 6347.392,
+        "output_tokens": 685,
+        "category": "thermodynamics",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sci-0053",
+        "correct": false,
+        "predicted": "173.86",
+        "expected": "0.17",
+        "latency_ms": 4833.787,
+        "output_tokens": 511,
+        "category": "thermodynamics",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sci-0054",
+        "correct": true,
+        "predicted": "0.55",
+        "expected": "0.55",
+        "latency_ms": 5782.519,
+        "output_tokens": 608,
+        "category": "thermodynamics",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sci-0055",
+        "correct": false,
+        "predicted": "563",
+        "expected": "0.56",
+        "latency_ms": 4913.724,
+        "output_tokens": 518,
+        "category": "thermodynamics",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sci-0056",
+        "correct": false,
+        "predicted": "1127",
+        "expected": "1.13",
+        "latency_ms": 4277.083,
+        "output_tokens": 450,
+        "category": "thermodynamics",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sci-0057",
+        "correct": true,
+        "predicted": "180",
+        "expected": "180",
+        "latency_ms": 5346.824,
+        "output_tokens": 563,
+        "category": "thermodynamics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sci-0058",
+        "correct": true,
+        "predicted": "300",
+        "expected": "300",
+        "latency_ms": 24010.525,
+        "output_tokens": 2487,
+        "category": "thermodynamics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sci-0059",
+        "correct": false,
+        "predicted": "80",
+        "expected": "180",
+        "latency_ms": 6310.222,
+        "output_tokens": 660,
+        "category": "thermodynamics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sci-0060",
+        "correct": true,
+        "predicted": "200",
+        "expected": "200",
+        "latency_ms": 5066.939,
+        "output_tokens": 526,
+        "category": "thermodynamics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sci-0061",
+        "correct": false,
+        "predicted": "18",
+        "expected": "36",
+        "latency_ms": 8484.039,
+        "output_tokens": 869,
+        "category": "chemistry",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sci-0062",
+        "correct": true,
+        "predicted": "72",
+        "expected": "72",
+        "latency_ms": 8535.498,
+        "output_tokens": 868,
+        "category": "chemistry",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sci-0063",
+        "correct": false,
+        "predicted": "18",
+        "expected": "72",
+        "latency_ms": 7143.311,
+        "output_tokens": 734,
+        "category": "chemistry",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sci-0064",
+        "correct": true,
+        "predicted": "36",
+        "expected": "36",
+        "latency_ms": 7725.188,
+        "output_tokens": 807,
+        "category": "chemistry",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sci-0065",
+        "correct": false,
+        "predicted": "51",
+        "expected": "85",
+        "latency_ms": 8542.391,
+        "output_tokens": 903,
+        "category": "chemistry",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sci-0066",
+        "correct": true,
+        "predicted": "51",
+        "expected": "51",
+        "latency_ms": 22358.674,
+        "output_tokens": 2357,
+        "category": "chemistry",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sci-0067",
+        "correct": false,
+        "predicted": "136",
+        "expected": "102",
+        "latency_ms": 7356.8,
+        "output_tokens": 797,
+        "category": "chemistry",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sci-0068",
+        "correct": true,
+        "predicted": "51",
+        "expected": "51",
+        "latency_ms": 7323.511,
+        "output_tokens": 795,
+        "category": "chemistry",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sci-0069",
+        "correct": false,
+        "predicted": "0.2353",
+        "expected": "0.02",
+        "latency_ms": 15973.945,
+        "output_tokens": 1685,
+        "category": "chemistry",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sci-0070",
+        "correct": false,
+        "predicted": "200",
+        "expected": "0.005",
+        "latency_ms": 39982.519,
+        "output_tokens": 4096,
+        "category": "chemistry",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sci-0071",
+        "correct": false,
+        "predicted": "43.6",
+        "expected": "0.04",
+        "latency_ms": 5133.06,
+        "output_tokens": 537,
+        "category": "chemistry",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sci-0072",
+        "correct": false,
+        "predicted": "10",
+        "expected": "0.01",
+        "latency_ms": 40481.009,
+        "output_tokens": 4096,
+        "category": "chemistry",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sci-0073",
+        "correct": false,
+        "predicted": "0.9",
+        "expected": "90",
+        "latency_ms": 57.085,
+        "output_tokens": 4,
+        "category": "chemistry",
+        "difficulty": "easy"
+      },
+      {
+        "id": "sci-0074",
+        "correct": false,
+        "predicted": "0.2",
+        "expected": "60",
+        "latency_ms": 58.0,
+        "output_tokens": 4,
+        "category": "chemistry",
+        "difficulty": "easy"
+      },
+      {
+        "id": "sci-0075",
+        "correct": false,
+        "predicted": "0.65",
+        "expected": "65",
+        "latency_ms": 57.67,
+        "output_tokens": 4,
+        "category": "chemistry",
+        "difficulty": "easy"
+      },
+      {
+        "id": "sci-0076",
+        "correct": false,
+        "predicted": "0.72",
+        "expected": "70",
+        "latency_ms": 58.034,
+        "output_tokens": 4,
+        "category": "chemistry",
+        "difficulty": "easy"
+      },
+      {
+        "id": "sci-0077",
+        "correct": true,
+        "predicted": "24",
+        "expected": "24",
+        "latency_ms": 4558.651,
+        "output_tokens": 474,
+        "category": "chemistry",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sci-0078",
+        "correct": true,
+        "predicted": "120",
+        "expected": "120",
+        "latency_ms": 3580.635,
+        "output_tokens": 373,
+        "category": "chemistry",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sci-0079",
+        "correct": true,
+        "predicted": "72",
+        "expected": "72",
+        "latency_ms": 3650.355,
+        "output_tokens": 378,
+        "category": "chemistry",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sci-0080",
+        "correct": true,
+        "predicted": "48",
+        "expected": "48",
+        "latency_ms": 4487.839,
+        "output_tokens": 462,
+        "category": "chemistry",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sci-0081",
+        "correct": false,
+        "predicted": "2000000000",
+        "expected": "3",
+        "latency_ms": 66.36,
+        "output_tokens": 5,
+        "category": "waves_optics",
+        "difficulty": "easy"
+      },
+      {
+        "id": "sci-0082",
+        "correct": false,
+        "predicted": "1500000000",
+        "expected": "2",
+        "latency_ms": 68.076,
+        "output_tokens": 5,
+        "category": "waves_optics",
+        "difficulty": "easy"
+      },
+      {
+        "id": "sci-0083",
+        "correct": false,
+        "predicted": "0",
+        "expected": "4",
+        "latency_ms": 40518.939,
+        "output_tokens": 4096,
+        "category": "waves_optics",
+        "difficulty": "easy"
+      },
+      {
+        "id": "sci-0084",
+        "correct": false,
+        "predicted": "2000000000",
+        "expected": "1.5",
+        "latency_ms": 67.827,
+        "output_tokens": 5,
+        "category": "waves_optics",
+        "difficulty": "easy"
+      },
+      {
+        "id": "sci-0085",
+        "correct": true,
+        "predicted": "50",
+        "expected": "50",
+        "latency_ms": 3853.248,
+        "output_tokens": 393,
+        "category": "waves_optics",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sci-0086",
+        "correct": true,
+        "predicted": "120",
+        "expected": "120",
+        "latency_ms": 6863.904,
+        "output_tokens": 698,
+        "category": "waves_optics",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sci-0087",
+        "correct": true,
+        "predicted": "120",
+        "expected": "120",
+        "latency_ms": 10895.895,
+        "output_tokens": 1079,
+        "category": "waves_optics",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sci-0088",
+        "correct": true,
+        "predicted": "60",
+        "expected": "60",
+        "latency_ms": 5419.058,
+        "output_tokens": 533,
+        "category": "waves_optics",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sci-0089",
+        "correct": false,
+        "predicted": "0.36",
+        "expected": "0.72",
+        "latency_ms": 58.696,
+        "output_tokens": 4,
+        "category": "waves_optics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sci-0090",
+        "correct": false,
+        "predicted": "0",
+        "expected": "0.38",
+        "latency_ms": 59.127,
+        "output_tokens": 4,
+        "category": "waves_optics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sci-0091",
+        "correct": false,
+        "predicted": "0",
+        "expected": "0.84",
+        "latency_ms": 58.769,
+        "output_tokens": 4,
+        "category": "waves_optics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sci-0092",
+        "correct": false,
+        "predicted": "0",
+        "expected": "0.7",
+        "latency_ms": 59.245,
+        "output_tokens": 4,
+        "category": "waves_optics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sci-0093",
+        "correct": false,
+        "predicted": "6",
+        "expected": "50",
+        "latency_ms": 39.575,
+        "output_tokens": 2,
+        "category": "waves_optics",
+        "difficulty": "easy"
+      },
+      {
+        "id": "sci-0094",
+        "correct": false,
+        "predicted": "10",
+        "expected": "100",
+        "latency_ms": 39.012,
+        "output_tokens": 2,
+        "category": "waves_optics",
+        "difficulty": "easy"
+      },
+      {
+        "id": "sci-0095",
+        "correct": false,
+        "predicted": "40",
+        "expected": "25",
+        "latency_ms": 39.908,
+        "output_tokens": 2,
+        "category": "waves_optics",
+        "difficulty": "easy"
+      },
+      {
+        "id": "sci-0096",
+        "correct": false,
+        "predicted": "0.2",
+        "expected": "200",
+        "latency_ms": 59.186,
+        "output_tokens": 4,
+        "category": "waves_optics",
+        "difficulty": "easy"
+      },
+      {
+        "id": "sci-0097",
+        "correct": true,
+        "predicted": "1020",
+        "expected": "1020",
+        "latency_ms": 4394.523,
+        "output_tokens": 443,
+        "category": "waves_optics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sci-0098",
+        "correct": true,
+        "predicted": "680",
+        "expected": "680",
+        "latency_ms": 8687.964,
+        "output_tokens": 889,
+        "category": "waves_optics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sci-0099",
+        "correct": true,
+        "predicted": "340",
+        "expected": "340",
+        "latency_ms": 7832.984,
+        "output_tokens": 807,
+        "category": "waves_optics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sci-0100",
+        "correct": true,
+        "predicted": "510",
+        "expected": "510",
+        "latency_ms": 40768.103,
+        "output_tokens": 4096,
+        "category": "waves_optics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sci-0101",
+        "correct": true,
+        "predicted": "6",
+        "expected": "6",
+        "latency_ms": 4861.021,
+        "output_tokens": 499,
+        "category": "radioactivity_units",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sci-0102",
+        "correct": true,
+        "predicted": "12",
+        "expected": "12",
+        "latency_ms": 4777.656,
+        "output_tokens": 488,
+        "category": "radioactivity_units",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sci-0103",
+        "correct": true,
+        "predicted": "10",
+        "expected": "10",
+        "latency_ms": 4727.575,
+        "output_tokens": 491,
+        "category": "radioactivity_units",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sci-0104",
+        "correct": true,
+        "predicted": "5",
+        "expected": "5",
+        "latency_ms": 4586.596,
+        "output_tokens": 485,
+        "category": "radioactivity_units",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sci-0105",
+        "correct": true,
+        "predicted": "36",
+        "expected": "36",
+        "latency_ms": 5520.592,
+        "output_tokens": 591,
+        "category": "radioactivity_units",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sci-0106",
+        "correct": true,
+        "predicted": "75",
+        "expected": "75",
+        "latency_ms": 5601.674,
+        "output_tokens": 598,
+        "category": "radioactivity_units",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sci-0107",
+        "correct": true,
+        "predicted": "24",
+        "expected": "24",
+        "latency_ms": 5647.13,
+        "output_tokens": 602,
+        "category": "radioactivity_units",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sci-0108",
+        "correct": true,
+        "predicted": "125",
+        "expected": "125",
+        "latency_ms": 5856.485,
+        "output_tokens": 620,
+        "category": "radioactivity_units",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sci-0109",
+        "correct": true,
+        "predicted": "3600",
+        "expected": "3600",
+        "latency_ms": 2167.884,
+        "output_tokens": 228,
+        "category": "radioactivity_units",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sci-0110",
+        "correct": false,
+        "predicted": "36000",
+        "expected": "6000",
+        "latency_ms": 3670.019,
+        "output_tokens": 384,
+        "category": "radioactivity_units",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sci-0111",
+        "correct": true,
+        "predicted": "18000",
+        "expected": "18000",
+        "latency_ms": 4019.485,
+        "output_tokens": 420,
+        "category": "radioactivity_units",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sci-0112",
+        "correct": true,
+        "predicted": "30000",
+        "expected": "30000",
+        "latency_ms": 3673.543,
+        "output_tokens": 383,
+        "category": "radioactivity_units",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sci-0113",
+        "correct": true,
+        "predicted": "360",
+        "expected": "360",
+        "latency_ms": 3339.685,
+        "output_tokens": 347,
+        "category": "radioactivity_units",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sci-0114",
+        "correct": true,
+        "predicted": "450",
+        "expected": "450",
+        "latency_ms": 3278.711,
+        "output_tokens": 338,
+        "category": "radioactivity_units",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sci-0115",
+        "correct": true,
+        "predicted": "240",
+        "expected": "240",
+        "latency_ms": 3593.263,
+        "output_tokens": 364,
+        "category": "radioactivity_units",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sci-0116",
+        "correct": true,
+        "predicted": "1000",
+        "expected": "1000",
+        "latency_ms": 3726.428,
+        "output_tokens": 378,
+        "category": "radioactivity_units",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sci-0117",
+        "correct": false,
+        "predicted": "126",
+        "expected": "35",
+        "latency_ms": 38.207,
+        "output_tokens": 2,
+        "category": "radioactivity_units",
+        "difficulty": "easy"
+      },
+      {
+        "id": "sci-0118",
+        "correct": false,
+        "predicted": "90",
+        "expected": "25",
+        "latency_ms": 38.531,
+        "output_tokens": 2,
+        "category": "radioactivity_units",
+        "difficulty": "easy"
+      },
+      {
+        "id": "sci-0119",
+        "correct": false,
+        "predicted": "0.054",
+        "expected": "5",
+        "latency_ms": 58.089,
+        "output_tokens": 4,
+        "category": "radioactivity_units",
+        "difficulty": "easy"
+      },
+      {
+        "id": "sci-0120",
+        "correct": false,
+        "predicted": "54",
+        "expected": "15",
+        "latency_ms": 38.639,
+        "output_tokens": 2,
+        "category": "radioactivity_units",
+        "difficulty": "easy"
+      }
+    ]
+  },
+  "failures": [],
+  "conditions": {
+    "dedicated": true,
+    "detail": "Only this SGLang server (and, for the speed and long-context rows, the small cache-busting proxy in front of it) was resident; the image server that normally runs on the box was stopped, and nvidia-smi listed no other compute process. The only other running container was a small host metrics exporter (python, about 10 MB, no GPU).",
+    "isolation_check": "nvidia-smi compute apps -> 1335306, .venv/bin/python 1335362, sglang::scheduler ; docker ps -> 1 containers; load1 at start 1.10"
+  },
+  "gotchas": [
+    {
+      "severity": "info",
+      "text": "Tool calling needs SGLang with the minicpm5 tool-call parser (sgl-project/sglang#25600). The openbmb cookbook says to install SGLang from main because v0.5.12.post1 lacked it; the PyPI 0.5.20 wheel used here ships it, so no source build is needed any more. The model writes XML tool calls (<function name=\"x\"><param name=\"k\">v</param></function>) and they come back as OpenAI tool_calls with finish_reason tool_calls, with thinking on and off."
+    },
+    {
+      "severity": "info",
+      "text": "SGLang has no MiniCPM5 reasoning parser, but the model uses plain <think> ... </think>, so --reasoning-parser qwen3 splits it into reasoning_content. With enable_thinking left unset the template adds no <think> prefix; the model opens the tag itself and the qwen3 parser still catches it."
+    },
+    {
+      "severity": "info",
+      "text": "flashinfer JIT-compiles its prefill kernels on the first request and shells out to ninja. In a venv that is not activated the first prefill dies with FileNotFoundError: ninja and the scheduler exits; put the venv bin directory on PATH before starting the server."
+    },
+    {
+      "severity": "info",
+      "text": "In a llama.cpp deployment the card warns that the default min_p 0.05 causes repetition and asks for min_p 0; the SGLang default min_p is already 0."
+    }
+  ],
+  "derived": {
+    "cost_per_1m_output_tokens_usd": null,
+    "tokens_per_watt": null,
+    "tok_s_per_gb_bandwidth": null,
+    "bandwidth_efficiency": null,
+    "memory_headroom_gb": 38.626
+  },
+  "raw": {
+    "harness": "atlas-bench",
+    "harness_version": "0.1.0",
+    "sha256": "197d0b28c199c979f7f795e36cb3668ddee9b96352ba4ec6e4c36f4ec67cc09a",
+    "payload_path": null,
+    "payload": {
+      "scorer": "numeric",
+      "scorers_used": [
+        "numeric"
+      ],
+      "engine_endpoint": {
+        "attached": true,
+        "base_url": "http://127.0.0.1:30000/v1",
+        "served_model_id": "MiniCPM5-1B",
+        "advertised_models": [
+          "MiniCPM5-1B"
+        ]
+      }
+    },
+    "truncated": false
+  },
+  "provenance": {
+    "github_login": "0xBakeer",
+    "github_user_id": null,
+    "started_at": "2026-09-23T00:01:32Z",
+    "finished_at": "2026-09-23T00:05:30Z",
+    "submitted_at": null,
+    "commit": null,
+    "pr": null,
+    "method": "atlas-bench",
+    "agent": null,
+    "notes": "Weights: openbmb/MiniCPM5-1B at 87179e5c1f455ef22e6223592d2d61351b525bfc, BF16, one 2.16 GB safetensors shard, sha256 checked against the Hub. SGLang 0.5.20 from PyPI in a Python 3.12 venv (uv) with torch 2.13.0+cu130, flashinfer-python 0.6.18, sglang-kernel 0.4.7, triton 3.7.1, transformers 5.12.1, xgrammar 0.2.1; CUDA 13.0, driver 580.173.02, Ubuntu 24.04.4, kernel 6.17.0-1029-nvidia. Environment SGLANG_ALLOW_OVERWRITE_LONGER_CONTEXT_LEN=1 and SGLANG_DISABLE_CUDNN_CHECK=1 as the MiniCPM SGLang cookbook recommends, the venv bin directory on PATH (flashinfer JIT needs ninja). Server flags follow the openbmb SGLang cookbook (docs/deployment/sglang.md): --dtype bfloat16 --context-length 131072 --tool-call-parser minicpm5, plus --reasoning-parser qwen3 so the <think> block lands in reasoning_content; --mem-fraction-static 0.75 instead of the cookbook 0.85 to leave the unified-memory box about 20 GB of host headroom (the KV pool still holds about 2 million tokens). Radix prefix cache, chunked prefill 8192, CUDA graphs and the flashinfer attention backend are SGLang defaults. Every request sets temperature 0 and seed 42 as the workloads specify. The chat template has three thinking states: enable_thinking true prefills <think>, false prefills an empty think block, and unset lets the model decide, which on almost every prompt means it thinks. Speed and long-context depth rows send chat_template_kwargs enable_thinking false; eval and needle rows leave it unset (the template default). Load: weights 13.0 s (2.38 GB), KV cache allocation 3.2 s, CUDA graph capture 10.6 s, scheduler end to end 32.2 s; SGLang reported max_total_num_tokens 3,679,002 and chunked_prefill_size 8192, and 23.5 GB of GPU memory was still free after start. max_running_requests is passed explicitly as 512 (the SGLang default on this box was 4096) so the concurrency limit is recorded in the row args and can be read back from /get_server_info; it was confirmed at 512 on this server before the first concurrent row. Thinking OFF row. MiniCPM5 thinks by default, and on this suite more than 10 % of the items ran into the output-token budget mid-thought, which scores them wrong however good the model is. This row repeats the same suite with chat_template_kwargs {\"enable_thinking\": false} and everything else identical; the default-thinking row is kept alongside it, and the pair is the measurement. Accuracy here is not comparable to a model that has no thinking mode to turn off."
+  },
+  "verification": {
+    "level": "self-reported",
+    "reproduced_by": [],
+    "flags": []
+  }
+}
