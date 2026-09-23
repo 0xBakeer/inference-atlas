@@ -61,6 +61,8 @@ class ResultInputs:
     served_model_id: str | None = None
     #: Everything ``/v1/models`` advertised, so a wrong-model run can be spotted afterwards.
     advertised_models: list[str] = field(default_factory=list)
+    #: The build the server itself reported (llama.cpp ``/props``), when it reports one.
+    server_build: str | None = None
     #: True when the engine was already running and the harness only measured it.
     attached: bool = False
     extra_gotchas: list[str] = field(default_factory=list)
@@ -334,6 +336,8 @@ def build_result(inputs: ResultInputs) -> dict[str, Any]:
         "served_model_id": inputs.served_model_id,
         "advertised_models": inputs.advertised_models,
     }
+    if inputs.server_build:
+        raw_payload["engine_endpoint"]["build_info"] = inputs.server_build
     payload, truncated = bound_payload(raw_payload)
     payload_json = json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
 

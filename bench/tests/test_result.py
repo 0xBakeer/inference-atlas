@@ -304,3 +304,16 @@ def test_request_block_never_records_a_credential(atlas_repo: Path) -> None:
     )
     assert record["request"] is None
     assert "sk-secret" not in json.dumps(record)
+
+
+def test_the_build_the_server_reported_is_recorded(atlas_repo: Path) -> None:
+    """engine_endpoint.build_info carries what the server said, so a reviewer can compare it."""
+    outcome = WorkloadOutcome(kind="serving", metrics={})
+    record = build_result(inputs(atlas_repo, outcome, server_build="b11071-f95b0d9"))
+    assert record["raw"]["payload"]["engine_endpoint"]["build_info"] == "b11071-f95b0d9"
+
+
+def test_no_build_info_key_when_the_server_reported_none(atlas_repo: Path) -> None:
+    """Engines that do not report a build keep the payload they always had."""
+    record = build_result(inputs(atlas_repo, WorkloadOutcome(kind="serving", metrics={})))
+    assert "build_info" not in record["raw"]["payload"]["engine_endpoint"]

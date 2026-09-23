@@ -408,6 +408,12 @@ On every PR:
 6. Duplicate `run_id` → fail. Same `cell_id+config_id+workload_id` with metric deviation > 25 % from the median of existing → warning + `needs-review` label comment.
 7. Resolve login → numeric user id via `api.github.com/users/<login>` (CI token) and write it into the file in a bot commit on the PR branch (or fail if the login does not exist).
 8. **Identity map ownership:** a PR that changes `site/identities.json` may only add, modify or remove the entry whose `login` equals the PR author. Registry credit is paid on that file, so editing somebody else's entry is editing who gets their points. (Same `maintainer-override` escape as rule 3.)
+9. **Served model vs label:** `raw.payload.engine_endpoint.served_model_id` (what the server answered as) is compared with the model id, the quant `hf_id` and the quant `files`. Both sides carry a parameter-size token (`27b`, `0.6b`; active-parameter tags such as `a3b` are not sizes) and the sets do not overlap: `served-model-mismatch`, error. The served name shares no word of 3+ letters with any label: `served-model-unmatched`, warning.
+10. **One build, one version string:** results in the PR that share `engine.id` + `engine.commit` but name different `engine.version` strings fail with `engine-version-split`. Where the harness recorded the server's own build string (`raw.payload.engine_endpoint.build_info`, from llama.cpp `/props`), `engine.version` must be one of its dash-separated parts, else `engine-version-contradicts-server`.
+11. **Existing registry records are code-owner changes:** modifying, deleting or moving an existing file under `models/`, `hardware/`, `engines/`, `workloads/`, `datasets/`, `schemas/` needs the path's owner as named by `.github/CODEOWNERS` at the base ref (a PR cannot make itself owner), else `registry-edit-foreign` (`maintainer-override` downgrades it to a warning, as in rule 3). Adding a record stays open to everyone, and so does correcting the location fields `hf_id`, `files`, `size_gb`, `revision` of an existing quant. `github-actions[bot]` (engine ingest) is exempt.
+12. **Hugging Face existence (`--check-hf`, passed by CI):** for every model and quant record the PR adds or changes, the Hub API is asked without a token. 401/404: `hf-repo-missing` (the Hub does not distinguish missing from private). 307: `hf-repo-renamed`; the id must be the current one, spelled as the Hub spells it (§2). A quant file absent from the repo: `hf-file-missing`. All three are errors; 5xx and timeouts only warn (`hf-unreachable`).
+
+Rules 9 to 12 fire only on files the PR touches (`--changed`).
 
 On `main` build (`build-pages.yml`): `tools/build` stamps `provenance.commit` (the commit that
 added the file, from `git log --diff-filter=A --format=%H -- <path>`) and `provenance.pr`
@@ -824,3 +830,42 @@ or where reality disagreed with it. Each one is binding until superseded here.
     A setting the harness applied through a proxy rather than through the request body is
     still a request option and still belongs here, with a gotcha naming the proxy — where
     the bytes were rewritten is provenance, not a reason to omit what the model was asked.
+
+**2026-09-23: contribution guards (decision 29)**
+
+29. **A submission that passes every recomputed id can still be filed under the wrong
+    model, build or registry record, so those three are checked too.** Rules 1 to 8 of §5
+    prove that a result agrees with itself and that its author owns it. They say nothing
+    about whether the server that answered was the model the file names. A run served by
+    another model passes all eight: `served_model_id` was recorded for exactly this case,
+    and no rule read it. Versions had the same gap. Nine rows named `b7000` and two named
+    `f95b0d9`, all on commit f95b0d9, are one engine split into two atlas cells. And any
+    pull request could rewrite an existing registry record, so a wrong release date or a
+    dropped attention note would change what every measurement of that model means, with
+    no owner asked.
+
+    Four checks close this. Each fires only on files the pull request touches (`--changed`),
+    so `main` still validates at 0 errors and the 384 warnings it had before.
+
+    - **The served name must agree with the label.** Both carry a parameter-size token
+      (`27b`, `0.6b`) and the sets do not overlap: error. Active-parameter tags such as `a3b`
+      are not sizes. No shared word of 3+ letters: warning. None of the 569 results on
+      `main` trips either.
+    - **One build, one version string.** Results in one pull request that share `engine.id`
+      and `engine.commit` must name one `engine.version`. Where atlas-bench recorded the
+      server's own build string (llama.cpp `/props`, `build_info: b11071-f95b0d9`), the
+      version must be one of its parts.
+    - **An existing registry record is a code-owner change.** Adding a record stays open to
+      everyone. Validate reads the owner from `CODEOWNERS` at the base ref, so a pull
+      request cannot make itself the owner. One exception: the location fields of a quant
+      (`hf_id`, `files`, `size_gb`, `revision`), which the quant notes already ask
+      contributors to correct.
+    - **A record must point at a public Hub repository.** `--check-hf` asks the Hugging
+      Face API, without a token, about every model and quant record the pull request adds
+      or changes. 401 and 404 mean not public, since the Hub does not distinguish missing
+      from private. 307 means the id is not spelled as the Hub spells it, which §2 already
+      requires. A quant file absent from the repository is an error. 5xx and timeouts only
+      warn. Run over the whole registry, this found 11 records already broken; the
+      touched-files rule keeps them from blocking anyone. atlas-bench refuses the first
+      case up front: a packet with no `served_model_id` against a server advertising
+      more than one model, none matching, stops before the first request (exit 2).

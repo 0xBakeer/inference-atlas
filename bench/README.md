@@ -91,9 +91,16 @@ What the harness does with it:
 - sends `served_model_id` verbatim as the `model` field, and warns
   (`served-model-not-advertised`) if `/v1/models` does not list it — it still sends it, since
   some servers load on demand;
-- without one, it looks for `model.id` in `/v1/models` **case-insensitively**, and only then
-  falls back to the first advertised model — saying so (`served-model-guessed`) when more
-  than one is loaded;
+- without one, it looks for `model.id` in `/v1/models` **case-insensitively**. A server
+  that advertises one model is used as is. Several, none matching: the run stops before the
+  first request (`AmbiguousServedModelError`; the CLI prints `which model?` and exits 2),
+  and the packet has to name the one it means in `served_model_id`. It used to take the
+  first advertised model and warn (`served-model-guessed`);
+- for llama.cpp, reads the server's own build string from `/props` (`build_info`, for
+  example `b11071-f95b0d9`), falling back to llama-swap's per-model
+  `/upstream/<model>/props`, records it as `raw.payload.engine_endpoint.build_info`, and
+  warns `engine-version-mismatch` when the packet's `engine.version` appears nowhere in
+  it. The validator reads the same field (SPEC §5.10);
 - records the resolved key, everything `/v1/models` advertised, the base URL and whether the
   server was already running in `raw.payload.engine_endpoint`, so a run against the wrong
   model can be spotted after the fact;

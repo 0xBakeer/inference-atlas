@@ -291,6 +291,27 @@ class ChatClient:
             return []
         return [str(item.get("id")) for item in payload.get("data") or [] if item.get("id")]
 
+    async def server_build(self, served_model: str | None = None) -> str | None:
+        """The build a llama.cpp server reports in ``/props`` (``b<N>-<sha>``), else ``None``.
+
+        llama-swap does not route ``/props`` itself; it proxies it per model under
+        ``/upstream/<model>/props``, so that path is tried second.
+        """
+        paths = ["/props"]
+        if served_model:
+            paths.append(f"/upstream/{served_model}/props")
+        for path in paths:
+            try:
+                response = await self._client.get(path, timeout=15.0)
+                if response.status_code >= 400:
+                    continue
+                info = response.json().get("build_info")
+            except (httpx.HTTPError, json.JSONDecodeError, ValueError, AttributeError):
+                continue
+            if isinstance(info, str) and info.strip():
+                return info.strip()
+        return None
+
     async def count_prompt_tokens(self, messages: list[dict[str, Any]]) -> int | None:
         """Token count for a prompt via ``/tokenize`` or a local tokenizer, else ``None``."""
         body: dict[str, Any] = {"model": self.model, "messages": messages}

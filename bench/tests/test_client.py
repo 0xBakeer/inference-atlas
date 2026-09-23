@@ -388,3 +388,33 @@ async def test_concurrent_requests_are_not_serialized_by_the_pool(
         )
     assert all(r.ok for r in results)
     assert len(fake_server.requests) == 120
+
+
+def _props_client(routes: dict[str, httpx.Response]) -> ChatClient:
+    def handler(request: httpx.Request) -> httpx.Response:
+        return routes.get(request.url.path, httpx.Response(404, json={"error": "not found"}))
+
+    return ChatClient("http://fake", "m", transport=httpx.MockTransport(handler))
+
+
+async def test_server_build_reads_llama_cpp_props() -> None:
+    """llama-server reports its build in /props; that is the build that was measured."""
+    client = _props_client({"/props": httpx.Response(200, json={"build_info": "b11071-f95b0d9"})})
+    async with client:
+        assert await client.server_build("qwen") == "b11071-f95b0d9"
+
+
+async def test_server_build_falls_back_to_the_llama_swap_upstream_path() -> None:
+    """llama-swap proxies /props per model under /upstream/<model>/props."""
+    client = _props_client(
+        {"/upstream/qwen3.8-27b/props": httpx.Response(200, json={"build_info": "b11071-abc"})}
+    )
+    async with client:
+        assert await client.server_build("qwen3.8-27b") == "b11071-abc"
+
+
+async def test_server_build_is_none_when_the_server_does_not_say() -> None:
+    """Engines without /props, or a /props without build_info, report nothing."""
+    client = _props_client({"/props": httpx.Response(200, json={"n_ctx": 4096})})
+    async with client:
+        assert await client.server_build("m") is None

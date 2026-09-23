@@ -17,7 +17,7 @@ import pytest
 from atlas_bench.engines import ADAPTERS
 from atlas_bench.engines.base import AttachAdapter, get_adapter
 from atlas_bench.registry import Registry
-from atlas_bench.runner import run_spec
+from atlas_bench.runner import AmbiguousServedModelError, run_spec
 from atlas_bench.spec import TaskSpec
 from atlas_bench.validate import validate_file
 from tests.conftest import FakeOpenAIServer, drop_pre_migration_schema_errors
@@ -171,8 +171,12 @@ async def test_case_only_difference_resolves_itself(lmstudio_repo: Path) -> None
     assert record["model"]["id"] == MODEL_ID
 
 
-async def test_guessing_between_loaded_models_is_reported(lmstudio_repo: Path) -> None:
-    """Two models loaded and none matching: the run continues but says it guessed."""
+async def test_guessing_between_loaded_models_is_refused(lmstudio_repo: Path) -> None:
+    """Two models loaded and none matching: the run stops before it measures anything.
+
+    It used to pick the first advertised model and warn, which measures one model and files
+    it under another; a warning at the end of the run does not stop that row being submitted.
+    """
 
     class TwoModels(FakeOpenAIServer):
         def handle(self, request):
@@ -187,10 +191,22 @@ async def test_guessing_between_loaded_models_is_reported(lmstudio_repo: Path) -
     server = TwoModels(responder=lambda m: "Answer: 4")
     spec = make_spec()
     spec.model.served_model_id = None
-    output = await run(lmstudio_repo, server, spec)
+    with pytest.raises(AmbiguousServedModelError, match="served_model_id"):
+        await run(lmstudio_repo, server, spec)
 
-    assert any(w.startswith("served-model-guessed") for w in output.warnings)
-    assert all(body["model"] == "other/model-a" for body in server.requests)
+    assert server.requests == []
+    assert not list((lmstudio_repo / "results").rglob("*.json"))
+
+
+async def test_one_loaded_model_is_served_without_a_packet_field(lmstudio_repo: Path) -> None:
+    """A single advertised model is unambiguous even when its name differs from the id."""
+    server = FakeOpenAIServer(model="whatever-alias", responder=lambda m: "Answer: 4")
+    spec = make_spec()
+    spec.model.served_model_id = None
+    await run(lmstudio_repo, server, spec)
+
+    assert server.requests
+    assert all(body["model"] == "whatever-alias" for body in server.requests)
 
 
 @pytest.mark.parametrize("field", ["served_model_id", "served_name"])

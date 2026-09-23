@@ -35,7 +35,7 @@ from .packet import build_packet, find_cell, parse_cell, write_packet
 from .registry import Registry
 from .repo import find_repo_root, write_json
 from .result import ResultInputs, build_result, output_path, resolve_login
-from .runner import run_spec_sync
+from .runner import AmbiguousServedModelError, run_spec_sync
 from .spec import RunConditions, load_spec
 from .submit import submit as do_submit
 from .validate import check_model_registry, validate_file
@@ -264,18 +264,22 @@ def run(
         )
         raise typer.Exit(code=2)
 
-    output = run_spec_sync(
-        spec,
-        registry=registry,
-        out_dir=out,
-        github_login=resolved_login or "unknown",
-        base_url=base_url,
-        dry_run=dry_run,
-        telemetry=telemetry,
-        gotchas=list(gotcha),
-        notes=notes,
-        conditions=conditions,
-    )
+    try:
+        output = run_spec_sync(
+            spec,
+            registry=registry,
+            out_dir=out,
+            github_login=resolved_login or "unknown",
+            base_url=base_url,
+            dry_run=dry_run,
+            telemetry=telemetry,
+            gotchas=list(gotcha),
+            notes=notes,
+            conditions=conditions,
+        )
+    except AmbiguousServedModelError as exc:
+        error_console.print(f"[bold red]which model?[/] {exc}")
+        raise typer.Exit(code=2) from exc
 
     if dry_run:
         table = Table(title="Planned workloads")
