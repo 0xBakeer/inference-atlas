@@ -48,6 +48,8 @@ information.
 
 ## Choosing a box
 
+![The hardware picker: 4 × H100 pools its memory and re-ranks every verdict; 2 × DGX Spark does not pool](media/tui-06-hardware.gif)
+
 Press **`b`**. The list is every hardware entry in the registry, the detected one first and
 marked. `+` / `-` set how many devices. `enter` selects — and drops you back on the target
 view, with everything re-ranked against the box you just chose.

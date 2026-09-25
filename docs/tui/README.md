@@ -13,6 +13,11 @@ contribute your own measurement back.
 It reads the same compiled data the website reads, so it is never out of date with it, and
 it works offline once it has synced.
 
+![inference-atlas on a DGX Spark: the ranked list, the Pareto frontier, the coverage map, one run in full, and its install recipe](media/tui-00-tour.gif)
+
+The main screens have a short recording next to them in this manual; the full set, and how
+they were made, is in [`media/`](media/README.md).
+
 ## Contents
 
 |                                       |                                                                               |

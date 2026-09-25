@@ -109,6 +109,8 @@ curl -fsSL https://raw.githubusercontent.com/0xBakeer/inference-atlas/main/insta
 inference-atlas
 ```
 
+![inference-atlas on a DGX Spark: the ranked list, the Pareto frontier, the coverage map, one run in full, and its install recipe](docs/tui/media/tui-00-tour.gif)
+
 The atlas in your terminal: it identifies a **target box** — this machine, or any entry in
 the hardware registry, times however many of them you have — ranks every measured
 configuration by whether it would actually run there, draws the sweep curves,

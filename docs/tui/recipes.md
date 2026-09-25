@@ -5,6 +5,8 @@ agent — can follow to reproduce it, and then to contribute their own measureme
 
 Press **`g`** on an open run.
 
+![g on a run: the recipe, scrolled to the serve command, then copied and handed to an agent](media/tui-03-recipe.gif)
+
 ## What you get
 
 The file is written to `~/inference-atlas/recipes/` (configurable) with a name built from

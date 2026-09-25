@@ -10,6 +10,8 @@ inference-atlas
 
 Or from a checkout: `pnpm install && pnpm tui`.
 
+![inference-atlas on a DGX Spark: the ranked list, the Pareto frontier, the coverage map, one run in full, and its install recipe](../../docs/tui/media/tui-00-tour.gif)
+
 📖 **[The manual](../../docs/tui/README.md)** — installation, every view, every key, the
 target-box model, how to read the charts, recipes, configuration, the CLI, troubleshooting
 and development notes.

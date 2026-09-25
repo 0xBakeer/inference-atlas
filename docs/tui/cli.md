@@ -4,6 +4,8 @@
 inference-atlas [options]
 ```
 
+![--help, --sync, and --hardware / --count on the command line](media/tui-07-cli.gif)
+
 With no options it syncs the data, detects your box, and opens the app.
 
 ## Options
