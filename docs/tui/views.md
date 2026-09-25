@@ -48,6 +48,8 @@ Use this when you know what you are looking for: a model, an engine, a piece of 
 do not own. Unlike the target view it does not sort by fit, so it is also how you see what
 other people are running.
 
+![The runs view: a multi-word filter narrowing to Qwen3.8-Flash-Next serving runs, then sorted by headline metric](media/tui-04-runs-filter.gif)
+
 ---
 
 ## 3 · Pareto
@@ -62,6 +64,8 @@ marker and names the run underneath.
 
 This is the view for "what am I giving up?". A configuration far off the frontier is being
 beaten by another one on both axes, and the panel underneath tells you which.
+
+![Walking the Pareto frontier with j/k, then the coverage map](media/tui-05-pareto-coverage.gif)
 
 ---
 
@@ -89,6 +93,8 @@ in [The target box](target-box.md).
 ## Run detail (`enter`)
 
 Everything known about one measurement.
+
+![Filtering to one Qwen3.8-27B NVFP4 run and opening it: fit reasoning, latency bars, every request, gotchas](media/tui-02-run-detail.gif)
 
 **Identity** — model, quantization, engine and version, the hardware it ran on and how many
 devices, the workload, who ran it, and the verification level (`self-reported` until someone

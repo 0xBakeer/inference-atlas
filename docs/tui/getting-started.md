@@ -17,6 +17,8 @@ On the very first run it does three things before drawing anything:
 3. **Probes this machine** — the CPU or Apple chip, installed memory, and any NVIDIA GPUs —
    and matches it against the atlas hardware registry.
 
+![First run on a DGX Spark: detection, the ranked list, s to re-sort, ? for help](media/tui-01-launch.gif)
+
 ## 2. Tell it which box you care about
 
 If step 3 recognised your machine, you land on the **target** view with it selected. The
