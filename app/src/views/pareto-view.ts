@@ -15,6 +15,13 @@ import { paretoFrontier } from '@atlas/core';
 import { ViewElement } from './view-base.js';
 
 const X_OPTS = ['ttft_p95', 'ttft_p50', 'tpot_p50', 'vram_peak_gb', 'power_avg_w'];
+/** The questions people actually come with, as axis pairs. */
+const PRESETS: Array<{ label: string; x: string; y: string }> = [
+  { label: 'Throughput vs. wait for first token', x: 'ttft_p95', y: 'output_tok_s' },
+  { label: 'Speed per user vs. wait', x: 'ttft_p50', y: 'decode_tok_s_per_request' },
+  { label: 'Efficiency: tokens per watt vs. power', x: 'power_avg_w', y: 'tok_per_w' },
+  { label: 'Accuracy vs. memory', x: 'vram_peak_gb', y: 'accuracy' },
+];
 const Y_OPTS = ['output_tok_s', 'decode_tok_s_per_request', 'tok_per_w', 'accuracy'];
 
 interface Pt {
@@ -227,11 +234,25 @@ export class AtlasParetoView extends ViewElement {
     return html`<div class="page">
       <div class="page-head">
         <div class="eyebrow">Pareto</div>
-        <h1>Latency against throughput</h1>
+        <h1>Which runs give the best trade-off?</h1>
         <p class="lede">
-          Every point is a run. The dashed line is the Pareto frontier: nothing measured so far
-          beats those runs on both axes at once. Colour is the hardware vendor, size is peak VRAM.
+          Every dot is one run. Pick two numbers to trade off — say, how long a user waits for the
+          first token against how much the box produces in total — and the dashed line joins the
+          runs nothing else beats on both at once. Those are the setups worth copying.
         </p>
+      </div>
+      <div class="row-wrap mb-3 presets">
+        <span class="xs muted">Quick questions:</span>
+        ${PRESETS.map(
+          (pr) =>
+            html`<button
+              class="chip"
+              aria-pressed=${pr.x === xKey && pr.y === yKey}
+              @click=${() => setQuery({ x: pr.x, y: pr.y })}
+            >
+              ${pr.label}
+            </button>`,
+        )}
       </div>
       <div class="filters mb-3">
         ${selectField(
@@ -303,9 +324,12 @@ export class AtlasParetoView extends ViewElement {
                 <div class="row-wrap mt-3" style="justify-content:space-between">
                   <div class="legend-inline">
                     ${hwInPlot.map((id) => html`<span>${vendorDot(lk.hardware.get(id)?.vendor)} ${lk.hardware.get(id)?.name ?? id}</span>`)}
+                    <span class="muted">· dot size = peak VRAM</span>
                   </div>
                   <span class="xs muted"
-                    >${fmtInt(pts.length)} runs · ${frontier.length} on the frontier</span
+                    >${fmtInt(pts.length)} runs · ${frontier.length} on the frontier · best is
+                    towards the top-left: lower ${xm.short.toLowerCase()}, higher
+                    ${ym.short.toLowerCase()}</span
                   >
                 </div>
               </div>
@@ -318,9 +342,10 @@ export class AtlasParetoView extends ViewElement {
                   <table class="table cards">
                     <thead>
                       <tr>
-                        <th>run</th>
-                        <th>hardware</th>
-                        <th>workload</th>
+                        <th>Model / quant</th>
+                        <th>Device</th>
+                        <th>Engine</th>
+                        <th>Test</th>
                         <th class="num">${xm.short} <span class="unit">${xm.unit}</span></th>
                         <th class="num">${ym.short} <span class="unit">${ym.unit}</span></th>
                         <th class="num">VRAM <span class="unit">GB</span></th>
@@ -333,12 +358,23 @@ export class AtlasParetoView extends ViewElement {
                           class="clickable"
                           @click=${() => navigate(href('run', pt.row.run_id))}
                         >
-                          <td class="primary mono xs">
-                            ${pt.row.engine.id} ${pt.row.engine.version} ·
-                            ${pt.row.model.id}/${pt.row.model.quant_id}
+                          <td
+                            class="primary"
+                            title=${`${pt.row.model.id}/${pt.row.model.quant_id}`}
+                          >
+                            ${lk.models.get(pt.row.model.id)?.model.name ?? pt.row.model.id}
+                            <span class="mono xs muted">/${pt.row.model.quant_id}</span>
                           </td>
-                          <td class="mono xs" data-label="hardware">${pt.row.hardware.id}</td>
-                          <td class="mono xs" data-label="workload">${pt.row.workload_id}</td>
+                          <td class="xs" data-label="device">
+                            ${lk.hardware.get(pt.row.hardware.id)?.name ?? pt.row.hardware.id}
+                          </td>
+                          <td class="xs" data-label="engine">
+                            ${lk.engines.get(pt.row.engine.id)?.meta.name ?? pt.row.engine.id}
+                            <span class="mono muted">${pt.row.engine.version}</span>
+                          </td>
+                          <td class="xs" data-label="test" title=${pt.row.workload_id}>
+                            ${lk.workloads.get(pt.row.workload_id)?.name ?? pt.row.workload_id}
+                          </td>
                           <td class="num" data-label=${xm.short}>${xm.fmt(pt.x)}</td>
                           <td class="num" data-label=${ym.short}>${ym.fmt(pt.y)}</td>
                           <td class="num" data-label="VRAM">

@@ -48,6 +48,53 @@ export class AtlasParallelismView extends ViewElement {
     }
   }
 
+  /** The two numbers a reader wants before the curves: the biggest peak, and the best scaler. */
+  private summary(recs: ResultRecord[]) {
+    if (!recs.length) return nothing;
+    let peak: { r: ResultRecord; y: number; c: number } | null = null;
+    let eff: { r: ResultRecord; e: number; c: number } | null = null;
+    for (const r of recs) {
+      for (const p of scalingEfficiency(r.sweep!)) {
+        if (p.y !== null && (!peak || p.y > peak.y)) peak = { r, y: p.y, c: p.x };
+      }
+      const last = scalingEfficiency(r.sweep!)
+        .filter((p) => p.eff !== null)
+        .at(-1);
+      if (last && last.eff !== null && (!eff || last.eff > eff.e))
+        eff = { r, e: last.eff, c: last.x };
+    }
+    const name = (r: ResultRecord) =>
+      `${store.lookups.models.get(r.model.id)?.model.name ?? r.model.id} on ${store.lookups.hardware.get(r.hardware.id)?.name ?? r.hardware.id}`;
+    return html`<div class="stats-strip mb-4">
+      <div class="stat">
+        <div class="v">${recs.length}</div>
+        <div class="k">sweeps compared</div>
+      </div>
+      ${
+        peak
+          ? html`<div class="stat">
+              <div class="v">${fmtTokS(peak.y)}<small>tok/s</small></div>
+              <div class="k">
+                highest total · ${peak.c} users ·
+                <a href=${href('run', peak.r.run_id)}>${name(peak.r)}</a>
+              </div>
+            </div>`
+          : nothing
+      }
+      ${
+        eff
+          ? html`<div class="stat">
+              <div class="v">${fmtPct(eff.e, 0)}</div>
+              <div class="k">
+                best scaling kept at ${eff.c} users ·
+                <a href=${href('run', eff.r.run_id)}>${name(eff.r)}</a>
+              </div>
+            </div>`
+          : nothing
+      }
+    </div>`;
+  }
+
   override render() {
     const reg = store.registry.value;
     if (!reg) return html`<div class="page">${skeletonLines(6)}</div>`;
@@ -79,11 +126,11 @@ export class AtlasParallelismView extends ViewElement {
     return html`<div class="page">
       <div class="page-head">
         <div class="eyebrow">Parallelism</div>
-        <h1>Throughput against concurrency</h1>
+        <h1>How many users can one box serve?</h1>
         <p class="lede">
-          Sweeps run the same workload at 1, 2, 4 … 32 concurrent streams. Perfect scaling doubles
-          tok/s with every doubling; the efficiency column says how far each device and engine fall
-          short.
+          A sweep runs the same request shape with 1, 2, 4 … 64 people at once. Perfect scaling
+          would double the total tok/s with every doubling; the curve shows where each setup stops
+          climbing, and the efficiency column says how much of that ideal it keeps.
         </p>
       </div>
       <div class="card mb-4">
@@ -119,11 +166,13 @@ export class AtlasParallelismView extends ViewElement {
             })
           : loading && recs.length === 0
             ? skeletonLines(6)
-            : html`<div class="card">
+            : html`${this.summary(recs)}
+                <div class="card hide-legend">
                   <div class="row mb-2">
+                    <span class="xs muted">Colours match the table below</span>
                     <span class="spacer"></span>
                     <div class="seg sm">
-                      ${metrics.map((m) => html`<button aria-pressed=${m === metric} @click=${() => (this.metric = m)}>${m === 'throughput' ? 'tok/s' : m === 'ttft' ? 'TTFT' : 'TPOT'}</button>`)}
+                      ${metrics.map((m) => html`<button aria-pressed=${m === metric} @click=${() => (this.metric = m)}>${m === 'throughput' ? 'Total tok/s' : m === 'ttft' ? 'Wait for first token' : 'Time per token'}</button>`)}
                     </div>
                   </div>
                   <atlas-chart
@@ -136,16 +185,19 @@ export class AtlasParallelismView extends ViewElement {
                 <section class="mt-4">
                   <div class="section-title">
                     <h2>Scaling efficiency</h2>
-                    <span class="meta">tok/s at c ÷ (tok/s at c₀ × c/c₀)</span>
+                    <span class="meta"
+                      >total tok/s at each concurrency, and below it the share of perfect scaling
+                      kept (100% = doubled with every doubling)</span
+                    >
                   </div>
                   <div class="table-wrap">
                     <table class="table cards">
                       <thead>
                         <tr>
-                          <th>run</th>
-                          <th>by</th>
-                          ${[1, 2, 4, 8, 16, 32, 64].map((c) => html`<th class="num">c=${c}</th>`)}
-                          <th class="num">eff @max</th>
+                          <th>Setup</th>
+                          <th>By</th>
+                          ${[1, 2, 4, 8, 16, 32, 64].map((c) => html`<th class="num">${c} user${c === 1 ? '' : 's'}</th>`)}
+                          <th class="num">Kept at max</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -160,9 +212,19 @@ export class AtlasParallelismView extends ViewElement {
                                   class="sw"
                                   style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${seriesColor(i)}"
                                 ></i
-                                ><a class="mono xs" href=${href('run', r.run_id)}
-                                  >${r.engine.id} ${r.engine.version} ·
-                                  ${r.model.id}/${r.model.quant_id} · ${r.hardware.id}</a
+                                ><a
+                                  class="xs"
+                                  href=${href('run', r.run_id)}
+                                  title=${`${r.engine.id} ${r.engine.version} · ${r.model.id}/${r.model.quant_id} · ${r.hardware.id}`}
+                                  >${store.lookups.models.get(r.model.id)?.model.name ?? r.model.id}<span
+                                    class="mono muted"
+                                    >/${r.model.quant_id}</span
+                                  >
+                                  ·
+                                  ${store.lookups.hardware.get(r.hardware.id)?.name ?? r.hardware.id}
+                                  ·
+                                  ${store.lookups.engines.get(r.engine.id)?.meta.name ?? r.engine.id}
+                                  <span class="mono muted">${r.engine.version}</span></a
                                 ></span
                               >
                             </td>
