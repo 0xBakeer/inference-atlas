@@ -32,6 +32,7 @@ import './views/workloads-view.js';
 import './views/contributors-view.js';
 import './views/gaps-view.js';
 import './views/contribute-view.js';
+import './views/tui-view.js';
 import './views/about-view.js';
 
 @customElement('atlas-app')
@@ -94,7 +95,10 @@ export class AtlasApp extends AtlasElement {
     const site = store.site.site.title;
     const seg = r.segments[0];
     if (!seg) return site;
-    const name = seg.charAt(0).toUpperCase() + seg.slice(1);
+    // a nav entry's label is the page's name (`#/tui` reads "Terminal", not "Tui")
+    const name =
+      store.site.nav.find((n) => n.route === `#/${seg}`)?.label ??
+      seg.charAt(0).toUpperCase() + seg.slice(1);
     // model ids are HF repo ids and span two segments (`#/models/<owner>/<name>`)
     const item = seg === 'models' ? modelIdFromSegments(r.segments) : (r.segments[1] ?? null);
     return item ? `${item} · ${name} · ${site}` : `${name} · ${site}`;
@@ -137,6 +141,8 @@ export class AtlasApp extends AtlasElement {
         return html`<atlas-gaps-view></atlas-gaps-view>`;
       case 'contribute':
         return html`<atlas-contribute-view></atlas-contribute-view>`;
+      case 'tui':
+        return html`<atlas-tui-view></atlas-tui-view>`;
       case 'about':
         return html`<atlas-about-view></atlas-about-view>`;
       default:

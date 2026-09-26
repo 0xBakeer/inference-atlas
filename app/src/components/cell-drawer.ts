@@ -2,15 +2,13 @@
 import { html, nothing, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import type { HeatCell, PossibleCell } from '../data/derive.js';
-import type { IndexRow } from '../data/types.js';
-import { href } from '../router.js';
 import { store } from '../store.js';
 import { fmtInt } from '@atlas/core';
-import { headlineMetric } from '@atlas/core';
 import { addButton } from './add-modal.js';
 import { AtlasElement } from './base.js';
 import { icon } from './icons.js';
-import { avatar, evBadge, kindTag, verifBadge, when } from './ui.js';
+import { runsTable } from './runs-table.js';
+import { evBadge } from './ui.js';
 
 @customElement('atlas-cell-drawer')
 export class AtlasCellDrawer extends AtlasElement {
@@ -34,24 +32,6 @@ export class AtlasCellDrawer extends AtlasElement {
   override disconnectedCallback(): void {
     super.disconnectedCallback();
     window.removeEventListener('keydown', this.onKey);
-  }
-
-  private runRow(r: IndexRow): TemplateResult {
-    const hl = headlineMetric(r, store.site.coverage.key_metrics);
-    return html`<a class="cell-run" href=${href('run', r.run_id)}>
-      <span class="row" style="gap:6px;min-width:0">
-        <span class="mono xs ellipsis">${r.workload_id}</span>
-        ${kindTag(r.kind)}
-      </span>
-      <span class="hl"
-        >${hl ? html`${hl.def.fmt(hl.value)}<span class="unit">${hl.def.unit}</span>` : html`<span class="faint">–</span>`}</span
-      >
-      <span class="meta">
-        ${avatar(r.provenance.login, { userId: r.provenance.user_id, avatarUrl: r.provenance.avatar_url, size: 'sm' })}
-        ${r.provenance.login} · ${when(r.provenance.submitted_at ?? r.provenance.started_at)} ·
-        ${verifBadge(r.verification_level)} ${hl ? html`· ${hl.def.label}` : nothing}
-      </span>
-    </a>`;
   }
 
   private specFor(pc: PossibleCell, workloadIds?: string[]) {
@@ -135,7 +115,7 @@ export class AtlasCellDrawer extends AtlasElement {
                             >Explore ${icon('arrowRight')}</a
                           >
                         </div>
-                        ${runs.map((r) => this.runRow(r))}
+                        ${runsTable(runs, { hide: ['engine', 'model', 'quant', 'hardware', 'by', 'when'], limit: 8 })}
                         ${
                           missingW.length
                             ? html`<div class="row-wrap" style="gap:4px">

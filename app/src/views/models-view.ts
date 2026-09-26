@@ -4,14 +4,26 @@ import { addButton } from '../components/add-modal.js';
 import { icon } from '../components/icons.js';
 import '../components/mini-coverage.js';
 import { runsTable } from '../components/runs-table.js';
+import {
+  barList,
+  bestPerGroup,
+  countPerGroup,
+  firstMetricWithData,
+} from '../components/stat-charts.js';
 import { emptyState, extLink, kv, skeletonLines } from '../components/ui.js';
 import { engineMinors, engineRunsOn, quantRunsOn } from '../data/derive.js';
-import type { RegistryModel } from '../data/types.js';
+import type { IndexRow, RegistryModel } from '../data/types.js';
 import { href, modelHref, qget, qlist, setQuery } from '../router.js';
 import { store } from '../store.js';
+import { vendorClass } from '../util/colors.js';
 import { matchesQuery, uniqueSorted } from '../util/filters.js';
 import { fmtInt, fmtParams, fmtTokens } from '@atlas/core';
 import { ViewElement } from './view-base.js';
+
+/** CSS variable carrying the vendor hue of a device id. */
+function vendorVar(hardwareId: string): string {
+  return `var(--${vendorClass(store.lookups.hardware.get(hardwareId)?.vendor)})`;
+}
 
 @customElement('atlas-models-view')
 export class AtlasModelsView extends ViewElement {
@@ -105,6 +117,7 @@ export class AtlasModelsView extends ViewElement {
         ${chips('modality', 'modality', uniqueSorted(reg.models.flatMap((m) => m.model.modalities ?? ['text'])), mods)}
         ${chips('licence', 'licence', uniqueSorted(reg.models.map((m) => m.model.licence ?? 'unknown')), lic)}
       </div>
+      ${this.listCharts()}
       ${
         rows.length === 0
           ? emptyState({
@@ -143,6 +156,125 @@ export class AtlasModelsView extends ViewElement {
               })}
             </div>`
       }
+    </div>`;
+  }
+
+  /** How this model's quants and devices compare on what was actually measured. */
+  private detailCharts(runs: IndexRow[]): TemplateResult | typeof nothing {
+    const metric = firstMetricWithData(runs);
+    if (!metric) return nothing;
+    const lowerMax = (xs: number[]) => (metric.better === 'lower' ? Math.max(...xs) : undefined);
+    const byQuant = bestPerGroup(runs, (r) => r.model.quant_id, metric).slice(0, 10);
+    const byHw = bestPerGroup(runs, (r) => r.hardware.id, metric).slice(0, 10);
+    if (!byQuant.length && !byHw.length) return nothing;
+    return html`<section class="mt-5">
+      <div class="section-title">
+        <h2>Measured</h2>
+        <span class="meta"
+          >best ${metric.label}${metric.unit ? ` (${metric.unit})` : ''} recorded so far</span
+        >
+      </div>
+      <div class="insights">
+        ${
+          byQuant.length
+            ? html`<section class="card tight">
+                <div class="card-head">
+                  <h3>By quantization</h3>
+                  <span class="muted small">${byQuant.length} measured</span>
+                </div>
+                ${barList(
+                  byQuant.map((b) => ({
+                    label: b.id,
+                    title: `${b.id} — ${metric.fmt(b.value)} ${metric.unit} on ${b.row.hardware.id}`,
+                    value: b.value,
+                    text: metric.fmt(b.value),
+                    note: b.row.hardware.id,
+                    href: href('run', b.row.run_id),
+                  })),
+                  {
+                    max: lowerMax(byQuant.map((b) => b.value)),
+                    ariaLabel: `Best ${metric.label} per quantization`,
+                  },
+                )}
+              </section>`
+            : nothing
+        }
+        ${
+          byHw.length
+            ? html`<section class="card tight">
+                <div class="card-head">
+                  <h3>By hardware</h3>
+                  <span class="muted small">${byHw.length} devices measured</span>
+                </div>
+                ${barList(
+                  byHw.map((b) => ({
+                    label: b.id,
+                    title: `${b.id} — ${metric.fmt(b.value)} ${metric.unit} (${b.row.model.quant_id})`,
+                    value: b.value,
+                    text: metric.fmt(b.value),
+                    note: b.row.model.quant_id,
+                    color: vendorVar(b.id),
+                    href: href('run', b.row.run_id),
+                  })),
+                  {
+                    max: lowerMax(byHw.map((b) => b.value)),
+                    ariaLabel: `Best ${metric.label} per device`,
+                  },
+                )}
+              </section>`
+            : nothing
+        }
+      </div>
+    </section>`;
+  }
+
+  /** Measured leaders across the registry — only models that actually have runs. */
+  private listCharts(): TemplateResult | typeof nothing {
+    const rows = store.index.value;
+    const metric = firstMetricWithData(rows);
+    if (!metric) return nothing;
+    const best = bestPerGroup(rows, (r) => r.model.id, metric).slice(0, 10);
+    const counts = countPerGroup(rows, (r) => r.model.id).slice(0, 10);
+    if (!best.length) return nothing;
+    return html`<div class="insights">
+      <section class="card tight">
+        <div class="card-head">
+          <h3>${metric.better === 'lower' ? 'Best' : 'Fastest'} measured</h3>
+          <span class="muted small"
+            >best ${metric.label}${metric.unit ? ` (${metric.unit})` : ''} per model</span
+          >
+        </div>
+        ${barList(
+          best.map((b) => ({
+            label: b.id,
+            title: `${b.id} — best ${metric.fmt(b.value)} ${metric.unit} (${b.row.model.quant_id} on ${b.row.hardware.id})`,
+            value: b.value,
+            text: metric.fmt(b.value),
+            note: `${b.row.model.quant_id} · ${b.row.hardware.id}`,
+            href: modelHref(b.id),
+          })),
+          {
+            max: metric.better === 'lower' ? Math.max(...best.map((b) => b.value)) : undefined,
+            ariaLabel: `Best ${metric.label} per model`,
+          },
+        )}
+      </section>
+      <section class="card tight">
+        <div class="card-head">
+          <h3>Most measured</h3>
+          <span class="muted small">runs per model</span>
+        </div>
+        ${barList(
+          counts.map((c) => ({
+            label: c.id,
+            value: c.count,
+            text: fmtInt(c.count),
+            color: 'var(--chart-2)',
+            href: modelHref(c.id),
+          })),
+          { ariaLabel: 'Runs per model' },
+        )}
+      </section>
     </div>`;
   }
 
@@ -215,48 +347,30 @@ export class AtlasModelsView extends ViewElement {
         </div>
       </div>
 
-      <div class="split facts-quants">
-        <section class="card">
-          <div class="card-head"><h3>Facts</h3></div>
-          ${kv([
-            ['id', html`<span class="mono">${m.id}</span>`],
-            [
-              'Hugging Face',
-              m.hf_id ? extLink(`https://huggingface.co/${m.hf_id}`, m.hf_id) : null,
-            ],
-            ['vendor', m.vendor],
-            ['family', m.family ?? null],
-            [
-              'parameters',
-              `${fmtParams(m.params_b)}${m.moe ? ` total · ${fmtParams(m.active_params_b)} active` : ''}`,
-            ],
-            m.moe
-              ? ['experts', `${m.experts ?? '?'} total · ${m.experts_active ?? '?'} active`]
-              : null,
-            [
-              'architecture',
-              m.architecture ? html`<span class="mono xs">${m.architecture}</span>` : null,
-            ],
-            ['attention', m.attention ?? null],
-            ['context', `${fmtTokens(m.context_length)} tokens`],
-            ['modalities', (m.modalities ?? ['text']).join(', ')],
-            ['licence', m.licence ?? null],
-            ['released', m.released ?? null],
-            [
-              'tags',
-              (m.tags ?? []).length
-                ? html`<span class="row-wrap" style="gap:4px"
-                    >${(m.tags ?? []).map((t) => html`<span class="tag">${t}</span>`)}</span
-                  >`
-                : null,
-            ],
-            ...Object.entries(m.links ?? {})
-              .filter(([, v]) => v)
-              .map(([k, v]) => [k, extLink(v!, v!)] as [string, TemplateResult]),
-            ['coverage', `${c} of ${p} possible cells measured`],
-          ])}
-        </section>
+      <div class="fact-strip">
+        <span
+          ><b>${fmtParams(m.params_b)}</b>
+          parameters${m.moe ? html` · <b>${fmtParams(m.active_params_b)}</b> active` : nothing}</span
+        >
+        <span><b>${fmtTokens(m.context_length)}</b> context</span>
+        ${m.licence ? html`<span>${m.licence}</span>` : nothing}
+        ${m.released ? html`<span>released ${m.released}</span>` : nothing}
+        <span>${entry.quants.length} quantizations</span>
+        ${m.hf_id ? extLink(`https://huggingface.co/${m.hf_id}`, m.hf_id) : nothing}
+      </div>
 
+      <section class="mt-5">
+        <div class="section-title">
+          <h2>Results</h2>
+          <span class="meta"
+            >${runs.length} runs · one tab per kind of test, best first · click a row for the full
+            recipe</span
+          >
+        </div>
+        ${runsTable(runs, { hide: ['model'], limit: 10 })}
+      </section>
+
+      <div class="facts-quants">
         <section>
           <div class="section-title">
             <h2>Quantizations</h2>
@@ -303,7 +417,26 @@ export class AtlasModelsView extends ViewElement {
               </tbody>
             </table>
           </div>
-          ${entry.quants.some((qq) => qq.notes) ? html`<div class="col mt-2" style="gap:4px">${entry.quants.filter((qq) => qq.notes).map((qq) => html`<p class="xs muted"><span class="mono">${qq.id}</span> — ${qq.notes}</p>`)}</div>` : nothing}
+          ${
+            entry.quants.some((qq) => qq.notes)
+              ? html`<details class="disclosure boxed mt-2">
+                  <summary>
+                    ${icon('chevronRight')}<span class="t">Notes on each quantization</span
+                    ><span class="m">where the weights come from, what differs</span>
+                  </summary>
+                  <div class="body col" style="gap:6px">
+                    ${entry.quants
+                      .filter((qq) => qq.notes)
+                      .map(
+                        (qq) =>
+                          html`<p class="xs muted">
+                            <span class="mono">${qq.id}</span> — ${qq.notes}
+                          </p>`,
+                      )}
+                  </div>
+                </details>`
+              : nothing
+          }
         </section>
       </div>
 
@@ -319,13 +452,53 @@ export class AtlasModelsView extends ViewElement {
         ></atlas-mini-coverage>
       </section>
 
-      <section class="mt-5">
-        <div class="section-title">
-          <h2>Runs</h2>
-          <span class="meta">${runs.length}</span>
+      ${this.detailCharts(runs)}
+
+      <details class="disclosure boxed mt-5">
+        <summary>
+          ${icon('chevronRight')}<span class="t">All model facts</span
+          ><span class="m">architecture, attention, modalities, links</span>
+        </summary>
+        <div class="body">
+          ${kv([
+            ['id', html`<span class="mono">${m.id}</span>`],
+            [
+              'Hugging Face',
+              m.hf_id ? extLink(`https://huggingface.co/${m.hf_id}`, m.hf_id) : null,
+            ],
+            ['vendor', m.vendor],
+            ['family', m.family ?? null],
+            [
+              'parameters',
+              `${fmtParams(m.params_b)}${m.moe ? ` total · ${fmtParams(m.active_params_b)} active` : ''}`,
+            ],
+            m.moe
+              ? ['experts', `${m.experts ?? '?'} total · ${m.experts_active ?? '?'} active`]
+              : null,
+            [
+              'architecture',
+              m.architecture ? html`<span class="mono xs">${m.architecture}</span>` : null,
+            ],
+            ['attention', m.attention ?? null],
+            ['context', `${fmtTokens(m.context_length)} tokens`],
+            ['modalities', (m.modalities ?? ['text']).join(', ')],
+            ['licence', m.licence ?? null],
+            ['released', m.released ?? null],
+            [
+              'tags',
+              (m.tags ?? []).length
+                ? html`<span class="row-wrap" style="gap:4px"
+                    >${(m.tags ?? []).map((t) => html`<span class="tag">${t}</span>`)}</span
+                  >`
+                : null,
+            ],
+            ...Object.entries(m.links ?? {})
+              .filter(([, v]) => v)
+              .map(([k, v]) => [k, extLink(v!, v!)] as [string, TemplateResult]),
+            ['coverage', `${c} of ${p} possible cells measured`],
+          ])}
         </div>
-        ${runsTable(runs, { hide: ['model'], limit: 30 })}
-      </section>
+      </details>
 
       <section class="mt-5">
         <div class="section-title">

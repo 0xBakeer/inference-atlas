@@ -353,6 +353,7 @@ export class AtlasCompareView extends ViewElement {
           .build=${sweepChartBuild(series, metric, axis)}
           .height=${280}
           .key=${metric + series.length}
+          .chartTitle=${'Compare runs'}
         ></atlas-chart>
       </div>
     </section>`;

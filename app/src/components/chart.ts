@@ -9,8 +9,11 @@ import uPlot from 'uplot';
 import 'uplot/dist/uPlot.min.css';
 import { theme as themeSignal, type Theme } from '../theme.js';
 import { watch } from '../signal.js';
+import { store } from '../store.js';
+import { exportPng, exportSvg, type ExportOpts } from '../util/chart-export.js';
 import { cssVar } from '../util/colors.js';
 import { AtlasElement } from './base.js';
+import { icon } from './icons.js';
 
 export type ChartBuild = (
   width: number,
@@ -131,6 +134,15 @@ export class AtlasChart extends AtlasElement {
   @property({ type: Number }) height = 260;
   /** Bump to force a rebuild when `build` closes over new data. */
   @property({ attribute: false }) key: unknown = null;
+  /** Title written above the chart in an exported file; also names the file. */
+  @property({ attribute: false }) chartTitle = '';
+  /** Second line under the title in an exported file: the run, the filter, the model. */
+  @property({ attribute: false }) subtitle = '';
+  /**
+   * Who the exported picture is credited to. Defaults to the site owner; a run page passes
+   * the contributor who measured it.
+   */
+  @property({ attribute: false }) credit = '';
 
   private plot: uPlot | null = null;
   private ro: ResizeObserver | null = null;
@@ -183,7 +195,49 @@ export class AtlasChart extends AtlasElement {
     this.plot = new uPlot({ ...opts, width: w, height: this.height }, data, host);
   }
 
+  private exportOpts(): ExportOpts {
+    const site = store.site;
+    return {
+      title: this.chartTitle || (typeof document !== 'undefined' ? document.title : ''),
+      subtitle: this.subtitle,
+      credit: this.credit || site.repo.owner,
+      site: site.site.title,
+      licence: 'CC-BY-4.0',
+      colors: {
+        bg: cssVar('--surface'),
+        ink: cssVar('--ink'),
+        muted: cssVar('--muted'),
+        line: cssVar('--line'),
+      },
+    };
+  }
+
+  private export(kind: 'png' | 'svg', e: Event): void {
+    e.preventDefault();
+    const menu = (e.currentTarget as HTMLElement).closest('details');
+    if (menu) menu.removeAttribute('open');
+    if (!this.plot) return;
+    if (kind === 'png') exportPng(this.plot, this.exportOpts());
+    else exportSvg(this.plot, this.exportOpts());
+  }
+
   override render() {
-    return html`<div class="chart-box" style="min-height:${this.height}px"></div>`;
+    return html`<div class="chart-wrap">
+      <div class="chart-box" style="min-height:${this.height}px"></div>
+      <details class="chart-menu">
+        <summary class="btn btn-xs btn-ghost" title="Save this chart as an image">
+          ${icon('download')}
+        </summary>
+        <div class="menu">
+          <button class="btn btn-xs btn-ghost" @click=${(e: Event) => this.export('png', e)}>
+            PNG
+          </button>
+          <button class="btn btn-xs btn-ghost" @click=${(e: Event) => this.export('svg', e)}>
+            SVG
+          </button>
+          <span class="xs muted">credited to ${this.credit || store.site.repo.owner}</span>
+        </div>
+      </details>
+    </div>`;
   }
 }

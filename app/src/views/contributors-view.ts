@@ -1,24 +1,31 @@
 import { html, nothing, type TemplateResult } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
+import '../components/chart.js';
 import { icon } from '../components/icons.js';
 import { runsTable } from '../components/runs-table.js';
+import { activityBuild, barList } from '../components/stat-charts.js';
 import {
   avatar,
   emptyState,
   extLink,
   hardwareLink,
-  kindTag,
   kv,
   skeletonLines,
+  sparkline,
   when,
 } from '../components/ui.js';
-import type { ContributorRow } from '../data/types.js';
-import { loginKey } from '@atlas/core';
-import { href } from '../router.js';
+import type { ContributorRow, IndexRow } from '../data/types.js';
+import { fmtInt, fmtMs, fmtNum, fmtPct, fmtTokS, loginKey } from '@atlas/core';
+import { href, modelHref } from '../router.js';
 import { store } from '../store.js';
+import {
+  firstAppearances,
+  periodStats,
+  weeklyCounts,
+  type NewsItem,
+  type NewsKind,
+} from '../util/community.js';
 import { absDate } from '../util/dates.js';
-import { fmtInt, fmtNum } from '@atlas/core';
-import { headlineMetric } from '@atlas/core';
 import { ViewElement } from './view-base.js';
 
 interface Badge {
@@ -111,6 +118,9 @@ export class AtlasContributorsView extends ViewElement {
   private leaderboard(list: ContributorRow[]): TemplateResult {
     const rows = [...list].sort((a, b) => b.points - a.points || b.runs - a.runs);
     const w = store.site.scoring.weights;
+    const index = store.index.value;
+    const month = periodStats(index, 30);
+    const news = firstAppearances(index).slice(0, 24);
     return html`<div class="page">
       <div class="page-head">
         <div class="eyebrow">Community</div>
@@ -132,56 +142,200 @@ export class AtlasContributorsView extends ViewElement {
                 <a class="btn" href="#/contribute">How contributing works</a>
               </div>`,
             })
-          : html`<div class="table-wrap">
-              <table class="table cards">
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>contributor</th>
-                    <th class="num">points</th>
-                    <th class="num">runs</th>
-                    <th class="num">cells filled</th>
-                    <th class="num">reproductions</th>
-                    <th>hardware</th>
-                    <th>first · last</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${rows.map(
-                    (c, i) =>
-                      html`<tr
-                        class="lb-row clickable"
-                        @click=${() => (location.hash = href('contributors', c.login))}
-                      >
-                        <td class="rank ${i < 3 ? 'top' : ''}">${i + 1}</td>
-                        <td class="primary">
-                          <span class="row" style="gap:8px"
-                            >${avatar(c.login, { userId: c.user_id, avatarUrl: c.avatar_url, size: 'md' })}<span
-                              >${c.login}</span
-                            ></span
-                          >
-                        </td>
-                        <td class="num points" data-label="points">
-                          ${fmtNum(c.points, c.points % 1 ? 1 : 0)}
-                        </td>
-                        <td class="num" data-label="runs">${c.runs}</td>
-                        <td class="num" data-label="cells">${c.cells_filled}</td>
-                        <td class="num" data-label="reproductions">${c.reproductions}</td>
-                        <td data-label="hardware">
-                          <span class="row-wrap" style="gap:3px"
-                            >${c.hardware_ids.slice(0, 4).map((h) => html`<span class="tag mono">${h}</span>`)}${c.hardware_ids.length > 4 ? html`<span class="tag">+${c.hardware_ids.length - 4}</span>` : nothing}</span
-                          >
-                        </td>
-                        <td class="xs muted" data-label="active">
-                          ${absDate(c.first_seen)} · ${when(c.last_seen)}
-                        </td>
-                      </tr>`,
-                  )}
-                </tbody>
-              </table>
-            </div>`
+          : html`<div class="stats-strip mb-5">
+                ${this.stat(month.runs, 'runs · last 30 days')}
+                ${this.stat(month.contributors, 'people active · 30 days')}
+                ${this.stat(month.cells, 'squares filled · 30 days')}
+                ${this.stat(month.models, 'models first measured · 30 days')}
+                ${this.stat(month.hardware, 'devices first measured · 30 days')}
+              </div>
+
+              <div class="split facts-wide community-split">
+                <section>
+                  <div class="section-title">
+                    <h2>What's new</h2>
+                    <span class="meta">first appearances on the map</span>
+                  </div>
+                  ${this.newsFeed(news)}
+                </section>
+                <div class="stack">${this.leaderboardCharts(rows)}</div>
+              </div>
+
+              <section class="mt-5">
+                <div class="section-title">
+                  <h2>Leaderboard</h2>
+                  <span class="meta">by points · click a card for the full profile</span>
+                </div>
+                <div class="contributor-grid">
+                  ${rows.map((c, i) => this.contributorCard(c, i + 1))}
+                </div>
+              </section>`
       }
     </div>`;
+  }
+
+  private stat(v: number, k: string): TemplateResult {
+    return html`<div class="stat">
+      <div class="v">${fmtInt(v)}</div>
+      <div class="k">${k}</div>
+    </div>`;
+  }
+
+  /** New models, devices, engines and people, grouped by day. */
+  private newsFeed(news: NewsItem[]): TemplateResult {
+    if (!news.length) return html`<p class="small muted">Nothing yet.</p>`;
+    const days = new Map<string, NewsItem[]>();
+    for (const n of news) days.set(n.date, [...(days.get(n.date) ?? []), n]);
+    const lk = store.lookups;
+    const label = (n: NewsItem): TemplateResult => {
+      switch (n.kind) {
+        case 'model':
+          return html`<a href=${modelHref(n.id)}>${lk.models.get(n.id)?.model.name ?? n.id}</a>
+            <span class="muted">first measured</span>`;
+        case 'hardware':
+          return html`<a href=${href('hardware', n.id)}>${lk.hardware.get(n.id)?.name ?? n.id}</a>
+            <span class="muted">first measured</span>`;
+        case 'engine':
+          return html`<a href=${href('engines', n.id)}
+              >${lk.engines.get(n.id)?.meta.name ?? n.id}</a
+            >
+            <span class="muted">first measured</span>`;
+        case 'contributor':
+          return html`<a href=${href('contributors', n.id)}>${n.id}</a>
+            <span class="muted">joined the map</span>`;
+        default:
+          return html`${n.id}`;
+      }
+    };
+    const ic: Record<NewsKind, string> = {
+      model: 'box',
+      hardware: 'cpu',
+      engine: 'zap',
+      cell: 'grid',
+      contributor: 'users',
+    };
+    return html`<div class="news">
+      ${[...days.entries()].map(
+        ([day, items]) =>
+          html`<div class="news-day">
+            <div class="news-date">${absDate(day)} <span class="faint">· ${when(day)}</span></div>
+            <div class="news-items">
+              ${items.map(
+                (n) =>
+                  html`<div class="news-item">
+                    <span class="ic ${n.kind}">${icon(ic[n.kind])}</span>
+                    <span class="what">${label(n)}</span>
+                    <span class="by xs muted"
+                      >${n.kind === 'contributor' ? nothing : html`by <a href=${href('contributors', n.by)}>${n.by}</a> ·`}
+                      <a href=${href('run', n.run_id)}>run</a></span
+                    >
+                  </div>`,
+              )}
+            </div>
+          </div>`,
+      )}
+    </div>`;
+  }
+
+  /** One contributor at a glance: the numbers, the devices, the badges, the rhythm. */
+  private contributorCard(c: ContributorRow, rank: number): TemplateResult {
+    const runs = store.index.value.filter(
+      (r) => loginKey(r.provenance.login) === loginKey(c.login),
+    );
+    const earned = BADGES.filter((b) => b.earned(c, runs.length));
+    const weeks = weeklyCounts(runs, 12);
+    const bd = c.breakdown;
+    const models = new Set(runs.map((r) => r.model.id)).size;
+    const engines = [...new Set(runs.map((r) => r.engine.id))];
+    return html`<a class="contributor-tile" href=${href('contributors', c.login)}>
+      <div class="ct-head">
+        ${avatar(c.login, { userId: c.user_id, avatarUrl: c.avatar_url, size: 'lg' })}
+        <div class="min-w-0">
+          <div class="row" style="gap:8px">
+            <span class="login ellipsis">${c.login}</span>
+            <span class="rank ${rank <= 3 ? 'top' : ''}">#${rank}</span>
+          </div>
+          <div class="points">
+            ${fmtNum(c.points, c.points % 1 ? 1 : 0)} <span class="muted xs">points</span>
+          </div>
+        </div>
+        <div class="spark">
+          ${sparkline(weeks, { width: 88, height: 28 })}
+          <span class="xs faint">12 weeks</span>
+        </div>
+      </div>
+      <div class="ct-tiles">
+        <div><b>${fmtInt(c.runs)}</b><span>runs</span></div>
+        <div><b>${fmtInt(c.cells_filled)}</b><span>squares</span></div>
+        <div><b>${fmtInt(models)}</b><span>models</span></div>
+        <div><b>${fmtInt(bd.eval_runs)}</b><span>evals</span></div>
+        <div><b>${fmtInt(bd.gotchas)}</b><span>gotchas</span></div>
+        <div><b>${fmtInt(c.reproductions)}</b><span>repros</span></div>
+      </div>
+      <div class="ct-tags">
+        ${c.hardware_ids.slice(0, 3).map((h) => html`<span class="tag">${store.lookups.hardware.get(h)?.name ?? h}</span>`)}
+        ${c.hardware_ids.length > 3 ? html`<span class="tag">+${c.hardware_ids.length - 3}</span>` : nothing}
+        ${engines.slice(0, 4).map((e) => html`<span class="tag mono">${e}</span>`)}
+        ${engines.length > 4 ? html`<span class="tag">+${engines.length - 4}</span>` : nothing}
+      </div>
+      <div class="ct-foot">
+        <span class="badges"
+          >${earned.map((b) => html`<span class="badge" title=${`${b.label} — ${b.desc}`}>${icon(b.ic)}</span>`)}</span
+        >
+        <span class="xs muted"
+          >${c.first_seen ? html`since ${absDate(c.first_seen)}` : nothing}${c.last_seen ? html` · last ${when(c.last_seen)}` : nothing}</span
+        >
+      </div>
+    </a>`;
+  }
+
+  /** Points at a glance plus the map's overall submission rhythm. */
+  private leaderboardCharts(rows: ContributorRow[]): TemplateResult | typeof nothing {
+    if (!rows.length) return nothing;
+    const top = rows.slice(0, 10);
+    const activity = activityBuild(
+      store.index.value.map((r) => r.provenance.submitted_at ?? r.provenance.started_at),
+      { label: 'runs' },
+    );
+    return html`${
+        activity
+          ? html`<section class="card tight">
+              <div class="card-head">
+                <h3>Community activity</h3>
+                <span class="muted small">all submissions over time</span>
+              </div>
+              <atlas-chart
+                .build=${activity}
+                .height=${200}
+                .key=${store.index.value.length}
+                .chartTitle=${'Community activity'}
+                .subtitle=${'all submissions over time · Inference Atlas'}
+              ></atlas-chart>
+            </section>`
+          : nothing
+      }
+      <section class="card tight">
+        <div class="card-head">
+          <h3>Points</h3>
+          <span class="muted small">top ${top.length}</span>
+        </div>
+        ${barList(
+          top.map((c) => ({
+            label: html`<span class="row" style="gap:6px;min-width:0"
+              >${avatar(c.login, { userId: c.user_id, avatarUrl: c.avatar_url, size: 'sm' })}<span
+                class="ellipsis"
+                >${c.login}</span
+              ></span
+            >`,
+            title: `${c.login} — ${fmtNum(c.points, c.points % 1 ? 1 : 0)} points`,
+            value: c.points,
+            text: fmtNum(c.points, c.points % 1 ? 1 : 0),
+            color: 'var(--accent)',
+            href: href('contributors', c.login),
+          })),
+          { ariaLabel: 'Points per contributor' },
+        )}
+      </section>`;
   }
 
   private profile(typed: string, list: ContributorRow[]): TemplateResult {
@@ -227,10 +381,12 @@ export class AtlasContributorsView extends ViewElement {
       },
     };
     const engines = [...new Set(runs.map((r) => r.engine.id))];
+    const modelCounts = new Map<string, number>();
+    for (const r of runs) modelCounts.set(r.model.id, (modelCounts.get(r.model.id) ?? 0) + 1);
+    const models = [...modelCounts.entries()].sort((a, b) => b[1] - a[1]);
     const rank =
       [...list].sort((a, b) => b.points - a.points).findIndex((x) => loginKey(x.login) === key) + 1;
     const earned = BADGES.filter((b) => b.earned(cc, runs.length));
-    const keyMetrics = store.site.coverage.key_metrics;
     const bd = cc.breakdown;
     return html`<div class="page">
       <div class="page-head">
@@ -252,8 +408,31 @@ export class AtlasContributorsView extends ViewElement {
         ${earned.length ? html`<div class="badge-row mt-2">${earned.map((b) => html`<span class="badge" title=${b.desc}>${icon(b.ic)} ${b.label}</span>`)}</div>` : nothing}
       </div>
 
+      <div class="stats-strip mb-5">
+        ${this.stat(Math.round(cc.points), 'points')} ${this.stat(cc.runs, 'runs')}
+        ${this.stat(cc.cells_filled, 'squares filled')}
+        ${this.stat(cc.reproductions, 'reproductions')} ${this.stat(bd.eval_runs, 'evals')}
+        ${this.stat(bd.gotchas, 'gotchas recorded')} ${this.stat(bd.sweep_points, 'sweep points')}
+      </div>
+
       <div class="split facts-quants">
         <div class="stack">
+          <section class="card">
+            <div class="card-head"><h3>Where they measure</h3></div>
+            <div class="eyebrow plain mb-1">Hardware</div>
+            ${cc.hardware_ids.length ? html`<div class="col" style="gap:4px">${cc.hardware_ids.map((h) => html`<div>${hardwareLink(h)}</div>`)}</div>` : html`<span class="muted small">–</span>`}
+            <div class="eyebrow plain mt-3 mb-1">Engines</div>
+            ${engines.length ? html`<div class="row-wrap" style="gap:4px">${engines.map((e) => html`<a class="tag mono" href=${href('engines', e)} style="color:inherit">${e}</a>`)}</div>` : html`<span class="muted small">–</span>`}
+            <div class="eyebrow plain mt-3 mb-1">Models</div>
+            ${
+              models.length
+                ? html`<div class="row-wrap" style="gap:4px">
+                    ${models.slice(0, 12).map(([m, n]) => html`<a class="tag" href=${modelHref(m)} style="color:inherit">${store.lookups.models.get(m)?.model.name ?? m} <span class="muted">${n}</span></a>`)}
+                    ${models.length > 12 ? html`<span class="tag">+${models.length - 12}</span>` : nothing}
+                  </div>`
+                : html`<span class="muted small">–</span>`
+            }
+          </section>
           <section class="card">
             <div class="card-head"><h3>Points breakdown</h3></div>
             ${kv([
@@ -270,12 +449,6 @@ export class AtlasContributorsView extends ViewElement {
             ])}
           </section>
           <section class="card">
-            <div class="card-head"><h3>Hardware</h3></div>
-            ${cc.hardware_ids.length ? html`<div class="col" style="gap:6px">${cc.hardware_ids.map((h) => html`<div>${hardwareLink(h)}</div>`)}</div>` : html`<span class="muted small">–</span>`}
-            <div class="card-head mt-4"><h3>Engines</h3></div>
-            ${engines.length ? html`<div class="row-wrap" style="gap:4px">${engines.map((e) => html`<a class="tag mono" href=${href('engines', e)} style="color:inherit">${e}</a>`)}</div>` : html`<span class="muted small">–</span>`}
-          </section>
-          <section class="card">
             <div class="card-head"><h3>Badges</h3></div>
             <div class="col" style="gap:6px">
               ${BADGES.map((b) => html`<div class="row small" style="opacity:${earned.includes(b) ? 1 : 0.45}">${icon(b.ic)} <b>${b.label}</b> <span class="muted">— ${b.desc}</span> ${earned.includes(b) ? icon('check') : nothing}</div>`)}
@@ -283,36 +456,112 @@ export class AtlasContributorsView extends ViewElement {
           </section>
         </div>
         <div class="stack">
+          ${(() => {
+            const activity = activityBuild(
+              runs.map((r) => r.provenance.submitted_at ?? r.provenance.started_at),
+              { label: 'runs' },
+            );
+            return activity
+              ? html`<section class="card tight">
+                  <div class="card-head">
+                    <h3>Activity</h3>
+                    <span class="muted small">submissions over time</span>
+                  </div>
+                  <atlas-chart
+                    .build=${activity}
+                    .height=${180}
+                    .key=${runs.length}
+                    .chartTitle=${`Activity — ${login}`}
+                    .subtitle=${`${runs.length} runs · Inference Atlas`}
+                    .credit=${login}
+                  ></atlas-chart>
+                </section>`
+              : nothing;
+          })()}
+          ${this.highlights(runs)}
           <section>
             <div class="section-title">
-              <h2>Timeline</h2>
-              <span class="meta">${runs.length} runs</span>
+              <h2>All runs</h2>
+              <span class="meta">${runs.length} · one tab per kind of test, best first</span>
             </div>
-            <div class="timeline">
-              ${runs.slice(0, 40).map((r) => {
-                const hl = headlineMetric(r, keyMetrics);
-                return html`<div class="tl-item">
-                  <div class="when">
-                    ${absDate(r.provenance.submitted_at ?? r.provenance.started_at)} ·
-                    ${when(r.provenance.submitted_at ?? r.provenance.started_at)}
-                  </div>
-                  <a href=${href('run', r.run_id)} class="row-wrap" style="color:inherit;gap:6px">
-                    ${kindTag(r.kind)}
-                    <span class="mono xs">${r.engine.id} ${r.engine.version}</span> ·
-                    <span class="mono xs">${r.model.id}/${r.model.quant_id}</span> ·
-                    <span class="mono xs">${r.hardware.id}</span>
-                    ${hl ? html`<span class="mono" style="font-weight:500;margin-left:auto">${hl.def.fmt(hl.value)}<span class="unit">${hl.def.unit}</span></span>` : nothing}
-                  </a>
-                </div>`;
-              })}
-            </div>
-          </section>
-          <section>
-            <div class="section-title"><h2>All runs</h2></div>
-            ${runsTable(runs, { hide: ['by'], limit: 50 })}
+            ${runsTable(runs, { hide: ['by'], limit: 25 })}
           </section>
         </div>
       </div>
     </div>`;
+  }
+
+  /** The runs worth showing first: the best number this person has put on the map, per kind. */
+  private highlights(runs: IndexRow[]): TemplateResult | typeof nothing {
+    const best = (
+      label: string,
+      filter: (r: IndexRow) => boolean,
+      value: (r: IndexRow) => number | null,
+      better: 'higher' | 'lower',
+      fmt: (v: number) => string,
+      unit: string,
+    ) => {
+      const cands = runs.filter(filter).filter((r) => value(r) !== null);
+      if (!cands.length) return null;
+      const r = cands.sort((a, b) =>
+        better === 'higher' ? value(b)! - value(a)! : value(a)! - value(b)!,
+      )[0]!;
+      return { label, r, text: fmt(value(r)!), unit };
+    };
+    const items = [
+      best(
+        'Highest throughput',
+        (r) => r.kind === 'serving',
+        (r) => r.metrics.output_tok_s ?? null,
+        'higher',
+        fmtTokS,
+        'tok/s',
+      ),
+      best(
+        'Fastest per user',
+        (r) => r.kind === 'serving',
+        (r) => r.metrics.decode_tok_s_per_request ?? null,
+        'higher',
+        fmtTokS,
+        'tok/s',
+      ),
+      best(
+        'Best eval',
+        (r) => r.kind === 'eval',
+        (r) => r.metrics.accuracy ?? null,
+        'higher',
+        (v) => fmtPct(v, 1),
+        '',
+      ),
+      best(
+        'Fastest first token',
+        (r) => r.kind === 'prefill' || r.kind === 'longctx',
+        (r) => r.metrics.ttft_p50 ?? null,
+        'lower',
+        fmtMs,
+        'ms',
+      ),
+    ].filter((x): x is NonNullable<typeof x> => !!x);
+    if (!items.length) return nothing;
+    return html`<section>
+      <div class="section-title">
+        <h2>Highlights</h2>
+        <span class="meta">their best number of each kind</span>
+      </div>
+      <div class="highlight-grid">
+        ${items.map(
+          (h) =>
+            html`<a class="highlight" href=${href('run', h.r.run_id)}>
+              <span class="k">${h.label}</span>
+              <span class="v">${h.text}<span class="unit">${h.unit}</span></span>
+              <span class="xs muted ellipsis">${h.r.model.id}/${h.r.model.quant_id}</span>
+              <span class="xs muted ellipsis"
+                >${store.lookups.hardware.get(h.r.hardware.id)?.name ?? h.r.hardware.id} ·
+                ${h.r.engine.id} · ${h.r.workload_id}</span
+              >
+            </a>`,
+        )}
+      </div>
+    </section>`;
   }
 }

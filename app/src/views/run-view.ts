@@ -8,6 +8,7 @@ import '../components/request-strip.js';
 import '../components/run-picker.js';
 import type { StripMetric } from '../components/request-strip.js';
 import { icon } from '../components/icons.js';
+import { barList, bestPerGroup, firstMetricWithData } from '../components/stat-charts.js';
 import {
   sweepAxisOf,
   sweepChartBuild,
@@ -18,6 +19,7 @@ import {
   type SweepSeries,
 } from '../components/sweep-chart.js';
 import {
+  avatar,
   codeBlock,
   condMeasured,
   condTag,
@@ -37,8 +39,6 @@ import {
   sparkline,
   verifBadge,
   when,
-  who,
-  workloadLink,
 } from '../components/ui.js';
 import type { IndexRow } from '../data/types.js';
 import { href, modelHref, navigate } from '../router.js';
@@ -48,11 +48,15 @@ import { cssVar, seriesColor } from '../util/colors.js';
 import { absDateTime } from '../util/dates.js';
 import { metricDelta } from '@atlas/core';
 import { fmtGB, fmtInt, fmtMs, fmtNum, fmtPct, fmtTokS, fmtW, shortSha } from '@atlas/core';
-import { blockCards, headlineMetric } from '@atlas/core';
+import { blockCards, headlineMetric, type MetricCardData } from '@atlas/core';
 import { requestSamples } from '@atlas/core';
 import { fmtDefault, isDefault } from '../components/param-form.js';
 import { modelRefFor } from './explore-view.js';
+import { keyNumbers, recipeFacts, workloadShape } from '../util/recipe.js';
+import { linkify } from '../util/linkify.js';
 import { ViewElement } from './view-base.js';
+
+type DetailTab = 'flags' | 'metrics' | 'others' | 'raw';
 
 @customElement('atlas-run-view')
 export class AtlasRunView extends ViewElement {
@@ -62,6 +66,7 @@ export class AtlasRunView extends ViewElement {
   @state() private itemFilter: 'all' | 'correct' | 'incorrect' = 'all';
   @state() private stripMetric: StripMetric = 'ttft';
   @state() private siblings = new Map<string, ResultRecord | null>();
+  @state() private detailTab: DetailTab = 'flags';
   private loadedFor = '';
 
   protected override willUpdate(_c: PropertyValues): void {
@@ -162,195 +167,110 @@ export class AtlasRunView extends ViewElement {
       workload_ids: [rec.workload_id],
     };
 
-    return html`<div class="page">
+    const shape = workloadShape(workload, rec.workload?.resolved_params);
+    const nums = keyNumbers(rec, shape);
+    const facts = recipeFacts(rec, workload);
+    const hwName = lk.hardware.get(rec.hardware.id)?.name ?? rec.hardware.id;
+    const engineName = engine?.meta.name ?? rec.engine.id;
+    const container = rec.engine.container;
+
+    return html`<div class="page run-page">
       <div class="run-head">
         <div class="row-wrap xs muted">
           <a href="#/results">Results</a> ${icon('chevronRight')}
-          <span class="mono">${rec.run_id}</span>
-          ${copyBtn(rec.run_id, '', { cls: 'btn-xs btn-ghost', done: 'run_id copied' })}
+          <a href=${modelHref(rec.model.id)}>${model?.model.name ?? rec.model.id}</a>
+          ${icon('chevronRight')}
+          <span>${workload?.name ?? rec.workload_id}</span>
         </div>
-        <div class="title">
-          <span
-            ><a href=${href('engines', rec.engine.id)}>${engine?.meta.name ?? rec.engine.id}</a>
-            <span class="ver">${rec.engine.version}</span></span
-          >
-          <span class="sep">·</span>
-          <span
-            ><a href=${modelHref(rec.model.id)}>${model?.model.name ?? rec.model.id}</a
-            ><span class="ver">/${rec.model.quant_id}</span></span
-          >
-          <span class="sep">·</span>
-          <span
-            ><a href=${href('hardware', rec.hardware.id)}
-              >${lk.hardware.get(rec.hardware.id)?.name ?? rec.hardware.id}</a
-            >${rec.hardware.count > 1 ? html`<span class="ver"> ×${rec.hardware.count}</span>` : nothing}</span
-          >
-        </div>
-        <div class="meta">
-          ${kindTag(rec.kind)} ${workloadLink(rec.workload_id)}
-          ${workload ? html`<span class="muted">${workload.name}</span>` : nothing}
-          ${verifBadge(rec.verification.level)}
-          ${rec.verification.reproduced_by?.length ? html`<span class="xs muted">reproduced by ${rec.verification.reproduced_by.join(', ')}</span>` : nothing}
-          <span class="xs muted"
-            >cell ${hashChip(rec.cell_id)} config
-            ${hashChip(rec.config_id, { href: `#/explore?engine=${rec.engine.id}&version=${rec.engine.version}&model=${rec.model.id}&quant=${rec.model.quant_id}&hardware=${rec.hardware.id}&args=${encodeURIComponent(JSON.stringify(rec.args))}`, title: 'open in the explorer' })}</span
-          >
-        </div>
-        <div class="row-wrap mt-2">
-          ${addButton(reproduceSpec, { label: 'Reproduce', primary: true, title: 'Open the packet for this exact configuration and workload' })}
-          <a class="btn" href=${`#/compare?runs=${rec.run_id}`}>${icon('compare')} Compare with…</a>
-          <a class="btn" href=${issueUrl} target="_blank" rel="noopener"
-            >${icon('alert')} Report a problem</a
-          >
-          ${row?.path ? html`<a class="btn btn-ghost" href=${`${repo}/blob/${store.site.repo.default_branch}/${row.path}`} target="_blank" rel="noopener">${icon('github')} Source file</a>` : nothing}
+        <div class="run-title-row">
+          <div>
+            <h1 class="title">
+              <span
+                ><a href=${modelHref(rec.model.id)}>${model?.model.name ?? rec.model.id}</a
+                ><span class="ver">/${rec.model.quant_id}</span></span
+              >
+            </h1>
+            <div class="run-sub">
+              on
+              <a href=${href('hardware', rec.hardware.id)}>${hwName}</a
+              >${rec.hardware.count > 1 ? ` ×${rec.hardware.count}` : ''} with
+              <a href=${href('engines', rec.engine.id)}>${engineName}</a>
+              <span class="mono muted">${rec.engine.version}</span>
+            </div>
+            <div class="meta">
+              ${kindTag(rec.kind)}
+              <span>${workload?.name ?? rec.workload_id}</span>
+              ${verifBadge(rec.verification.level)}
+              ${rec.verification.reproduced_by?.length ? html`<span class="xs muted">reproduced by ${rec.verification.reproduced_by.join(', ')}</span>` : nothing}
+            </div>
+          </div>
+          <div class="head-actions">
+            ${addButton(reproduceSpec, { label: 'Reproduce', primary: true, title: 'Open the packet for this exact configuration and workload' })}
+            <a class="btn" href=${`#/compare?runs=${rec.run_id}`}>${icon('compare')} Compare</a>
+          </div>
         </div>
       </div>
 
-      <div class="split main-aside">
-        <div class="stack">
+      <div class="split main-aside run-split">
+        <div class="stack run-body">
+          <section class="card recipe-card" aria-label="Result and setup">
+            ${
+              nums.length
+                ? html`<div class="key-numbers">
+                    ${nums.map(
+                      (k, i) =>
+                        html`<div class="knum ${i === 0 ? 'lead' : ''}">
+                          <span class="k">${k.label}</span>
+                          <span class="v"
+                            >${k.fmt(k.value)}<span class="unit">${k.unit}</span></span
+                          >
+                          <span class="hint">${k.hint}</span>
+                        </div>`,
+                    )}
+                  </div>`
+                : nothing
+            }
+            <div class="recipe">
+              <div class="eyebrow plain">How it was measured</div>
+              <dl class="facts">
+                ${facts.map(
+                  (f) =>
+                    html`<div class="fact ${f.missing ? 'missing' : ''}" title=${f.source ?? ''}>
+                      <dt>${f.label}</dt>
+                      <dd>${f.value}</dd>
+                      ${f.hint ? html`<span class="hint">${f.hint}</span>` : nothing}
+                    </div>`,
+                )}
+              </dl>
+            </div>
+          </section>
+
           ${
-            cards.length
+            serve
               ? html`<section>
                   <div class="section-title">
-                    <h2>Metrics</h2>
+                    <h2>Run it yourself</h2>
                     <span class="meta"
-                      >${rec.kind === 'longctx' || rec.kind === 'sweep' ? 'headline; per-point numbers below' : ''}</span
+                      >${rec.serve_command ? 'the exact command line' : 'rendered from the recorded flags'}${container ? html` · image <span class="mono">${container}</span>` : nothing}${rec.model.hf_id ? html` · weights <a class="mono" href=${`https://huggingface.co/${rec.model.hf_id}`} target="_blank" rel="noopener">${rec.model.hf_id}</a>` : nothing}</span
                     >
                   </div>
-                  <div class="metric-grid">
-                    ${cards.map((c, i) => metricCard(c, { hero: i === 0 }))}
-                  </div>
+                  ${codeBlock(serve, { lang: 'bash', maxHeight: 'none', cls: 'wrap' })}
                 </section>`
-              : rec.kind !== 'eval'
-                ? html`<section>
-                    <div class="callout">
-                      No aggregate metrics were recorded for this
-                      run${rec.sweep?.length ? ' — the numbers live in the sweep points below' : ''}.
-                    </div>
-                  </section>`
-                : nothing
+              : nothing
           }
-          ${rec.sweep?.length ? this.sweep(rec) : nothing}
-          ${rec.kind === 'prefill' ? this.prefillCurve(rec) : nothing} ${this.arms(rec)}
-          ${rec.scores ? this.scores(rec) : nothing}
           ${rec.failures?.length ? this.failures(rec) : nothing}
-          ${rec.gotchas?.length ? this.gotchas(rec) : nothing} ${this.args(rec, serve)}
-          ${this.raw(rec)}
+          ${rec.sweep?.length ? this.sweep(rec) : nothing}
+          ${rec.kind === 'prefill' ? this.prefillCurve(rec) : nothing}
+          ${rec.scores ? this.scores(rec) : nothing} ${this.contextChart(rec)}
+          ${rec.gotchas?.length ? this.gotchas(rec) : nothing} ${this.details(rec, cards)}
         </div>
 
-        <aside class="stack">
-          <section class="card">
-            <div class="card-head"><h3>Provenance</h3></div>
-            <div class="prov-card">
-              ${who(prov.github_login, { userId: prov.github_user_id, avatarUrl: row?.provenance.avatar_url, size: 'lg' })}
-              <div>
-                ${kv([
-                  [
-                    'commit',
-                    prov.commit
-                      ? hashChip(prov.commit, { href: `${repo}/commit/${prov.commit}`, short: 7 })
-                      : html`<span class="faint">not yet stamped by the build</span>`,
-                  ],
-                  [
-                    'PR',
-                    prov.pr
-                      ? html`<a href=${`${repo}/pull/${prov.pr}`} target="_blank" rel="noopener"
-                          >#${prov.pr}</a
-                        >`
-                      : html`<span class="faint">–</span>`,
-                  ],
-                  [
-                    'started',
-                    html`<span title=${absDateTime(prov.started_at)}
-                      >${absDateTime(prov.started_at)}</span
-                    >`,
-                  ],
-                  prov.finished_at ? ['finished', absDateTime(prov.finished_at)] : null,
-                  ['submitted', when(prov.submitted_at)],
-                  [
-                    'method',
-                    html`<span class="tag">${prov.method}</span
-                      >${prov.agent ? html` <span class="tag">${prov.agent.name}${prov.agent.model ? ` · ${prov.agent.model}` : ''}</span>` : nothing}`,
-                  ],
-                  [
-                    'user id',
-                    prov.github_user_id ?? html`<span class="faint">resolved by CI</span>`,
-                  ],
-                  (() => {
-                    const c = resolveConditions(rec);
-                    return ['conditions', html`${condTag(c)}${condMeasured(c)}`] as [
-                      string,
-                      unknown,
-                    ];
-                  })(),
-                ])}
-              </div>
-            </div>
-            ${prov.notes ? html`<p class="small mt-3" style="line-height:1.5">${prov.notes}</p>` : nothing}
-          </section>
-
+        <aside class="stack run-aside">
+          ${this.contributor(rec, row, repo)}
           <section class="card">
             <div class="card-head"><h3>Environment</h3></div>
-            ${kv([
-              ['engine', engineLink(rec.engine.id, rec.engine.version)],
-              rec.engine.container
-                ? ['container', html`<span class="mono xs">${rec.engine.container}</span>`]
-                : null,
-              rec.engine.install_method ? ['install', rec.engine.install_method] : null,
-              rec.engine.commit
-                ? ['engine commit', html`<span class="mono xs">${rec.engine.commit}</span>`]
-                : null,
-              ['model', modelLink(rec.model.id, rec.model.quant_id)],
-              rec.model.hf_id
-                ? [
-                    'weights',
-                    html`<a
-                      href=${`https://huggingface.co/${rec.model.hf_id}`}
-                      target="_blank"
-                      rel="noopener"
-                      class="mono xs"
-                      >${rec.model.hf_id}</a
-                    >`,
-                  ]
-                : null,
-              rec.model.revision
-                ? ['revision', html`<span class="mono xs">${rec.model.revision}</span>`]
-                : null,
-              ['dtype', rec.model.dtype ?? 'auto'],
-              ['hardware', hardwareLink(rec.hardware.id, rec.hardware.count)],
-              rec.hardware.driver ? ['driver', rec.hardware.driver] : null,
-              rec.hardware.cuda ? ['CUDA', rec.hardware.cuda] : null,
-              rec.hardware.rocm ? ['ROCm', rec.hardware.rocm] : null,
-              rec.hardware.host?.cpu ? ['host CPU', rec.hardware.host.cpu] : null,
-              rec.hardware.host?.ram_gb ? ['host RAM', `${rec.hardware.host.ram_gb} GB`] : null,
-              rec.hardware.host?.os
-                ? [
-                    'OS',
-                    `${rec.hardware.host.os}${rec.hardware.host.arch ? ` (${rec.hardware.host.arch})` : ''}`,
-                  ]
-                : null,
-              rec.workload?.resolved_params
-                ? [
-                    'workload params',
-                    html`<span class="mono xs"
-                      >${Object.entries(rec.workload.resolved_params)
-                        .map(([k, v]) => `${k}=${JSON.stringify(v)}`)
-                        .join(' ')}</span
-                    >`,
-                  ]
-                : null,
-              rec.derived?.tokens_per_watt
-                ? ['tok/W', fmtNum(rec.derived.tokens_per_watt, 2)]
-                : null,
-              rec.derived?.tok_s_per_gb_bandwidth
-                ? ['tok/s per GB/s', fmtNum(rec.derived.tok_s_per_gb_bandwidth, 3)]
-                : null,
-              rec.derived?.bandwidth_efficiency
-                ? ['bandwidth efficiency', fmtPct(rec.derived.bandwidth_efficiency)]
-                : null,
-            ])}
+            ${this.environment(rec)}
           </section>
-
           <section class="card">
             <div class="card-head"><h3>Compare with…</h3></div>
             <atlas-run-picker
@@ -362,9 +282,221 @@ export class AtlasRunView extends ViewElement {
               and engine minor.
             </p>
           </section>
+          <section class="card tight run-ids">
+            <div class="card-head"><h3>This record</h3></div>
+            ${kv([
+              [
+                'run',
+                html`<span class="mono xs">${rec.run_id}</span>
+                  ${copyBtn(rec.run_id, '', { cls: 'btn-xs btn-ghost', done: 'run_id copied' })}`,
+              ],
+              ['cell', hashChip(rec.cell_id)],
+              [
+                'config',
+                hashChip(rec.config_id, {
+                  href: `#/explore?engine=${rec.engine.id}&version=${rec.engine.version}&model=${rec.model.id}&quant=${rec.model.quant_id}&hardware=${rec.hardware.id}&args=${encodeURIComponent(JSON.stringify(rec.args))}`,
+                  title: 'open in the explorer',
+                }),
+              ],
+              [
+                'commit',
+                prov.commit
+                  ? hashChip(prov.commit, { href: `${repo}/commit/${prov.commit}`, short: 7 })
+                  : html`<span class="faint">not yet stamped</span>`,
+              ],
+              [
+                'PR',
+                prov.pr
+                  ? html`<a href=${`${repo}/pull/${prov.pr}`} target="_blank" rel="noopener"
+                      >#${prov.pr}</a
+                    >`
+                  : html`<span class="faint">–</span>`,
+              ],
+            ])}
+            <div class="row-wrap mt-3">
+              ${row?.path ? html`<a class="btn btn-xs btn-ghost" href=${`${repo}/blob/${store.site.repo.default_branch}/${row.path}`} target="_blank" rel="noopener">${icon('github')} Source file</a>` : nothing}
+              <a class="btn btn-xs btn-ghost" href=${issueUrl} target="_blank" rel="noopener"
+                >${icon('alert')} Report a problem</a
+              >
+            </div>
+          </section>
         </aside>
       </div>
     </div>`;
+  }
+
+  /** One line naming the run under an exported chart title. */
+  private chartSubtitle(rec: ResultRecord): string {
+    const lk = store.lookups;
+    return `${lk.hardware.get(rec.hardware.id)?.name ?? rec.hardware.id} · ${lk.engines.get(rec.engine.id)?.meta.name ?? rec.engine.id} ${rec.engine.version} · ${rec.workload_id} · measured by ${rec.provenance.github_login}`;
+  }
+
+  /** Hugging Face ids the registry knows, so notes can link them without guessing. */
+  private knownHfIds(): Set<string> {
+    const ids = new Set<string>();
+    for (const m of store.registry.value?.models ?? []) {
+      ids.add(m.model.id);
+      if (m.model.hf_id) ids.add(m.model.hf_id);
+      for (const q of m.quants) if (q.hf_id) ids.add(q.hf_id);
+    }
+    return ids;
+  }
+
+  /**
+   * Who measured it and what they wrote about it. The notes are the contributor's own account
+   * of the run — the recipe source, the conditions, what else was on the box — so they sit in
+   * the sidebar in full, with the URLs and repo ids they mention turned into links.
+   */
+  private contributor(rec: ResultRecord, row: IndexRow | undefined, repo: string): TemplateResult {
+    const prov = rec.provenance;
+    const c = resolveConditions(rec);
+    void repo;
+    return html`<section class="card contributor-card">
+      <div class="contributor-head">
+        ${avatar(prov.github_login, { userId: prov.github_user_id, avatarUrl: row?.provenance.avatar_url, size: 'lg' })}
+        <div class="min-w-0">
+          <a class="login" href=${href('contributors', prov.github_login)}>${prov.github_login}</a>
+          <div class="xs muted">
+            ${when(prov.submitted_at ?? prov.started_at)} ·
+            <span title=${absDateTime(prov.started_at)}>${absDateTime(prov.started_at)}</span>
+          </div>
+          <div class="row-wrap mt-1" style="gap:4px">
+            <span class="tag">${prov.method}</span>
+            ${prov.agent ? html`<span class="tag">${prov.agent.name}${prov.agent.model ? ` · ${prov.agent.model}` : ''}</span>` : nothing}
+            ${condTag(c)}
+          </div>
+        </div>
+      </div>
+      ${condMeasured(c) ? html`<div class="xs muted mt-2">${condMeasured(c)}</div>` : nothing}
+      ${
+        prov.notes
+          ? html`<div class="notes mt-3">${this.paragraphs(prov.notes)}</div>`
+          : html`<p class="xs faint mt-3">No notes were left with this run.</p>`
+      }
+    </section>`;
+  }
+
+  /** Notes as paragraphs with live links; a blank line in the text starts a new paragraph. */
+  private paragraphs(text: string): TemplateResult {
+    const known = this.knownHfIds();
+    const paras = text
+      .split(/\n\s*\n/)
+      .map((p) => p.trim())
+      .filter(Boolean);
+    return html`${paras.map((p) => html`<p>${linkify(p, known)}</p>`)}`;
+  }
+
+  /**
+   * The engineering detail, one tab each, below the charts: what an engineer wants is all here
+   * and one click away, without pushing the answer off the first screen.
+   */
+  private details(rec: ResultRecord, cards: MetricCardData[]): TemplateResult {
+    const others = this.siblingRows(rec).length;
+    const tabs: Array<{ id: DetailTab; label: string; count?: number | string }> = [
+      { id: 'flags', label: 'Engine flags', count: Object.keys(rec.args).length },
+      { id: 'metrics', label: 'All metrics', count: cards.length },
+      ...(others
+        ? [{ id: 'others' as const, label: 'Other runs of this setup', count: others }]
+        : []),
+      { id: 'raw', label: 'Raw record' },
+    ];
+    const cur = tabs.some((t) => t.id === this.detailTab) ? this.detailTab : tabs[0]!.id;
+    return html`<section class="run-details">
+      <div class="section-title">
+        <h2>Details</h2>
+        <span class="meta">for reproducing and comparing</span>
+      </div>
+      <div class="seg detail-tabs" role="tablist">
+        ${tabs.map(
+          (t) =>
+            html`<button
+              role="tab"
+              aria-pressed=${t.id === cur}
+              @click=${() => (this.detailTab = t.id)}
+            >
+              ${t.label}${t.count !== undefined ? html` <span class="count">${t.count}</span>` : nothing}
+            </button>`,
+        )}
+      </div>
+      <div class="card detail-body">
+        ${
+          cur === 'flags'
+            ? this.args(rec)
+            : cur === 'metrics'
+              ? cards.length
+                ? html`<div class="metric-grid">
+                    ${cards.map((c, i) => metricCard(c, { hero: i === 0 }))}
+                  </div>`
+                : html`<p class="small muted">
+                    No aggregate metrics were recorded for this
+                    run${rec.sweep?.length ? ' — the numbers live in the sweep above' : ''}.
+                  </p>`
+              : cur === 'others'
+                ? this.arms(rec)
+                : html`<div class="xs muted mb-2">${this.rawMeta(rec)}</div>
+                    ${this.raw(rec)}`
+        }
+      </div>
+    </section>`;
+  }
+
+  private environment(rec: ResultRecord): TemplateResult {
+    return kv([
+      ['engine', engineLink(rec.engine.id, rec.engine.version)],
+      rec.engine.container
+        ? ['container', html`<span class="mono xs">${rec.engine.container}</span>`]
+        : null,
+      rec.engine.install_method ? ['install', rec.engine.install_method] : null,
+      rec.engine.commit
+        ? ['engine commit', html`<span class="mono xs">${rec.engine.commit}</span>`]
+        : null,
+      ['model', modelLink(rec.model.id, rec.model.quant_id)],
+      rec.model.hf_id
+        ? [
+            'weights',
+            html`<a
+              href=${`https://huggingface.co/${rec.model.hf_id}`}
+              target="_blank"
+              rel="noopener"
+              class="mono xs"
+              >${rec.model.hf_id}</a
+            >`,
+          ]
+        : null,
+      rec.model.revision
+        ? ['revision', html`<span class="mono xs">${rec.model.revision}</span>`]
+        : null,
+      ['dtype', rec.model.dtype ?? 'auto'],
+      ['hardware', hardwareLink(rec.hardware.id, rec.hardware.count)],
+      rec.hardware.driver ? ['driver', rec.hardware.driver] : null,
+      rec.hardware.cuda ? ['CUDA', rec.hardware.cuda] : null,
+      rec.hardware.rocm ? ['ROCm', rec.hardware.rocm] : null,
+      rec.hardware.host?.cpu ? ['host CPU', rec.hardware.host.cpu] : null,
+      rec.hardware.host?.ram_gb ? ['host RAM', `${rec.hardware.host.ram_gb} GB`] : null,
+      rec.hardware.host?.os
+        ? [
+            'OS',
+            `${rec.hardware.host.os}${rec.hardware.host.arch ? ` (${rec.hardware.host.arch})` : ''}`,
+          ]
+        : null,
+      rec.workload?.resolved_params
+        ? [
+            'workload params',
+            html`<span class="mono xs"
+              >${Object.entries(rec.workload.resolved_params)
+                .map(([k, v]) => `${k}=${JSON.stringify(v)}`)
+                .join(' ')}</span
+            >`,
+          ]
+        : null,
+      rec.derived?.tokens_per_watt ? ['tok/W', fmtNum(rec.derived.tokens_per_watt, 2)] : null,
+      rec.derived?.tok_s_per_gb_bandwidth
+        ? ['tok/s per GB/s', fmtNum(rec.derived.tok_s_per_gb_bandwidth, 3)]
+        : null,
+      rec.derived?.bandwidth_efficiency
+        ? ['bandwidth efficiency', fmtPct(rec.derived.bandwidth_efficiency)]
+        : null,
+    ]);
   }
 
   /**
@@ -411,6 +543,9 @@ export class AtlasRunView extends ViewElement {
                   .build=${sweepChartBuild(series, 'throughput', axis, { sync })}
                   .height=${240}
                   .key=${`t${series.length}`}
+                  .chartTitle=${`Aggregate throughput — ${rec.model.id}/${rec.model.quant_id}`}
+                  .subtitle=${this.chartSubtitle(rec)}
+                  .credit=${rec.provenance.github_login}
                 ></atlas-chart>`
             : nothing
         }
@@ -424,6 +559,9 @@ export class AtlasRunView extends ViewElement {
                   .build=${sweepChartBuild(series, latency, axis, { sync })}
                   .height=${190}
                   .key=${`l${series.length}`}
+                  .chartTitle=${`${latency === 'ttft' ? 'Time to first token' : 'Time per output token'} — ${rec.model.id}/${rec.model.quant_id}`}
+                  .subtitle=${this.chartSubtitle(rec)}
+                  .credit=${rec.provenance.github_login}
                 ></atlas-chart>`
             : nothing
         }
@@ -590,7 +728,57 @@ export class AtlasRunView extends ViewElement {
           .build=${sweepChartBuild(series, 'prefill', 'input_tokens', { logX: true })}
           .height=${220}
           .key=${points.length}
+          .chartTitle=${`Prefill across context length — ${rec.model.id}/${rec.model.quant_id}`}
+          .subtitle=${this.chartSubtitle(rec)}
+          .credit=${rec.provenance.github_login}
         ></atlas-chart>
+      </div>
+    </section>`;
+  }
+
+  /**
+   * This run in context: the same workload on the same model/quant, best number per
+   * device × engine. Same workload id means the comparison is valid by construction.
+   */
+  private contextChart(rec: ResultRecord): TemplateResult | typeof nothing {
+    const rows = store.index.value.filter(
+      (r) =>
+        r.workload_id === rec.workload_id &&
+        r.model.id === rec.model.id &&
+        r.model.quant_id === rec.model.quant_id,
+    );
+    const metric = firstMetricWithData(rows);
+    if (!metric) return nothing;
+    const best = bestPerGroup(rows, (r) => `${r.hardware.id} · ${r.engine.id}`, metric).slice(
+      0,
+      10,
+    );
+    if (best.length < 2) return nothing;
+    const mineKey = `${rec.hardware.id} · ${rec.engine.id}`;
+    return html`<section>
+      <div class="section-title">
+        <h2>In context</h2>
+        <span class="meta"
+          >best ${metric.label}${metric.unit ? ` (${metric.unit})` : ''} on
+          <span class="mono">${rec.workload_id}</span> with this model/quant, per device ×
+          engine</span
+        >
+      </div>
+      <div class="card tight">
+        ${barList(
+          best.map((b) => ({
+            label: b.id === mineKey ? html`${b.id} <span class="tag accent">this run</span>` : b.id,
+            title: `${b.id} — ${metric.fmt(b.value)} ${metric.unit}`,
+            value: b.value,
+            text: metric.fmt(b.value),
+            color: b.id === mineKey ? 'var(--accent)' : 'var(--chart-1)',
+            href: b.row.run_id === rec.run_id ? undefined : href('run', b.row.run_id),
+          })),
+          {
+            max: metric.better === 'lower' ? Math.max(...best.map((b) => b.value)) : undefined,
+            ariaLabel: `Best ${metric.label} per device and engine on this workload`,
+          },
+        )}
       </div>
     </section>`;
   }
@@ -608,10 +796,6 @@ export class AtlasRunView extends ViewElement {
     );
     const currentRow = store.rowById(rec.run_id);
     return html`<section>
-      <div class="section-title">
-        <h2>Same cell, other runs</h2>
-        <span class="meta">${rows.length} in this model × hardware × engine-minor square</span>
-      </div>
       <div class="arm-list">
         ${groups.map((g) => {
           const sibRec = g.rows
@@ -820,6 +1004,7 @@ export class AtlasRunView extends ViewElement {
 
   private gotchas(rec: ResultRecord): TemplateResult {
     const ic = { info: 'info', warn: 'warn', blocker: 'alert' } as const;
+    const known = this.knownHfIds();
     return html`<section>
       <div class="section-title">
         <h2>Gotchas</h2>
@@ -836,7 +1021,7 @@ export class AtlasRunView extends ViewElement {
                 >${icon(ic[g.severity])}</span
               >
               <span
-                >${g.text}${g.link ? html` <a href=${g.link} target="_blank" rel="noopener">${icon('external')}</a>` : nothing}</span
+                >${linkify(g.text, known)}${g.link ? html` <a href=${g.link} target="_blank" rel="noopener">${icon('external')}</a>` : nothing}</span
               >
             </div>`,
         )}
@@ -844,15 +1029,11 @@ export class AtlasRunView extends ViewElement {
     </section>`;
   }
 
-  private args(rec: ResultRecord, serve: string): TemplateResult {
+  private args(rec: ResultRecord): TemplateResult {
     const params = this.vf?.params ?? [];
     const byName = new Map(params.map((p) => [p.name, p]));
     const entries = Object.entries(rec.args);
     return html`<section>
-      <div class="section-title">
-        <h2>Arguments</h2>
-        <span class="meta">${entries.length} passed · canonical fingerprint below</span>
-      </div>
       ${
         entries.length
           ? html`<div class="table-wrap">
@@ -891,34 +1072,20 @@ export class AtlasRunView extends ViewElement {
         <div class="eyebrow plain mb-2">Canonical</div>
         ${codeBlock(rec.args_canonical, { lang: 'text' })}
       </div>
-      ${
-        serve
-          ? html`<div class="mt-3">
-              <div class="eyebrow plain mb-2">
-                Serve
-                command${rec.serve_command ? '' : ' (rendered from args — the exact command line was not recorded)'}
-              </div>
-              ${codeBlock(serve, { lang: 'bash' })}
-            </div>`
-          : nothing
-      }
     </section>`;
   }
 
+  private rawMeta(rec: ResultRecord): string {
+    return [
+      rec.raw?.harness ? `${rec.raw.harness} ${rec.raw.harness_version ?? ''}`.trim() : null,
+      rec.raw?.truncated ? 'payload truncated' : null,
+      rec.raw?.sha256 ? `sha256 ${shortSha(rec.raw.sha256)}` : null,
+    ]
+      .filter(Boolean)
+      .join(' · ');
+  }
+
   private raw(rec: ResultRecord): TemplateResult {
-    const json = JSON.stringify(rec, null, 2);
-    return html`<section>
-      <details class="json-view">
-        <summary>
-          ${icon('chevronRight')} Raw record
-          <span class="muted xs"
-            >${rec.raw?.harness ? `${rec.raw.harness} ${rec.raw.harness_version ?? ''}` : ''}
-            ${rec.raw?.truncated ? '· payload truncated' : ''}
-            ${rec.raw?.sha256 ? `· sha256 ${shortSha(rec.raw.sha256)}` : ''}</span
-          >
-        </summary>
-        ${codeBlock(json, { lang: 'json', maxHeight: 520 })}
-      </details>
-    </section>`;
+    return codeBlock(JSON.stringify(rec, null, 2), { lang: 'json', maxHeight: 520 });
   }
 }

@@ -6,9 +6,9 @@ import '../components/cell-picker.js';
 import '../components/chart.js';
 import { icon } from '../components/icons.js';
 import { ordinalLinesBuild } from '../components/sweep-chart.js';
-import { emptyState, kindTag, selectField, skeletonLines } from '../components/ui.js';
+import { emptyState, selectField, skeletonLines } from '../components/ui.js';
 import { engineMinors } from '../data/derive.js';
-import { href, qget, setQuery } from '../router.js';
+import { qget, setQuery } from '../router.js';
 import { store } from '../store.js';
 import { seriesColor } from '../util/colors.js';
 import { fmtSignedPct } from '@atlas/core';
@@ -100,6 +100,21 @@ export class AtlasTimelineView extends ViewElement {
       });
     }
     const measuredVersions = versions.filter((v) => rows.some((r) => r.engine.version === v));
+    const showAll = q.get('all') === '1';
+    const chartVersions = showAll ? versions : measuredVersions;
+    const chartSeries = series.map((s) => ({
+      ...s,
+      values: chartVersions.map((v) => s.values[versions.indexOf(v)] ?? null),
+    }));
+    const bestVersion = (s: (typeof series)[number]): { v: string; y: number } | null => {
+      let best: { v: string; y: number } | null = null;
+      s.values.forEach((y, i) => {
+        if (y === null) return;
+        if (best === null || (metric.better === 'higher' ? y > best.y : y < best.y))
+          best = { v: versions[i]!, y };
+      });
+      return best;
+    };
     const minorsMissing = engine
       ? engineMinors(engine).filter((m) => !rows.some((r) => r.engine.minor === m.minor))
       : [];
@@ -107,11 +122,11 @@ export class AtlasTimelineView extends ViewElement {
     return html`<div class="page">
       <div class="page-head">
         <div class="eyebrow">Timeline</div>
-        <h1>One cell across engine versions</h1>
+        <h1>Did the engine get faster or slower?</h1>
         <p class="lede">
-          Engines move numbers by double digits between minors. Pick a model, quant, device and
-          engine: every registered version is a tick, every workload a line. Drops of more than
-          ${REGRESSION * 100}% are flagged.
+          The same model, quantization and device measured on different versions of one engine. Each
+          line is one test; a drop of more than ${REGRESSION * 100}% between two measured versions
+          is flagged as a regression.
         </p>
       </div>
       <div class="card mb-4">
@@ -122,6 +137,13 @@ export class AtlasTimelineView extends ViewElement {
           @cell-change=${(e: CellChangeEvent) => setQuery({ engine: e.detail.engine, model: e.detail.model, quant: e.detail.quant, hardware: e.detail.hardware })}
         ></atlas-cell-picker>
         <div class="filters mt-2">
+          <label class="switch" style="padding-bottom:6px"
+            ><input
+              type="checkbox"
+              .checked=${showAll}
+              @change=${(e: Event) => setQuery({ all: (e.target as HTMLInputElement).checked })}
+            /><span class="track"></span>Show versions nobody measured</label
+          >
           ${selectField(
             'Metric',
             metricKey,
@@ -150,17 +172,44 @@ export class AtlasTimelineView extends ViewElement {
                 { primary: true },
               ),
             })
-          : html`<div class="card">
+          : html`<div class="stats-strip mb-4">
+                <div class="stat">
+                  <div class="v">${measuredVersions.length}<small>/ ${versions.length}</small></div>
+                  <div class="k">versions measured</div>
+                </div>
+                <div class="stat">
+                  <div class="v">${workloads.length}</div>
+                  <div class="k">tests tracked</div>
+                </div>
+                <div class="stat">
+                  <div class="v">${rows.length}</div>
+                  <div class="k">runs</div>
+                </div>
+                <div class="stat">
+                  <div class="v" style=${regressions.length ? 'color:var(--danger)' : ''}>
+                    ${regressions.length}
+                  </div>
+                  <div class="k">regressions</div>
+                </div>
+              </div>
+              <div class="card hide-legend">
                 <atlas-chart
-                  .build=${ordinalLinesBuild(versions, series, `${metric.label}${metric.unit ? ` (${metric.unit})` : ''}`, (v) => metric.fmt(v), flagged)}
+                  .build=${ordinalLinesBuild(chartVersions, chartSeries, `${metric.label}${metric.unit ? ` (${metric.unit})` : ''}`, (v) => metric.fmt(v), flagged)}
                   .height=${300}
-                  .key=${`${metricKey}${rows.length}${versions.join()}`}
+                  .key=${`${metricKey}${rows.length}${chartVersions.join()}`}
+                  .chartTitle=${`${metric.label} across ${engine?.meta.name ?? sel.engine} versions`}
+                  .subtitle=${`${sel.model}/${sel.quant} on ${store.lookups.hardware.get(sel.hardware ?? '')?.name ?? sel.hardware}`}
                 ></atlas-chart>
-                <div class="legend-inline mt-3">
-                  ${series.map((s) => html`<span><i class="sw" style="background:${s.color}"></i>${s.label}</span>`)}
-                  <span class="muted"
-                    >· ${measuredVersions.length} of ${versions.length} versions measured</span
-                  >
+                <div class="tl-legend mt-3">
+                  ${series.map((s) => {
+                    const b = bestVersion(s);
+                    return html`<span class="tl-series" title=${s.label}
+                      ><i class="sw" style="background:${s.color}"></i
+                      ><span class="ellipsis"
+                        >${store.lookups.workloads.get(s.label)?.name ?? s.label}</span
+                      >${b ? html`<span class="xs muted">best ${metric.fmt(b.y)} on ${b.v}</span>` : nothing}</span
+                    >`;
+                  })}
                 </div>
               </div>
               ${
@@ -187,9 +236,9 @@ export class AtlasTimelineView extends ViewElement {
                   <table class="table cards">
                     <thead>
                       <tr>
-                        <th>version</th>
-                        <th>minor</th>
-                        ${workloads.map((w) => html`<th class="num">${w}</th>`)}
+                        <th>Version</th>
+                        <th>Minor</th>
+                        ${workloads.map((w) => html`<th class="num" title=${w}>${store.lookups.workloads.get(w)?.name ?? w}</th>`)}
                         <th></th>
                       </tr>
                     </thead>
@@ -233,8 +282,12 @@ export class AtlasTimelineView extends ViewElement {
                 ${minorsMissing.length ? html`<p class="xs muted mt-2">${minorsMissing.length} engine minor${minorsMissing.length === 1 ? '' : 's'} without any measurement in this cell.</p>` : nothing}
               </section>
               <p class="xs muted mt-3">
-                ${rows.map((r) => html`<a href=${href('run', r.run_id)} class="hash link" style="margin-right:4px">${r.run_id.slice(0, 10)}</a>`)}
-                ${kindTag(rows[0]!.kind)}
+                Numbers are the best run per version and test; a version without a row for a test
+                shows –. Open
+                <a
+                  href=${`#/results?engine=${sel.engine}&model=${encodeURIComponent(sel.model ?? '')}&quant=${sel.quant}&hardware=${sel.hardware}&kind=all`}
+                  >every run of this cell</a
+                >.
               </p>`
       }
     </div>`;

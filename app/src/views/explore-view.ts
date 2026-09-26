@@ -11,6 +11,7 @@ import {
 import '../components/cell-picker.js';
 import '../components/param-form.js';
 import { icon } from '../components/icons.js';
+import { barList, firstMetricWithData } from '../components/stat-charts.js';
 import {
   codeBlock,
   emptyState,
@@ -279,6 +280,7 @@ export class AtlasExploreView extends ViewElement {
               : nothing
           }
           ${matching.length ? this.tested(matching, cellRows) : this.untested(canon?.canonical ?? null, cellRows, sel, args, dtype, serve, engine?.meta ?? null, vf)}
+          ${this.cellChart(cellRows)}
           ${
             engine
               ? html`<div class="card">
@@ -293,6 +295,47 @@ export class AtlasExploreView extends ViewElement {
           }
         </div>
       </div>
+    </div>`;
+  }
+
+  /** Every run already measured in this cell, as bars — flags differ, the square is the same. */
+  private cellChart(cellRows: IndexRow[]): TemplateResult | typeof nothing {
+    if (cellRows.length < 2) return nothing;
+    const metric = firstMetricWithData(cellRows);
+    if (!metric) return nothing;
+    const rows = cellRows
+      .filter((r) => metric.fromRow(r) !== null)
+      .sort((a, b) =>
+        metric.better === 'higher'
+          ? metric.fromRow(b)! - metric.fromRow(a)!
+          : metric.fromRow(a)! - metric.fromRow(b)!,
+      )
+      .slice(0, 8);
+    if (rows.length < 2) return nothing;
+    return html`<div class="card tight">
+      <div class="card-head">
+        <h3>Measured in this cell</h3>
+        <span class="muted small"
+          >${metric.label}${metric.unit ? ` (${metric.unit})` : ''} — flag sets differ</span
+        >
+      </div>
+      ${barList(
+        rows.map((r) => ({
+          label: `${r.workload_id} · ${r.engine.version}`,
+          title: `${r.workload_id} on ${r.engine.id} ${r.engine.version} — ${metric.fmt(metric.fromRow(r))} ${metric.unit} (${r.provenance.login})`,
+          value: metric.fromRow(r),
+          text: metric.fmt(metric.fromRow(r)),
+          note: r.provenance.login,
+          href: href('run', r.run_id),
+        })),
+        {
+          max:
+            metric.better === 'lower'
+              ? Math.max(...rows.map((r) => metric.fromRow(r)!))
+              : undefined,
+          ariaLabel: `${metric.label} for runs in this cell`,
+        },
+      )}
     </div>`;
   }
 
