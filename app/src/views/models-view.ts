@@ -163,8 +163,7 @@ export class AtlasModelsView extends ViewElement {
   private detailCharts(runs: IndexRow[]): TemplateResult | typeof nothing {
     const metric = firstMetricWithData(runs);
     if (!metric) return nothing;
-    const lowerMax = (xs: number[]) =>
-      metric.better === 'lower' ? Math.max(...xs) : undefined;
+    const lowerMax = (xs: number[]) => (metric.better === 'lower' ? Math.max(...xs) : undefined);
     const byQuant = bestPerGroup(runs, (r) => r.model.quant_id, metric).slice(0, 10);
     const byHw = bestPerGroup(runs, (r) => r.hardware.id, metric).slice(0, 10);
     if (!byQuant.length && !byHw.length) return nothing;
@@ -192,7 +191,10 @@ export class AtlasModelsView extends ViewElement {
                     note: b.row.hardware.id,
                     href: href('run', b.row.run_id),
                   })),
-                  { max: lowerMax(byQuant.map((b) => b.value)), ariaLabel: `Best ${metric.label} per quantization` },
+                  {
+                    max: lowerMax(byQuant.map((b) => b.value)),
+                    ariaLabel: `Best ${metric.label} per quantization`,
+                  },
                 )}
               </section>`
             : nothing
@@ -214,7 +216,10 @@ export class AtlasModelsView extends ViewElement {
                     color: vendorVar(b.id),
                     href: href('run', b.row.run_id),
                   })),
-                  { max: lowerMax(byHw.map((b) => b.value)), ariaLabel: `Best ${metric.label} per device` },
+                  {
+                    max: lowerMax(byHw.map((b) => b.value)),
+                    ariaLabel: `Best ${metric.label} per device`,
+                  },
                 )}
               </section>`
             : nothing
@@ -342,48 +347,30 @@ export class AtlasModelsView extends ViewElement {
         </div>
       </div>
 
-      <div class="split facts-quants">
-        <section class="card">
-          <div class="card-head"><h3>Facts</h3></div>
-          ${kv([
-            ['id', html`<span class="mono">${m.id}</span>`],
-            [
-              'Hugging Face',
-              m.hf_id ? extLink(`https://huggingface.co/${m.hf_id}`, m.hf_id) : null,
-            ],
-            ['vendor', m.vendor],
-            ['family', m.family ?? null],
-            [
-              'parameters',
-              `${fmtParams(m.params_b)}${m.moe ? ` total · ${fmtParams(m.active_params_b)} active` : ''}`,
-            ],
-            m.moe
-              ? ['experts', `${m.experts ?? '?'} total · ${m.experts_active ?? '?'} active`]
-              : null,
-            [
-              'architecture',
-              m.architecture ? html`<span class="mono xs">${m.architecture}</span>` : null,
-            ],
-            ['attention', m.attention ?? null],
-            ['context', `${fmtTokens(m.context_length)} tokens`],
-            ['modalities', (m.modalities ?? ['text']).join(', ')],
-            ['licence', m.licence ?? null],
-            ['released', m.released ?? null],
-            [
-              'tags',
-              (m.tags ?? []).length
-                ? html`<span class="row-wrap" style="gap:4px"
-                    >${(m.tags ?? []).map((t) => html`<span class="tag">${t}</span>`)}</span
-                  >`
-                : null,
-            ],
-            ...Object.entries(m.links ?? {})
-              .filter(([, v]) => v)
-              .map(([k, v]) => [k, extLink(v!, v!)] as [string, TemplateResult]),
-            ['coverage', `${c} of ${p} possible cells measured`],
-          ])}
-        </section>
+      <div class="fact-strip">
+        <span
+          ><b>${fmtParams(m.params_b)}</b>
+          parameters${m.moe ? html` · <b>${fmtParams(m.active_params_b)}</b> active` : nothing}</span
+        >
+        <span><b>${fmtTokens(m.context_length)}</b> context</span>
+        ${m.licence ? html`<span>${m.licence}</span>` : nothing}
+        ${m.released ? html`<span>released ${m.released}</span>` : nothing}
+        <span>${entry.quants.length} quantizations</span>
+        ${m.hf_id ? extLink(`https://huggingface.co/${m.hf_id}`, m.hf_id) : nothing}
+      </div>
 
+      <section class="mt-5">
+        <div class="section-title">
+          <h2>Results</h2>
+          <span class="meta"
+            >${runs.length} runs · one tab per kind of test, best first · click a row for the full
+            recipe</span
+          >
+        </div>
+        ${runsTable(runs, { hide: ['model'], limit: 10 })}
+      </section>
+
+      <div class="facts-quants">
         <section>
           <div class="section-title">
             <h2>Quantizations</h2>
@@ -430,7 +417,26 @@ export class AtlasModelsView extends ViewElement {
               </tbody>
             </table>
           </div>
-          ${entry.quants.some((qq) => qq.notes) ? html`<div class="col mt-2" style="gap:4px">${entry.quants.filter((qq) => qq.notes).map((qq) => html`<p class="xs muted"><span class="mono">${qq.id}</span> — ${qq.notes}</p>`)}</div>` : nothing}
+          ${
+            entry.quants.some((qq) => qq.notes)
+              ? html`<details class="disclosure boxed mt-2">
+                  <summary>
+                    ${icon('chevronRight')}<span class="t">Notes on each quantization</span
+                    ><span class="m">where the weights come from, what differs</span>
+                  </summary>
+                  <div class="body col" style="gap:6px">
+                    ${entry.quants
+                      .filter((qq) => qq.notes)
+                      .map(
+                        (qq) =>
+                          html`<p class="xs muted">
+                            <span class="mono">${qq.id}</span> — ${qq.notes}
+                          </p>`,
+                      )}
+                  </div>
+                </details>`
+              : nothing
+          }
         </section>
       </div>
 
@@ -448,13 +454,51 @@ export class AtlasModelsView extends ViewElement {
 
       ${this.detailCharts(runs)}
 
-      <section class="mt-5">
-        <div class="section-title">
-          <h2>Runs</h2>
-          <span class="meta">${runs.length}</span>
+      <details class="disclosure boxed mt-5">
+        <summary>
+          ${icon('chevronRight')}<span class="t">All model facts</span
+          ><span class="m">architecture, attention, modalities, links</span>
+        </summary>
+        <div class="body">
+          ${kv([
+            ['id', html`<span class="mono">${m.id}</span>`],
+            [
+              'Hugging Face',
+              m.hf_id ? extLink(`https://huggingface.co/${m.hf_id}`, m.hf_id) : null,
+            ],
+            ['vendor', m.vendor],
+            ['family', m.family ?? null],
+            [
+              'parameters',
+              `${fmtParams(m.params_b)}${m.moe ? ` total · ${fmtParams(m.active_params_b)} active` : ''}`,
+            ],
+            m.moe
+              ? ['experts', `${m.experts ?? '?'} total · ${m.experts_active ?? '?'} active`]
+              : null,
+            [
+              'architecture',
+              m.architecture ? html`<span class="mono xs">${m.architecture}</span>` : null,
+            ],
+            ['attention', m.attention ?? null],
+            ['context', `${fmtTokens(m.context_length)} tokens`],
+            ['modalities', (m.modalities ?? ['text']).join(', ')],
+            ['licence', m.licence ?? null],
+            ['released', m.released ?? null],
+            [
+              'tags',
+              (m.tags ?? []).length
+                ? html`<span class="row-wrap" style="gap:4px"
+                    >${(m.tags ?? []).map((t) => html`<span class="tag">${t}</span>`)}</span
+                  >`
+                : null,
+            ],
+            ...Object.entries(m.links ?? {})
+              .filter(([, v]) => v)
+              .map(([k, v]) => [k, extLink(v!, v!)] as [string, TemplateResult]),
+            ['coverage', `${c} of ${p} possible cells measured`],
+          ])}
         </div>
-        ${runsTable(runs, { hide: ['model'], limit: 30 })}
-      </section>
+      </details>
 
       <section class="mt-5">
         <div class="section-title">
