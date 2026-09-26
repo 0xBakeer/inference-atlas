@@ -7,11 +7,12 @@
  * byte-identical, because a build that reshuffles keys turns every deploy into a diff of
  * the whole data directory.
  */
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { cellId, engineMinor } from '@atlas/core';
 import type { CoverageCell, Gap } from '@atlas/core';
-import { buildData } from '../src/build.js';
+import { buildData, resolveContributorIds } from '../src/build.js';
 import type { CompiledContributor } from '../src/build.js';
 import type { BuiltIndexRow } from '../src/lib/index-row.js';
 import { makeFixtureRepo, makeResult } from './helpers/fixture-repo.js';
@@ -97,6 +98,7 @@ describe('output shape', () => {
       'decode_tok_s_per_request',
       'output_tok_s',
       'power_avg_w',
+      's_per_image_p50',
       'success_rate',
       'tpot_p50',
       'ttft_p50',
@@ -201,6 +203,31 @@ describe('output shape', () => {
     expect(stats.coverage_pct).toBeGreaterThan(0);
     expect(stats.last_updated).toBe('2026-08-02T10:00:00Z');
     expect((stats.levels as Record<string, number>).reproduced).toBe(1);
+  });
+
+  it('counts a measured multi-device cell in the denominator as well as the numerator', () => {
+    const base = build();
+    expect(base.ok).toBe(true);
+    const before = read<Record<string, number>>('stats.json');
+
+    // The cross product enumerates hw_count 1 only, so a tensor-parallel run lands in a cell
+    // it cannot reach. It still has to be possible: it has been measured.
+    const tp = makeResult(repo, { login: 'alice', startedAt: '2026-08-05T10:00:00Z' });
+    tp.hardware.count = 2;
+    tp.cell_id = cellId({
+      model_id: tp.model.id,
+      quant_id: tp.model.quant_id,
+      hardware_id: tp.hardware.id,
+      hw_count: 2,
+      engine_id: tp.engine.id,
+      engine_minor: engineMinor(tp.engine.version),
+    });
+    repo.writeResult(tp);
+    build();
+
+    const after = read<Record<string, number>>('stats.json');
+    expect(after.cells_covered).toBe(before.cells_covered! + 1);
+    expect(after.cells_possible).toBe(before.cells_possible! + 1);
   });
 
   it('reports dataset metadata and counts without compiling the rows', () => {
@@ -343,6 +370,7 @@ describe('determinism and provenance', () => {
   it('stamps the commit and pull request number from git history', () => {
     repo.initGit('seed: registries');
     const carol = makeResult(repo, { login: 'carol', startedAt: '2026-08-05T10:00:00Z' });
+    carol.provenance.submitted_at = null; // what atlas-bench writes
     const path = repo.writeResult(carol);
     repo.commit('results: carol on a 4090 (#42)');
     const head = repo.git('rev-parse', 'HEAD').trim();
@@ -356,17 +384,36 @@ describe('determinism and provenance', () => {
     expect(compiled.provenance.commit).toBe(head);
     expect(compiled.provenance.commit_short).toBe(head.slice(0, 7));
     expect(compiled.provenance.pr).toBe(42);
-    expect(typeof compiled.provenance.merged_at).toBe('string');
+    expect(compiled.provenance.merged_at).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/);
+    // A submitted_at the contributor left null is the adding commit's date, so the
+    // timeline and the scoring order have something to sort on.
+    expect(compiled.provenance.submitted_at).toBe(compiled.provenance.merged_at);
 
     // The raw file is never rewritten: the stamp exists only in the compiled copy.
     const raw = repo.read<{ provenance: Record<string, unknown> }>(path);
     expect(raw.provenance.commit).toBeNull();
     expect(raw.provenance.pr).toBeNull();
+    expect(raw.provenance.submitted_at ?? null).toBeNull();
 
     const row = read<BuiltIndexRow[]>('index.json').find((r) => r.run_id === carol.run_id)!;
     expect(row.provenance.commit).toBe(head);
     expect(row.provenance.pr).toBe(42);
+    expect(row.provenance.submitted_at).toBe(compiled.provenance.merged_at);
     expect(read<{ git: boolean }>('manifest.json').git).toBe(true);
+  });
+
+  it('keeps a submitted_at the contributor wrote', () => {
+    repo.initGit('seed: registries');
+    const erin = makeResult(repo, { login: 'erin', startedAt: '2026-08-07T10:00:00Z' });
+    erin.provenance.submitted_at = '2026-08-07T12:00:00Z';
+    const path = repo.writeResult(erin);
+    repo.commit('results: erin (#43)');
+    expect(buildData({ root: repo.root, out }).ok).toBe(true);
+    const compiled = read<{ provenance: Record<string, unknown> }>(
+      `runs/${path.replace(/^results\//, '')}`,
+    );
+    expect(compiled.provenance.submitted_at).toBe('2026-08-07T12:00:00Z');
+    expect(compiled.provenance.submitted_at).not.toBe(compiled.provenance.merged_at);
   });
 
   it('understands a merge-commit subject as well as a squash subject', () => {
@@ -408,3 +455,132 @@ describe('refusing bad data', () => {
 function stripBuiltAt(text: string): string {
   return text.replace(/"built_at":"[^"]+"/g, '"built_at":"X"');
 }
+
+describe('contributor ids for contributions merged from forks', () => {
+  // stamp-user-ids cannot push to a fork's branch, so those results keep a null
+  // github_user_id and no one may stamp them afterwards without breaking the ownership
+  // rule. The build fills the id in for the contributors page instead.
+  const contributorsFile = () => join(out, 'contributors.json');
+  const write = (rows: unknown) =>
+    writeFileSync(contributorsFile(), `${JSON.stringify(rows, null, 2)}\n`);
+  const read = () => JSON.parse(readFileSync(contributorsFile(), 'utf8')) as CompiledContributor[];
+
+  beforeEach(() => build());
+
+  it('fills the id and switches the avatar to the permanent url', async () => {
+    write([
+      { login: 'forker', user_id: null, avatar_url: 'https://github.com/forker.png?size=64' },
+      {
+        login: 'stamped',
+        user_id: 7,
+        avatar_url: 'https://avatars.githubusercontent.com/u/7?s=64',
+      },
+    ]);
+    const asked: string[] = [];
+    await resolveContributorIds(out, () => {}, {
+      fetchImpl: async (url: string) => {
+        asked.push(url);
+        return { ok: true, status: 200, json: async () => ({ id: 1065484 }) };
+      },
+    });
+
+    const [forker, stamped] = read();
+    expect(forker?.user_id).toBe(1065484);
+    expect(forker?.avatar_url).toBe('https://avatars.githubusercontent.com/u/1065484?s=64');
+    // The contributor who already had an id is not asked about again.
+    expect(asked).toHaveLength(1);
+    expect(asked[0]).toContain('forker');
+    expect(stamped?.user_id).toBe(7);
+  });
+
+  it('leaves the file untouched when the login cannot be resolved', async () => {
+    write([{ login: 'ghost', user_id: null, avatar_url: 'https://github.com/ghost.png?size=64' }]);
+    const before = readFileSync(contributorsFile(), 'utf8');
+    await resolveContributorIds(out, () => {}, {
+      fetchImpl: async () => ({ ok: false, status: 404, json: async () => ({}) }),
+    });
+    // A deleted account, a rate limit or a network blip must never fail a build or
+    // rewrite the file: the login-derived avatar still works.
+    expect(readFileSync(contributorsFile(), 'utf8')).toBe(before);
+    expect(read()[0]?.user_id ?? null).toBe(null);
+  });
+
+  it('does nothing when every contributor already has an id', async () => {
+    write([
+      {
+        login: 'someone',
+        user_id: 42,
+        avatar_url: 'https://avatars.githubusercontent.com/u/42?s=64',
+      },
+    ]);
+    const before = readFileSync(contributorsFile(), 'utf8');
+    await resolveContributorIds(out);
+    expect(readFileSync(contributorsFile(), 'utf8')).toBe(before);
+  });
+
+  it('shrugs when the file is missing rather than throwing', async () => {
+    await expect(resolveContributorIds(join(out, 'no-such-dir'))).resolves.toBeUndefined();
+  });
+});
+
+/**
+ * Registry credit. A registry file has no `provenance.github_login`, so who added it can
+ * only come from the commit — and until the identity map existed, only a GitHub noreply
+ * address said anything, which meant most contributors were paid nothing for widening the
+ * registry.
+ */
+describe('registry credit', () => {
+  const addHardware = (author: string, subject: string) => {
+    repo.write('hardware/test-device-1.json', {
+      schema_version: 1,
+      id: 'test-device-1',
+      name: 'Test Device 1',
+      vendor: 'other',
+      kind: 'gpu',
+      memory_gb: 24,
+    });
+    repo.commit(subject, author);
+  };
+
+  const creditFor = (id: string): string | undefined => {
+    const outcome = buildData({ root: repo.root, out });
+    expect(outcome.ok).toBe(true);
+    return read<Array<{ login: string; breakdown: Record<string, number> }>>('contributors.json')
+      .filter((c) => (c.breakdown.registry_hardware ?? 0) > 0)
+      .map((c) => c.login)
+      .find((login) => login.toLowerCase() === id.toLowerCase());
+  };
+
+  it('credits a noreply address without needing the map at all', () => {
+    repo.initGit('seed: registries');
+    addHardware('Zoe <9+zoe@users.noreply.github.com>', 'hardware: a test device (#51)');
+    expect(creditFor('zoe')).toBe('zoe');
+  });
+
+  it('credits an ordinary address once the map claims it', () => {
+    repo.write('site/identities.json', {
+      schema_version: 1,
+      identities: [{ login: 'Yara', emails: ['yara@example.com'], verified_by: [52] }],
+    });
+    repo.initGit('seed: registries');
+    addHardware('Yara <yara@example.com>', 'hardware: a test device (#52)');
+    expect(creditFor('Yara')).toBe('Yara');
+  });
+
+  it('credits nobody for an address the map does not know', () => {
+    repo.initGit('seed: registries');
+    addHardware('Xena <xena@example.com>', 'hardware: a test device (#53)');
+    expect(creditFor('xena')).toBeUndefined();
+  });
+
+  it('never lets the map override the login GitHub wrote into the address', () => {
+    repo.write('site/identities.json', {
+      schema_version: 1,
+      identities: [{ login: 'thief', emails: ['9+zoe@users.noreply.github.com'] }],
+    });
+    repo.initGit('seed: registries');
+    addHardware('Zoe <9+zoe@users.noreply.github.com>', 'hardware: a test device (#54)');
+    expect(creditFor('zoe')).toBe('zoe');
+    expect(creditFor('thief')).toBeUndefined();
+  });
+});

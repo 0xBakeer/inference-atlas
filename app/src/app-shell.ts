@@ -12,7 +12,7 @@ import { theme, toggleTheme } from './theme.js';
 import { toasts } from './util/clipboard.js';
 import { applyEvidenceColors } from './util/colors.js';
 import { absDateTime, relTime } from './util/dates.js';
-import { shortSha } from './util/format.js';
+import { shortSha } from '@atlas/core';
 
 import './components/add-modal.js';
 import './components/command-palette.js';

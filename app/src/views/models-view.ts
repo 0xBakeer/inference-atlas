@@ -17,7 +17,7 @@ import { href, modelHref, qget, qlist, setQuery } from '../router.js';
 import { store } from '../store.js';
 import { vendorClass } from '../util/colors.js';
 import { matchesQuery, uniqueSorted } from '../util/filters.js';
-import { fmtInt, fmtParams, fmtTokens } from '../util/format.js';
+import { fmtInt, fmtParams, fmtTokens } from '@atlas/core';
 import { ViewElement } from './view-base.js';
 
 /** CSS variable carrying the vendor hue of a device id. */

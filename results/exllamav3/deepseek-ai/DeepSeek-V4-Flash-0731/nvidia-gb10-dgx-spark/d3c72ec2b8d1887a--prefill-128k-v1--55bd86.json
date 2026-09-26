@@ -1,0 +1,351 @@
+{
+  "schema_version": 1,
+  "run_id": "d3c72ec2b8d1887a--prefill-128k-v1--55bd86",
+  "config_id": "d3c72ec2b8d1887a",
+  "cell_id": "6d98c946f3e4",
+  "workload_id": "prefill-128k-v1",
+  "kind": "prefill",
+  "engine": {
+    "id": "exllamav3",
+    "version": "1.4.2-anemone",
+    "commit": "fork:anoane/exllamav3-anemone@c6d2e3e",
+    "build": "github.com/0xBakeer/deepseek-v4-flash-spark@v0.1.0",
+    "container": null,
+    "install_method": "source"
+  },
+  "model": {
+    "id": "deepseek-ai/DeepSeek-V4-Flash-0731",
+    "quant_id": "exl3-2.54bpw",
+    "hf_id": "deepseek-ai/DeepSeek-V4-Flash-0731",
+    "revision": "91cf8b7e3cde8833c291bd513590d3fced5e566f",
+    "dtype": "auto",
+    "local_path": null
+  },
+  "hardware": {
+    "id": "nvidia-gb10-dgx-spark",
+    "count": 1,
+    "driver": "580.173.02",
+    "cuda": "13.0",
+    "host": {
+      "cpu": "Cortex-A725",
+      "cpu_cores": 20,
+      "ram_gb": 121.6,
+      "os": "Ubuntu 24.04.4 LTS",
+      "kernel": "6.17.0-1029-nvidia",
+      "arch": "aarch64"
+    },
+    "fingerprint": "sha256:52ea2bdd513719724db88c162b6cc2c9fb4e5b67e02dbe41b9de00687acefb91",
+    "captured": {
+      "nvidia_smi": {
+        "driver": "580.173.02",
+        "cuda": "13.0",
+        "products": [
+          "NVIDIA GB10"
+        ],
+        "fb_memory_total_mib": 0
+      },
+      "lscpu": {
+        "architecture": "aarch64",
+        "cpus": "20",
+        "vendor_id": "ARM",
+        "model_name": "Cortex-A725",
+        "cores_per_socket": "10",
+        "sockets": "1",
+        "cpu_max_mhz": "2808.0000"
+      }
+    }
+  },
+  "args": {
+    "max-seq-len": 393216,
+    "cache-size": 786432,
+    "cache-quant": "fp16",
+    "draft-mode": "mtp",
+    "max-batch-size": 1,
+    "max-chunk-size": 2048,
+    "gpu-split": 106,
+    "draft-gpu-split": 8,
+    "template-vars-default": {
+      "reasoning_effort": "max",
+      "thinking": true
+    }
+  },
+  "args_canonical": "@build=github.com/0xbakeer/deepseek-v4-flash-spark@v0.1.0;@dtype=auto;@quant=exl3-2.54bpw;cache-size=786432;draft-gpu-split=8;draft-mode=mtp;gpu-split=106;max-seq-len=393216;template-vars-default={\"reasoning_effort\":\"max\",\"thinking\":true}",
+  "serve_command": null,
+  "workload": {
+    "id": "prefill-128k-v1",
+    "resolved_params": {
+      "concurrency": 1,
+      "num_requests": 10,
+      "input_tokens": 131072,
+      "output_tokens": 16,
+      "warmup_requests": 1,
+      "prompts_padded": false,
+      "needle_check": false,
+      "timeout_s": 900,
+      "seed": 42
+    }
+  },
+  "metrics": {
+    "requests_total": 10,
+    "requests_ok": 10,
+    "requests_failed": 0,
+    "success_rate": 1,
+    "duration_s": 567.721,
+    "input_tokens_total": 1268836,
+    "output_tokens_total": 100,
+    "output_tok_s": 0.176,
+    "total_tok_s": 2235.14,
+    "req_s": 0.018,
+    "prefill_tok_s": 2234.979,
+    "ttft_ms": {
+      "mean": 56771.727,
+      "p50": 3688.216,
+      "p90": 181562.537,
+      "p95": 181751.436,
+      "p99": 181902.554,
+      "min": 1240.488,
+      "max": 181940.334
+    },
+    "tpot_ms": null,
+    "itl_ms": null,
+    "e2e_ms": {
+      "mean": 56772.066,
+      "p50": 3688.544,
+      "p90": 181562.889,
+      "p95": 181751.871,
+      "p99": 181903.056,
+      "min": 1240.797,
+      "max": 181940.852
+    },
+    "decode_tok_s_per_request": null,
+    "vram_peak_gb": null,
+    "ram_peak_gb": 116.809,
+    "kv_cache_tokens": null,
+    "power_avg_w": 81.66,
+    "power_peak_w": 86.77,
+    "energy_wh": 16.9702,
+    "gpu_util_avg_pct": 94.78,
+    "temp_max_c": 86,
+    "thermal_throttle_detected": true
+  },
+  "failures": [],
+  "conditions": {
+    "dedicated": true,
+    "detail": "Only the TabbyAPI server was resident; nothing else used the GPU. Full stack, pins and patches: https://github.com/0xBakeer/deepseek-v4-flash-spark (v0.1.0). Model pack revision 91cf8b7e3cde8833c291bd513590d3fced5e566f.",
+    "isolation_check": "pgrep -af 'main.py --config' → 1 TabbyAPI process; nvidia-smi compute apps → 1; load1 at start 1.09"
+  },
+  "gotchas": [
+    {
+      "severity": "warn",
+      "text": "The driver reported thermal/hardware slowdown during the run — the numbers are throttled."
+    },
+    {
+      "severity": "info",
+      "link": "https://github.com/0xBakeer/deepseek-v4-flash-spark",
+      "text": "The served stack is published as a recipe: https://github.com/0xBakeer/deepseek-v4-flash-spark v0.1.0 pins exllamav3-anemone c6d2e3e plus an aarch64 patch, TabbyAPI 4a4f9f4 plus a unified-memory patch, the chat template, the sampler preset and this exact config, and ships it as the image ghcr.io/0xbakeer/deepseek-v4-flash-spark. These rows were served by the recipe's native install (docs/build-from-source.md) on the DGX Spark rather than the container; engine.build names the recipe tag because the fork sha alone does not describe the served build."
+    },
+    {
+      "severity": "info",
+      "link": "https://huggingface.co/deepseek-ai/DeepSeek-V4-Flash-0731/blob/main/encoding/encoding_dsv4.py",
+      "text": "Thinking is ON in every row with reasoning_effort max, set server-side through template_vars_default (the recipe's config with thinking true and effort max, otherwise identical to its served config); requests sent no chat_template_kwargs. The chat template is the recipe's 1:1 port of DeepSeek's reference encoder, not the pack's reconstructed chat_template.jinja, which ignores the thinking switch. The thinking-off rows on this cell are config 299da4b40264e1ab; template-vars-default is the only argument that differs."
+    },
+    {
+      "severity": "info",
+      "text": "TabbyAPI only returns a usage block on a non-streaming completion when the request carries stream_options.include_usage; the harness's tokenizer fallback counts prompt tokens but not completions. Every request here sends stream_options {\"include_usage\": true} via the packet's extra_body, so output token counts are the engine's own and include the reasoning tokens."
+    },
+    {
+      "severity": "info",
+      "text": "DeepSeek-V4's DSA attention keeps a tiny paged fp16 pool (about 2.5 GiB at 384k tokens, 5 GiB for the 768k cache-size here, plus 1.1 GiB for the drafter), so context is not memory-limited on this pack: 393216 per request with a 786432-token pool leaves two full conversations prefix-cached at 106 GB used. cache-quant fp16 is the effective mode either way - k,v bit settings are ignored for DSA layers."
+    },
+    {
+      "severity": "info",
+      "text": "The 10 requests of a prefill-* row reuse prompts, and TabbyAPI's prompt cache serves the repeats from the cached prefix: TTFT is bimodal (cache hits in 2-4 s, the cold request at the row's max TTFT) and the aggregate prefill_tok_s is inflated by the hits. The cold prefill rate is the row's input length over its max TTFT: 8k in 11.2 s (about 730 tok/s), 32k in 43.1 s (about 760 tok/s), 128k in 181.9 s (about 720 tok/s), consistent with the single-shot longctx-needle rows (725 and 696 tok/s) and the 253k depth sweep (644 tok/s) on this config."
+    }
+  ],
+  "derived": {
+    "cost_per_1m_output_tokens_usd": null,
+    "tokens_per_watt": 0.0022,
+    "tok_s_per_gb_bandwidth": 0.000645,
+    "bandwidth_efficiency": null,
+    "memory_headroom_gb": null
+  },
+  "raw": {
+    "harness": "atlas-bench",
+    "harness_version": "0.1.0",
+    "sha256": "1862e5ccd103ed2a267129b382ba8c13fec7e63f87b3699d1b9fc6e8c30b7250",
+    "payload_path": null,
+    "payload": {
+      "requests": [
+        {
+          "id": "prefill-w00000",
+          "prompt_id": "hay-128k-d10",
+          "warmup": true,
+          "status": "ok",
+          "ttft_ms": 180823.405,
+          "e2e_ms": 180823.791,
+          "prompt_tokens": 126851,
+          "completion_tokens": 10,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00000",
+          "prompt_id": "hay-128k-d10",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 3704.96,
+          "e2e_ms": 3705.311,
+          "prompt_tokens": 126851,
+          "completion_tokens": 10,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00001",
+          "prompt_id": "hay-128k-multi",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 181940.334,
+          "e2e_ms": 181940.852,
+          "prompt_tokens": 126791,
+          "completion_tokens": 10,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00002",
+          "prompt_id": "hay-128k-d50",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 181520.56,
+          "e2e_ms": 181520.893,
+          "prompt_tokens": 127087,
+          "completion_tokens": 10,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00003",
+          "prompt_id": "hay-128k-d90",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 180923.657,
+          "e2e_ms": 180923.982,
+          "prompt_tokens": 126868,
+          "completion_tokens": 10,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00004",
+          "prompt_id": "hay-128k-d10",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 3670.435,
+          "e2e_ms": 3670.759,
+          "prompt_tokens": 126851,
+          "completion_tokens": 10,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00005",
+          "prompt_id": "hay-128k-multi",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 3671.473,
+          "e2e_ms": 3671.777,
+          "prompt_tokens": 126791,
+          "completion_tokens": 10,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00006",
+          "prompt_id": "hay-128k-d50",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 1240.488,
+          "e2e_ms": 1240.797,
+          "prompt_tokens": 127087,
+          "completion_tokens": 10,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00007",
+          "prompt_id": "hay-128k-d90",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 3731.077,
+          "e2e_ms": 3731.388,
+          "prompt_tokens": 126868,
+          "completion_tokens": 10,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00008",
+          "prompt_id": "hay-128k-d10",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 3645.205,
+          "e2e_ms": 3645.509,
+          "prompt_tokens": 126851,
+          "completion_tokens": 10,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00009",
+          "prompt_id": "hay-128k-multi",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 3669.077,
+          "e2e_ms": 3669.393,
+          "prompt_tokens": 126791,
+          "completion_tokens": 10,
+          "token_source": "usage",
+          "finish_reason": "length",
+          "error_category": null
+        }
+      ],
+      "engine_endpoint": {
+        "attached": true,
+        "base_url": "http://127.0.0.1:8888/v1",
+        "served_model_id": "deepseek-v4-flash-0731",
+        "advertised_models": [
+          "deepseek-v4-flash-0731"
+        ]
+      }
+    },
+    "truncated": false
+  },
+  "provenance": {
+    "github_login": "0xBakeer",
+    "github_user_id": 17404809,
+    "started_at": "2026-09-03T05:49:32Z",
+    "finished_at": "2026-09-03T06:02:02Z",
+    "submitted_at": null,
+    "commit": null,
+    "pr": null,
+    "method": "atlas-bench",
+    "agent": null,
+    "notes": "TabbyAPI 4a4f9f4 on exllamav3-anemone c6d2e3e, built on aarch64 (x86-only sources excluded, AVX paths stubbed, spin-wait uses yield) with two TabbyAPI patches for unified memory (manual gpu_split honoured on a single GPU; no reserve_per_device for the draft). Chat template is a 1:1 port of the DeepSeek reference encoder (the pack ships a reconstructed one that ignores thinking=false). tool_format deepseek_v4, DSpark MTP drafter, thinking ON with reasoning_effort max via the server template_vars_default (config.think.yml, otherwise identical to the served config). Full stack, pins and patches: https://github.com/0xBakeer/deepseek-v4-flash-spark (v0.1.0). Server started by hand; harness attached. Public API gateway in front of this server was switched off for the run."
+  },
+  "verification": {
+    "level": "self-reported",
+    "reproduced_by": [],
+    "flags": []
+  }
+}

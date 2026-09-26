@@ -23,15 +23,19 @@ from __future__ import annotations
 
 import re
 from collections.abc import Callable
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 
 __all__ = [
+    "IMAGE_SCORERS",
     "SCORERS",
+    "ImageScore",
     "ScoreResult",
     "collapse_ws",
     "extract_answer",
+    "get_image_scorer",
     "get_scorer",
+    "is_image_scorer",
     "normalize_scorer_name",
     "strip_boxed",
     "strip_fences",
@@ -59,6 +63,24 @@ class ScoreResult:
     expected: str = ""
     scored: bool = True
     detail: str | None = None
+
+
+@dataclass
+class ImageScore:
+    """Outcome of scoring one generated image.
+
+    A separate type from :class:`ScoreResult` because the two answer different questions. A
+    text scorer compares strings and `predicted` is the thing that was said; an image scorer
+    measures — PSNR, a character error rate, a transparent fraction — and `correct` is a
+    threshold on the measurement. `metrics` is what the result file keeps per item, and it
+    never holds generated content: numbers, and perceptual hashes that are 64 bits of one.
+    """
+
+    correct: bool
+    metrics: dict[str, Any] = field(default_factory=dict)
+    scored: bool = True
+    detail: str | None = None
+    backend: str | None = None
 
 
 def strip_think(text: str) -> str:
@@ -164,8 +186,28 @@ def get_scorer(name: str | None) -> Callable[[str, Any], ScoreResult]:
     return SCORERS.get(normalize_scorer_name(name), SCORERS["exact"])
 
 
+#: Scorers whose item is a rendered image rather than text. Populated at the bottom of the
+#: module, like SCORERS, and kept in a separate registry because the call shape is different:
+#: ``score(path: Path, row: EvalRow, cfg: dict) -> ImageScore``.
+IMAGE_SCORERS: dict[str, Callable[..., ImageScore]] = {}
+
+
+def is_image_scorer(name: str | None) -> bool:
+    """Does this scorer name score a picture (and therefore need one rendered first)?"""
+    return normalize_scorer_name(name) in IMAGE_SCORERS
+
+
+def get_image_scorer(name: str | None) -> Callable[..., ImageScore]:
+    """Look up an image scorer by name. Unknown names raise: there is no sane fallback."""
+    key = normalize_scorer_name(name)
+    if key not in IMAGE_SCORERS:
+        raise KeyError(f"unknown image scorer {name!r}; known: {', '.join(sorted(IMAGE_SCORERS))}")
+    return IMAGE_SCORERS[key]
+
+
 from .code_exec import score_code_exec  # noqa: E402
 from .instruction import score_instruction  # noqa: E402
+from .integrity import score_integrity  # noqa: E402
 from .json_match import score_json  # noqa: E402
 from .judge import score_judge  # noqa: E402
 from .mc import score_mc  # noqa: E402
@@ -186,8 +228,27 @@ SCORERS.update(
         "json": score_json,
         "code_exec": score_code_exec,
         "instruction": score_instruction,
+        # One scorer, two spellings: `integrity` is the row vocabulary,
+        # `token-integrity` the workload one (normalized to `token_integrity`).
+        "integrity": score_integrity,
+        "token_integrity": score_integrity,
         "vision": score_vision,
         "tool_call": score_tool_call,
         "judge": score_judge,
+    }
+)
+
+
+from .clip import score_clip  # noqa: E402
+from .fidelity import score_fidelity  # noqa: E402
+from .ocr import score_ocr  # noqa: E402
+from .rgba import score_rgba  # noqa: E402
+
+IMAGE_SCORERS.update(
+    {
+        "ocr": score_ocr,
+        "clip": score_clip,
+        "rgba": score_rgba,
+        "fidelity": score_fidelity,
     }
 )

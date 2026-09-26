@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "id": "deepseek-ai/DeepSeek-V4-Flash-Vision-Exp",
+  "name": "DeepSeek-V4-Flash-Vision-Exp",
+  "hf_id": "deepseek-ai/DeepSeek-V4-Flash-Vision-Exp",
+  "family": "deepseek-v4",
+  "vendor": "deepseek",
+  "params_b": 304.6,
+  "active_params_b": 14.8,
+  "architecture": "DeepseekV4ForCausalLM",
+  "moe": true,
+  "experts": 256,
+  "experts_active": 6,
+  "attention": "mla",
+  "modalities": ["text", "image"],
+  "context_length": 1048576,
+  "licence": "MIT",
+  "released": "2026-08-31",
+  "tags": ["chat", "reasoning", "moe", "vision"],
+  "links": {
+    "hf": "https://huggingface.co/deepseek-ai/DeepSeek-V4-Flash-Vision-Exp"
+  },
+  "notes": "Every architecture figure was read out of config.json and the safetensors headers of snapshot 86f746b3 (48 shards), not from a blog post. params_b is the Hugging Face safetensors index total, 304,646,824,126 parameters - dominated by 296.35B values stored as packed MXFP4 (the same figure the API reports as I8, i.e. the unpacked count), plus 6.30B F8_E4M3, 3.90B BF16, 0.15B F32. active_params_b is DERIVED, following the DeepSeek-V4-Flash convention: total minus the 277.98B held in all 257 experts per layer (257 x 43 x 3 x 2048 x 4096) minus the ~19.4B of nextn/dspark draft tensors, plus 43 x (6 routed + 1 shared) x 3 x 2048 x 4096 = 7.57B of active experts, giving 14.8B; the draft stack is excluded from active for the same reason the Qwen3.8-Flash-Next entry excludes its MTP head. Attention is MLA with a DSA-style lightning indexer (index_n_heads 64, index_head_dim 128, index_topk 512), 3 hash layers, yarn rope factor 16 from 65,536, hc_mult 4 hyper-connections, o_lora_rank/q_lora_rank 1024, and num_key_value_heads 1. config.json declares architectures DeepseekV4ForCausalLM and carries no vision_config, but the shards DO hold a 0.41B vision tower (263 tensors) and the HF card is pipeline_tag image-text-to-text - the serving runtime lights the vision path up through --hf-overrides swapping the class to DeepseekV4VForConditionalGeneration, which is why modalities includes image. num_nextn_predict_layers 3 and the dspark_* fields (block_size, markov_rank, target_layer_ids, noise_token_id) in the config are SparkInfer's draft, shipped inside the checkpoint itself."
+}

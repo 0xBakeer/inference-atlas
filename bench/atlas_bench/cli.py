@@ -9,6 +9,8 @@ Commands
 ``submit``   branch + commit + ``gh pr create`` for new result files only
 ``packet``   print the agent packet for a cell
 ``wrap``     turn an engine-native benchmark JSON into an Atlas result file
+``restamp``  name the build behind an already-written result and recompute its ids
+``t2i-reference``  render the bf16 reference bundle the image fidelity suite compares against
 """
 
 from __future__ import annotations
@@ -27,12 +29,14 @@ from . import __version__
 from . import hwinfo as hwinfo_module
 from .client import utc_now
 from .engines.base import get_adapter
+from .canonical import canonicalize
+from .ids import config_id_from_canonical, run_id
 from .packet import build_packet, find_cell, parse_cell, write_packet
 from .registry import Registry
 from .repo import find_repo_root, write_json
 from .result import ResultInputs, build_result, output_path, resolve_login
-from .runner import run_spec_sync
-from .spec import load_spec
+from .runner import AmbiguousServedModelError, run_spec_sync
+from .spec import RunConditions, load_spec
 from .submit import submit as do_submit
 from .validate import check_model_registry, validate_file
 from .workloads import resolve_workload
@@ -50,6 +54,23 @@ error_console = Console(stderr=True)
 def _registry(repo: Path | None) -> Registry:
     """Registry rooted at ``--repo``/``--registry-dir`` or the discovered checkout."""
     return Registry(repo)
+
+
+def _conditions_option(
+    dedicated: bool | None, detail: str | None, isolation_check: str | None
+) -> RunConditions | None:
+    """Build the ``conditions`` record from CLI flags.
+
+    ``--dedicated``/``--not-dedicated`` is the anchor: detail and the isolation check only
+    mean something relative to it, so passing them alone is an error rather than a guess.
+    """
+    if dedicated is None:
+        if detail or isolation_check:
+            raise typer.BadParameter(
+                "--conditions-detail/--isolation-check need --dedicated or --not-dedicated"
+            )
+        return None
+    return RunConditions(dedicated=dedicated, detail=detail, isolation_check=isolation_check)
 
 
 def _parse_kv(pairs: list[str]) -> dict[str, Any]:
@@ -201,7 +222,24 @@ def run(
     registry_dir: Path | None = typer.Option(None, "--registry-dir", "--repo"),
     login: str | None = typer.Option(None, "--login", help="GitHub login for provenance."),
     notes: str | None = typer.Option(None, "--notes", help="provenance.notes for this run."),
+    dedicated: bool | None = typer.Option(
+        None,
+        "--dedicated/--not-dedicated",
+        help="Run conditions: was the box dedicated to this run? Falls back to the packet's "
+        "`conditions`; omitted entirely when neither is given.",
+    ),
+    conditions_detail: str | None = typer.Option(
+        None, "--conditions-detail", help="What else was resident or reachable (asserted)."
+    ),
+    isolation_check: str | None = typer.Option(
+        None, "--isolation-check", help="What was MEASURED about isolation, not just asserted."
+    ),
     gotcha: list[str] = typer.Option([], "--gotcha", help="Add a gotcha (repeatable)."),
+    reference_bundle: Path | None = typer.Option(
+        None,
+        "--reference-bundle",
+        help="Bundle from `atlas-bench t2i-reference`; the image fidelity suite needs one.",
+    ),
     telemetry: bool = typer.Option(True, "--telemetry/--no-telemetry"),
     tokenizer: str | None = typer.Option(
         None, "--tokenizer", help="HF tokenizer id, only for engines that report no usage."
@@ -211,6 +249,12 @@ def run(
     spec = load_spec(spec_path)
     if tokenizer:
         spec.tokenizer = tokenizer
+    if reference_bundle:
+        # Set on every workload rather than guessed by id: only the fidelity scorer reads
+        # it, and a packet that names the bundle itself already works without this flag.
+        for ref in spec.workloads:
+            ref.params.setdefault("reference_bundle", str(reference_bundle))
+    conditions = _conditions_option(dedicated, conditions_detail, isolation_check)
     registry = _registry(registry_dir)
     resolved_login = resolve_login(login or spec.github_login)
     if not resolved_login and not dry_run:
@@ -220,17 +264,22 @@ def run(
         )
         raise typer.Exit(code=2)
 
-    output = run_spec_sync(
-        spec,
-        registry=registry,
-        out_dir=out,
-        github_login=resolved_login or "unknown",
-        base_url=base_url,
-        dry_run=dry_run,
-        telemetry=telemetry,
-        gotchas=list(gotcha),
-        notes=notes,
-    )
+    try:
+        output = run_spec_sync(
+            spec,
+            registry=registry,
+            out_dir=out,
+            github_login=resolved_login or "unknown",
+            base_url=base_url,
+            dry_run=dry_run,
+            telemetry=telemetry,
+            gotchas=list(gotcha),
+            notes=notes,
+            conditions=conditions,
+        )
+    except AmbiguousServedModelError as exc:
+        error_console.print(f"[bold red]which model?[/] {exc}")
+        raise typer.Exit(code=2) from exc
 
     if dry_run:
         table = Table(title="Planned workloads")
@@ -253,6 +302,49 @@ def run(
 
     for warning in dict.fromkeys(output.warnings):
         error_console.print(f"[yellow]warning:[/] {warning}")
+
+
+@app.command("t2i-reference")
+def t2i_reference(
+    spec_path: Path = typer.Option(..., "--spec", help="Task packet for the bf16 lane."),
+    out: Path = typer.Option(..., "--out", help="Directory to write the reference bundle to."),
+    workload_id: str = typer.Option(
+        "eval-t2i-fidelity-v1", "--workload", help="Which image eval suite to render."
+    ),
+    base_url: str | None = typer.Option(None, "--base-url", help="Attach to a running lane."),
+    registry_dir: Path | None = typer.Option(None, "--registry-dir", "--repo"),
+) -> None:
+    """Render the bf16 reference images the fidelity suite scores against.
+
+    The bundle stays on this machine: fidelity results publish the numbers and a perceptual
+    hash per case, never the pictures. Run this once on the bf16 configuration, then point
+    every quantized run at it with `--reference-bundle`.
+    """
+    from .reference import build_reference_bundle_sync
+
+    spec = load_spec(spec_path)
+    if base_url:
+        spec.engine.base_url = base_url
+    registry = _registry(registry_dir)
+
+    def progress(case_id: str, result: Any) -> None:
+        status = f"[green]{result.seconds:6.2f}s[/]" if result.ok else "[red]failed[/]"
+        console.print(f"  {case_id}  {status}")
+
+    manifest = build_reference_bundle_sync(
+        spec, registry=registry, out_dir=out, workload_id=workload_id, progress=progress
+    )
+    rendered, failed = len(manifest["items"]), len(manifest["failures"])
+    console.print(
+        f"wrote {out}/{'manifest.json'}: {rendered} case(s)"
+        + (f", [red]{failed} failed[/]" if failed else "")
+    )
+    console.print(
+        f"config_id [bold]{manifest['config_id']}[/] — a fidelity run is only comparable "
+        "against a bundle from the configuration it means to be the reference for."
+    )
+    if failed:
+        raise typer.Exit(code=1)
 
 
 def _print_summary(records: list[dict[str, Any]], paths: list[Path]) -> None:
@@ -383,6 +475,16 @@ def packet(
     hardware: str | None = typer.Option(None, "--hardware"),
     workload: list[str] = typer.Option([], "--workload", help="Workload id (repeatable)."),
     arg: list[str] = typer.Option([], "--arg", help="Engine arg as key=value (repeatable)."),
+    request: list[str] = typer.Option(
+        [],
+        "--request",
+        help=(
+            "Request option as key=value (repeatable), applied to every request of every "
+            "workload: temperature, seed, max_tokens, timeout_s, extra_body, "
+            "chat_template_kwargs, reasoning_effort. Values are JSON when parseable, e.g. "
+            "--request 'chat_template_kwargs={\"thinking\": false}'."
+        ),
+    ),
     hw_count: int = typer.Option(1, "--hw-count"),
     repo_url: str | None = typer.Option(None, "--repo-url"),
     out: Path | None = typer.Option(None, "--out", help="Write the packet here instead of stdout."),
@@ -420,18 +522,23 @@ def packet(
             "quant_id": str(quant),
             "hardware_id": hardware or "",
         }
-    built = build_packet(
-        registry,
-        engine_id=parts["engine_id"],
-        engine_version=parts["engine_version"],
-        model_id=parts["model_id"],
-        quant_id=parts["quant_id"],
-        hardware_id=hardware or parts["hardware_id"] or None,
-        workloads=list(workload),
-        args=_parse_kv(arg),
-        hw_count=hw_count,
-        repo=repo_url,
-    )
+    try:
+        built = build_packet(
+            registry,
+            engine_id=parts["engine_id"],
+            engine_version=parts["engine_version"],
+            model_id=parts["model_id"],
+            quant_id=parts["quant_id"],
+            hardware_id=hardware or parts["hardware_id"] or None,
+            workloads=list(workload),
+            args=_parse_kv(arg),
+            hw_count=hw_count,
+            repo=repo_url,
+            request=_parse_kv(request),
+        )
+    except ValueError as exc:
+        error_console.print(f"[bold red]{exc}[/]")
+        raise typer.Exit(code=2) from exc
     if out:
         write_packet(built, out)
         console.print(f"wrote {out}")
@@ -453,6 +560,9 @@ def wrap(
     registry_dir: Path | None = typer.Option(None, "--registry-dir", "--repo"),
     login: str | None = typer.Option(None, "--login"),
     notes: str | None = typer.Option(None, "--notes"),
+    dedicated: bool | None = typer.Option(None, "--dedicated/--not-dedicated"),
+    conditions_detail: str | None = typer.Option(None, "--conditions-detail"),
+    isolation_check: str | None = typer.Option(None, "--isolation-check"),
 ) -> None:
     """Wrap ``vllm bench serve`` / SGLang ``bench_serving`` output into a result file."""
     spec = load_spec(spec_path)
@@ -508,11 +618,116 @@ def wrap(
             finished_at=utc_now(),
             serve_command=adapter.serve_command(),
             notes=notes,
+            conditions=_conditions_option(dedicated, conditions_detail, isolation_check),
         )
     )
     path = output_path(record, out)
     write_json(path, record)
     console.print(f"wrote {path}")
+
+
+# --------------------------------------------------------------------- restamp
+
+
+@app.command()
+def restamp(
+    files: list[Path] = typer.Argument(..., help="Result files (or directories) to restamp."),
+    build: str = typer.Option(
+        ..., "--build", help="What was actually run: an image digest, a wheel, a commit+patch."
+    ),
+    registry_dir: Path | None = typer.Option(None, "--registry-dir", "--repo"),
+    force: bool = typer.Option(
+        False, "--force", help="Overwrite a build that is already recorded and different."
+    ),
+    dry_run: bool = typer.Option(False, "--dry-run", help="Print the plan, change nothing."),
+) -> None:
+    """Name the build behind an already-written result and recompute its ids.
+
+    Two forks of an engine can report the same version string, so a result from one and a
+    result from the other used to collide on ``config_id`` and be read as repeats of a single
+    configuration. ``engine.build`` separates them (SPEC decision 24). A result written before
+    the field existed — or by a harness that left it null — needs the field added and the
+    fingerprint recomputed, which also moves the file, because the filename is the run id.
+
+    The cell id does not change: a build is a property of the configuration, not of the
+    model/quant/hardware/engine-minor cell the configuration sits in.
+    """
+    registry = _registry(registry_dir)
+    targets: list[Path] = []
+    for entry in files:
+        targets.extend(sorted(entry.rglob("*.json")) if entry.is_dir() else [entry])
+    if not targets:
+        error_console.print("[bold red]no result files given[/]")
+        raise typer.Exit(code=2)
+
+    changed = 0
+    for target in targets:
+        record = json.loads(target.read_text())
+        engine = record.get("engine") or {}
+        existing = (engine.get("build") or "").strip()
+        if existing == build.strip():
+            console.print(f"[dim]unchanged[/] {target} — already names this build")
+            continue
+        if existing and not force:
+            error_console.print(
+                f"[bold red]{target}[/] already names a different build "
+                f"({existing}); pass --force to replace it"
+            )
+            raise typer.Exit(code=1)
+
+        model = record.get("model") or {}
+        resolved = registry.resolve_config(
+            engine_id=engine.get("id", ""),
+            engine_version=engine.get("version", ""),
+            args=record.get("args") or {},
+            quant_id=model.get("quant_id", ""),
+            dtype=model.get("dtype"),
+            build=build,
+        )
+        for warning in resolved.warnings:
+            console.print(f"  [yellow]warning[/] {warning}")
+
+        args_canonical = canonicalize(resolved.canonical_input)
+        cfg_id = config_id_from_canonical(args_canonical)
+        provenance = record.get("provenance") or {}
+        rid = run_id(
+            cfg_id=cfg_id,
+            workload_id=str((record.get("workload") or {}).get("id")),
+            github_login=provenance.get("github_login") or "",
+            started_at=provenance.get("started_at") or "",
+        )
+
+        engine["build"] = build
+        record["engine"] = engine
+        record["args_canonical"] = args_canonical
+        record["config_id"] = cfg_id
+        record["run_id"] = rid
+
+        # The filename is the run id, so a recomputed fingerprint always relocates the file.
+        # output_path wants the repo root or its results/ directory; walk up to the results/
+        # the file already sits under, because a model id may be one path segment or two.
+        results_root = next(
+            (parent for parent in target.parents if parent.name == "results"), None
+        )
+        if results_root is None:
+            error_console.print(f"[bold red]{target} is not under a results/ directory[/]")
+            raise typer.Exit(code=2)
+        destination = output_path(record, results_root)
+
+        console.print(f"[bold]{target}[/]")
+        console.print(f"  config_id {record.get('config_id')} ← recomputed with the build")
+        console.print(f"  cell_id   {record.get('cell_id')} (unchanged — a build is not a cell)")
+        console.print(f"  → {destination}")
+        if dry_run:
+            continue
+        write_json(destination, record)
+        if destination.resolve() != target.resolve():
+            target.unlink()
+        changed += 1
+
+    console.print(f"\n{len(targets)} file(s), {changed} restamped")
+    if changed and not dry_run:
+        console.print("[dim]re-run `atlas-bench validate` before submitting.[/]")
 
 
 def main() -> None:

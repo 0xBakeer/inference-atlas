@@ -31,7 +31,13 @@ from atlas_bench.data import (
     render_haystack_prompt,
 )
 from atlas_bench.registry import Registry
-from atlas_bench.scorers import SCORERS, get_scorer, normalize_scorer_name
+from atlas_bench.scorers import (
+    IMAGE_SCORERS,
+    SCORERS,
+    get_scorer,
+    is_image_scorer,
+    normalize_scorer_name,
+)
 from atlas_bench.scorers.instruction import load_rules
 from atlas_bench.scorers.tools import score_tool_call
 from atlas_bench.spec import WorkloadRef
@@ -108,8 +114,13 @@ def test_every_dataset_loads(dataset_id: str) -> None:
         for row in rows:
             assert row.messages and row.messages[-1]["content"]
             assert row.answer is not None
-            assert normalize_scorer_name(row.scorer) in SCORERS
+            assert normalize_scorer_name(row.scorer) in SCORERS | IMAGE_SCORERS.keys()
             assert row.dataset_dir == reg.dataset_dir(dataset_id)
+            if is_image_scorer(row.scorer):
+                # An image suite item is a picture that has to be rendered first, so the
+                # row carries the render spec instead of relying on the workload.
+                render = row.meta.get("render") or {}
+                assert render.get("width") and render.get("height") and render.get("steps")
     elif kind == "haystack":
         rows = load_haystack_rows(reg, dataset_id)
         assert len(rows) == meta["count"]
@@ -162,8 +173,17 @@ def test_every_workload_resolves(path: Path) -> None:
     assert reg.dataset(record["dataset_id"]) is not None, "dataset_id must exist"
 
     if record["kind"] == "eval":
-        assert normalize_scorer_name(record["eval"]["scorer"]) in SCORERS
-        assert record["eval"]["max_output_tokens"] > 0
+        scorer = normalize_scorer_name(record["eval"]["scorer"])
+        assert scorer in SCORERS | IMAGE_SCORERS.keys()
+        # An image suite produces no tokens, so it names no token budget.
+        if is_image_scorer(scorer):
+            assert record["eval"]["max_output_tokens"] is None
+        else:
+            assert record["eval"]["max_output_tokens"] > 0
+    if record["kind"] == "image":
+        assert record["eval"] is None and record["sweep"] is None
+        for name in ("width", "height", "steps", "seed", "images_per_request", "ref_images"):
+            assert record["params"].get(name) is not None, f"{name} is part of the shape"
     if record["kind"] == "sweep":
         axes = [k for k in ("concurrency", "input_tokens") if record["sweep"].get(k)]
         assert len(axes) == 1, "a sweep has exactly one axis"
@@ -200,6 +220,27 @@ def test_workload_params_the_runners_read(path: Path) -> None:
         "num_conversations",
         "honour_tool_delays",
         "max_turns_per_conversation",
+        # image: the render shape (kind=image) and the scorer settings (image eval suites)
+        "width",
+        "height",
+        "steps",
+        "guidance",
+        "images_per_request",
+        "ref_images",
+        "transparent",
+        "image_dir",
+        "reference",
+        "reference_bundle",
+        "psnr_min",
+        "ssim_min",
+        "lpips",
+        "ocr_backend",
+        "ocr_languages",
+        "clip_backend",
+        "clip_model",
+        "clip_pretrained",
+        "clipscore_min",
+        "min_component_fraction",
     }
     record = json.loads(path.read_text(encoding="utf-8"))
     unknown = set(record["params"]) - known
@@ -280,18 +321,22 @@ def _reference_output(row: EvalRow) -> str:
     return f"<think>thinking</think>\nSome working out.\n\nAnswer: {answer}"
 
 
+#: Scorers whose ``answer`` is not a string a model would type, so the blunt
+#: reference-answer check below cannot apply to them. ``code_exec`` and ``instruction``
+#: have their own tests further down; ``integrity`` has ``test_longgen_integrity.py``,
+#: because its answer is an *observation* ("no spliced token") rather than a value —
+#: there is no output that is wrong by virtue of what it says.
+NON_REFERENCE_SCORERS = ("code_exec", "instruction", "integrity")
+
+
 @pytest.mark.parametrize("dataset_id", dataset_ids("eval"))
 def test_reference_answers_score_correct(dataset_id: str) -> None:
-    """Feeding a row's own answer back must score correct; garbage must not.
-
-    ``code_exec``, ``instruction`` and the tool-calling rows have their own tests below —
-    their "answer" is not a string a model would type.
-    """
+    """Feeding a row's own answer back must score correct; garbage must not."""
     reg = registry()
     rows = [
         row
         for row in load_eval_rows(reg, dataset_id)
-        if normalize_scorer_name(row.scorer) not in ("code_exec", "instruction")
+        if normalize_scorer_name(row.scorer) not in NON_REFERENCE_SCORERS
         and not row.meta.get("tools")
     ]
     if not rows:

@@ -1,0 +1,381 @@
+{
+  "schema_version": 1,
+  "run_id": "828c73f114adfb7e--prefill-8k-v1--08c153",
+  "config_id": "828c73f114adfb7e",
+  "cell_id": "aefd407f2560",
+  "workload_id": "prefill-8k-v1",
+  "kind": "prefill",
+  "engine": {
+    "id": "vllm",
+    "version": "0.27.1",
+    "commit": "6e448d0ea9bf3d88d898b65449ca6dc2aec170ac",
+    "container": "vllm/vllm-openai:v0.27.1-aarch64 (repo digest sha256:1c8e60a0841b333c700488cb029d3664807249da0c071e862191b00fe34b228c, image id 2c211a1273b4, created 2026-08-11; official release image, vLLM 0.27.1 at 6e448d0ea, torch 2.13.0+cu130, FlashInfer 0.6.16.post3, transformers 5.15.0)",
+    "install_method": "docker"
+  },
+  "model": {
+    "id": "Qwen/Qwen3.8-27B",
+    "quant_id": "nvfp4-unsloth",
+    "hf_id": "Qwen/Qwen3.8-27B",
+    "revision": "f0b7c9e722f5565102fff8481c99e4d86ae099c7",
+    "dtype": "auto",
+    "local_path": null
+  },
+  "hardware": {
+    "id": "nvidia-gb10-dgx-spark",
+    "count": 1,
+    "driver": "580.173.02",
+    "cuda": "13.0",
+    "host": {
+      "cpu": "Cortex-A725",
+      "cpu_cores": 20,
+      "ram_gb": 121.6,
+      "os": "Ubuntu 24.04.4 LTS",
+      "kernel": "6.17.0-1029-nvidia",
+      "arch": "aarch64"
+    },
+    "fingerprint": "sha256:52ea2bdd513719724db88c162b6cc2c9fb4e5b67e02dbe41b9de00687acefb91",
+    "captured": {
+      "nvidia_smi": {
+        "driver": "580.173.02",
+        "cuda": "13.0",
+        "products": [
+          "NVIDIA GB10"
+        ],
+        "fb_memory_total_mib": 0
+      },
+      "lscpu": {
+        "architecture": "aarch64",
+        "cpus": "20",
+        "vendor_id": "ARM",
+        "model_name": "Cortex-A725",
+        "cores_per_socket": "10",
+        "sockets": "1",
+        "cpu_max_mhz": "2808.0000"
+      }
+    }
+  },
+  "args": {
+    "max-model-len": 262144,
+    "max-num-seqs": 8,
+    "gpu-memory-utilization": 0.82,
+    "enable-prefix-caching": true,
+    "limit-mm-per-prompt": {
+      "image": 4,
+      "video": 0
+    },
+    "reasoning-parser": "qwen3",
+    "enable-auto-tool-choice": true,
+    "tool-call-parser": "qwen3_xml",
+    "enable-flashinfer-autotune": true,
+    "speculative-config": {
+      "method": "mtp",
+      "num_speculative_tokens": 3,
+      "model": "unsloth/Qwen3.8-27B-NVFP4"
+    }
+  },
+  "args_canonical": "@dtype=auto;@quant=nvfp4-unsloth;enable-auto-tool-choice=true;enable-flashinfer-autotune=true;enable-prefix-caching=true;gpu-memory-utilization=0.82;limit-mm-per-prompt={\"image\":4,\"video\":0};max-model-len=262144;max-num-seqs=8;reasoning-parser=qwen3;speculative-config={\"method\":\"mtp\",\"model\":\"unsloth/Qwen3.8-27B-NVFP4\",\"num_speculative_tokens\":3};tool-call-parser=qwen3_xml",
+  "serve_command": null,
+  "workload": {
+    "id": "prefill-8k-v1",
+    "resolved_params": {
+      "concurrency": 1,
+      "num_requests": 10,
+      "input_tokens": 8192,
+      "output_tokens": 16,
+      "warmup_requests": 1,
+      "prompts_padded": false,
+      "needle_check": false,
+      "timeout_s": 900,
+      "seed": 42
+    }
+  },
+  "metrics": {
+    "requests_total": 10,
+    "requests_ok": 10,
+    "requests_failed": 0,
+    "success_rate": 1,
+    "duration_s": 32.751,
+    "input_tokens_total": 101562,
+    "output_tokens_total": 57,
+    "output_tok_s": 1.74,
+    "total_tok_s": 3102.802,
+    "req_s": 0.305,
+    "prefill_tok_s": 3358.593,
+    "ttft_ms": {
+      "mean": 3023.945,
+      "p50": 1536.514,
+      "p90": 6530.862,
+      "p95": 6532.821,
+      "p99": 6534.389,
+      "min": 1489.788,
+      "max": 6534.78
+    },
+    "tpot_ms": {
+      "mean": 54.024,
+      "p50": 50.271,
+      "p90": 63.44,
+      "p95": 64.381,
+      "p99": 65.135,
+      "min": 49.358,
+      "max": 65.323
+    },
+    "itl_ms": {
+      "mean": 124.319,
+      "p50": 121.885,
+      "p90": 127.506,
+      "p95": 132.209,
+      "p99": 137.622,
+      "min": 120.866,
+      "max": 138.975
+    },
+    "e2e_ms": {
+      "mean": 3274.974,
+      "p50": 1784.282,
+      "p90": 6787.918,
+      "p95": 6789.818,
+      "p99": 6791.338,
+      "min": 1742.604,
+      "max": 6791.718
+    },
+    "decode_tok_s_per_request": {
+      "mean": 18.744,
+      "p50": 19.893,
+      "p90": 20.231,
+      "p95": 20.245,
+      "p99": 20.257,
+      "min": 15.309,
+      "max": 20.26
+    },
+    "vram_peak_gb": null,
+    "ram_peak_gb": 106.483,
+    "kv_cache_tokens": null,
+    "power_avg_w": 64.45,
+    "power_peak_w": 73.46,
+    "energy_wh": 0.7102,
+    "gpu_util_avg_pct": 90.76,
+    "temp_max_c": 80,
+    "thermal_throttle_detected": false
+  },
+  "failures": [],
+  "conditions": {
+    "dedicated": true,
+    "detail": "Only the recipe's own vLLM container was resident; nothing else used the GPU.",
+    "isolation_check": "docker ps -> mirrdhyn-vllm dgx-exporter ; nvidia-smi compute apps -> 1; load1 at start 0.37"
+  },
+  "gotchas": [
+    {
+      "severity": "info",
+      "text": "Engine build: the gist builds vLLM 0.27.1 from source against CUDA 13.2 and does not publish the build. These rows ran the official release image vllm/vllm-openai:v0.27.1-aarch64, repo digest sha256:1c8e60a0841b333c700488cb029d3664807249da0c071e862191b00fe34b228c, which is the same v0.27.1 tag (6e448d0ea) built against CUDA 13.0 with torch arch list up to sm_120. The gist environment (CUTE_DSL_ARCH=sm_121a, FLASHINFER_CUDA_ARCH_LIST=12.1a) was set as written."
+    },
+    {
+      "severity": "info",
+      "text": "max-num-seqs is 8, so serve-short-c16 queues half of its 16 streams. With 3 speculative tokens vLLM also caps max_num_scheduled_tokens at 2048 and warns that this may be suboptimal, so long prompts prefill in 2,048-token chunks."
+    },
+    {
+      "severity": "info",
+      "text": "KV cache dtype is not set (auto), but unsloth/Qwen3.8-27B-NVFP4 carries a static per-tensor 8-bit float kv_cache_scheme, and FlashInfer resolved kv_cache_dtype float8_e4m3fn. This boot allocated 72.79 GiB of KV cache, 2,054,681 tokens, 7.84x concurrency at 262144; the gist reports 2,032,714 tokens for the same settings. The attention block size is 1,600 tokens and the mamba prefix cache runs in align mode."
+    },
+    {
+      "severity": "info",
+      "text": "Speculative decoding with FlashInfer attention cannot use full CUDA graphs: vLLM logs that FULL_AND_PIECEWISE is not supported with spec-decode for this backend and falls back to cudagraph_mode PIECEWISE."
+    },
+    {
+      "severity": "info",
+      "text": "The target is not pinned by the gist, which loads a local path. The snapshot served was unsloth/Qwen3.8-27B-NVFP4 main f0b7c9e7 (2026-09-08). The MTP drafter is the head bundled in the same checkpoint (model_mtp.safetensors, one layer); vLLM shares the target embedding and lm_head with it."
+    },
+    {
+      "severity": "info",
+      "text": "vLLM reads generation_config.json from the target and overrides its own sampling defaults with temperature 1.0, top_k 20, top_p 0.95. Every request here sets temperature 0 and seed 42."
+    },
+    {
+      "severity": "info",
+      "text": "Speed rows force thinking off per request with chat_template_kwargs enable_thinking false. Eval rows use the served default, thinking on at full length; the gist sets no reasoning level on the server."
+    }
+  ],
+  "derived": {
+    "cost_per_1m_output_tokens_usd": null,
+    "tokens_per_watt": 0.027,
+    "tok_s_per_gb_bandwidth": 0.068659,
+    "bandwidth_efficiency": 1.608002,
+    "memory_headroom_gb": null
+  },
+  "raw": {
+    "harness": "atlas-bench",
+    "harness_version": "0.1.0",
+    "sha256": "84986341b14ddf4d8ad47252868042c6d2da2855a18f25cfad1e663fe830da11",
+    "payload_path": null,
+    "payload": {
+      "requests": [
+        {
+          "id": "prefill-w00000",
+          "prompt_id": "hay-8k-d10",
+          "warmup": true,
+          "status": "ok",
+          "ttft_ms": 6527.251,
+          "e2e_ms": 6776.672,
+          "prompt_tokens": 10208,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00000",
+          "prompt_id": "hay-8k-d10",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 1536.63,
+          "e2e_ms": 1783.419,
+          "prompt_tokens": 10208,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00001",
+          "prompt_id": "hay-8k-multi",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 6530.427,
+          "e2e_ms": 6791.718,
+          "prompt_tokens": 10154,
+          "completion_tokens": 5,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00002",
+          "prompt_id": "hay-8k-d50",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 6511.522,
+          "e2e_ms": 6761.519,
+          "prompt_tokens": 10103,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00003",
+          "prompt_id": "hay-8k-d90",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 6534.78,
+          "e2e_ms": 6787.496,
+          "prompt_tokens": 10135,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00004",
+          "prompt_id": "hay-8k-d10",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 1536.398,
+          "e2e_ms": 1785.146,
+          "prompt_tokens": 10208,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00005",
+          "prompt_id": "hay-8k-multi",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 1522.658,
+          "e2e_ms": 1772.069,
+          "prompt_tokens": 10154,
+          "completion_tokens": 5,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00006",
+          "prompt_id": "hay-8k-d50",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 1489.788,
+          "e2e_ms": 1742.604,
+          "prompt_tokens": 10103,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00007",
+          "prompt_id": "hay-8k-d90",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 1514.208,
+          "e2e_ms": 1762.62,
+          "prompt_tokens": 10135,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00008",
+          "prompt_id": "hay-8k-d10",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 1546.733,
+          "e2e_ms": 1793.923,
+          "prompt_tokens": 10208,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00009",
+          "prompt_id": "hay-8k-multi",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 1516.301,
+          "e2e_ms": 1769.225,
+          "prompt_tokens": 10154,
+          "completion_tokens": 5,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        }
+      ],
+      "engine_endpoint": {
+        "attached": true,
+        "base_url": "http://127.0.0.1:8888/v1",
+        "served_model_id": "qwen3.8-27b",
+        "advertised_models": [
+          "qwen3.8-27b"
+        ]
+      }
+    },
+    "truncated": false
+  },
+  "provenance": {
+    "github_login": "0xBakeer",
+    "github_user_id": 17404809,
+    "started_at": "2026-09-16T22:17:06Z",
+    "finished_at": "2026-09-16T22:17:46Z",
+    "submitted_at": null,
+    "commit": null,
+    "pr": null,
+    "method": "atlas-bench",
+    "agent": null,
+    "notes": "Served with the single-node launch from the GitHub gist \"Qwen3.8-27B-NVFP4 + MTP-3 on a single DGX Spark\" by Mirrdhyn (https://gist.github.com/Mirrdhyn/d476d17723c9d68eac72f03ec9447f2b, revision ee1ffa6b of 2026-08-17). The gist builds vLLM 0.27.1 from source against CUDA 13.2; these rows ran the official vllm/vllm-openai:v0.27.1-aarch64 release image instead (repo digest sha256:1c8e60a0, vLLM 0.27.1 at 6e448d0ea, torch 2.13.0+cu130, FlashInfer 0.6.16.post3, transformers 5.15.0). Flags as in the gist: target unsloth/Qwen3.8-27B-NVFP4 from a local snapshot (main f0b7c9e7), MTP speculative decoding with 3 tokens from the MTP head bundled in the same checkpoint, max-model-len 262144, max-num-seqs 8, gpu-memory-utilization 0.82, prefix caching on, 4 images and 0 videos per prompt, reasoning parser qwen3, tool parser qwen3_xml with auto tool choice, FlashInfer autotune on, tensor-parallel-size 1. Environment as in the gist: CUTE_DSL_ARCH=sm_121a, FLASHINFER_CUDA_ARCH_LIST=12.1a, FLASHINFER_DISABLE_VERSION_CHECK=1, PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True, VLLM_USE_FLASHINFER_SAMPLER=1. Only the port (8888 instead of 8000) and the usage-stats opt-outs VLLM_NO_USAGE_STATS=1 and DO_NOT_TRACK=1 were added. vLLM chose the FlashInfer attention backend, an fp8_e4m3 KV cache from the checkpoint kv_cache_scheme and FlashInferCutlassNvFp4LinearKernel for the NVFP4 layers. The chat template comes from the target repository, so the served default is thinking on: the speed rows force thinking off per request with chat_template_kwargs enable_thinking false, the eval rows use that served default. The server runs without an API key; the harness attached over HTTP on 127.0.0.1:8888 and sent a bearer header the server ignores."
+  },
+  "verification": {
+    "level": "self-reported",
+    "reproduced_by": [],
+    "flags": []
+  }
+}

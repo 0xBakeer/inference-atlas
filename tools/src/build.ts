@@ -10,7 +10,8 @@
  *
  * 1. **Provenance stamping.** `provenance.commit` and `provenance.pr` are derived from
  *    `git log --diff-filter=A` — the commit that *added* the file — and written only into
- *    the compiled copy. The raw file in `results/` is never rewritten, so what a
+ *    the compiled copy, and a `submitted_at` the contributor left null is filled from the
+ *    same commit: the file arriving on main is the submission. The raw file in `results/` is never rewritten, so what a
  *    contributor committed stays exactly what they committed and the stamp cannot be typed
  *    by hand (SPEC §5, last paragraph).
  * 2. **Overlay merging.** `engines/<id>/overlay.json` carries the hand-curated grouping and
@@ -23,7 +24,7 @@
  * only where they mean something. A rebuild with no data change produces byte-identical
  * files apart from `built_at`.
  */
-import { existsSync, readFileSync, rmSync } from 'node:fs';
+import { existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { realpathSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -40,9 +41,12 @@ import type {
   Workload,
 } from '@atlas/core';
 import { parseArgv } from './lib/args.js';
+import { resolveUsers } from './resolve-user.js';
+import type { ResolveOptions } from './resolve-user.js';
 import { checkDataset } from './lib/datasets.js';
 import type { DatasetStats } from './lib/datasets.js';
-import { addCommits, headCommit, isGitRepo, loginFromEmail, parsePr } from './lib/git.js';
+import { addCommits, headCommit, isGitRepo, parsePr } from './lib/git.js';
+import { indexIdentities, resolveLogin } from './lib/identities.js';
 import type { GitCommit } from './lib/git.js';
 import { computeGaps, possibleCells } from './lib/gaps.js';
 import type { WantedRequest } from './lib/gaps.js';
@@ -57,7 +61,11 @@ import type { WrittenFile } from './lib/write.js';
 
 const DEFAULT_OUT = 'app/public/data';
 
-/** Provenance as it appears in the compiled data: the three git-derived fields added. */
+/**
+ * Provenance as it appears in the compiled data: the git-derived fields added, and
+ * `submitted_at` filled from the adding commit when the contributor left it null, so every
+ * sort on submission order (timeline, latest results, scoring) has a date to work with.
+ */
 export interface StampedProvenance extends Provenance {
   commit_short: string | null;
   /** Author date of the commit that added the file — when the measurement became public. */
@@ -156,12 +164,16 @@ export function buildData(options: BuildOptions): BuildOutcome {
 
   const stampProvenance = (result: ResultRecord, path: string): StampedProvenance => {
     const commit = stamps.get(path) ?? null;
+    // Author dates come with whatever offset the author's clock had; the app sorts these as
+    // strings, so they are normalised to UTC like every other timestamp in a result.
+    const merged = commit ? utcIso(commit.date) : null;
     return {
       ...result.provenance,
       commit: commit?.commit ?? null,
       commit_short: commit?.commit_short ?? null,
       pr: commit ? parsePr(commit.subject) : null,
-      merged_at: commit?.date ?? null,
+      merged_at: merged,
+      submitted_at: result.provenance.submitted_at ?? merged,
     };
   };
 
@@ -362,7 +374,7 @@ export function buildData(options: BuildOptions): BuildOutcome {
   const byKind: Record<string, number> = {};
   for (const row of rows) byKind[row.kind] = (byKind[row.kind] ?? 0) + 1;
 
-  const cellsPossible = possibleCells(repo);
+  const cellsPossible = possibleCells(repo, cells);
   const cellsCovered = Object.keys(cells).length;
   const times = rows
     .map((r) => r.provenance.submitted_at ?? r.provenance.started_at)
@@ -465,9 +477,11 @@ function datasetMeta(dataset: Dataset, stats: DatasetStats | undefined) {
  * Who registered each piece of the registry, from the commit that added its file.
  *
  * `computeScores` credits new hardware, models, engines, quants and workloads, but a
- * registry file carries no `github_login` — the only identity in git history is the author
- * email, and only GitHub's `…@users.noreply.github.com` form contains a login. Anything
- * else is skipped rather than guessed (see `loginFromEmail`).
+ * registry file carries no `github_login` — the only identity in its history is the author
+ * address of the commit that added it. GitHub's `…@users.noreply.github.com` form spells
+ * the login; an ordinary address does not, and `site/identities.json` is where a person
+ * says which addresses are theirs (`resolveLogin`). An address in neither is skipped
+ * rather than guessed: crediting a plausible neighbour is worse than crediting nobody.
  */
 function registryCredits(root: string, repo: Repo): RegistryCredits {
   const paths: Array<[keyof RegistryCredits, string, string]> = [];
@@ -485,11 +499,12 @@ function registryCredits(root: string, repo: Repo): RegistryCredits {
     root,
     paths.map(([, , path]) => path),
   );
+  const index = indexIdentities(repo.identities);
   const credits: RegistryCredits = {};
   for (const [kind, id, path] of paths) {
     const commit = commits.get(path);
     if (!commit) continue;
-    const login = loginFromEmail(commit.email);
+    const login = resolveLogin(commit.email, index);
     if (!login) continue;
     const bucket = (credits[kind] ??= {});
     bucket[id] = login;
@@ -497,9 +512,71 @@ function registryCredits(root: string, repo: Repo): RegistryCredits {
   return credits;
 }
 
+/** `2026-09-03T02:12:33-07:00` → `2026-09-03T09:12:33Z`; an unparseable date is kept as is. */
+function utcIso(date: string): string {
+  const ms = Date.parse(date);
+  return Number.isNaN(ms) ? date : new Date(ms).toISOString().replace(/\.\d{3}Z$/, 'Z');
+}
+
+/* ------------------------------------------------- fork contributor user ids */
+
+/**
+ * Fill in `user_id` for contributors whose results were merged from a fork.
+ *
+ * `stamp-user-ids` in validate.yml can only push to a branch in this repository, so a
+ * contribution that arrives from a fork keeps `provenance.github_user_id: null` for ever —
+ * and nobody can stamp it afterwards without tripping the ownership rule, which exists
+ * precisely to stop one person editing another's result. check-result.ts already says the
+ * build resolves it later; this is that.
+ *
+ * The login is what the contributors page keys on, so a contributor is listed either way.
+ * The id only decides whether the avatar comes from the permanent numeric URL or the
+ * renameable login one, which is why every failure path here is a shrug rather than an
+ * error: no token, a rate limit, a network blip, a deleted account. The build must never
+ * fail over a decoration.
+ */
+export async function resolveContributorIds(
+  out: string,
+  log: (message: string) => void = () => {},
+  options: ResolveOptions = {},
+): Promise<void> {
+  const file = join(out, 'contributors.json');
+  if (!existsSync(file)) return;
+
+  let contributors: Array<{ login: string; user_id: number | null; avatar_url: string }>;
+  try {
+    contributors = JSON.parse(readFileSync(file, 'utf8'));
+  } catch {
+    return;
+  }
+
+  const missing = contributors.filter((c) => c.user_id == null && c.login);
+  if (missing.length === 0) return;
+
+  const resolutions = await resolveUsers(
+    missing.map((c) => c.login),
+    options,
+  );
+  let filled = 0;
+  for (const contributor of contributors) {
+    const resolution = resolutions.get(contributor.login);
+    if (!resolution || resolution.id == null) continue;
+    contributor.user_id = resolution.id;
+    contributor.avatar_url = avatarUrl(contributor.login, resolution.id);
+    filled += 1;
+  }
+
+  if (filled === 0) {
+    log(`contributor ids: ${missing.length} unresolved (no token, or the API said no)`);
+    return;
+  }
+  writeFileSync(file, `${JSON.stringify(contributors, null, 2)}\n`);
+  log(`contributor ids: resolved ${filled} of ${missing.length}`);
+}
+
 /* ----------------------------------------------------------------------- CLI */
 
-function main(argv: string[]): number {
+async function main(argv: string[]): Promise<number> {
   const args = parseArgv(argv, { boolean: ['no-git', 'force', 'json', 'quiet'] });
   const root = resolve(args.str('root', REPO_ROOT));
   const out = resolve(root, args.str('out', DEFAULT_OUT));
@@ -521,6 +598,11 @@ function main(argv: string[]): number {
     return 1;
   }
 
+  // After the emit, because it rewrites one of the files the emit just wrote.
+  await resolveContributorIds(out, (message) => {
+    if (!args.bool('quiet') && !args.bool('json')) process.stdout.write(`${message}\n`);
+  });
+
   if (args.bool('json')) {
     process.stdout.write(`${JSON.stringify(outcome, null, 2)}\n`);
   } else if (!args.bool('quiet')) {
@@ -539,4 +621,4 @@ const invokedDirectly =
   process.argv[1] !== undefined &&
   realpathSync(process.argv[1]) === realpathSync(fileURLToPath(import.meta.url));
 
-if (invokedDirectly) process.exit(main(process.argv.slice(2)));
+if (invokedDirectly) process.exit(await main(process.argv.slice(2)));

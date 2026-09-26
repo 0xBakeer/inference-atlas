@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "id": "eval-commonsense-v2",
+  "name": "Commonsense traps eval v2",
+  "kind": "eval",
+  "description": "116 pragmatic-reasoning items built to punish pattern matching: goal-tracking errands where the tempting 'virtuous' option defeats the goal (wash the car — so the car must come along), classic riddles altered so the memorised answer is wrong, physical-consequence questions with a seductive wrong intuition, questions built on false premises with the premise-rejection offered as an option, small feasibility plans whose obvious ordering fails, and literal-text questions (letter counts, reversals) computed from the string itself.",
+  "licence": "MIT",
+  "created": "2026-09-01",
+  "files": [
+    "items.jsonl"
+  ],
+  "count": 116,
+  "generator": "datasets/_gen/gen_eval_commonsense_v2.py",
+  "token_heuristic": "approx_tokens = ceil(sum(len(m.content) for m in messages) / 4)",
+  "provenance": "Synthetic, authored in this repository. No third-party text.",
+  "default_scorer": "mc",
+  "scoring": {
+    "answer_extraction": [
+      "Drop everything inside <think>...</think> (and an unterminated leading <think> block).",
+      "Drop markdown code fences, keeping the fenced content.",
+      "If any line matches /^\\s*(?:final answer|answer)\\s*[:\\-]\\s*(.+)$/i, take the capture of the LAST such line and use only that.",
+      "Strip surrounding whitespace, matching quotes, and a single trailing '.' or '!'."
+    ],
+    "scorers": {
+      "mc": "Multiple choice. `choices` is a list of strings; `answer` is the letter label. Accept the bare letter, 'A)', '(A)', 'A.' or the full text of the correct choice, case-insensitively.",
+      "exact": "Case-insensitive comparison after collapsing internal whitespace.",
+      "numeric": "Parse the last number in the extracted output; correct when within meta.tolerance (default 1e-6) of the key."
+    },
+    "pass_rule": "One item is correct or incorrect; there is no partial credit. accuracy = correct / total. An item whose request failed counts as incorrect AND is reported in scores.failures and metrics.requests_failed."
+  },
+  "categories": [
+    "false_presupposition",
+    "feasibility",
+    "goal_tracking",
+    "physical",
+    "reversed_classics",
+    "text_selfref"
+  ],
+  "difficulties": [
+    "easy",
+    "medium",
+    "hard"
+  ],
+  "counts": {
+    "by_category": {
+      "physical": 20,
+      "goal_tracking": 22,
+      "false_presupposition": 16,
+      "feasibility": 12,
+      "reversed_classics": 14,
+      "text_selfref": 32
+    },
+    "by_difficulty": {
+      "medium": 58,
+      "hard": 31,
+      "easy": 27
+    },
+    "by_scorer": {
+      "mc": 76,
+      "exact": 13,
+      "numeric": 27
+    },
+    "mc_letter_balance": {
+      "A": 19,
+      "B": 19,
+      "C": 19,
+      "D": 19
+    }
+  },
+  "seed": 20260910,
+  "notes": [
+    "Hand-authored families (everything except text_selfref) follow the eval-format-v1 precedent: the key is typed, and every such row carries meta.trap naming the specific wrong answer the item is built to catch, for auditability.",
+    "text_selfref answers are computed from the literal string by the generator.",
+    "The suite is adversarial on purpose: each item has a surface pattern (a famous riddle, a 'healthy choice', a helpful-sounding count) that points at a wrong answer, and a correct answer that requires actually modelling the situation.",
+    "created is the date this dataset was authored; the -v2 suffix marks the second-generation (hardened) eval wave alongside the -v2 refreshes of the saturated v1 suites."
+  ]
+}

@@ -30,8 +30,8 @@ import {
 } from '../data/derive.js';
 import { href, modelHref, qget, setQuery } from '../router.js';
 import { store } from '../store.js';
-import { fmtInt, fmtPct } from '../util/format.js';
-import { headlineMetric } from '../util/metrics.js';
+import { fmtInt, fmtPct } from '@atlas/core';
+import { headlineMetric } from '@atlas/core';
 import { ViewElement } from './view-base.js';
 
 const AXES: AxisKey[] = ['model', 'quant', 'hardware', 'engine', 'engine_minor', 'workload'];
@@ -245,7 +245,10 @@ export class AtlasView extends ViewElement {
       ${selectField(
         'Workload kind',
         qget(q, 'kind'),
-        ['serving', 'sweep', 'prefill', 'longctx', 'eval'].map((k) => ({ value: k, label: k })),
+        ['serving', 'sweep', 'prefill', 'longctx', 'eval', 'image'].map((k) => ({
+          value: k,
+          label: k,
+        })),
         (v) => setQuery({ kind: v }),
         { allLabel: 'All kinds', small: true },
       )}

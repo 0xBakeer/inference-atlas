@@ -6,6 +6,7 @@
  *   pnpm validate --changed a.json b.json           # report only these files
  *   pnpm validate --pr-author octocat --base origin/main --json
  *   pnpm validate --json-out report.json              # report to a file, not stdout
+ *   pnpm validate --check-hf --changed models/a/b/model.json   # also ask the Hub
  *
  * What it does, in order: schema-check every JSON file against the schema its *path*
  * implies, recompute every derived id, check referential integrity and physics, look for
@@ -26,9 +27,12 @@ import type { SiteConfig } from '@atlas/core';
 import { parseArgv } from './lib/args.js';
 import { checkResult } from './lib/check-result.js';
 import { checkDataset } from './lib/datasets.js';
+import { checkHuggingFace } from './lib/hf.js';
 import { changedFiles as gitChangedFiles, isGitRepo } from './lib/git.js';
 import { buildIndexRow } from './lib/index-row.js';
+import { checkIdentities } from './lib/identities.js';
 import { checkOwnership } from './lib/ownership.js';
+import { checkRegistryEdits } from './lib/registry-edits.js';
 import { loadRepo } from './lib/repo.js';
 import { REPO_ROOT } from './lib/root.js';
 import type { Counts, Issue } from './lib/report.js';
@@ -46,6 +50,8 @@ export interface ValidateOptions {
   allowOverride?: boolean;
   /** Treat warnings as failures. */
   strict?: boolean;
+  /** Findings computed outside this synchronous pass (`--check-hf`), reported with the rest. */
+  extraIssues?: Issue[];
 }
 
 export interface ValidateOutcome {
@@ -123,6 +129,10 @@ export function validateRepo(options: ValidateOptions): ValidateOutcome {
 
   for (const dataset of repo.datasets.values()) checkDataset(root, dataset, reporter);
 
+  /* ------------------------------------------------------------- identities */
+
+  if (repo.identities) checkIdentities(repo.identities, reporter);
+
   /* ---------------------------------------------------------------- results */
 
   const seenRunIds = new Map<string, string>();
@@ -147,6 +157,8 @@ export function validateRepo(options: ValidateOptions): ValidateOutcome {
   }
 
   crossCheck(repo, reporter);
+  versionSplit(repo, reporter, underReview);
+  for (const issue of options.extraIssues ?? []) reporter.add(issue);
 
   /* --------------------------------------------------------------- ownership */
 
@@ -168,12 +180,9 @@ export function validateRepo(options: ValidateOptions): ValidateOutcome {
           `git diff ${base}...HEAD failed — check out with fetch-depth: 0 and fetch the base ref`,
         );
       } else {
-        checkOwnership(changed, reporter, {
-          root,
-          base,
-          author,
-          allowOverride: options.allowOverride === true,
-        });
+        const context = { root, base, author, allowOverride: options.allowOverride === true };
+        checkOwnership(changed, reporter, context);
+        checkRegistryEdits(changed, reporter, context);
       }
     }
   }
@@ -259,13 +268,85 @@ function crossCheck(repo: ReturnType<typeof loadRepo>, reporter: Reporter): void
   }
 }
 
+/**
+ * One build, one version string (decision 29). Results under review that name the same
+ * engine commit must name the same engine.version: otherwise one box and one binary show up
+ * as two engine versions, and the atlas splits one cell into two (for example nine rows as
+ * `b7000` and two as `f95b0d9`, all with `engine.commit` f95b0d9).
+ */
+function versionSplit(
+  repo: ReturnType<typeof loadRepo>,
+  reporter: Reporter,
+  underReview: ReadonlySet<string>,
+): void {
+  const groups = new Map<string, Map<string, string[]>>();
+  for (const { path, data } of repo.results) {
+    if (!underReview.has(normalize(path))) continue;
+    const commit = data.engine.commit?.trim().toLowerCase();
+    if (!commit) continue;
+    const key = `${data.engine.id}@${commit}`;
+    const versions = groups.get(key) ?? new Map<string, string[]>();
+    versions.set(data.engine.version, [...(versions.get(data.engine.version) ?? []), path]);
+    groups.set(key, versions);
+  }
+  for (const [key, versions] of groups) {
+    if (versions.size < 2) continue;
+    const listed = [...versions.keys()].map((v) => `"${v}"`).join(', ');
+    for (const [version, paths] of versions) {
+      for (const path of paths) {
+        reporter.error(
+          path,
+          'engine-version-split',
+          `engine.version is "${version}", but other files in this pull request name ${listed} for the same build ${key}; use one version string for one build`,
+          {
+            path: 'engine.version',
+            related: [...versions.values()]
+              .flat()
+              .filter((p) => p !== path)
+              .slice(0, 10),
+          },
+        );
+      }
+    }
+  }
+}
+
 /* ----------------------------------------------------------------------- CLI */
 
-export function main(argv: string[]): number {
-  const args = parseArgv(argv, {
-    variadic: ['changed'],
-    boolean: ['json', 'strict', 'allow-override', 'markdown', 'no-color'],
+const ARGV_SPEC = {
+  variadic: ['changed'],
+  boolean: ['json', 'strict', 'allow-override', 'markdown', 'no-color', 'check-hf'],
+};
+
+/**
+ * The registry files `--check-hf` asks the Hub about: the model and quant records named by
+ * `--changed`, or every one of them when nothing is named (a local sweep).
+ */
+export function hfCandidates(root: string, changed: string[] | null): string[] {
+  const isRecord = (p: string) => /^models\/.+\.json$/.test(p);
+  if (changed && changed.length > 0) return changed.map(normalize).filter(isRecord);
+  const repo = loadRepo(root, new Reporter());
+  return [...repo.models.values()].flatMap((m) => [
+    `models/${m.model.id}/model.json`,
+    ...[...m.quants.keys()].map((q) => `models/${m.model.id}/quants/${q}.json`),
+  ]);
+}
+
+/** The CLI entry point: the network checks first, then the synchronous validation. */
+export async function run(argv: string[]): Promise<number> {
+  const args = parseArgv(argv, ARGV_SPEC);
+  if (!args.bool('check-hf')) return main(argv);
+  const root = resolve(args.str('root', REPO_ROOT));
+  const extra = await checkHuggingFace({
+    root,
+    files: hfCandidates(root, args.list('changed')),
+    token: process.env.HF_TOKEN ?? null,
   });
+  return main(argv, extra);
+}
+
+export function main(argv: string[], extraIssues: Issue[] = []): number {
+  const args = parseArgv(argv, ARGV_SPEC);
   const jsonOut = args.str('json-out');
 
   const root = resolve(args.str('root', REPO_ROOT));
@@ -276,6 +357,7 @@ export function main(argv: string[]): number {
     base: args.str('base'),
     allowOverride: args.bool('allow-override'),
     strict: args.bool('strict'),
+    extraIssues,
   });
 
   const report = () =>
@@ -287,6 +369,10 @@ export function main(argv: string[]): number {
         warnings: outcome.issues.filter((i) => i.level === 'warn'),
         codes: outcome.codes,
         code_counts: codeCounts(outcome.issues),
+        // Consumed by the workflow that comments on pull requests from forks, which has no
+        // checkout to count changed files for itself.
+        changed_results: (args.list('changed') ?? []).filter((f) => f.startsWith('results/'))
+          .length,
         markdown: renderMarkdown(outcome.issues, { counts: outcome.counts }),
       },
       null,
@@ -324,4 +410,4 @@ const invokedDirectly =
   process.argv[1] !== undefined &&
   realpathSync(process.argv[1]) === realpathSync(fileURLToPath(import.meta.url));
 
-if (invokedDirectly) process.exit(main(process.argv.slice(2)));
+if (invokedDirectly) process.exit(await run(process.argv.slice(2)));

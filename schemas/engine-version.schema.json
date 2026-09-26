@@ -5,10 +5,21 @@
   "description": "The flags one engine version accepts, with their defaults. Drives canonicalization (defaults are dropped) and the config explorer. File: engines/<engine-id>/versions/<version>.json",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_version", "engine_id", "version", "extraction_method", "params"],
+  "required": [
+    "schema_version",
+    "engine_id",
+    "version",
+    "extraction_method",
+    "params"
+  ],
   "properties": {
-    "schema_version": { "type": "integer", "const": 1 },
-    "engine_id": { "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/id" },
+    "schema_version": {
+      "type": "integer",
+      "const": 1
+    },
+    "engine_id": {
+      "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/id"
+    },
     "version": {
       "type": "string",
       "minLength": 1,
@@ -16,23 +27,37 @@
     },
     "released": {
       "oneOf": [
-        { "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/iso_date" },
-        { "type": "null" }
+        {
+          "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/iso_date"
+        },
+        {
+          "type": "null"
+        }
       ]
     },
     "extraction_method": {
       "type": "string",
-      "enum": ["hand-seeded", "help", "argparse", "docs", "generated"]
+      "enum": [
+        "hand-seeded",
+        "help",
+        "argparse",
+        "docs",
+        "generated"
+      ]
     },
     "extracted_at": {
       "oneOf": [
-        { "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/iso_datetime" },
-        { "type": "null" }
+        {
+          "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/iso_datetime"
+        },
+        {
+          "type": "null"
+        }
       ]
     },
     "source": {
       "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/nullable_string",
-      "description": "Where the flags came from — a docs URL, a container image, a command."
+      "description": "Where the flags came from \u2014 a docs URL, a container image, a command."
     },
     "notes": {
       "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/nullable_string"
@@ -42,7 +67,11 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["name", "type", "default"],
+        "required": [
+          "name",
+          "type",
+          "default"
+        ],
         "properties": {
           "name": {
             "type": "string",
@@ -51,16 +80,43 @@
           },
           "type": {
             "type": "string",
-            "enum": ["bool", "int", "float", "str", "enum", "json", "list", "path"]
+            "enum": [
+              "bool",
+              "int",
+              "float",
+              "str",
+              "enum",
+              "json",
+              "list",
+              "path"
+            ]
           },
           "default": {
             "description": "The value the engine uses when the flag is absent. Anything equal to this is dropped from the fingerprint. null means \"no default / unset\".",
-            "type": ["string", "number", "boolean", "object", "array", "null"]
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "object",
+              "array",
+              "null"
+            ]
           },
           "choices": {
             "oneOf": [
-              { "type": "array", "items": { "type": ["string", "number", "boolean"] } },
-              { "type": "null" }
+              {
+                "type": "array",
+                "items": {
+                  "type": [
+                    "string",
+                    "number",
+                    "boolean"
+                  ]
+                }
+              },
+              {
+                "type": "null"
+              }
             ]
           },
           "range": {
@@ -69,31 +125,103 @@
                 "type": "array",
                 "minItems": 2,
                 "maxItems": 2,
-                "items": { "type": ["number", "null"] }
+                "items": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                }
               },
-              { "type": "null" }
+              {
+                "type": "null"
+              }
             ]
           },
           "help": {
             "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/nullable_string"
           },
-          "aliases": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+          "aliases": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "uniqueItems": true
+          },
           "group": {
             "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/nullable_string"
           },
           "impact": {
             "oneOf": [
-              { "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/impact" },
-              { "type": "null" }
+              {
+                "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/impact"
+              },
+              {
+                "type": "null"
+              }
             ]
           },
           "env": {
             "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/nullable_string",
             "description": "Environment variable that sets the same thing, if any."
           },
-          "deprecated": { "type": "boolean", "default": false }
+          "deprecated": {
+            "type": "boolean",
+            "default": false
+          }
+        }
+      }
+    },
+    "distribution": {
+      "type": "string",
+      "enum": [
+        "upstream",
+        "fork"
+      ],
+      "description": "upstream = a published release of the engine, where the version string identifies the build. fork = a build carrying patches the version string does not name; source_repo and source_ref are then required, and results must declare engine.build."
+    },
+    "source_repo": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "For a fork: the repository the build was made from, e.g. github.com/blazux/qwen3.8-Flash-DGX."
+    },
+    "source_ref": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "For a fork: the commit or tag in source_repo that was built. A version string like 0.1.dev20073+g8e685d198 names the UPSTREAM commit branched from, not this."
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "distribution": {
+            "const": "fork"
+          }
+        },
+        "required": [
+          "distribution"
+        ]
+      },
+      "then": {
+        "required": [
+          "source_repo",
+          "source_ref"
+        ],
+        "properties": {
+          "source_repo": {
+            "type": "string",
+            "minLength": 1
+          },
+          "source_ref": {
+            "type": "string",
+            "minLength": 1
+          }
         }
       }
     }
-  }
+  ]
 }

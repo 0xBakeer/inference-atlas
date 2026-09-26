@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "id": "eval-longgen-integrity-v1",
+  "name": "Long-generation token integrity v1",
+  "kind": "eval",
+  "description": "Runs all 36 items of eval-longgen-integrity-v1 at temperature 0, concurrency 1, with a 3000-token output budget, and reports the share of generations that came back with no spliced token. Each item hands the model a 20-25k-character synthetic JavaScript project and asks for one complete new module of 150 to 290 lines that includes a hand-written numeric table and a call site fed from its rows (the two shapes that carry most splices in the motivating generations), so the measurement is what happens to a decode path over one to two thousand consecutive tokens. Concurrency 1 is part of the configuration under test, not a convenience: the failure this exists for was observed on a single sequence, and batching changes the scheduler, the KV-cache layout and the attention path it runs through. Pinned together with the dataset: a change to either means a new -v2 id.",
+  "dataset_id": "eval-longgen-integrity-v1",
+  "params": {
+    "concurrency": 1,
+    "num_requests": 36,
+    "input_tokens": null,
+    "output_tokens": 3000,
+    "seed": 42,
+    "warmup_requests": 0,
+    "temperature": 0,
+    "repeat": 1,
+    "timeout_s": 900,
+    "reasoning": "default"
+  },
+  "sweep": null,
+  "eval": {
+    "suite": "longgen-integrity",
+    "scorer": "integrity",
+    "pass_threshold": null,
+    "max_output_tokens": 3000,
+    "categories": [
+      "models",
+      "systems",
+      "ui",
+      "utils"
+    ],
+    "notes": "accuracy here is the share of generations containing NO spliced token, not the share of correct programs. A model that writes wrong but well-formed code scores 1.0; a model that writes a perfect module with one `carrierhed` in it scores 0 for that item. The scorer masks strings, comments and regex literals, then reports only five shapes: a digit-initial token that is not a valid numeric literal (`128Pin`), an undefined identifier that is a defined name — down to a single letter — plus 2-6 lower-case letters (`carrierhed`, `zhed`), a property name welded from a property the file itself defines (`ship.bobAmporton` with `bobAmp:` in the file), an undefined bare word or dotted fragment between two numeric literals in a comma-separated list (`[6, visible, 0]`, `[2, 0, .src, 4]`), and any non-ASCII character in code (`[2, 0, 惯, 4]`). A welded name that recurs counts once per generation. Ordinary undefined identifiers are not counted. Calibrated against the engine's own logprobs on 48 generations of the motivating build: the scorer finds 53 and 47 splices where the top-5 logprobs show 54 and 47 junk-argmax steps. A model that truncates before finishing the module still gets its partial output scored — a short generation is a weaker measurement, not a failed one — so read avg_output_tokens alongside the accuracy."
+  },
+  "metrics_required": [
+    "accuracy",
+    "success_rate",
+    "avg_latency_ms"
+  ],
+  "immutable": true,
+  "created": "2026-09-02",
+  "supersedes": null,
+  "notes": "accuracy and avg_latency_ms live in the result's `scores` block, not in `metrics`; success_rate is the share of requests that completed at all and is independent of whether the generations were intact. A clean run of 36 is NOT proof of absence. The rate is strongly content-dependent: on the build that motivated this workload, the engine's own logprobs show one spliced token per ~750 output tokens (23-24 of 24 generations hit) on a 25k-character real project, while this synthetic dataset caught 2 of 36 without the numeric-table requirement and 1 of 36 with it (three splices in ~82k output tokens, same ghost vocabulary): the rate is set by the context the model reads, so accuracy here is a floor on the problem. Report the run; do not report the absence, and read the splices in scores.items[].predicted rather than the accuracy alone. A model that thinks by default must have its thinking switched off in the packet's `request` block (`atlas-bench packet --request 'chat_template_kwargs={\"thinking\": false}'`, or whatever the engine's template expects): the 3000-token budget is the output budget, and a run that spends it on a thought block comes back with 36 items scored `no code in response` and an accuracy of 0.0 that says nothing about splices. The `reasoning: \"default\"` param deliberately leaves the engine's reasoning setting alone, so this is the packet's job, not the workload's. Two follow-ups are deliberately left out of this v1: the runner has no per-workload `extra_body`, so `return_token_ids` cannot be requested here without a harness change plus a retry-on-400 path for engines that reject unknown fields, and the result schema's `scores.avg_output_tokens` is not listed in metrics_required because kind=eval fixes that list at accuracy/success_rate/avg_latency_ms. Both are worth a v2 once the harness supports them; the runner already records avg_output_tokens in `scores`."
+}

@@ -1,0 +1,1343 @@
+{
+  "schema_version": 1,
+  "run_id": "a3b46e9ee9b29ebc--eval-security-v2--80b156",
+  "config_id": "a3b46e9ee9b29ebc",
+  "cell_id": "4ab17fea2273",
+  "workload_id": "eval-security-v2",
+  "kind": "eval",
+  "engine": {
+    "id": "sglang",
+    "version": "0.0.0.dev1+g079d40460",
+    "commit": null,
+    "build": "github.com/inclusionAI/sglang@079d404",
+    "container": "lmsysorg/sglang:v0.0.0.dev1+g079d40460-cu126",
+    "install_method": "source"
+  },
+  "model": {
+    "id": "inclusionAI/Ling-3.0-flash",
+    "quant_id": "mxfp4",
+    "hf_id": "inclusionAI/Ling-3.0-flash",
+    "revision": null,
+    "dtype": "auto",
+    "local_path": null
+  },
+  "hardware": {
+    "id": "nvidia-gb10-dgx-spark",
+    "count": 1,
+    "driver": "580.173.02",
+    "cuda": "13.0",
+    "host": {
+      "cpu": "Cortex-A725",
+      "cpu_cores": 20,
+      "ram_gb": 121.6,
+      "os": "Ubuntu 24.04.4 LTS",
+      "kernel": "6.17.0-1029-nvidia",
+      "arch": "aarch64"
+    },
+    "fingerprint": "sha256:52ea2bdd513719724db88c162b6cc2c9fb4e5b67e02dbe41b9de00687acefb91",
+    "captured": {
+      "nvidia_smi": {
+        "driver": "580.173.02",
+        "cuda": "13.0",
+        "products": [
+          "NVIDIA GB10"
+        ],
+        "fb_memory_total_mib": 0
+      },
+      "lscpu": {
+        "architecture": "aarch64",
+        "cpus": "20",
+        "vendor_id": "ARM",
+        "model_name": "Cortex-A725",
+        "cores_per_socket": "10",
+        "sockets": "1",
+        "cpu_max_mhz": "2808.0000"
+      }
+    }
+  },
+  "args": {
+    "moe-runner-backend": "humming",
+    "speculative-algorithm": "DSPARK",
+    "speculative-draft-model-path": "inclusionAI/Ling-3.0-flash-dspark",
+    "enable-linear-replayssm-spec": true,
+    "linear-replayssm-cache-len": 32,
+    "mem-fraction-static": 0.75,
+    "max-running-requests": 1,
+    "max-mamba-cache-size": 64,
+    "chunked-prefill-size": 8192,
+    "max-prefill-tokens": 16384,
+    "page-size": 64,
+    "attention-backend": "flashinfer",
+    "fp8-gemm-backend": "cutlass",
+    "flashinfer-mxfp4-moe-precision": "default",
+    "disable-shared-experts-fusion": true,
+    "cuda-graph-backend-decode": "full",
+    "cuda-graph-max-bs-decode": 1,
+    "cuda-graph-backend-prefill": "disabled",
+    "reasoning-parser": "deepseek-r1",
+    "tool-call-parser": "qwen25",
+    "trust-remote-code": true,
+    "fp8-lm-head": "online",
+    "default-chat-template-kwargs": {
+      "enable_thinking": true
+    }
+  },
+  "args_canonical": "@build=github.com/inclusionai/sglang@079d404;@dtype=auto;@quant=mxfp4;attention-backend=flashinfer;chunked-prefill-size=8192;cuda-graph-backend-decode=full;cuda-graph-backend-prefill=disabled;cuda-graph-max-bs-decode=1;default-chat-template-kwargs={\"enable_thinking\":true};disable-shared-experts-fusion=true;enable-linear-replayssm-spec=true;fp8-gemm-backend=cutlass;fp8-lm-head=online;linear-replayssm-cache-len=32;max-mamba-cache-size=64;max-running-requests=1;mem-fraction-static=0.75;moe-runner-backend=humming;page-size=64;reasoning-parser=deepseek-r1;speculative-algorithm=DSPARK;speculative-draft-model-path=inclusionAI/Ling-3.0-flash-dspark;tool-call-parser=qwen25;trust-remote-code=true",
+  "serve_command": null,
+  "workload": {
+    "id": "eval-security-v2",
+    "resolved_params": {
+      "dataset_id": "eval-security-v2",
+      "suite": "security",
+      "scorer": "mc",
+      "items": 111,
+      "concurrency": 4,
+      "max_output_tokens": 4096,
+      "timeout_s": 300,
+      "temperature": 0,
+      "reasoning": "default",
+      "dataset_categories": null,
+      "dataset_target_tokens": null,
+      "pass_threshold": null,
+      "seed": 42
+    }
+  },
+  "metrics": {
+    "requests_total": 111,
+    "requests_ok": 111,
+    "requests_failed": 0,
+    "success_rate": 1,
+    "duration_s": 388.372,
+    "input_tokens_total": 12852,
+    "output_tokens_total": 34686,
+    "e2e_ms": {
+      "mean": 13785.858,
+      "p50": 10160.469,
+      "p90": 34783.536,
+      "p95": 41113.969,
+      "p99": 46069.434,
+      "min": 4826.749,
+      "max": 46180.303
+    },
+    "vram_peak_gb": null,
+    "ram_peak_gb": 115.775,
+    "power_avg_w": 44.22,
+    "power_peak_w": 51.66,
+    "energy_wh": 4.7694,
+    "gpu_util_avg_pct": 95.88,
+    "temp_max_c": 70,
+    "thermal_throttle_detected": false
+  },
+  "scores": {
+    "suite": "security",
+    "total": 111,
+    "correct": 108,
+    "accuracy": 0.972973,
+    "success_rate": 1,
+    "by_category": {
+      "concepts": {
+        "total": 19,
+        "correct": 19
+      },
+      "crypto": {
+        "total": 21,
+        "correct": 20
+      },
+      "forensics": {
+        "total": 17,
+        "correct": 15
+      },
+      "incident_judgment": {
+        "total": 12,
+        "correct": 12
+      },
+      "network": {
+        "total": 22,
+        "correct": 22
+      },
+      "web_security": {
+        "total": 20,
+        "correct": 20
+      }
+    },
+    "by_difficulty": {
+      "easy": {
+        "total": 15,
+        "correct": 15
+      },
+      "hard": {
+        "total": 31,
+        "correct": 29
+      },
+      "medium": {
+        "total": 65,
+        "correct": 64
+      }
+    },
+    "avg_output_tokens": 312.49,
+    "avg_latency_ms": 13785.86,
+    "failures": 0,
+    "items": [
+      {
+        "id": "sec2-0001",
+        "correct": true,
+        "predicted": "sandbox",
+        "expected": "sandbox",
+        "latency_ms": 4826.749,
+        "output_tokens": 447,
+        "category": "crypto",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sec2-0002",
+        "correct": true,
+        "predicted": "142",
+        "expected": "142",
+        "latency_ms": 8265.096,
+        "output_tokens": 332,
+        "category": "crypto",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0003",
+        "correct": true,
+        "predicted": "10.45.120.0",
+        "expected": "10.45.120.0",
+        "latency_ms": 15206.253,
+        "output_tokens": 710,
+        "category": "network",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sec2-0004",
+        "correct": true,
+        "predicted": "68",
+        "expected": "68",
+        "latency_ms": 16689.685,
+        "output_tokens": 131,
+        "category": "crypto",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0005",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 14774.954,
+        "output_tokens": 181,
+        "category": "web_security",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sec2-0006",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 12344.392,
+        "output_tokens": 53,
+        "category": "web_security",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0007",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 9673.749,
+        "output_tokens": 218,
+        "category": "incident_judgment",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0008",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 10246.932,
+        "output_tokens": 91,
+        "category": "forensics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0009",
+        "correct": true,
+        "predicted": "10.25.55.255",
+        "expected": "10.25.55.255",
+        "latency_ms": 15489.433,
+        "output_tokens": 691,
+        "category": "network",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sec2-0010",
+        "correct": true,
+        "predicted": "11",
+        "expected": "11",
+        "latency_ms": 29126.301,
+        "output_tokens": 1546,
+        "category": "crypto",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sec2-0011",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 25806.141,
+        "output_tokens": 54,
+        "category": "network",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0012",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 25071.493,
+        "output_tokens": 67,
+        "category": "incident_judgment",
+        "difficulty": "easy"
+      },
+      {
+        "id": "sec2-0013",
+        "correct": true,
+        "predicted": "30",
+        "expected": "30",
+        "latency_ms": 17978.58,
+        "output_tokens": 55,
+        "category": "network",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0014",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 10343.618,
+        "output_tokens": 398,
+        "category": "web_security",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0015",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 11185.967,
+        "output_tokens": 127,
+        "category": "forensics",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sec2-0016",
+        "correct": true,
+        "predicted": "126",
+        "expected": "126",
+        "latency_ms": 10945.987,
+        "output_tokens": 60,
+        "category": "network",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0017",
+        "correct": true,
+        "predicted": "phishing",
+        "expected": "phishing",
+        "latency_ms": 13415.705,
+        "output_tokens": 381,
+        "category": "crypto",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sec2-0018",
+        "correct": true,
+        "predicted": "230",
+        "expected": "230",
+        "latency_ms": 9858.996,
+        "output_tokens": 369,
+        "category": "crypto",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0019",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 10668.15,
+        "output_tokens": 170,
+        "category": "web_security",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sec2-0020",
+        "correct": true,
+        "predicted": "firewall",
+        "expected": "firewall",
+        "latency_ms": 14680.793,
+        "output_tokens": 478,
+        "category": "crypto",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sec2-0021",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 12957.529,
+        "output_tokens": 112,
+        "category": "forensics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0022",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 12037.39,
+        "output_tokens": 141,
+        "category": "web_security",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0023",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 10929.435,
+        "output_tokens": 106,
+        "category": "web_security",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0024",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 8143.173,
+        "output_tokens": 157,
+        "category": "concepts",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0025",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 7512.154,
+        "output_tokens": 79,
+        "category": "concepts",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0026",
+        "correct": true,
+        "predicted": "02:37:04",
+        "expected": "02:37:04",
+        "latency_ms": 6318.366,
+        "output_tokens": 121,
+        "category": "forensics",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sec2-0027",
+        "correct": true,
+        "predicted": "2022-06-28 14:45:38",
+        "expected": "2022-06-28 14:45:38",
+        "latency_ms": 36133.204,
+        "output_tokens": 3280,
+        "category": "forensics",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sec2-0028",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 34783.536,
+        "output_tokens": 56,
+        "category": "forensics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0029",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 36268.687,
+        "output_tokens": 148,
+        "category": "web_security",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0030",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 36492.179,
+        "output_tokens": 81,
+        "category": "incident_judgment",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0031",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 6542.831,
+        "output_tokens": 88,
+        "category": "web_security",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0032",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 6898.448,
+        "output_tokens": 103,
+        "category": "web_security",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0033",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 5220.765,
+        "output_tokens": 52,
+        "category": "incident_judgment",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0034",
+        "correct": false,
+        "predicted": "1. The Unix timestamp is 1691146295 seconds.\n2. Unix time starts from 1970-01-01 00:00:00 UTC.\n3. I need to convert 1691146295 seconds to a UTC date and time.\n4. Let's calculate the number of days: 1691146295 / 86400 = 19573.452488... days.\n5. 19573 days from 1970-01-01.\n6. Let's find the year.\n   - 1970 to 2022 is 52 years.\n   - Leap years between 1970 and 2022: 1972, 1976, 1980, 1984, 1988, 1992, 1996, 2000, 2004, 2008, 2012, 2016, 2020. (13 leap years)\n   - Total days from 1970 to 2022: 52 * ",
+        "expected": "2023-08-04 10:51:35",
+        "latency_ms": 38970.569,
+        "output_tokens": 4096,
+        "category": "forensics",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sec2-0035",
+        "correct": true,
+        "predicted": "235",
+        "expected": "235",
+        "latency_ms": 46119.648,
+        "output_tokens": 932,
+        "category": "crypto",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sec2-0036",
+        "correct": true,
+        "predicted": "02:38:57",
+        "expected": "02:38:57",
+        "latency_ms": 46180.303,
+        "output_tokens": 121,
+        "category": "forensics",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sec2-0037",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 45617.508,
+        "output_tokens": 21,
+        "category": "network",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0038",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 12587.782,
+        "output_tokens": 209,
+        "category": "crypto",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0039",
+        "correct": true,
+        "predicted": "28",
+        "expected": "28",
+        "latency_ms": 5185.558,
+        "output_tokens": 89,
+        "category": "concepts",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sec2-0040",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 5004.373,
+        "output_tokens": 93,
+        "category": "network",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0041",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 7438.843,
+        "output_tokens": 289,
+        "category": "network",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sec2-0042",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 6329.265,
+        "output_tokens": 65,
+        "category": "forensics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0043",
+        "correct": false,
+        "predicted": "1. The Unix timestamp is 1694679636 seconds.\n2. Unix time starts from 1970-01-01 00:00:00 UTC.\n3. Let's calculate the date.\n   - 1694679636 seconds.\n   - Days = 1694679636 / 86400 = 19614.3476...\n   - 19614 days from 1970-01-01.\n   - Let's use known reference points or calculate step by step.\n   - 1970 to 2023:\n     - 1970-2022 is 53 years.\n     - Leap years between 1970 and 2022: 1972, 1976, 1980, 1984, 1988, 1992, 1996, 2000, 2004, 2008, 2012, 2016, 2020. (13 leap years)\n     - Total days from",
+        "expected": "2023-09-14 08:20:36",
+        "latency_ms": 43485.49,
+        "output_tokens": 4096,
+        "category": "forensics",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sec2-0044",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 42783.318,
+        "output_tokens": 22,
+        "category": "concepts",
+        "difficulty": "easy"
+      },
+      {
+        "id": "sec2-0045",
+        "correct": true,
+        "predicted": "118",
+        "expected": "118",
+        "latency_ms": 40887.18,
+        "output_tokens": 83,
+        "category": "crypto",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0046",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 41340.759,
+        "output_tokens": 108,
+        "category": "network",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0047",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 6572.209,
+        "output_tokens": 256,
+        "category": "crypto",
+        "difficulty": "easy"
+      },
+      {
+        "id": "sec2-0048",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 6787.545,
+        "output_tokens": 48,
+        "category": "network",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0049",
+        "correct": false,
+        "predicted": "fierce",
+        "expected": "firewall",
+        "latency_ms": 11840.397,
+        "output_tokens": 632,
+        "category": "crypto",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0050",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 12303.923,
+        "output_tokens": 158,
+        "category": "concepts",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0051",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 9832.109,
+        "output_tokens": 38,
+        "category": "incident_judgment",
+        "difficulty": "easy"
+      },
+      {
+        "id": "sec2-0052",
+        "correct": true,
+        "predicted": "352",
+        "expected": "352",
+        "latency_ms": 10408.215,
+        "output_tokens": 96,
+        "category": "crypto",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0053",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 8008.827,
+        "output_tokens": 251,
+        "category": "web_security",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0054",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 7621.673,
+        "output_tokens": 89,
+        "category": "web_security",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0055",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 7904.119,
+        "output_tokens": 112,
+        "category": "concepts",
+        "difficulty": "easy"
+      },
+      {
+        "id": "sec2-0056",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 7889.938,
+        "output_tokens": 80,
+        "category": "concepts",
+        "difficulty": "easy"
+      },
+      {
+        "id": "sec2-0057",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 8371.937,
+        "output_tokens": 213,
+        "category": "web_security",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sec2-0058",
+        "correct": true,
+        "predicted": "cipher",
+        "expected": "cipher",
+        "latency_ms": 9770.182,
+        "output_tokens": 361,
+        "category": "crypto",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sec2-0059",
+        "correct": true,
+        "predicted": "308915776",
+        "expected": "308915776",
+        "latency_ms": 10840.139,
+        "output_tokens": 194,
+        "category": "concepts",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0060",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 11457.805,
+        "output_tokens": 123,
+        "category": "forensics",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sec2-0061",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 10404.446,
+        "output_tokens": 307,
+        "category": "network",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sec2-0062",
+        "correct": true,
+        "predicted": "1083",
+        "expected": "1083",
+        "latency_ms": 17468.291,
+        "output_tokens": 1075,
+        "category": "crypto",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sec2-0063",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 16151.221,
+        "output_tokens": 57,
+        "category": "forensics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0064",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 15962.532,
+        "output_tokens": 147,
+        "category": "concepts",
+        "difficulty": "easy"
+      },
+      {
+        "id": "sec2-0065",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 13605.832,
+        "output_tokens": 50,
+        "category": "web_security",
+        "difficulty": "easy"
+      },
+      {
+        "id": "sec2-0066",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 5482.389,
+        "output_tokens": 114,
+        "category": "forensics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0067",
+        "correct": true,
+        "predicted": "malware",
+        "expected": "malware",
+        "latency_ms": 7428.127,
+        "output_tokens": 279,
+        "category": "crypto",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0068",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 6440.664,
+        "output_tokens": 42,
+        "category": "concepts",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0069",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 9141.878,
+        "output_tokens": 234,
+        "category": "incident_judgment",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0070",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 8116.155,
+        "output_tokens": 65,
+        "category": "network",
+        "difficulty": "easy"
+      },
+      {
+        "id": "sec2-0071",
+        "correct": true,
+        "predicted": "7",
+        "expected": "7",
+        "latency_ms": 17207.086,
+        "output_tokens": 1461,
+        "category": "crypto",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sec2-0072",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 20240.178,
+        "output_tokens": 229,
+        "category": "concepts",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0073",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 19729.059,
+        "output_tokens": 175,
+        "category": "web_security",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0074",
+        "correct": true,
+        "predicted": "66",
+        "expected": "66",
+        "latency_ms": 19830.523,
+        "output_tokens": 95,
+        "category": "concepts",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sec2-0075",
+        "correct": true,
+        "predicted": "510",
+        "expected": "510",
+        "latency_ms": 8546.622,
+        "output_tokens": 59,
+        "category": "network",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0076",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 8161.479,
+        "output_tokens": 224,
+        "category": "incident_judgment",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0077",
+        "correct": true,
+        "predicted": "malware",
+        "expected": "malware",
+        "latency_ms": 10174.962,
+        "output_tokens": 496,
+        "category": "crypto",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sec2-0078",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 9743.001,
+        "output_tokens": 50,
+        "category": "network",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0079",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 10149.325,
+        "output_tokens": 89,
+        "category": "network",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0080",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 10392.198,
+        "output_tokens": 201,
+        "category": "web_security",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0081",
+        "correct": true,
+        "predicted": "105",
+        "expected": "105",
+        "latency_ms": 7345.026,
+        "output_tokens": 148,
+        "category": "concepts",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sec2-0082",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 9313.948,
+        "output_tokens": 277,
+        "category": "network",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sec2-0083",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 10160.469,
+        "output_tokens": 123,
+        "category": "web_security",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0084",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 7264.523,
+        "output_tokens": 49,
+        "category": "network",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0085",
+        "correct": true,
+        "predicted": "1022",
+        "expected": "1022",
+        "latency_ms": 6289.585,
+        "output_tokens": 62,
+        "category": "network",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0086",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 7630.181,
+        "output_tokens": 244,
+        "category": "concepts",
+        "difficulty": "easy"
+      },
+      {
+        "id": "sec2-0087",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 6332.504,
+        "output_tokens": 45,
+        "category": "network",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0088",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 6687.896,
+        "output_tokens": 79,
+        "category": "network",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0089",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 7596.586,
+        "output_tokens": 87,
+        "category": "web_security",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0090",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 5484.452,
+        "output_tokens": 171,
+        "category": "concepts",
+        "difficulty": "easy"
+      },
+      {
+        "id": "sec2-0091",
+        "correct": true,
+        "predicted": "10.169.14.0",
+        "expected": "10.169.14.0",
+        "latency_ms": 6173.089,
+        "output_tokens": 110,
+        "category": "network",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sec2-0092",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 8578.826,
+        "output_tokens": 210,
+        "category": "concepts",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0093",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 8003.803,
+        "output_tokens": 64,
+        "category": "incident_judgment",
+        "difficulty": "easy"
+      },
+      {
+        "id": "sec2-0094",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 9871.14,
+        "output_tokens": 263,
+        "category": "incident_judgment",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sec2-0095",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 10431.233,
+        "output_tokens": 139,
+        "category": "incident_judgment",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0096",
+        "correct": true,
+        "predicted": "8",
+        "expected": "8",
+        "latency_ms": 10295.055,
+        "output_tokens": 344,
+        "category": "forensics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0097",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 9691.019,
+        "output_tokens": 28,
+        "category": "crypto",
+        "difficulty": "easy"
+      },
+      {
+        "id": "sec2-0098",
+        "correct": true,
+        "predicted": "1656",
+        "expected": "1656",
+        "latency_ms": 8344.773,
+        "output_tokens": 252,
+        "category": "crypto",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0099",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 8264.804,
+        "output_tokens": 128,
+        "category": "web_security",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0100",
+        "correct": true,
+        "predicted": "7",
+        "expected": "7",
+        "latency_ms": 7716.54,
+        "output_tokens": 298,
+        "category": "forensics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0101",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 8133.946,
+        "output_tokens": 66,
+        "category": "web_security",
+        "difficulty": "easy"
+      },
+      {
+        "id": "sec2-0102",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 6549.146,
+        "output_tokens": 49,
+        "category": "concepts",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0103",
+        "correct": true,
+        "predicted": "10.7.189.255",
+        "expected": "10.7.189.255",
+        "latency_ms": 11951.924,
+        "output_tokens": 668,
+        "category": "network",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sec2-0104",
+        "correct": true,
+        "predicted": "10000",
+        "expected": "10000",
+        "latency_ms": 11812.926,
+        "output_tokens": 246,
+        "category": "concepts",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0105",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 13051.513,
+        "output_tokens": 147,
+        "category": "forensics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0106",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 13387.7,
+        "output_tokens": 74,
+        "category": "concepts",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0107",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 7054.794,
+        "output_tokens": 56,
+        "category": "forensics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0108",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 5324.077,
+        "output_tokens": 42,
+        "category": "incident_judgment",
+        "difficulty": "easy"
+      },
+      {
+        "id": "sec2-0109",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 6233.934,
+        "output_tokens": 179,
+        "category": "web_security",
+        "difficulty": "medium"
+      },
+      {
+        "id": "sec2-0110",
+        "correct": true,
+        "predicted": "backdoor",
+        "expected": "backdoor",
+        "latency_ms": 10071.091,
+        "output_tokens": 448,
+        "category": "crypto",
+        "difficulty": "hard"
+      },
+      {
+        "id": "sec2-0111",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 12431.478,
+        "output_tokens": 183,
+        "category": "incident_judgment",
+        "difficulty": "medium"
+      }
+    ]
+  },
+  "failures": [],
+  "conditions": null,
+  "gotchas": [],
+  "derived": {
+    "cost_per_1m_output_tokens_usd": null,
+    "tokens_per_watt": null,
+    "tok_s_per_gb_bandwidth": null,
+    "bandwidth_efficiency": null,
+    "memory_headroom_gb": null
+  },
+  "raw": {
+    "harness": "atlas-bench",
+    "harness_version": "0.1.0",
+    "sha256": "c890e0f2e3b9c749882d02e5b05b7c253875f4971be90ba5d31132168cfe53be",
+    "payload_path": null,
+    "payload": {
+      "scorer": "mc",
+      "scorers_used": [
+        "exact",
+        "mc",
+        "numeric"
+      ],
+      "engine_endpoint": {
+        "attached": true,
+        "base_url": "http://127.0.0.1:8000/v1",
+        "served_model_id": "ling-3.0-flash",
+        "advertised_models": [
+          "ling-3.0-flash"
+        ]
+      }
+    },
+    "truncated": false
+  },
+  "provenance": {
+    "github_login": "0xBakeer",
+    "github_user_id": 17404809,
+    "started_at": "2026-09-09T23:04:39Z",
+    "finished_at": "2026-09-09T23:11:07Z",
+    "submitted_at": null,
+    "commit": null,
+    "pr": null,
+    "method": "atlas-bench",
+    "agent": null,
+    "notes": "Served with the ling3-flash-dgx-spark recipe (49b6c9c), PROFILE=humming-dspark, thinking on (server default via --default-chat-template-kwargs): inclusionAI/Ling-3.0-flash-fp4 (MXFP4 routed experts, FP8 attention/shared/router) with --moe-runner-backend humming, online FP8 LM head (SGLANG_ENABLE_FP8_LM_HEAD=1), DSpark speculative decoding with inclusionAI/Ling-3.0-flash-dspark and the KDA ReplaySSM exact fold (--enable-linear-replayssm-spec, ring 32), context 262144 native (no YaRN), mem-fraction 0.75, max-running 1, page 64, decode cuda graph bs 1, prefill cuda graph disabled, FlashInfer autotune off with precompiled CUTLASS MXFP4 kernels. Single request at a time on every row."
+  },
+  "verification": {
+    "level": "self-reported",
+    "reproduced_by": [],
+    "flags": []
+  }
+}

@@ -1,6 +1,6 @@
 import { html, nothing, type PropertyValues, type TemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import { renderServeCommand } from '@atlas/core';
+import { renderServeCommand, resolveConditions } from '@atlas/core';
 import type { EngineVersion, ResultRecord, SweepAxis, SweepPoint } from '@atlas/core';
 import { addButton } from '../components/add-modal.js';
 import '../components/chart.js';
@@ -20,6 +20,8 @@ import {
 } from '../components/sweep-chart.js';
 import {
   codeBlock,
+  condMeasured,
+  condTag,
   copyBtn,
   deltaTag,
   emptyState,
@@ -42,13 +44,13 @@ import {
 import type { IndexRow } from '../data/types.js';
 import { href, modelHref, navigate } from '../router.js';
 import { store } from '../store.js';
-import { armDiff, armLabel, cellArms, prefillPoints } from '../util/arms.js';
+import { armDiff, armLabel, cellArms, prefillPoints } from '@atlas/core';
 import { cssVar, seriesColor } from '../util/colors.js';
 import { absDateTime } from '../util/dates.js';
-import { metricDelta } from '../util/diff.js';
-import { fmtGB, fmtInt, fmtMs, fmtNum, fmtPct, fmtTokS, fmtW, shortSha } from '../util/format.js';
-import { blockCards, headlineMetric } from '../util/metrics.js';
-import { requestSamples } from '../util/requests.js';
+import { metricDelta } from '@atlas/core';
+import { fmtGB, fmtInt, fmtMs, fmtNum, fmtPct, fmtTokS, fmtW, shortSha } from '@atlas/core';
+import { blockCards, headlineMetric } from '@atlas/core';
+import { requestSamples } from '@atlas/core';
 import { fmtDefault, isDefault } from '../components/param-form.js';
 import { modelRefFor } from './explore-view.js';
 import { ViewElement } from './view-base.js';
@@ -275,6 +277,13 @@ export class AtlasRunView extends ViewElement {
                     'user id',
                     prov.github_user_id ?? html`<span class="faint">resolved by CI</span>`,
                   ],
+                  (() => {
+                    const c = resolveConditions(rec);
+                    return ['conditions', html`${condTag(c)}${condMeasured(c)}`] as [
+                      string,
+                      unknown,
+                    ];
+                  })(),
                 ])}
               </div>
             </div>

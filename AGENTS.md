@@ -125,6 +125,13 @@ Full shape: `schemas/result.schema.json` and `docs/SPEC.md` §4. The parts you m
   — it is a Hugging Face repo id, so it spends two directory levels.
 - `args` is what you actually passed. Not what you meant to pass, not what the packet asked
   for if you had to deviate.
+- `request` is what you sent with every request — the packet's `request` block. Anything
+  that is not the harness default belongs here, `chat_template_kwargs
+{"enable_thinking": false}` above all: it folds into `config_id`, so a run with a model's
+  thinking switched off can never be confused with one that left it on. If a setting reached
+  the server through a proxy rather than the request body, it still goes here, plus a gotcha
+  naming the proxy. Two rows for the same cell and workload that differ only in the file name
+  are not a measurement, they are a puzzle.
 - Metrics you did not measure stay `null`. A `null` is information; a plausible-looking
   invented number is not. Filling a metric you did not measure is the single worst thing you
   can do in this repository.
@@ -140,6 +147,18 @@ find out which, do not paper over it.
 
 Adding hardware, a model, a quantization or an engine is a PR that adds a file. It is never a
 code change. All of these live under CC-BY-4.0 (see `DATA_LICENSE`).
+
+**Getting the credit for it.** A registry file carries no login, so the leaderboard reads the
+author address of the commit that added it. A GitHub noreply address
+(`1234+you@users.noreply.github.com`) already spells your login and needs nothing further. If
+you commit under your own address, add it to `site/identities.json` in the same pull request:
+
+```json
+{ "login": "your-login", "emails": ["you@yourdomain.com"], "verified_by": [123] }
+```
+
+`verified_by` is the pull request the mapping can be checked against — this one will do. You
+may only add or change the entry for your own login; validate rejects anything else.
 
 ### New hardware — `hardware/<id>.json`
 

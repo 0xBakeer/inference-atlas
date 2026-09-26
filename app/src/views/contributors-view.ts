@@ -15,11 +15,12 @@ import {
   when,
 } from '../components/ui.js';
 import type { ContributorRow } from '../data/types.js';
+import { loginKey } from '@atlas/core';
 import { href } from '../router.js';
 import { store } from '../store.js';
 import { absDate } from '../util/dates.js';
-import { fmtInt, fmtNum } from '../util/format.js';
-import { headlineMetric } from '../util/metrics.js';
+import { fmtInt, fmtNum } from '@atlas/core';
+import { headlineMetric } from '@atlas/core';
 import { ViewElement } from './view-base.js';
 
 interface Badge {
@@ -134,22 +135,22 @@ export class AtlasContributorsView extends ViewElement {
               </div>`,
             })
           : html`${this.leaderboardCharts(rows)}
-            <div class="table-wrap">
-              <table class="table cards">
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>contributor</th>
-                    <th class="num">points</th>
-                    <th class="num">runs</th>
-                    <th class="num">cells filled</th>
-                    <th class="num">reproductions</th>
-                    <th>hardware</th>
-                    <th>first · last</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${rows.map(
+              <div class="table-wrap">
+                <table class="table cards">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>contributor</th>
+                      <th class="num">points</th>
+                      <th class="num">runs</th>
+                      <th class="num">cells filled</th>
+                      <th class="num">reproductions</th>
+                      <th>hardware</th>
+                      <th>first · last</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${rows.map(
                     (c, i) =>
                       html`<tr
                         class="lb-row clickable"
@@ -179,9 +180,9 @@ export class AtlasContributorsView extends ViewElement {
                         </td>
                       </tr>`,
                   )}
-                </tbody>
-              </table>
-            </div>`
+                  </tbody>
+                </table>
+              </div>`
       }
     </div>`;
   }
@@ -235,18 +236,24 @@ export class AtlasContributorsView extends ViewElement {
     </div>`;
   }
 
-  private profile(login: string, list: ContributorRow[]): TemplateResult {
-    const c = list.find((x) => x.login === login);
+  private profile(typed: string, list: ContributorRow[]): TemplateResult {
+    // A login in a URL can be spelled with any casing; GitHub treats them as one person.
+    const key = loginKey(typed);
+    const c = list.find((x) => loginKey(x.login) === key);
     const runs = store.index.value
-      .filter((r) => r.provenance.login === login)
+      .filter((r) => loginKey(r.provenance.login) === key)
       .sort((a, b) =>
-        (b.provenance.submitted_at ?? '').localeCompare(a.provenance.submitted_at ?? ''),
+        (b.provenance.submitted_at ?? b.provenance.started_at ?? '').localeCompare(
+          a.provenance.submitted_at ?? a.provenance.started_at ?? '',
+        ),
       );
     if (!c && runs.length === 0) {
       return html`<div class="page">
-        ${emptyState({ title: `No contributor “${login}”`, text: 'Nobody with this login has a result file on main yet.', action: html`<a class="btn" href="#/contributors">Leaderboard</a>` })}
+        ${emptyState({ title: `No contributor “${typed}”`, text: 'Nobody with this login has a result file on main yet.', action: html`<a class="btn" href="#/contributors">Leaderboard</a>` })}
       </div>`;
     }
+    // Whatever the URL said, show the spelling the data carries.
+    const login = c?.login ?? runs[0]?.provenance.login ?? typed;
     const cc: ContributorRow = c ?? {
       login,
       user_id: null,
@@ -273,7 +280,7 @@ export class AtlasContributorsView extends ViewElement {
     };
     const engines = [...new Set(runs.map((r) => r.engine.id))];
     const rank =
-      [...list].sort((a, b) => b.points - a.points).findIndex((x) => x.login === login) + 1;
+      [...list].sort((a, b) => b.points - a.points).findIndex((x) => loginKey(x.login) === key) + 1;
     const earned = BADGES.filter((b) => b.earned(cc, runs.length));
     const keyMetrics = store.site.coverage.key_metrics;
     const bd = cc.breakdown;

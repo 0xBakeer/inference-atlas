@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { computeScores } from './scoring.js';
+import { computeScores, loginKey } from './scoring.js';
 import type { CompiledIndexRow } from './types.js';
 
 function row(
@@ -154,5 +154,47 @@ describe('contributor scoring', () => {
     expect(alice.hardware_ids).toEqual(['apple-m2-max-32gb', 'nvidia-rtx-4090']);
     expect(alice.first_seen).toBe('2026-08-01T00:00:00Z');
     expect(alice.last_seen).toBe('2026-08-05T00:00:00Z');
+  });
+
+  it('is one person however their login is cased', () => {
+    // A result file carries `AzeezIsh`; the registry credit is read out of a noreply address.
+    const scored = computeScores({
+      rows: [
+        row('AzeezIsh', 'cell-a', {}, '2026-09-01T00:00:00Z'),
+        row('azeezish', 'cell-a', {}, '2026-09-02T00:00:00Z'),
+      ],
+      registryCredits: { engines: { atlas: 'AZEEZISH' } },
+    });
+    expect(scored.contributors).toHaveLength(1);
+    const only = scored.contributors[0]!;
+    expect(only.login).toBe('AzeezIsh');
+    expect(only.runs).toBe(2);
+    expect(only.cells_filled).toBe(1);
+    expect(only.breakdown.registry_engines).toBe(1);
+    expect(scored.runs.every((r) => r.login === 'AzeezIsh')).toBe(true);
+  });
+
+  it('does not pay a second run in the same cell as a reproduction of yourself', () => {
+    const scored = computeScores({
+      rows: [
+        row('AzeezIsh', 'cell-a', {}, '2026-09-01T00:00:00Z'),
+        row('azeezish', 'cell-a', {}, '2026-09-02T00:00:00Z'),
+      ],
+    });
+    expect(scored.runs.map((r) => r.role)).toEqual(['fill', 'additional']);
+    expect(scored.runs[1]!.factor).toBeLessThan(1);
+  });
+
+  it('keeps a registry-only contributor listed under the spelling git recorded', () => {
+    const scored = computeScores({
+      rows: [],
+      registryCredits: { engines: { atlas: 'AzeezIsh' } },
+    });
+    expect(scored.contributors[0]!.login).toBe('AzeezIsh');
+  });
+
+  it('loginKey folds case and surrounding space', () => {
+    expect(loginKey('  AzeezIsh ')).toBe('azeezish');
+    expect(loginKey('0xBakeer')).toBe(loginKey('0xbakeer'));
   });
 });

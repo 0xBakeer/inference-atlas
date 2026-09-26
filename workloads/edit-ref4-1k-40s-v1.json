@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "id": "edit-ref4-1k-40s-v1",
+  "name": "Image edit, four references, 1024x1024, 40 steps",
+  "kind": "image",
+  "description": "Three edit prompts at 1024x1024 with four conditioning images each. Run against edit-ref1-1k-40s-v1 it gives the marginal cost of a reference image, which is the number that decides how many a deployment can afford.",
+  "dataset_id": "t2i-prompts-v1",
+  "params": {
+    "concurrency": 1,
+    "num_requests": 3,
+    "input_tokens": null,
+    "output_tokens": null,
+    "seed": 42,
+    "warmup_requests": 1,
+    "repeat": 3,
+    "timeout_s": 1800,
+    "width": 1024,
+    "height": 1024,
+    "steps": 40,
+    "guidance": null,
+    "images_per_request": 1,
+    "ref_images": 4,
+    "transparent": false,
+    "dataset_categories": [
+      "edit-ref4"
+    ]
+  },
+  "sweep": null,
+  "eval": null,
+  "metrics_required": [
+    "s_per_image.p50",
+    "success_rate",
+    "duration_s"
+  ],
+  "immutable": true,
+  "created": "2026-09-20",
+  "supersedes": null,
+  "notes": "Concurrency is 1 on purpose: one image at a time is the shape of a single-GPU box for this class of model, and a second request in flight measures the queue rather than the device. Each prompt is rendered `repeat` times and the median is reported, with `warmup_requests` rendered first and excluded. `guidance: null` means the lane's own default — guidance above 1 runs a second transformer forward per step, so a lane that silently defaults to 4 is doing twice the work of one that defaults to 1, and the value that was actually used belongs in the result's args. Four references also test whether the lane accepts them at all: an edit endpoint that keeps only the first `image` field returns quickly and wrongly, so compare the timing against edit-ref1 before believing a flattering number."
+}

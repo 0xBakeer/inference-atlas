@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "id": "mxfp4-fp8",
+  "model_id": "deepseek-ai/DeepSeek-V4-Flash-Vision-Exp",
+  "format": "mxfp4",
+  "bits": 4.41,
+  "hf_id": "deepseek-ai/DeepSeek-V4-Flash-Vision-Exp",
+  "revision": "86f746b36186f0e567729a5c06a8c918caba82a9",
+  "files": [],
+  "size_gb": 167.8,
+  "engines": ["vllm"],
+  "source": "official",
+  "calibration": null,
+  "links": {
+    "hf": "https://huggingface.co/deepseek-ai/DeepSeek-V4-Flash-Vision-Exp"
+  },
+  "notes": "The repository's own native mixed format, measured from the 48 safetensors headers of snapshot 86f746b3: 167,819,404,368 bytes of tensor data (matches the on-disk blobs byte for byte), which is 148.18B packed-I8 elements = 296.35B MXFP4 values (expert_dtype fp4 in config.json; the 9.26B F8_E8M0 elements are its block scales at exactly one per 32 values, the MX group size - E8M0/32 is the MXFP4 spec, not NVFP4's E4M3/16), 6.30B F8_E4M3 under config quantization_config (block 128x128, dynamic activation, ue8m0 scale_fmt), 3.90B BF16 (embeddings and heads), 0.15B F32 and I64. bits = those bytes x 8 / 304.65B params = 4.41, close to the expert-dominated 4-bit floor because 97% of parameter values sit in the routed experts. engines lists only vllm because nothing else is known to parse the deepseek_v4 tokenizer-mode and this checkpoint's in-config dspark draft; the run that established this entry used a vLLM fork build (0.21.1rc1.dev339+g1967a5627bc3) inside the vllm-dspark-runtime container."
+}

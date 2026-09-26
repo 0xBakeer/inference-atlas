@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { computeCoverage, emptyCell, minorsBehind } from './coverage.js';
+import { computeCoverage, emptyCell, isReleaseVersion, minorsBehind } from './coverage.js';
 import { cellId } from './ids.js';
 import type { CompiledIndexRow, CoverageRegistry } from './index.js';
 
@@ -47,6 +47,40 @@ describe('minorsBehind', () => {
   });
   it('orders build numbers numerically, not lexicographically', () => {
     expect(minorsBehind('b9000', ['b7000', 'b9000', 'b10000'])).toBe(1);
+  });
+  it('accepts a full version as well as a bare minor', () => {
+    expect(minorsBehind('0.26.1', ['0.24.0', '0.25.1', '0.26.1', '0.27.1'])).toBe(1);
+  });
+  it('never calls a development build behind a release', () => {
+    // vLLM's Qwen3.8-Flash-Next branch build: setuptools-scm with no reachable tag reports
+    // 0.1.devN+g<sha>, so the leading 0.1 is a placeholder, not release 0.1.
+    expect(minorsBehind('0.1.dev20073+g8e685d198', ['0.1.dev20073+g8e685d198', '0.27.1'])).toBe(0);
+    expect(minorsBehind('0.0.0.dev0+qwen38.27b.g561c8f3', ['0.5.4'])).toBe(0);
+  });
+  it('never calls an opaque build identifier behind another one', () => {
+    expect(minorsBehind('b50-035e227', ['b50-035e227', 'b7000'])).toBe(0);
+    expect(minorsBehind('960652b', ['960652b'])).toBe(0);
+  });
+  it('does not let a development build make a release look behind', () => {
+    expect(minorsBehind('0.27', ['0.27.1', '0.28.0rc1', '99.0.dev1+gdeadbee'])).toBe(0);
+  });
+});
+
+describe('isReleaseVersion', () => {
+  it('accepts dotted releases and monotonic build numbers', () => {
+    for (const v of ['0.27.1', 'v1.2.3', '2026.08.1', '0.0.14', 'b7000', '7000'])
+      expect(isReleaseVersion(v), v).toBe(true);
+  });
+  it('rejects development, pre-release and opaque builds', () => {
+    for (const v of [
+      '0.1.dev20073+g8e685d198',
+      '0.0.0.dev0+qwen38.27b.g561c8f3',
+      '0.28.0rc1',
+      '1.0.0-beta.2',
+      'b50-035e227',
+      '960652b',
+    ])
+      expect(isReleaseVersion(v), v).toBe(false);
   });
 });
 
@@ -103,6 +137,29 @@ describe('coverage levels', () => {
     const cell = Object.values(cells)[0]!;
     expect(cell.level).toBe('stale');
     expect(cell.minors_behind).toBe(2);
+  });
+
+  it('does not call a development build stale', () => {
+    // The only build that runs the model is a fork of the engine, and it reports a
+    // placeholder version. There is no newer release that could supersede it.
+    const engine = { id: 'vllm', version: '0.1.dev20073+g8e685d198', minor: '0.1' };
+    const forkRegistry: CoverageRegistry = {
+      engineVersions: { vllm: ['0.1.dev20073+g8e685d198', '0.26.1', '0.27.1'] },
+    };
+    const cells = computeCoverage([row({ login: 'alice', engine })], forkRegistry);
+    const cell = Object.values(cells)[0]!;
+    expect(cell.level).toBe('single');
+    expect(cell.minors_behind).toBeUndefined();
+  });
+
+  it('still calls a real release stale when the engine has moved on', () => {
+    const engine = { id: 'vllm', version: '0.25.1', minor: '0.25' };
+    const forkRegistry: CoverageRegistry = {
+      engineVersions: { vllm: ['0.1.dev20073+g8e685d198', '0.25.1', '0.26.1', '0.27.1'] },
+    };
+    const cells = computeCoverage([row({ login: 'alice', engine })], forkRegistry);
+    expect(Object.values(cells)[0]?.level).toBe('stale');
+    expect(Object.values(cells)[0]?.minors_behind).toBe(2);
   });
 
   it('lets a dispute outrank staleness', () => {

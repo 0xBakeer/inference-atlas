@@ -1,0 +1,954 @@
+{
+  "schema_version": 1,
+  "run_id": "a9e5da49f0c2bba3--longctx-depth-sweep-v1--6a38d7",
+  "config_id": "a9e5da49f0c2bba3",
+  "cell_id": "4ab17fea2273",
+  "workload_id": "longctx-depth-sweep-v1",
+  "kind": "longctx",
+  "engine": {
+    "id": "sglang",
+    "version": "0.0.0.dev1+g079d40460",
+    "commit": null,
+    "build": "github.com/inclusionAI/sglang@079d404",
+    "container": "lmsysorg/sglang:v0.0.0.dev1+g079d40460-cu126",
+    "install_method": "source"
+  },
+  "model": {
+    "id": "inclusionAI/Ling-3.0-flash",
+    "quant_id": "mxfp4",
+    "hf_id": "inclusionAI/Ling-3.0-flash",
+    "revision": null,
+    "dtype": "auto",
+    "local_path": null
+  },
+  "hardware": {
+    "id": "nvidia-gb10-dgx-spark",
+    "count": 1,
+    "driver": "580.173.02",
+    "cuda": "13.0",
+    "host": {
+      "cpu": "Cortex-A725",
+      "cpu_cores": 20,
+      "ram_gb": 121.6,
+      "os": "Ubuntu 24.04.4 LTS",
+      "kernel": "6.17.0-1029-nvidia",
+      "arch": "aarch64"
+    },
+    "fingerprint": "sha256:52ea2bdd513719724db88c162b6cc2c9fb4e5b67e02dbe41b9de00687acefb91",
+    "captured": {
+      "nvidia_smi": {
+        "driver": "580.173.02",
+        "cuda": "13.0",
+        "products": [
+          "NVIDIA GB10"
+        ],
+        "fb_memory_total_mib": 0
+      },
+      "lscpu": {
+        "architecture": "aarch64",
+        "cpus": "20",
+        "vendor_id": "ARM",
+        "model_name": "Cortex-A725",
+        "cores_per_socket": "10",
+        "sockets": "1",
+        "cpu_max_mhz": "2808.0000"
+      }
+    }
+  },
+  "args": {
+    "moe-runner-backend": "humming",
+    "speculative-algorithm": "DSPARK",
+    "speculative-draft-model-path": "inclusionAI/Ling-3.0-flash-dspark",
+    "enable-linear-replayssm-spec": true,
+    "linear-replayssm-cache-len": 32,
+    "mem-fraction-static": 0.75,
+    "max-running-requests": 1,
+    "max-mamba-cache-size": 64,
+    "chunked-prefill-size": 8192,
+    "max-prefill-tokens": 16384,
+    "page-size": 64,
+    "attention-backend": "flashinfer",
+    "fp8-gemm-backend": "cutlass",
+    "flashinfer-mxfp4-moe-precision": "default",
+    "disable-shared-experts-fusion": true,
+    "cuda-graph-backend-decode": "full",
+    "cuda-graph-max-bs-decode": 1,
+    "cuda-graph-backend-prefill": "disabled",
+    "reasoning-parser": "deepseek-r1",
+    "tool-call-parser": "qwen25",
+    "trust-remote-code": true,
+    "fp8-lm-head": "online",
+    "default-chat-template-kwargs": {
+      "enable_thinking": false
+    }
+  },
+  "args_canonical": "@build=github.com/inclusionai/sglang@079d404;@dtype=auto;@quant=mxfp4;attention-backend=flashinfer;chunked-prefill-size=8192;cuda-graph-backend-decode=full;cuda-graph-backend-prefill=disabled;cuda-graph-max-bs-decode=1;default-chat-template-kwargs={\"enable_thinking\":false};disable-shared-experts-fusion=true;enable-linear-replayssm-spec=true;fp8-gemm-backend=cutlass;fp8-lm-head=online;linear-replayssm-cache-len=32;max-mamba-cache-size=64;max-running-requests=1;mem-fraction-static=0.75;moe-runner-backend=humming;page-size=64;reasoning-parser=deepseek-r1;speculative-algorithm=DSPARK;speculative-draft-model-path=inclusionAI/Ling-3.0-flash-dspark;tool-call-parser=qwen25;trust-remote-code=true",
+  "serve_command": null,
+  "workload": {
+    "id": "longctx-depth-sweep-v1",
+    "resolved_params": {
+      "axis": "input_tokens",
+      "points": [
+        [
+          1024,
+          90
+        ],
+        [
+          4096,
+          90
+        ],
+        [
+          8192,
+          90
+        ],
+        [
+          16384,
+          90
+        ],
+        [
+          32768,
+          90
+        ],
+        [
+          65536,
+          90
+        ],
+        [
+          131072,
+          90
+        ],
+        [
+          262144,
+          90
+        ]
+      ],
+      "output_tokens": 256,
+      "needle_check": true,
+      "needle_depth": 0.9,
+      "headline_input_tokens": 65536,
+      "needles_found": 6,
+      "needles_total": 6,
+      "dataset_categories": null,
+      "dataset_target_tokens": null,
+      "timeout_s": 1800,
+      "seed": 42
+    }
+  },
+  "metrics": {
+    "requests_total": 1,
+    "requests_ok": 1,
+    "requests_failed": 0,
+    "success_rate": 1,
+    "duration_s": 25.199,
+    "input_tokens_total": 80765,
+    "output_tokens_total": 6,
+    "output_tok_s": 0.238,
+    "total_tok_s": 3205.344,
+    "req_s": 0.04,
+    "prefill_tok_s": 3217.239,
+    "ttft_ms": {
+      "mean": 25103.821,
+      "p50": 25103.821,
+      "p90": 25103.821,
+      "p95": 25103.821,
+      "p99": 25103.821,
+      "min": 25103.821,
+      "max": 25103.821
+    },
+    "tpot_ms": {
+      "mean": 18.972,
+      "p50": 18.972,
+      "p90": 18.972,
+      "p95": 18.972,
+      "p99": 18.972,
+      "min": 18.972,
+      "max": 18.972
+    },
+    "itl_ms": {
+      "mean": 94.167,
+      "p50": 94.167,
+      "p90": 94.167,
+      "p95": 94.167,
+      "p99": 94.167,
+      "min": 94.167,
+      "max": 94.167
+    },
+    "e2e_ms": {
+      "mean": 25198.683,
+      "p50": 25198.683,
+      "p90": 25198.683,
+      "p95": 25198.683,
+      "p99": 25198.683,
+      "min": 25198.683,
+      "max": 25198.683
+    },
+    "decode_tok_s_per_request": {
+      "mean": 52.709,
+      "p50": 52.709,
+      "p90": 52.709,
+      "p95": 52.709,
+      "p99": 52.709,
+      "min": 52.709,
+      "max": 52.709
+    },
+    "vram_peak_gb": null,
+    "ram_peak_gb": 104.098,
+    "kv_cache_tokens": null,
+    "power_avg_w": 76.04,
+    "power_peak_w": 85.82,
+    "energy_wh": 0.5206,
+    "gpu_util_avg_pct": 96,
+    "temp_max_c": 72,
+    "thermal_throttle_detected": false
+  },
+  "sweep": [
+    {
+      "input_tokens": 1024,
+      "output_tokens": 256,
+      "label": "depth 90% · needle found",
+      "metrics": {
+        "requests_total": 1,
+        "requests_ok": 1,
+        "requests_failed": 0,
+        "success_rate": 1,
+        "duration_s": 0.58,
+        "input_tokens_total": 1371,
+        "output_tokens_total": 6,
+        "output_tok_s": 10.351,
+        "total_tok_s": 2375.669,
+        "req_s": 1.725,
+        "prefill_tok_s": 2629.673,
+        "ttft_ms": {
+          "mean": 521.358,
+          "p50": 521.358,
+          "p90": 521.358,
+          "p95": 521.358,
+          "p99": 521.358,
+          "min": 521.358,
+          "max": 521.358
+        },
+        "tpot_ms": {
+          "mean": 11.626,
+          "p50": 11.626,
+          "p90": 11.626,
+          "p95": 11.626,
+          "p99": 11.626,
+          "min": 11.626,
+          "max": 11.626
+        },
+        "itl_ms": {
+          "mean": 57.14,
+          "p50": 57.14,
+          "p90": 57.14,
+          "p95": 57.14,
+          "p99": 57.14,
+          "min": 57.14,
+          "max": 57.14
+        },
+        "e2e_ms": {
+          "mean": 579.488,
+          "p50": 579.488,
+          "p90": 579.488,
+          "p95": 579.488,
+          "p99": 579.488,
+          "min": 579.488,
+          "max": 579.488
+        },
+        "decode_tok_s_per_request": {
+          "mean": 86.013,
+          "p50": 86.013,
+          "p90": 86.013,
+          "p95": 86.013,
+          "p99": 86.013,
+          "min": 86.013,
+          "max": 86.013
+        },
+        "vram_peak_gb": null,
+        "ram_peak_gb": 95.268,
+        "kv_cache_tokens": null,
+        "power_avg_w": 12.75,
+        "power_peak_w": 12.75,
+        "energy_wh": 0,
+        "gpu_util_avg_pct": 0,
+        "temp_max_c": 46,
+        "thermal_throttle_detected": false
+      }
+    },
+    {
+      "input_tokens": 4096,
+      "output_tokens": 256,
+      "label": "depth 90% · needle found",
+      "metrics": {
+        "requests_total": 1,
+        "requests_ok": 1,
+        "requests_failed": 0,
+        "success_rate": 1,
+        "duration_s": 1.48,
+        "input_tokens_total": 5176,
+        "output_tokens_total": 6,
+        "output_tok_s": 4.053,
+        "total_tok_s": 3500.8,
+        "req_s": 0.676,
+        "prefill_tok_s": 3644.221,
+        "ttft_ms": {
+          "mean": 1420.331,
+          "p50": 1420.331,
+          "p90": 1420.331,
+          "p95": 1420.331,
+          "p99": 1420.331,
+          "min": 1420.331,
+          "max": 1420.331
+        },
+        "tpot_ms": {
+          "mean": 11.942,
+          "p50": 11.942,
+          "p90": 11.942,
+          "p95": 11.942,
+          "p99": 11.942,
+          "min": 11.942,
+          "max": 11.942
+        },
+        "itl_ms": {
+          "mean": 58.867,
+          "p50": 58.867,
+          "p90": 58.867,
+          "p95": 58.867,
+          "p99": 58.867,
+          "min": 58.867,
+          "max": 58.867
+        },
+        "e2e_ms": {
+          "mean": 1480.039,
+          "p50": 1480.039,
+          "p90": 1480.039,
+          "p95": 1480.039,
+          "p99": 1480.039,
+          "min": 1480.039,
+          "max": 1480.039
+        },
+        "decode_tok_s_per_request": {
+          "mean": 83.741,
+          "p50": 83.741,
+          "p90": 83.741,
+          "p95": 83.741,
+          "p99": 83.741,
+          "min": 83.741,
+          "max": 83.741
+        },
+        "vram_peak_gb": null,
+        "ram_peak_gb": 96.208,
+        "kv_cache_tokens": null,
+        "power_avg_w": 53.59,
+        "power_peak_w": 69.08,
+        "energy_wh": 0.0157,
+        "gpu_util_avg_pct": 48,
+        "temp_max_c": 57,
+        "thermal_throttle_detected": false
+      }
+    },
+    {
+      "input_tokens": 8192,
+      "output_tokens": 256,
+      "label": "depth 90% · needle found",
+      "metrics": {
+        "requests_total": 1,
+        "requests_ok": 1,
+        "requests_failed": 0,
+        "success_rate": 1,
+        "duration_s": 2.801,
+        "input_tokens_total": 10169,
+        "output_tokens_total": 6,
+        "output_tok_s": 2.142,
+        "total_tok_s": 3632.947,
+        "req_s": 0.357,
+        "prefill_tok_s": 3716.647,
+        "ttft_ms": {
+          "mean": 2736.068,
+          "p50": 2736.068,
+          "p90": 2736.068,
+          "p95": 2736.068,
+          "p99": 2736.068,
+          "min": 2736.068,
+          "max": 2736.068
+        },
+        "tpot_ms": {
+          "mean": 12.905,
+          "p50": 12.905,
+          "p90": 12.905,
+          "p95": 12.905,
+          "p99": 12.905,
+          "min": 12.905,
+          "max": 12.905
+        },
+        "itl_ms": {
+          "mean": 63.712,
+          "p50": 63.712,
+          "p90": 63.712,
+          "p95": 63.712,
+          "p99": 63.712,
+          "min": 63.712,
+          "max": 63.712
+        },
+        "e2e_ms": {
+          "mean": 2800.594,
+          "p50": 2800.594,
+          "p90": 2800.594,
+          "p95": 2800.594,
+          "p99": 2800.594,
+          "min": 2800.594,
+          "max": 2800.594
+        },
+        "decode_tok_s_per_request": {
+          "mean": 77.488,
+          "p50": 77.488,
+          "p90": 77.488,
+          "p95": 77.488,
+          "p99": 77.488,
+          "min": 77.488,
+          "max": 77.488
+        },
+        "vram_peak_gb": null,
+        "ram_peak_gb": 97.628,
+        "kv_cache_tokens": null,
+        "power_avg_w": 63.3,
+        "power_peak_w": 66.49,
+        "energy_wh": 0.0369,
+        "gpu_util_avg_pct": 96,
+        "temp_max_c": 57,
+        "thermal_throttle_detected": false
+      }
+    },
+    {
+      "input_tokens": 16384,
+      "output_tokens": 256,
+      "label": "depth 90% · needle found",
+      "metrics": {
+        "requests_total": 1,
+        "requests_ok": 1,
+        "requests_failed": 0,
+        "success_rate": 1,
+        "duration_s": 5.133,
+        "input_tokens_total": 20064,
+        "output_tokens_total": 6,
+        "output_tok_s": 1.169,
+        "total_tok_s": 3910.246,
+        "req_s": 0.195,
+        "prefill_tok_s": 3962.217,
+        "ttft_ms": {
+          "mean": 5063.831,
+          "p50": 5063.831,
+          "p90": 5063.831,
+          "p95": 5063.831,
+          "p99": 5063.831,
+          "min": 5063.831,
+          "max": 5063.831
+        },
+        "tpot_ms": {
+          "mean": 13.737,
+          "p50": 13.737,
+          "p90": 13.737,
+          "p95": 13.737,
+          "p99": 13.737,
+          "min": 13.737,
+          "max": 13.737
+        },
+        "itl_ms": {
+          "mean": 67.345,
+          "p50": 67.345,
+          "p90": 67.345,
+          "p95": 67.345,
+          "p99": 67.345,
+          "min": 67.345,
+          "max": 67.345
+        },
+        "e2e_ms": {
+          "mean": 5132.517,
+          "p50": 5132.517,
+          "p90": 5132.517,
+          "p95": 5132.517,
+          "p99": 5132.517,
+          "min": 5132.517,
+          "max": 5132.517
+        },
+        "decode_tok_s_per_request": {
+          "mean": 72.796,
+          "p50": 72.796,
+          "p90": 72.796,
+          "p95": 72.796,
+          "p99": 72.796,
+          "min": 72.796,
+          "max": 72.796
+        },
+        "vram_peak_gb": null,
+        "ram_peak_gb": 97.675,
+        "kv_cache_tokens": null,
+        "power_avg_w": 67.87,
+        "power_peak_w": 71.31,
+        "energy_wh": 0.0798,
+        "gpu_util_avg_pct": 95.4,
+        "temp_max_c": 60,
+        "thermal_throttle_detected": false
+      }
+    },
+    {
+      "input_tokens": 32768,
+      "output_tokens": 256,
+      "label": "depth 90% · needle found",
+      "metrics": {
+        "requests_total": 1,
+        "requests_ok": 1,
+        "requests_failed": 0,
+        "success_rate": 1,
+        "duration_s": 10.96,
+        "input_tokens_total": 40486,
+        "output_tokens_total": 6,
+        "output_tok_s": 0.547,
+        "total_tok_s": 3694.671,
+        "req_s": 0.091,
+        "prefill_tok_s": 3720.659,
+        "ttft_ms": {
+          "mean": 10881.407,
+          "p50": 10881.407,
+          "p90": 10881.407,
+          "p95": 10881.407,
+          "p99": 10881.407,
+          "min": 10881.407,
+          "max": 10881.407
+        },
+        "tpot_ms": {
+          "mean": 15.597,
+          "p50": 15.597,
+          "p90": 15.597,
+          "p95": 15.597,
+          "p99": 15.597,
+          "min": 15.597,
+          "max": 15.597
+        },
+        "itl_ms": {
+          "mean": 77.074,
+          "p50": 77.074,
+          "p90": 77.074,
+          "p95": 77.074,
+          "p99": 77.074,
+          "min": 77.074,
+          "max": 77.074
+        },
+        "e2e_ms": {
+          "mean": 10959.393,
+          "p50": 10959.393,
+          "p90": 10959.393,
+          "p95": 10959.393,
+          "p99": 10959.393,
+          "min": 10959.393,
+          "max": 10959.393
+        },
+        "decode_tok_s_per_request": {
+          "mean": 64.114,
+          "p50": 64.114,
+          "p90": 64.114,
+          "p95": 64.114,
+          "p99": 64.114,
+          "min": 64.114,
+          "max": 64.114
+        },
+        "vram_peak_gb": null,
+        "ram_peak_gb": 98.126,
+        "kv_cache_tokens": null,
+        "power_avg_w": 71.91,
+        "power_peak_w": 77.02,
+        "energy_wh": 0.2115,
+        "gpu_util_avg_pct": 96,
+        "temp_max_c": 67,
+        "thermal_throttle_detected": false
+      }
+    },
+    {
+      "input_tokens": 65536,
+      "output_tokens": 256,
+      "label": "depth 90% · needle found",
+      "metrics": {
+        "requests_total": 1,
+        "requests_ok": 1,
+        "requests_failed": 0,
+        "success_rate": 1,
+        "duration_s": 25.199,
+        "input_tokens_total": 80765,
+        "output_tokens_total": 6,
+        "output_tok_s": 0.238,
+        "total_tok_s": 3205.344,
+        "req_s": 0.04,
+        "prefill_tok_s": 3217.239,
+        "ttft_ms": {
+          "mean": 25103.821,
+          "p50": 25103.821,
+          "p90": 25103.821,
+          "p95": 25103.821,
+          "p99": 25103.821,
+          "min": 25103.821,
+          "max": 25103.821
+        },
+        "tpot_ms": {
+          "mean": 18.972,
+          "p50": 18.972,
+          "p90": 18.972,
+          "p95": 18.972,
+          "p99": 18.972,
+          "min": 18.972,
+          "max": 18.972
+        },
+        "itl_ms": {
+          "mean": 94.167,
+          "p50": 94.167,
+          "p90": 94.167,
+          "p95": 94.167,
+          "p99": 94.167,
+          "min": 94.167,
+          "max": 94.167
+        },
+        "e2e_ms": {
+          "mean": 25198.683,
+          "p50": 25198.683,
+          "p90": 25198.683,
+          "p95": 25198.683,
+          "p99": 25198.683,
+          "min": 25198.683,
+          "max": 25198.683
+        },
+        "decode_tok_s_per_request": {
+          "mean": 52.709,
+          "p50": 52.709,
+          "p90": 52.709,
+          "p95": 52.709,
+          "p99": 52.709,
+          "min": 52.709,
+          "max": 52.709
+        },
+        "vram_peak_gb": null,
+        "ram_peak_gb": 104.098,
+        "kv_cache_tokens": null,
+        "power_avg_w": 76.04,
+        "power_peak_w": 85.82,
+        "energy_wh": 0.5206,
+        "gpu_util_avg_pct": 96,
+        "temp_max_c": 72,
+        "thermal_throttle_detected": false
+      }
+    },
+    {
+      "input_tokens": 131072,
+      "output_tokens": 256,
+      "label": "depth 90% · needle n/a",
+      "metrics": {
+        "requests_total": 1,
+        "requests_ok": 0,
+        "requests_failed": 1,
+        "success_rate": 0,
+        "duration_s": 0.303,
+        "input_tokens_total": 0,
+        "output_tokens_total": 0,
+        "output_tok_s": 0,
+        "total_tok_s": 0,
+        "req_s": 0,
+        "prefill_tok_s": null,
+        "ttft_ms": null,
+        "tpot_ms": null,
+        "itl_ms": null,
+        "e2e_ms": null,
+        "decode_tok_s_per_request": null,
+        "vram_peak_gb": null,
+        "ram_peak_gb": 104.118,
+        "kv_cache_tokens": null,
+        "power_avg_w": 78.47,
+        "power_peak_w": 78.47,
+        "energy_wh": 0,
+        "gpu_util_avg_pct": 96,
+        "temp_max_c": 74,
+        "thermal_throttle_detected": false
+      }
+    },
+    {
+      "input_tokens": 262144,
+      "output_tokens": 256,
+      "label": "depth 90% · needle n/a",
+      "metrics": {
+        "requests_total": 1,
+        "requests_ok": 0,
+        "requests_failed": 1,
+        "success_rate": 0,
+        "duration_s": 0.956,
+        "input_tokens_total": 0,
+        "output_tokens_total": 0,
+        "output_tok_s": 0,
+        "total_tok_s": 0,
+        "req_s": 0,
+        "prefill_tok_s": null,
+        "ttft_ms": null,
+        "tpot_ms": null,
+        "itl_ms": null,
+        "e2e_ms": null,
+        "decode_tok_s_per_request": null,
+        "vram_peak_gb": null,
+        "ram_peak_gb": 104.14,
+        "kv_cache_tokens": null,
+        "power_avg_w": 63.75,
+        "power_peak_w": 63.75,
+        "energy_wh": 0,
+        "gpu_util_avg_pct": 96,
+        "temp_max_c": 61,
+        "thermal_throttle_detected": false
+      }
+    }
+  ],
+  "failures": [
+    {
+      "at": "request",
+      "count": 1,
+      "category": "context-overflow",
+      "message": "Input length (161400 tokens) exceeds the maximum allowed length (140474 tokens). Use a shorter input or enable --allow-auto-truncate.",
+      "sample_request_id": "ctx131072-r00000"
+    },
+    {
+      "at": "request",
+      "count": 1,
+      "category": "http-4xx",
+      "message": "{\"object\":\"error\",\"message\":\"The input (322473 tokens) is longer than the model's context length (262144 tokens).\",\"type\":\"BadRequestError\",\"param\":null,\"code\":400}",
+      "sample_request_id": "ctx262144-r00000"
+    }
+  ],
+  "conditions": null,
+  "gotchas": [
+    {
+      "severity": "warn",
+      "text": "Requests exceeded the model's context window; the workload's input length does not fit this configuration."
+    }
+  ],
+  "derived": {
+    "cost_per_1m_output_tokens_usd": null,
+    "tokens_per_watt": 0.0031,
+    "tok_s_per_gb_bandwidth": 0.193073,
+    "bandwidth_efficiency": 0.5241,
+    "memory_headroom_gb": null
+  },
+  "raw": {
+    "harness": "atlas-bench",
+    "harness_version": "0.1.0",
+    "sha256": "4986a3b8d4b99c11d63e9c89f8cdd49ac0eef72e89753a4114be20c7c84136a0",
+    "payload_path": null,
+    "payload": {
+      "points": [
+        {
+          "id": "hay-1k-d90",
+          "input_tokens": 1024,
+          "depth_pct": 90,
+          "needle_correct": true,
+          "output_tok_s": 10.351,
+          "decode_tok_s": 86.013,
+          "ttft_ms": 521.358,
+          "success_rate": 1
+        },
+        {
+          "id": "hay-4k-d90",
+          "input_tokens": 4096,
+          "depth_pct": 90,
+          "needle_correct": true,
+          "output_tok_s": 4.053,
+          "decode_tok_s": 83.741,
+          "ttft_ms": 1420.331,
+          "success_rate": 1
+        },
+        {
+          "id": "hay-8k-d90",
+          "input_tokens": 8192,
+          "depth_pct": 90,
+          "needle_correct": true,
+          "output_tok_s": 2.142,
+          "decode_tok_s": 77.488,
+          "ttft_ms": 2736.068,
+          "success_rate": 1
+        },
+        {
+          "id": "hay-16k-d90",
+          "input_tokens": 16384,
+          "depth_pct": 90,
+          "needle_correct": true,
+          "output_tok_s": 1.169,
+          "decode_tok_s": 72.796,
+          "ttft_ms": 5063.831,
+          "success_rate": 1
+        },
+        {
+          "id": "hay-32k-d90",
+          "input_tokens": 32768,
+          "depth_pct": 90,
+          "needle_correct": true,
+          "output_tok_s": 0.547,
+          "decode_tok_s": 64.114,
+          "ttft_ms": 10881.407,
+          "success_rate": 1
+        },
+        {
+          "id": "hay-64k-d90",
+          "input_tokens": 65536,
+          "depth_pct": 90,
+          "needle_correct": true,
+          "output_tok_s": 0.238,
+          "decode_tok_s": 52.709,
+          "ttft_ms": 25103.821,
+          "success_rate": 1
+        },
+        {
+          "id": "hay-128k-d90",
+          "input_tokens": 131072,
+          "depth_pct": 90,
+          "needle_correct": null,
+          "output_tok_s": 0,
+          "decode_tok_s": null,
+          "ttft_ms": null,
+          "success_rate": 0
+        },
+        {
+          "id": "hay-256k-d90",
+          "input_tokens": 262144,
+          "depth_pct": 90,
+          "needle_correct": null,
+          "output_tok_s": 0,
+          "decode_tok_s": null,
+          "ttft_ms": null,
+          "success_rate": 0
+        }
+      ],
+      "requests": [
+        {
+          "id": "ctx1024-r00000",
+          "prompt_id": "hay-1k-d90",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 521.358,
+          "e2e_ms": 579.488,
+          "prompt_tokens": 1371,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "ctx4096-r00000",
+          "prompt_id": "hay-4k-d90",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 1420.331,
+          "e2e_ms": 1480.039,
+          "prompt_tokens": 5176,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "ctx8192-r00000",
+          "prompt_id": "hay-8k-d90",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 2736.068,
+          "e2e_ms": 2800.594,
+          "prompt_tokens": 10169,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "ctx16384-r00000",
+          "prompt_id": "hay-16k-d90",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 5063.831,
+          "e2e_ms": 5132.517,
+          "prompt_tokens": 20064,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "ctx32768-r00000",
+          "prompt_id": "hay-32k-d90",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 10881.407,
+          "e2e_ms": 10959.393,
+          "prompt_tokens": 40486,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "ctx65536-r00000",
+          "prompt_id": "hay-64k-d90",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 25103.821,
+          "e2e_ms": 25198.683,
+          "prompt_tokens": 80765,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "ctx131072-r00000",
+          "prompt_id": "hay-128k-d90",
+          "warmup": false,
+          "status": "error",
+          "ttft_ms": null,
+          "e2e_ms": 302.22,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "token_source": "usage",
+          "finish_reason": null,
+          "error_category": "context-overflow"
+        },
+        {
+          "id": "ctx262144-r00000",
+          "prompt_id": "hay-256k-d90",
+          "warmup": false,
+          "status": "error",
+          "ttft_ms": null,
+          "e2e_ms": 464.191,
+          "prompt_tokens": null,
+          "completion_tokens": null,
+          "token_source": "usage",
+          "finish_reason": null,
+          "error_category": "http-4xx"
+        }
+      ],
+      "engine_endpoint": {
+        "attached": true,
+        "base_url": "http://127.0.0.1:8000/v1",
+        "served_model_id": "ling-3.0-flash",
+        "advertised_models": [
+          "ling-3.0-flash"
+        ]
+      }
+    },
+    "truncated": false
+  },
+  "provenance": {
+    "github_login": "0xBakeer",
+    "github_user_id": 17404809,
+    "started_at": "2026-09-09T23:17:48Z",
+    "finished_at": "2026-09-09T23:18:36Z",
+    "submitted_at": null,
+    "commit": null,
+    "pr": null,
+    "method": "atlas-bench",
+    "agent": null,
+    "notes": "Served with the ling3-flash-dgx-spark recipe (49b6c9c), PROFILE=humming-dspark, thinking off (server default via --default-chat-template-kwargs): inclusionAI/Ling-3.0-flash-fp4 (MXFP4 routed experts, FP8 attention/shared/router) with --moe-runner-backend humming, online FP8 LM head (SGLANG_ENABLE_FP8_LM_HEAD=1), DSpark speculative decoding with inclusionAI/Ling-3.0-flash-dspark and the KDA ReplaySSM exact fold (--enable-linear-replayssm-spec, ring 32), context 262144 native (no YaRN), mem-fraction 0.75, max-running 1, page 64, decode cuda graph bs 1, prefill cuda graph disabled, FlashInfer autotune off with precompiled CUTLASS MXFP4 kernels. Single request at a time on every row."
+  },
+  "verification": {
+    "level": "self-reported",
+    "reproduced_by": [],
+    "flags": []
+  }
+}

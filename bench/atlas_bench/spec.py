@@ -18,9 +18,11 @@ __all__ = [
     "PACKET_VERSION",
     "EngineRef",
     "HardwareRef",
+    "ImageLaneSpec",
     "InstallSpec",
     "ModelRef",
     "RequestOptions",
+    "RunConditions",
     "TaskSpec",
     "WorkloadRef",
     "load_spec",
@@ -50,6 +52,11 @@ class EngineRef(_Base):
     id: str
     version: str
     commit: str | None = None
+    #: Identity of the BUILD when the version string does not pin it: a container digest, or
+    #: ``<fork repo>@<fork ref>``. Required for engine versions registered as forks, because
+    #: a fork's ``<release>+g<sha>`` names the upstream commit it branched from rather than
+    #: its own patches (SPEC §3, decision 24). Enters the fingerprint as ``@build``.
+    build: str | None = None
     install: InstallSpec | None = None
     container: str | None = None
     base_url: str | None = None
@@ -116,6 +123,35 @@ class WorkloadRef(_Base):
         raise TypeError(f"cannot read workload reference from {value!r}")
 
 
+class ImageLaneSpec(_Base):
+    """How to reach an image-generation lane, when it is not a plain HTTP server.
+
+    Image workloads default to the OpenAI images shape against the engine's base URL, which
+    is what every HTTP lane here speaks and what needs no packet field at all. A CLI lane
+    (stable-diffusion.cpp) has no server to attach to, so its command has to be in the
+    packet: a list of argv tokens with `{prompt} {seed} {width} {height} {steps} {out}`
+    placeholders and a repeating `{image...}` token for reference images. It is a list and
+    not a string because a shell between the harness and the prompt is one escaping bug
+    away from measuring a different prompt.
+    """
+
+    kind: str = "openai_images"  # openai_images | cli
+    command: list[str] = Field(default_factory=list)
+    #: Extra placeholders for the template: model paths, the text encoder file, a sampler.
+    vars: dict[str, Any] = Field(default_factory=dict)
+    env: dict[str, str] = Field(default_factory=dict)
+    workdir: str | None = None
+    timeout_s: float | None = None
+    #: Appended once per reference image, with `{image}` substituted (`["-r", "{image}"]`).
+    image_args: list[str] = Field(default_factory=list)
+    #: Appended when the case asks for a transparent background / carries a negative prompt.
+    transparent_args: list[str] = Field(default_factory=list)
+    negative_args: list[str] = Field(default_factory=list)
+    #: Override the engine's canonical->wire parameter names (atlas_bench.images.PARAM_MAPS).
+    param_map: dict[str, str | None] | None = None
+    extra_params: dict[str, Any] = Field(default_factory=dict)
+
+
 class RequestOptions(_Base):
     """Sampling/transport options applied to every request of the run."""
 
@@ -131,6 +167,23 @@ class RequestOptions(_Base):
     api_key: str | None = None
 
 
+class RunConditions(_Base):
+    """Run conditions (result schema ``conditions``): what else could have contended for the
+    box. ``dedicated`` + ``detail`` are asserted; ``isolation_check`` is what was MEASURED."""
+
+    dedicated: bool
+    detail: str | None = None
+    isolation_check: str | None = None
+
+    def record_dict(self) -> dict[str, bool | str | None]:
+        """Exactly the three schema fields — never any extra packet keys."""
+        return {
+            "dedicated": self.dedicated,
+            "detail": self.detail,
+            "isolation_check": self.isolation_check,
+        }
+
+
 class TaskSpec(_Base):
     """A full task packet."""
 
@@ -144,11 +197,13 @@ class TaskSpec(_Base):
     args: dict[str, Any] = Field(default_factory=dict)
     workloads: list[WorkloadRef] = Field(default_factory=list)
     request: RequestOptions = Field(default_factory=RequestOptions)
+    image_lane: ImageLaneSpec | None = None
     output_dir: str = "results"
     branch: str | None = None
     pr_title: str | None = None
     agent_rules: list[str] = Field(default_factory=list)
     notes: str | None = None
+    conditions: RunConditions | None = None
     github_login: str | None = None
     tokenizer: str | None = None
 
@@ -187,6 +242,7 @@ class TaskSpec(_Base):
             "pr_title",
             "agent_rules",
             "notes",
+            "conditions",
         ]
         ordered = {k: data[k] for k in order if k in data}
         ordered.update({k: v for k, v in data.items() if k not in ordered})

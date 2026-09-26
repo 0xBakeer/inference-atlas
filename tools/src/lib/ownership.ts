@@ -19,6 +19,8 @@ import { join } from 'node:path';
 import type { ResultRecord } from '@atlas/core';
 import type { ChangedFile } from './git.js';
 import { showFile } from './git.js';
+import type { IdentityMap } from './identities.js';
+import { IDENTITIES_PATH, touchedLogins } from './identities.js';
 import type { Reporter } from './report.js';
 
 export interface OwnershipOptions {
@@ -57,6 +59,63 @@ function currentLogin(root: string, path: string): string | null {
   }
 }
 
+/** Parse the identity map at a ref, or null when it is absent or unreadable there. */
+function identitiesAt(text: string | null): IdentityMap | null {
+  if (text === null) return null;
+  try {
+    return JSON.parse(text) as IdentityMap;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * `site/identities.json` says which commit addresses belong to which GitHub account, and
+ * registry credit is paid on it — so editing somebody else's entry is editing who gets
+ * their points. The rule is therefore the one results already live under, moved from the
+ * file to the entry: **a pull request may only touch the entry for its own author.**
+ *
+ * That keeps the map self-service. You claim your own addresses in your own pull request,
+ * the author login is the one GitHub recorded, and nobody can quietly redirect a stranger's
+ * contributions. Maintainers still have `maintainer-override` for the seeding case.
+ */
+export function checkIdentityOwnership(
+  changed: ChangedFile[],
+  reporter: Reporter,
+  options: OwnershipOptions,
+): void {
+  const change = changed.find((c) => c.path === IDENTITIES_PATH || c.oldPath === IDENTITIES_PATH);
+  if (!change) return;
+
+  const { root, base, author } = options;
+  const before = identitiesAt(showFile(root, base, IDENTITIES_PATH));
+  const afterText = existsSync(join(root, IDENTITIES_PATH))
+    ? readFileSync(join(root, IDENTITIES_PATH), 'utf8')
+    : null;
+  const after = identitiesAt(afterText);
+
+  if (afterText !== null && after === null) {
+    reporter.error(IDENTITIES_PATH, 'identity-unreadable', 'the identity map is not valid JSON');
+    return;
+  }
+
+  const foreign = touchedLogins(before, after).filter((login) => !sameLogin(login, author));
+  if (foreign.length === 0) return;
+
+  const message = `this pull request changes the identity entr${foreign.length === 1 ? 'y' : 'ies'} for ${foreign
+    .map((l) => `"${l}"`)
+    .join(', ')} but its author is "${author}"; you may only map your own addresses`;
+  if (options.allowOverride === true) {
+    reporter.warn(
+      IDENTITIES_PATH,
+      'ownership-override',
+      `identity-foreign: ${message} (maintainer-override)`,
+    );
+  } else {
+    reporter.error(IDENTITIES_PATH, 'identity-foreign', message);
+  }
+}
+
 export function checkOwnership(
   changed: ChangedFile[],
   reporter: Reporter,
@@ -64,6 +123,8 @@ export function checkOwnership(
 ): void {
   const { root, base, author } = options;
   const override = options.allowOverride === true;
+
+  checkIdentityOwnership(changed, reporter, options);
 
   const results = changed.filter(
     (c) => c.path.startsWith(RESULTS) || c.oldPath?.startsWith(RESULTS),

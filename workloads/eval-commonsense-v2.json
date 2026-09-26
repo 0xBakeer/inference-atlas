@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "id": "eval-commonsense-v2",
+  "name": "Commonsense traps eval v2",
+  "kind": "eval",
+  "description": "Runs all 116 items of eval-commonsense-v2 at temperature 0 and reports accuracy overall, by category and by difficulty. Pinned together with the dataset: a change to either means a new -v3 id.",
+  "dataset_id": "eval-commonsense-v2",
+  "params": {
+    "concurrency": 4,
+    "num_requests": 116,
+    "input_tokens": null,
+    "output_tokens": 2048,
+    "seed": 42,
+    "warmup_requests": 0,
+    "temperature": 0,
+    "repeat": 1,
+    "timeout_s": 300,
+    "reasoning": "default"
+  },
+  "sweep": null,
+  "eval": {
+    "suite": "commonsense",
+    "scorer": "mc",
+    "pass_threshold": null,
+    "max_output_tokens": 2048,
+    "categories": [
+      "goal_tracking",
+      "reversed_classics",
+      "physical",
+      "false_presupposition",
+      "feasibility",
+      "text_selfref"
+    ],
+    "notes": "Adversarial by design: every item carries a surface pattern (a famous riddle, a 'healthy choice', a helpful-sounding count) that points at a wrong answer. Mixed scorers per row: multiple-choice rows carry `choices` and are scored with mc, the rest with numeric or exact. Always use the row's own `scorer` field; eval.scorer is only the default."
+  },
+  "metrics_required": [
+    "accuracy",
+    "success_rate",
+    "avg_latency_ms"
+  ],
+  "immutable": true,
+  "created": "2026-09-01",
+  "supersedes": null,
+  "notes": "accuracy and avg_latency_ms live in the result's `scores` block, not in `metrics`; success_rate is the share of requests that completed at all and is independent of whether the answers were right. Part of the second-generation (-v2) eval wave; there is no commonsense v1."
+}

@@ -14,6 +14,8 @@ export {
   normalizeValue,
   normalizeNumber,
   byteCompare,
+  REQUEST_DEFAULTS,
+  REQUEST_DROP,
 } from './canonical.js';
 export type { CanonicalizeInput, CanonicalizeResult, CanonicalParam } from './canonical.js';
 export {
@@ -36,9 +38,22 @@ export {
   tokensPerForwardPass,
 } from './plausibility.js';
 export type { PlausibilityIssue, PlausibilityInput } from './plausibility.js';
-export { computeScores } from './scoring.js';
+export { resolveConditions, conditionsComparability } from './conditions.js';
+export type { ResolvedConditions, ConditionsSource, Comparability } from './conditions.js';
+export { computeScores, loginKey } from './scoring.js';
 export type { ScoringInput, ScoringOutput, ScoredRun, RegistryCredits } from './scoring.js';
-export { computeCoverage, emptyCell, minorsBehind } from './coverage.js';
+export { computeCoverage, emptyCell, isReleaseVersion, minorsBehind } from './coverage.js';
 export type { CoverageRegistry, CoverageOptions } from './coverage.js';
 export { buildPacket, renderFlags, renderServeCommand, AGENT_RULES } from './packet.js';
 export type { PacketSpec, PacketRegistry, PacketEngineEntry, PacketModelEntry } from './packet.js';
+
+export * from './shards.js';
+export * from './normalize.js';
+export * from './format.js';
+export * from './diff.js';
+export * from './pareto.js';
+export * from './neighbours.js';
+export * from './arms.js';
+export * from './metrics.js';
+export * from './requests.js';
+export { fixtureRow } from './fixtures.js';

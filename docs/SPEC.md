@@ -105,8 +105,8 @@ Hugging Face repo id verbatim (see below). Registry ids are chosen by humans and
 ## 3. Canonicalization (`config_id`)
 
 Input: `engine_id`, `engine_version`, `args` (object of flag→value as passed to the engine),
-`quant_id`, `dtype`. Steps, in order, implemented in `packages/core/src/canonical.ts` and
-`bench/atlas_bench/canonical.py`:
+`quant_id`, `dtype`, `request` (the run's request block). Steps, in order, implemented in
+`packages/core/src/canonical.ts` and `bench/atlas_bench/canonical.py`:
 
 1. Resolve aliases: `engines/<id>/versions/<ver>.json` params carry `aliases: ["-tp"]`; map
    every alias to the canonical `name`. Unknown flags are kept verbatim (lowercased,
@@ -118,8 +118,11 @@ Input: `engine_id`, `engine_version`, `args` (object of flag→value as passed t
    scalar elements; objects → JSON with sorted keys. Params in `drop_params` of the engine
    meta (paths, ports, host, api-key, served-model-name, download-dir, model, revision) are
    removed entirely.
-4. Prepend two pseudo-params: `@quant=<quant_id>` and `@dtype=<dtype|auto>`. (They sort
-   first because `@` < `a`.)
+4. Prepend the pseudo-params: `@quant=<quant_id>`, `@dtype=<dtype|auto>`, `@build=<build>`
+   when the result names one, and `@req.<name>=<value>` for every request option that
+   differs from the harness default (decision 28). Request options keep the API's own
+   spelling (`chat_template_kwargs`, not `chat-template-kwargs`); `api_key` is never
+   fingerprinted. (They sort first because `@` < `a`.)
 5. Sort keys lexicographically (byte order), join as `k=v;k=v`. Empty set → `@dtype=auto;@quant=bf16`-style string still non-empty.
 6. `config_id = sha256(utf8(canonical))[:16]`.
 
@@ -260,7 +263,7 @@ GGUF quants: `"files": ["Qwen3.8-27B-Q5_K_M.gguf"]`, `"engines": ["llamacpp","ol
   "id": "serve-chat-c8-i1k-o256-v1",
   "name": "...",
   "kind": "serving",
-  // serving | sweep | prefill | longctx | eval
+  // serving | sweep | prefill | longctx | eval | agentic | image
   "description": "...",
   "dataset_id": "prompts-mixed-v1",
   "params": {
@@ -274,7 +277,7 @@ GGUF quants: `"files": ["Qwen3.8-27B-Q5_K_M.gguf"]`, `"engines": ["llamacpp","ol
     "repeat": 3,
   },
   "sweep": null, // sweep kind: { "concurrency": [1,2,4,8,16,32] }
-  "eval": null, // eval kind: { "suite": "math", "scorer": "exact|mc|code-exec|json|judge|contains|needle", "pass_threshold": ... }
+  "eval": null, // eval kind: { "suite": "math", "scorer": "exact|mc|code-exec|json|judge|contains|needle|integrity", "pass_threshold": ... }
   "metrics_required": ["ttft_ms", "tpot_ms", "output_tok_s", "prefill_tok_s", "success_rate"],
   "immutable": true,
   "created": "2026-08-23",
@@ -334,6 +337,7 @@ Eval rows: `{ "id", "category", "difficulty", "prompt"|"messages", "answer", "sc
   "args": { "gpu-memory-utilization": 0.44, "max-model-len": 262144, "enable-prefix-caching": true,
             "speculative-config": { "method": "mtp", "num_speculative_tokens": 3 } },
   "args_canonical": "@dtype=auto;@quant=fp8;enable-prefix-caching=true;…",
+  "request": { "chat_template_kwargs": { "enable_thinking": false } },   // options sent with every request that differ from the harness default; null when none did
   "serve_command": "docker run … vllm serve …",              // exact reproducible command line
   "workload": { "id": "...", "resolved_params": { ... } },   // snapshot of what was run
   "metrics": {                                                // serving/prefill/longctx kinds
@@ -360,6 +364,11 @@ Eval rows: `{ "id", "category", "difficulty", "prompt"|"messages", "answer", "sc
   },
   "failures": [ { "at": "request", "count": 3, "category": "timeout|oom|context-overflow|http-5xx|http-4xx|malformed-output|refusal|other",
                   "message": "…", "sample_request_id": "…" } ],
+  "conditions": {                                             // optional; null/absent on results recorded before it existed
+    "dedicated": false,                                        // ASSERTED: nothing else was using the box's compute
+    "detail": "shared LM Studio endpoint reachable by other services; idle Chrome; agent session driving the harness",
+    "isolation_check": "resident-model set sampled before and after every workload; contaminated runs discarded"  // what was MEASURED, as opposed to asserted; null = nothing measured
+  },
   "gotchas": [ { "severity": "info|warn|blocker", "text": "Prefix caching defaults OFF for hybrid models; pass --enable-prefix-caching explicitly." } ],
   "derived": { "cost_per_1m_output_tokens_usd": null, "tokens_per_watt": 25.8, "tok_s_per_gb_bandwidth": 0.32 },
   "raw": { "harness": "atlas-bench", "harness_version": "0.1.0", "sha256": "…", "payload_path": null, "payload": { /* bounded <=100KB */ } },
@@ -367,6 +376,7 @@ Eval rows: `{ "id", "category", "difficulty", "prompt"|"messages", "answer", "sc
     "github_login": "khaledbakeer", "github_user_id": null,    // user_id resolved by CI, left null by contributor
     "started_at": "2026-08-23T10:00:00Z", "finished_at": "...", "submitted_at": "...",
     "commit": null, "pr": null,                                  // stamped by build from git history; contributor leaves null
+                                                                 // submitted_at may also be left null: the build fills it from the commit that added the file
     "method": "atlas-bench|manual|issue-form|agent",
     "agent": { "name": "claude-code", "model": "claude-fable-5" } | null,
     "notes": "Ambient 22C, box otherwise idle, embed engine resident (10 GiB)."
@@ -377,6 +387,14 @@ Eval rows: `{ "id", "category", "difficulty", "prompt"|"messages", "answer", "sc
 
 Bounded: any `raw.payload` above 100 KB must be truncated with `raw.truncated: true` (keep the
 aggregates). Per-item eval results keep at most `predicted` truncated to 500 chars.
+
+`conditions` records run conditions — a property of the run, like ambient temperature, never
+an identifier for the machine. Two honestly-recorded results can differ in nothing but their
+conditions, and the compare view uses this field to say so; it never ranks runs by it.
+Results from before the field existed carry `null`; for those, the canonical prose in
+`provenance.notes` (`Box WAS dedicated: ...` / `Box was NOT dedicated: ...` /
+`Isolation check: ...`) is parsed as a fallback, and anything older resolves to
+"not recorded" rather than a guess.
 
 ## 5. Ownership & provenance enforcement (validate.yml + `tools/validate`)
 
@@ -389,11 +407,24 @@ On every PR:
 5. Plausibility: `output_tok_s_per_request <= memory_bandwidth_gbs / weight_gb * 1.5` (MoE uses active weights), `vram_peak_gb <= memory_gb`, non-negative latencies, `success_rate ∈ [0,1]`, `requests_ok + requests_failed == requests_total`.
 6. Duplicate `run_id` → fail. Same `cell_id+config_id+workload_id` with metric deviation > 25 % from the median of existing → warning + `needs-review` label comment.
 7. Resolve login → numeric user id via `api.github.com/users/<login>` (CI token) and write it into the file in a bot commit on the PR branch (or fail if the login does not exist).
+8. **Identity map ownership:** a PR that changes `site/identities.json` may only add, modify or remove the entry whose `login` equals the PR author. Registry credit is paid on that file, so editing somebody else's entry is editing who gets their points. (Same `maintainer-override` escape as rule 3.)
+9. **Served model vs label:** `raw.payload.engine_endpoint.served_model_id` (what the server answered as) is compared with the model id, the quant `hf_id` and the quant `files`. Both sides carry a parameter-size token (`27b`, `0.6b`; active-parameter tags such as `a3b` are not sizes) and the sets do not overlap: `served-model-mismatch`, error. The served name shares no word of 3+ letters with any label: `served-model-unmatched`, warning.
+10. **One build, one version string:** results in the PR that share `engine.id` + `engine.commit` but name different `engine.version` strings fail with `engine-version-split`. Where the harness recorded the server's own build string (`raw.payload.engine_endpoint.build_info`, from llama.cpp `/props`), `engine.version` must be one of its dash-separated parts, else `engine-version-contradicts-server`.
+11. **Existing registry records are code-owner changes:** modifying, deleting or moving an existing file under `models/`, `hardware/`, `engines/`, `workloads/`, `datasets/`, `schemas/` needs the path's owner as named by `.github/CODEOWNERS` at the base ref (a PR cannot make itself owner), else `registry-edit-foreign` (`maintainer-override` downgrades it to a warning, as in rule 3). Adding a record stays open to everyone, and so does correcting the location fields `hf_id`, `files`, `size_gb`, `revision` of an existing quant. `github-actions[bot]` (engine ingest) is exempt.
+12. **Hugging Face existence (`--check-hf`, passed by CI):** for every model and quant record the PR adds or changes, the Hub API is asked without a token. 401/404: `hf-repo-missing` (the Hub does not distinguish missing from private). 307: `hf-repo-renamed`; the id must be the current one, spelled as the Hub spells it (§2). A quant file absent from the repo: `hf-file-missing`. All three are errors; 5xx and timeouts only warn (`hf-unreachable`).
+
+Rules 9 to 12 fire only on files the PR touches (`--changed`).
 
 On `main` build (`build-pages.yml`): `tools/build` stamps `provenance.commit` (the commit that
 added the file, from `git log --diff-filter=A --format=%H -- <path>`) and `provenance.pr`
 (parsed from that commit's message `(#123)`) into the compiled data — the raw files stay as
 the author committed them.
+
+Registry files (`hardware/`, `engines/`, `models/`, `workloads/`) carry no
+`provenance.github_login`, so their contributor comes from the author address of the commit
+that added them: GitHub's `…@users.noreply.github.com` form spells the login directly, and
+`site/identities.json` maps the ordinary addresses people actually commit with. An address in
+neither is credited to nobody. See decision 25.
 
 ## 6. Compiled data for the app (`tools/build` → `app/public/data/`)
 
@@ -442,7 +473,9 @@ or `--base-url` to attach to a running one), `run --spec`, `validate`, `submit`,
 Adapters per engine under `atlas_bench/engines/`. Workload runners under `atlas_bench/workloads/`:
 `serving`, `sweep`, `prefill`, `longctx`, `eval`. Scorers under `atlas_bench/scorers/`:
 `exact`, `numeric`, `mc`, `contains`, `json`, `code_exec` (subprocess, timeout, no network),
-`needle`, `vision` (same scorers; image attached as base64 data URL). Telemetry sampler:
+`needle`, `vision` (same scorers; image attached as base64 data URL), `integrity` (long-output
+token integrity: masks literals and comments, reports spliced identifiers and numbers).
+Telemetry sampler:
 `nvidia-smi --query-gpu` loop, macOS `powermetrics` if available (sudo) else `ioreg`/none, `psutil`.
 All talk goes through the OpenAI-compatible chat/completions streaming API (Ollama via its
 `/v1`). Streaming is how TTFT/ITL are measured (first token timestamp vs request start).
@@ -616,3 +649,223 @@ or where reality disagreed with it. Each one is binding until superseded here.
 
 21. **No seed results; measurements run on contributors' machines only.** The 8 hand-entered seed
     files were removed; `docs/reference-measurements.md` keeps the numbers as reference.
+
+22. **Staleness is only claimed on the release lineage (2026-08-30).** `minorsBehind` counts
+    only registered versions that can be placed on the engine's published release lineage —
+    a dotted numeric release (`0.27.1`) or a monotonic build number (`b7000`), the two shapes
+    `compareMinor` can actually order. Development and pre-release builds
+    (`0.1.dev20073+g8e685d198`, `0.0.0.dev0+qwen38.27b.g561c8f3`) and opaque build
+    identifiers (`960652b`, `b50-035e227`) are off the lineage: a cell measured on one is
+    never `stale`, and one of them in `versions_available` never makes anybody else's cell
+    stale. setuptools-scm reports `0.1.devN+g<sha>` for a checkout with no reachable tag,
+    which is what building an unmerged branch produces, so the leading `0.1` is a placeholder
+    and ordering it against 0.27 says nothing about age. Such a build is registered as its
+    own engine version precisely because its flags and its behaviour are those of no
+    published release (decision 7, and `engines/vllm/versions/0.1.dev20073+g8e685d198.json`);
+    calling it two minors old contradicts the reason it exists. This is a rule about version
+    strings, not about which engine version can load which model — the registry records no
+    per-version model support, so "is there a newer engine that can even run this" is not a
+    question the data can answer today.
+
+23. **The coverage denominator is the cross product plus what has been measured
+    (2026-08-30).** The registry cross product fixes `hw_count` at 1, because there is no
+    bound on how many devices a contributor may gang together and enumerating 2, 4 and 8 of
+    every device would invent a denominator. A cell somebody has run on several devices is
+    possible all the same, so `stats.cells_possible` and the app's atlas grid are the cross
+    product **union** the measured cells (`possibleCells(repo, cells)`,
+    `atlasCells(reg, coverage)`). Before this, a tensor-parallel run counted in
+    `coverage.json` and in `cells_covered` but appeared nowhere on the grid: the square's run
+    count, its evidence level, its best number and the cell drawer's "Measured" list all
+    silently excluded it, and the coverage ratio had a numerator its denominator did not
+    contain.
+
+24. **A fork's version string does not identify its build, so `@build` does
+    (2026-08-31).** `config_id` was `sha256` over the canonical args plus `@quant` and
+    `@dtype`, and `cell_id` carries the engine _minor_. Neither distinguishes two engines
+    that report the same version. That is not a corner case: a fork built with
+    setuptools-scm reports `<release>+g<sha>` where the sha is the **upstream** commit it
+    branched from, not the patches it carries. Three vLLM builds in this registry today —
+    `0.1.dev20073+g8e685d198`, `0.26.1.dev0+gf2654939e.d20260726`,
+    `0.0.0.dev0+qwen38.27b.g561c8f3` — are forks whose version strings say nothing about
+    their forks, and the same string covers builds either side of a correctness fix: the
+    author of one told us its pre-2026-08-30 wheels write a sparse-MLA cache out of bounds
+    on long generations, which is a different engine wearing the same name.
+
+    An engine version therefore declares `distribution`, and a fork must name
+    `source_repo` and `source_ref`. A result on a fork must set `engine.build` — a
+    container digest, or `<fork repo>@<fork ref>` — and that value enters the canonical
+    string as `@build`, so two builds of one version get two fingerprints.
+
+    Two deliberate limits. The pseudo-param is **omitted when absent**, so every result
+    merged before this rule keeps its `config_id` and no history is rewritten. And the
+    missing-build check fires **only under review**: an already-merged cell predates the
+    field, and failing it now would claim its numbers are wrong when what is missing is a
+    provenance field nobody could have supplied. Where a fork's origin is genuinely not
+    known — `sglang 0.0.0.dev0+qwen38.27b.g561c8f3` — `source_repo` is recorded as
+    `unknown` rather than guessed; an invented repository would be worse than an admitted
+    gap.
+
+    A result already on disk without the field is repaired by `atlas-bench restamp FILE
+--build <ref>`, which recomputes the fingerprint and moves the file, because the
+    filename is the run id. Restamping is idempotent, refuses to replace a build already
+    recorded unless forced, and never touches `cell_id`: a build is a property of the
+    configuration, not of the cell the configuration sits in.
+
+25. **Registry credit resolves an address through a claimed identity, never through a
+    display name (2026-09-03).** A result file names its own contributor and validate checks
+    that name against the pull request author, so results are attributable by construction.
+    A registry file — a device, a model, a quant, a workload — has no such field: the only
+    identity in its history is the author address of the commit that added it. Only GitHub's
+    `…@users.noreply.github.com` form spells a login, and guessing one from a display name
+    would put somebody else's points on an account, so anything else was credited to nobody.
+
+    That was not a corner case. Of the five addresses that have added registry files to this
+    repository, one is a noreply address. The other four — 179 files between them, including
+    every piece of hardware, every model and every quant seeded by the maintainer — earned
+    nothing at all, and the first outside contributor to add a device did not appear on the
+    leaderboard at any position.
+
+    `site/identities.json` maps author address → login. Three properties keep it from
+    becoming the guess it replaces. The **noreply form always wins**, so a map entry can
+    never redirect an address GitHub has already spoken for. An **address belongs to exactly
+    one login**, checked across the whole file. And a **pull request may only touch the entry
+    for its own author** (§5.8), which makes the map self-service without making it a way to
+    take somebody else's credit — the same rule result files have always lived under, moved
+    from the file to the entry.
+
+    Entries carry `verified_by`: the pull requests whose author GitHub recorded as that
+    login and whose commits carried that address. `resolve-identities` proposes entries from
+    exactly that evidence — it reads the `(#123)` in each adding commit, asks the API who
+    opened it, and writes the pair down — so filling the map is mechanical rather than a
+    matter of recognising names. The build never makes that call: it reads the committed
+    file, which keeps the compiled data deterministic and offline.
+
+    Two things this deliberately does not do. It does not backfill `provenance` in result
+    files, which already have a better answer. And it does not credit an unclaimed address:
+    an unattributable commit stays unattributed, because crediting a plausible neighbour is
+    worse than crediting nobody.
+
+**2026-09-20 — image generation (decision 26)**
+
+26. **Image generation is one new workload kind and nothing else.** A text-to-image model
+    is measured along the same axes as any other — model × quant × hardware × engine ×
+    flags × workload — so it needs no new registry, no new result shape and no second
+    fingerprint. What it does need is a place to say _what picture_, and that splits in two:
+
+    - **`kind: image`** is latency. The render shape is the workload (`width`, `height`,
+      `steps`, `seed`, `images_per_request`, `ref_images` are required in `params`), the
+      dataset supplies prompts, concurrency is 1 because one image at a time is the honest
+      shape of a single-GPU box for this model class, and the headline is
+      `metrics.s_per_image` with the warmup renders excluded. Two metric-block fields were
+      added for it: `s_per_image` (a distribution, so `metrics_required` can name
+      `s_per_image.p50` the way it names `ttft_ms.p50`) and `load_s`. Peak memory stays
+      `vram_peak_gb` — the existing 1 Hz `nvidia-smi` sampler already produces it, and a
+      second field in different units would fracture the data for nothing.
+    - **Scored image suites stay `kind: eval`.** They produce a `scores` block, they count
+      as eval coverage, and `accuracy` keeps its meaning (share of items that passed the
+      suite's threshold). Four scorers were added to the vocabulary — `ocr`, `clip`, `rgba`,
+      `fidelity` — in a second registry (`IMAGE_SCORERS`) because their call shape is
+      `score(path, row, cfg) -> ImageScore`, not `score(text, row) -> ScoreResult`. Their
+      render spec is frozen **per case in the dataset row** (`meta.render`), not in the
+      workload: a case rendered at another size or seed is a different picture, and the
+      whole point of a frozen suite is that everyone renders the same one.
+
+    `scores.items[]` gained one optional field, `metrics`, for suites where "correct" is a
+    threshold on a measurement rather than a match. It holds numbers, and the two 64-bit
+    perceptual hashes; `predicted` is **null** on every image item.
+
+27. **A fidelity reference is local, and only its fingerprints are published.** Comparing a
+    quantized lane against bf16 at identical prompt, size, steps and seed is the most useful
+    thing this suite can do, and it needs reference pixels — which cannot live here. §0.6 is
+    explicit that test data is authored in this repository, `datasets/README.md` says no
+    model output was used as data, and 24 references at 1K and 2K would also be a fifth of
+    the corpus budget under a licence nobody can name.
+
+    So the reference is a **local bundle**: `atlas-bench t2i-reference` renders the suite
+    once from the bf16 configuration on the contributor's own box and writes the images plus
+    a manifest — per case a sha256, a 64-bit perceptual hash and the render digest, and for
+    the bundle as a whole the engine, version, `config_id`, `args_canonical` and hardware id
+    that produced it. A fidelity result publishes the metrics, the candidate's and the
+    reference's perceptual hashes, and the bundle header. Never a pixel.
+
+    Two properties make that honest rather than merely convenient. The **render digest**
+    (`sha256(prompt|w|h|steps|seed|mode|refs)[:16]`, computed identically in
+    `datasets/_gen/_lib.py` and `atlas_bench/images.py`, pinned by a test over the committed
+    rows) is compared before scoring, so a bundle built from an edited case set is refused
+    instead of reported as drift. And the **perceptual hashes** are what let two
+    contributors compare references at all: equal hashes mean the same picture, a large
+    Hamming distance means two boxes disagree about what bf16 produces on that case, which
+    is worth knowing before anyone compares their PSNR tables. The cost is real and stated:
+    a fidelity number is only meaningful relative to a reference the same contributor made,
+    and the result names it (`workload.resolved_params.reference_run_id`).
+
+**2026-09-23 — the request block (decision 28)**
+
+28. **What was sent with every request is part of the configuration, so it is in the
+    result and in `config_id`.** The packet has carried a `request` block since §7 was
+    written — temperature, seed, `chat_template_kwargs`, `reasoning_effort` — and the
+    harness applied it to every request and then dropped it on the floor: it appeared in
+    no result file and in no fingerprint. That is not a cosmetic gap. A thinking model
+    measured twice, once with `chat_template_kwargs {"enable_thinking": false}` and once
+    without, produced two rows for the same cell and workload that shared a `config_id`,
+    carried identical engine args, and differed by up to 0.46 in accuracy. Nothing in the
+    data said which was which; the pair read as noise on one configuration.
+
+    So `results/…json` gains a `request` block and canonicalization gains a family of
+    pseudo-params, `@req.<name>`. Three rules keep it honest:
+
+    - **Only what was chosen is recorded.** An option equal to the harness default
+      (`RequestOptions` in `bench/atlas_bench/spec.py`: temperature 0, seed 42,
+      `timeout_s` 600, everything else unset) says nothing about the run, so it is neither
+      written nor hashed. The block is `null` when nothing survives. This is step 2 of this
+      section applied to requests instead of flags, and it is what lets every result
+      recorded before this existed keep its id — verified by the `request-block-all-defaults`
+      golden vector, which hashes to the same value as `empty-args`.
+    - **Names keep the API's spelling.** These are wire fields, not CLI flags, so
+      `chat_template_kwargs` is not lowercased into a dash-separated flag name. `@req.` is
+      what marks the namespace.
+    - **A credential is not a measurement input.** `api_key` is dropped from the record and
+      from the hash, the way `api-key` already is from `args`.
+
+    A setting the harness applied through a proxy rather than through the request body is
+    still a request option and still belongs here, with a gotcha naming the proxy — where
+    the bytes were rewritten is provenance, not a reason to omit what the model was asked.
+
+**2026-09-23: contribution guards (decision 29)**
+
+29. **A submission that passes every recomputed id can still be filed under the wrong
+    model, build or registry record, so those three are checked too.** Rules 1 to 8 of §5
+    prove that a result agrees with itself and that its author owns it. They say nothing
+    about whether the server that answered was the model the file names. A run served by
+    another model passes all eight: `served_model_id` was recorded for exactly this case,
+    and no rule read it. Versions had the same gap. Nine rows named `b7000` and two named
+    `f95b0d9`, all on commit f95b0d9, are one engine split into two atlas cells. And any
+    pull request could rewrite an existing registry record, so a wrong release date or a
+    dropped attention note would change what every measurement of that model means, with
+    no owner asked.
+
+    Four checks close this. Each fires only on files the pull request touches (`--changed`),
+    so `main` still validates at 0 errors and the 384 warnings it had before.
+
+    - **The served name must agree with the label.** Both carry a parameter-size token
+      (`27b`, `0.6b`) and the sets do not overlap: error. Active-parameter tags such as `a3b`
+      are not sizes. No shared word of 3+ letters: warning. None of the 569 results on
+      `main` trips either.
+    - **One build, one version string.** Results in one pull request that share `engine.id`
+      and `engine.commit` must name one `engine.version`. Where atlas-bench recorded the
+      server's own build string (llama.cpp `/props`, `build_info: b11071-f95b0d9`), the
+      version must be one of its parts.
+    - **An existing registry record is a code-owner change.** Adding a record stays open to
+      everyone. Validate reads the owner from `CODEOWNERS` at the base ref, so a pull
+      request cannot make itself the owner. One exception: the location fields of a quant
+      (`hf_id`, `files`, `size_gb`, `revision`), which the quant notes already ask
+      contributors to correct.
+    - **A record must point at a public Hub repository.** `--check-hf` asks the Hugging
+      Face API, without a token, about every model and quant record the pull request adds
+      or changes. 401 and 404 mean not public, since the Hub does not distinguish missing
+      from private. 307 means the id is not spelled as the Hub spells it, which §2 already
+      requires. A quant file absent from the repository is an error. 5xx and timeouts only
+      warn. Run over the whole registry, this found 11 records already broken; the
+      touched-files rule keeps them from blocking anyone. atlas-bench refuses the first
+      case up front: a packet with no `served_model_id` against a server advertising
+      more than one model, none matching, stops before the first request (exit 2).

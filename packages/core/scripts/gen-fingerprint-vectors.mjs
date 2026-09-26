@@ -73,6 +73,7 @@ const cases = [
     description:
       'No flags at all still produces a non-empty canonical string: the two pseudo-params.',
     input: vllm({}),
+    equivalence_group: 'vllm-empty',
   },
   {
     name: 'alias-resolution-short-flag',
@@ -281,6 +282,77 @@ const cases = [
       drop_params: LLAMACPP_DROP,
     },
     equivalence_group: 'llamacpp-long',
+  },
+  {
+    name: 'fork-build-a',
+    description:
+      "Two forks can share a version string: `0.1.dev20073+g8e685d198` names the UPSTREAM commit the fork branched from, not the fork's patches. @build is what separates them.",
+    input: {
+      engine_id: 'vllm',
+      engine_version: '0.1.dev20073+g8e685d198',
+      args: {},
+      quant_id: 'nvfp4',
+      dtype: null,
+      params: [],
+      build: 'github.com/blazux/qwen3.8-flash-dgx@82ed48d',
+    },
+  },
+  {
+    name: 'fork-build-b',
+    description:
+      'Same fork, later commit. The prefix-caching fix landed between these two refs, so they are materially different engines behind one version string and must not share a fingerprint.',
+    input: {
+      engine_id: 'vllm',
+      engine_version: '0.1.dev20073+g8e685d198',
+      args: {},
+      quant_id: 'nvfp4',
+      dtype: null,
+      params: [],
+      build: 'github.com/blazux/qwen3.8-flash-dgx@8347e7c',
+    },
+  },
+  {
+    name: 'no-build-is-omitted',
+    description:
+      'A result that declares no build hashes exactly as it did before @build existed, so every id recorded to date stays valid.',
+    input: {
+      engine_id: 'vllm',
+      engine_version: '0.27.1',
+      args: {},
+      quant_id: 'nvfp4',
+      dtype: null,
+      params: [],
+      build: null,
+    },
+  },
+  {
+    name: 'request-block-all-defaults',
+    description:
+      'A request block left at the harness defaults changes nothing, so every result recorded before the block existed keeps its id.',
+    input: vllm(
+      {},
+      { request: { temperature: 0, top_p: null, seed: 42, timeout_s: 600, extra_body: {} } },
+    ),
+    equivalence_group: 'vllm-empty',
+  },
+  {
+    name: 'request-block-thinking-off',
+    description:
+      'chat_template_kwargs {"enable_thinking": false} is a different configuration of the same server and gets its own config_id.',
+    input: vllm({}, { request: { chat_template_kwargs: { enable_thinking: false } } }),
+  },
+  {
+    name: 'request-block-api-key-dropped',
+    description:
+      'A credential never reaches a fingerprint, the same way the api-key flag never does.',
+    input: vllm({}, { request: { api_key: 'sk-not-in-the-hash' } }),
+    equivalence_group: 'vllm-empty',
+  },
+  {
+    name: 'request-block-sorts-after-the-other-pseudo-params',
+    description:
+      '@req.* keeps the API spelling of the option (snake_case, not a flag) and sorts after @quant.',
+    input: vllm({ '-tp': 2 }, { request: { temperature: 0.7, reasoning_effort: 'max', seed: 7 } }),
   },
   {
     name: 'engine-level-param-aliases',

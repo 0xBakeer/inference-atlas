@@ -54,6 +54,10 @@ file — never a code change. `AGENTS.md` has the field-by-field guidance, inclu
 that matters most: **if you are not sure of a specification, write `null` and say why.** The
 plausibility checks are derived from those numbers.
 
+If you commit under an ordinary git address rather than a GitHub noreply one, add it to
+`site/identities.json` in the same pull request — that file is what pays registry additions
+onto your account, and you may only edit your own entry in it.
+
 A model goes to `models/<owner>/<name>/model.json` under its Hugging Face repo id, with
 `hf_id` equal to `id`; its quantizations go to `models/<owner>/<name>/quants/<quant-id>.json`
 with a short lowercase id (`fp8`, `mlx-4bit`, `gguf-q4-k-m`) and the `hf_id` of whichever

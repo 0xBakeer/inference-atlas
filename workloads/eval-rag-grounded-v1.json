@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "id": "eval-rag-grounded-v1",
+  "name": "Grounded answering eval v1",
+  "kind": "eval",
+  "description": "Runs all 120 items of eval-rag-grounded-v1 at temperature 0: a question over a short invented passage (80-110 words), half answerable and half not. Reports accuracy overall and by category, where lookup/combine/condition measure reading the passage and absent/near_miss measure declining when the passage does not hold the answer. Pinned together with the dataset: a change to either means a new -v2 id.",
+  "dataset_id": "eval-rag-grounded-v1",
+  "params": {
+    "concurrency": 4,
+    "num_requests": 120,
+    "input_tokens": null,
+    "output_tokens": 2048,
+    "seed": 42,
+    "warmup_requests": 0,
+    "temperature": 0,
+    "repeat": 1,
+    "timeout_s": 300,
+    "reasoning": "default"
+  },
+  "sweep": null,
+  "eval": {
+    "suite": "rag-grounded",
+    "scorer": "needle",
+    "pass_threshold": null,
+    "max_output_tokens": 2048,
+    "categories": [
+      "lookup",
+      "combine",
+      "condition",
+      "absent",
+      "near_miss"
+    ],
+    "notes": "Answerable rows pass when the computed value occurs in the extracted output; unanswerable rows pass when any of the dataset's abstain phrases does (the prompt asks for NOT IN PASSAGE). Always declining scores 0.5, so read by_category."
+  },
+  "metrics_required": [
+    "accuracy",
+    "success_rate",
+    "avg_latency_ms"
+  ],
+  "immutable": true,
+  "created": "2026-09-22",
+  "supersedes": null,
+  "notes": "Part of the small-model tier (workloads/README.md). accuracy and avg_latency_ms live in the result's `scores` block, not in `metrics`; success_rate is the share of requests that completed at all and is independent of whether the answers were right."
+}

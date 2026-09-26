@@ -4,7 +4,7 @@ import { customElement, property, state } from 'lit/decorators.js';
 import type { IndexRow } from '../data/types.js';
 import { store } from '../store.js';
 import { fuzzyScore } from '../util/filters.js';
-import { headlineMetric } from '../util/metrics.js';
+import { headlineMetric } from '@atlas/core';
 import { AtlasElement } from './base.js';
 import { icon } from './icons.js';
 import { kindTag } from './ui.js';

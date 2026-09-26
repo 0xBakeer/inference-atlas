@@ -1,0 +1,580 @@
+{
+  "schema_version": 1,
+  "run_id": "edef00bacaa751a3--eval-format-v1--24800b",
+  "config_id": "edef00bacaa751a3",
+  "cell_id": "7b7ca8936123",
+  "workload_id": "eval-format-v1",
+  "kind": "eval",
+  "engine": {
+    "id": "sglang",
+    "version": "0.0.0.dev1+g5f55db35e",
+    "commit": null,
+    "build": "github.com/darkdatter/gb10-repo@2db1ecda01d9cab104aff9706083d1352a651a1a",
+    "container": "lmsysorg/sglang:dev-cu13-qwen38-27b-dflash2 (official LMSYS DFlash2 image, pulled as-is by the recipe fetch script; no local build, no lm_head patch)",
+    "install_method": "docker"
+  },
+  "model": {
+    "id": "Qwen/Qwen3.8-27B",
+    "quant_id": "nvfp4-fp4-lmhead",
+    "hf_id": "Qwen/Qwen3.8-27B",
+    "revision": "554ebba9b5f1b79dc11246341960360e6ef05ef4",
+    "dtype": "auto",
+    "local_path": null
+  },
+  "hardware": {
+    "id": "nvidia-gb10-dgx-spark",
+    "count": 1,
+    "driver": "580.173.02",
+    "cuda": "13.0",
+    "host": {
+      "cpu": "Cortex-A725",
+      "cpu_cores": 20,
+      "ram_gb": 121.6,
+      "os": "Ubuntu 24.04.4 LTS",
+      "kernel": "6.17.0-1029-nvidia",
+      "arch": "aarch64"
+    },
+    "fingerprint": "sha256:52ea2bdd513719724db88c162b6cc2c9fb4e5b67e02dbe41b9de00687acefb91",
+    "captured": {
+      "nvidia_smi": {
+        "driver": "580.173.02",
+        "cuda": "13.0",
+        "products": [
+          "NVIDIA GB10"
+        ],
+        "fb_memory_total_mib": 0
+      },
+      "lscpu": {
+        "architecture": "aarch64",
+        "cpus": "20",
+        "vendor_id": "ARM",
+        "model_name": "Cortex-A725",
+        "cores_per_socket": "10",
+        "sockets": "1",
+        "cpu_max_mhz": "2808.0000"
+      }
+    }
+  },
+  "args": {
+    "trust-remote-code": true,
+    "revision": "554ebba9b5f1b79dc11246341960360e6ef05ef4",
+    "tp-size": 1,
+    "context-length": 262144,
+    "mem-fraction-static": 0.85,
+    "max-total-tokens": 1048576,
+    "attention-backend": "flashinfer",
+    "chunked-prefill-size": 8192,
+    "disable-prefill-cuda-graph": true,
+    "cuda-graph-max-bs-decode": 16,
+    "kv-cache-dtype": "fp8_e4m3",
+    "speculative-algorithm": "DFLASH",
+    "speculative-draft-model-path": "z-lab/Qwen3.8-27B-DFlash2",
+    "speculative-draft-model-revision": "50307d4c4cde6860d4eee73e2547cd786fe8e8a4",
+    "speculative-num-draft-tokens": 16,
+    "mamba-radix-cache-strategy": "extra_buffer",
+    "mamba-ssm-dtype": "bfloat16",
+    "mamba-full-memory-ratio": 4.21,
+    "max-mamba-cache-size": 80,
+    "max-running-requests": 16,
+    "reasoning-parser": "qwen3",
+    "tool-call-parser": "qwen3_coder",
+    "sampling-defaults": "model",
+    "enable-metrics": true,
+    "enable-cache-report": true
+  },
+  "args_canonical": "@build=github.com/darkdatter/gb10-repo@2db1ecda01d9cab104aff9706083d1352a651a1a;@dtype=auto;@quant=nvfp4-fp4-lmhead;attention-backend=flashinfer;chunked-prefill-size=8192;context-length=262144;cuda-graph-max-bs-decode=16;disable-prefill-cuda-graph=true;enable-cache-report=true;enable-metrics=true;kv-cache-dtype=fp8_e4m3;mamba-full-memory-ratio=4.21;mamba-radix-cache-strategy=extra_buffer;mamba-ssm-dtype=bfloat16;max-mamba-cache-size=80;max-running-requests=16;max-total-tokens=1048576;mem-fraction-static=0.85;reasoning-parser=qwen3;sampling-defaults=model;speculative-algorithm=DFLASH;speculative-draft-model-path=z-lab/Qwen3.8-27B-DFlash2;speculative-draft-model-revision=50307d4c4cde6860d4eee73e2547cd786fe8e8a4;speculative-num-draft-tokens=16;tool-call-parser=qwen3_coder;tp-size=1;trust-remote-code=true",
+  "serve_command": null,
+  "workload": {
+    "id": "eval-format-v1",
+    "resolved_params": {
+      "dataset_id": "eval-format-v1",
+      "suite": "format",
+      "scorer": "exact",
+      "items": 30,
+      "concurrency": 4,
+      "max_output_tokens": 256,
+      "timeout_s": 300,
+      "temperature": 0,
+      "reasoning": "default",
+      "dataset_categories": null,
+      "dataset_target_tokens": null,
+      "pass_threshold": null,
+      "seed": 42
+    }
+  },
+  "metrics": {
+    "requests_total": 30,
+    "requests_ok": 30,
+    "requests_failed": 0,
+    "success_rate": 1,
+    "duration_s": 14.665,
+    "input_tokens_total": 2094,
+    "output_tokens_total": 1604,
+    "e2e_ms": {
+      "mean": 1841.339,
+      "p50": 1542.556,
+      "p90": 2758.315,
+      "p95": 3111.218,
+      "p99": 4225.77,
+      "min": 850.613,
+      "max": 4663.561
+    },
+    "vram_peak_gb": null,
+    "ram_peak_gb": 108.187,
+    "power_avg_w": 49.22,
+    "power_peak_w": 53.87,
+    "energy_wh": 0.1919,
+    "gpu_util_avg_pct": 88.93,
+    "temp_max_c": 71,
+    "thermal_throttle_detected": false
+  },
+  "scores": {
+    "suite": "format",
+    "total": 30,
+    "correct": 30,
+    "accuracy": 1,
+    "success_rate": 1,
+    "by_category": {
+      "boolean": {
+        "total": 4,
+        "correct": 4
+      },
+      "number_only": {
+        "total": 8,
+        "correct": 8
+      },
+      "one_word": {
+        "total": 8,
+        "correct": 8
+      },
+      "pattern": {
+        "total": 3,
+        "correct": 3
+      },
+      "token": {
+        "total": 7,
+        "correct": 7
+      }
+    },
+    "by_difficulty": {
+      "easy": {
+        "total": 12,
+        "correct": 12
+      },
+      "hard": {
+        "total": 3,
+        "correct": 3
+      },
+      "medium": {
+        "total": 15,
+        "correct": 15
+      }
+    },
+    "avg_output_tokens": 53.47,
+    "avg_latency_ms": 1841.34,
+    "failures": 0,
+    "items": [
+      {
+        "id": "fmt-0001",
+        "correct": true,
+        "predicted": "42",
+        "expected": "42",
+        "latency_ms": 1516.127,
+        "output_tokens": 33,
+        "category": "number_only",
+        "difficulty": "easy"
+      },
+      {
+        "id": "fmt-0002",
+        "correct": true,
+        "predicted": "25",
+        "expected": "25",
+        "latency_ms": 1516.963,
+        "output_tokens": 40,
+        "category": "number_only",
+        "difficulty": "easy"
+      },
+      {
+        "id": "fmt-0003",
+        "correct": true,
+        "predicted": "8",
+        "expected": "8",
+        "latency_ms": 850.613,
+        "output_tokens": 39,
+        "category": "number_only",
+        "difficulty": "easy"
+      },
+      {
+        "id": "fmt-0004",
+        "correct": true,
+        "predicted": "42",
+        "expected": "42",
+        "latency_ms": 1247.954,
+        "output_tokens": 35,
+        "category": "number_only",
+        "difficulty": "easy"
+      },
+      {
+        "id": "fmt-0005",
+        "correct": true,
+        "predicted": "9",
+        "expected": "9",
+        "latency_ms": 2724.905,
+        "output_tokens": 85,
+        "category": "number_only",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0006",
+        "correct": true,
+        "predicted": "30",
+        "expected": "30",
+        "latency_ms": 1409.539,
+        "output_tokens": 41,
+        "category": "number_only",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0007",
+        "correct": true,
+        "predicted": "13",
+        "expected": "13",
+        "latency_ms": 1532.615,
+        "output_tokens": 62,
+        "category": "number_only",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0008",
+        "correct": true,
+        "predicted": "150",
+        "expected": "150",
+        "latency_ms": 1285.079,
+        "output_tokens": 60,
+        "category": "number_only",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0009",
+        "correct": true,
+        "predicted": "OK",
+        "expected": "OK",
+        "latency_ms": 1310.438,
+        "output_tokens": 22,
+        "category": "one_word",
+        "difficulty": "easy"
+      },
+      {
+        "id": "fmt-0010",
+        "correct": true,
+        "predicted": "Tokyo",
+        "expected": "Tokyo",
+        "latency_ms": 1165.777,
+        "output_tokens": 30,
+        "category": "one_word",
+        "difficulty": "easy"
+      },
+      {
+        "id": "fmt-0011",
+        "correct": true,
+        "predicted": "Green",
+        "expected": "green",
+        "latency_ms": 2065.111,
+        "output_tokens": 49,
+        "category": "one_word",
+        "difficulty": "easy"
+      },
+      {
+        "id": "fmt-0012",
+        "correct": true,
+        "predicted": "cold",
+        "expected": "cold",
+        "latency_ms": 2247.177,
+        "output_tokens": 60,
+        "category": "one_word",
+        "difficulty": "easy"
+      },
+      {
+        "id": "fmt-0013",
+        "correct": true,
+        "predicted": "mice",
+        "expected": "mice",
+        "latency_ms": 1854.851,
+        "output_tokens": 43,
+        "category": "one_word",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0014",
+        "correct": true,
+        "predicted": "salta",
+        "expected": "salta",
+        "latency_ms": 1709.516,
+        "output_tokens": 50,
+        "category": "one_word",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0015",
+        "correct": true,
+        "predicted": "jumps",
+        "expected": "jumps",
+        "latency_ms": 2119.1,
+        "output_tokens": 60,
+        "category": "one_word",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0016",
+        "correct": true,
+        "predicted": "inf",
+        "expected": "inf",
+        "latency_ms": 2219.602,
+        "output_tokens": 57,
+        "category": "one_word",
+        "difficulty": "hard"
+      },
+      {
+        "id": "fmt-0017",
+        "correct": true,
+        "predicted": "Fe",
+        "expected": "Fe",
+        "latency_ms": 1552.497,
+        "output_tokens": 40,
+        "category": "token",
+        "difficulty": "easy"
+      },
+      {
+        "id": "fmt-0018",
+        "correct": true,
+        "predicted": "DE",
+        "expected": "DE",
+        "latency_ms": 4663.561,
+        "output_tokens": 142,
+        "category": "token",
+        "difficulty": "easy"
+      },
+      {
+        "id": "fmt-0019",
+        "correct": true,
+        "predicted": "ja",
+        "expected": "ja",
+        "latency_ms": 1519.348,
+        "output_tokens": 55,
+        "category": "token",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0020",
+        "correct": true,
+        "predicted": "s",
+        "expected": "s",
+        "latency_ms": 1518.97,
+        "output_tokens": 47,
+        "category": "token",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0021",
+        "correct": true,
+        "predicted": "ff",
+        "expected": "ff",
+        "latency_ms": 1665.924,
+        "output_tokens": 58,
+        "category": "token",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0022",
+        "correct": true,
+        "predicted": "IX",
+        "expected": "IX",
+        "latency_ms": 1371.755,
+        "output_tokens": 38,
+        "category": "token",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0023",
+        "correct": true,
+        "predicted": "l",
+        "expected": "l",
+        "latency_ms": 1228.999,
+        "output_tokens": 46,
+        "category": "token",
+        "difficulty": "hard"
+      },
+      {
+        "id": "fmt-0024",
+        "correct": true,
+        "predicted": "yes",
+        "expected": "yes",
+        "latency_ms": 3059.006,
+        "output_tokens": 68,
+        "category": "boolean",
+        "difficulty": "easy"
+      },
+      {
+        "id": "fmt-0025",
+        "correct": true,
+        "predicted": "true",
+        "expected": "true",
+        "latency_ms": 1385.935,
+        "output_tokens": 48,
+        "category": "boolean",
+        "difficulty": "easy"
+      },
+      {
+        "id": "fmt-0026",
+        "correct": true,
+        "predicted": "yes",
+        "expected": "yes",
+        "latency_ms": 1908.769,
+        "output_tokens": 46,
+        "category": "boolean",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0027",
+        "correct": true,
+        "predicted": "false",
+        "expected": "false",
+        "latency_ms": 1865.336,
+        "output_tokens": 40,
+        "category": "boolean",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0028",
+        "correct": true,
+        "predicted": "2026-03-01",
+        "expected": "2026-03-01",
+        "latency_ms": 3153.937,
+        "output_tokens": 110,
+        "category": "pattern",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0029",
+        "correct": true,
+        "predicted": "00:15",
+        "expected": "00:15",
+        "latency_ms": 2278.949,
+        "output_tokens": 57,
+        "category": "pattern",
+        "difficulty": "medium"
+      },
+      {
+        "id": "fmt-0030",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 1291.809,
+        "output_tokens": 43,
+        "category": "pattern",
+        "difficulty": "hard"
+      }
+    ]
+  },
+  "failures": [],
+  "conditions": {
+    "dedicated": true,
+    "detail": "Only the recipe's own SGLang container (qwen3.8-27b-sglang) was resident; nothing else used the GPU.",
+    "isolation_check": "docker ps -> qwen3.8-27b-sglang dgx-exporter ; nvidia-smi compute apps -> 2; load1 at start 1.06"
+  },
+  "gotchas": [
+    {
+      "severity": "info",
+      "text": "No engine version file for sglang@0.0.0.dev1+g5f55db35e; no defaults could be dropped from the canonical config."
+    },
+    {
+      "severity": "info",
+      "text": "Boot lottery: this boot allocated the KV pool at the recipe-capped max-total-tokens of 1,048,576 (target cache torch.float8_e4m3fn, K 16.00 GB + V 16.00 GB; the DFlash2 draft cache is the same dtype at K 5.00 GB + V 5.00 GB), with mem-fraction-static 0.85 and the native 262144 window, leaving 17.13 GB free after CUDA-graph capture. The recipe documents boot-to-boot variance of about 8 percent on single-stream against under 2 percent run-to-run inside one server instance, so read a pool number out of the log of the boot it belongs to and size any A/B delta against 8 percent."
+    },
+    {
+      "severity": "info",
+      "text": "Five mamba state slots per request, not four. SGLang clamps max_running_requests to max_mamba_cache_size divided by 5, so the recipe sizes the GDN pool at 80 for a target of 16. That held here: the server log reports max_running_requests=16 with no clamp line, which is the check the recipe asks for after any change to either flag."
+    },
+    {
+      "severity": "info",
+      "text": "The GDN state pool costs more on this image than the recipe measured. At the same 80 slots with --mamba-ssm-dtype bfloat16 the server allocated conv_state 0.22 GB + ssm_state 5.70 GB + intermediate_ssm_state_cache 19.12 GB + intermediate_conv_window_cache 0.28 GB, so 25.3 GB against the 15.6 GB in the recipe memory table, and 17.13 GB free after load against its 20.6 GB. The recipe numbers came from a locally built image on an older SGLang; this ran the official lmsysorg/sglang:dev-cu13-qwen38-27b-dflash2, engine version 0.0.0.dev1+g5f55db35e. Budget the difference before raising the pool to the 160 the recipe calls the practical ceiling."
+    },
+    {
+      "severity": "info",
+      "text": "The recipe fetch script downloads both checkpoints into the real ~/.cache/huggingface, but the toolkit launcher it hands off to sets HF_HOME to the working directory it is started from, so following the two documented steps in order re-downloads about 25 GB into the toolkit directory. The weights were staged across as hardlinks instead. Hardlinks are safe here; symlinks are not, because the container bind-mounts that directory and an in-mount symlink to a host-only path makes it re-download and then fail with OSError File exists."
+    },
+    {
+      "severity": "info",
+      "text": "A download pinned to a revision leaves no refs/main in the Hugging Face cache, and SGLang resolves the draft config in its early speculative-algorithm probe without a revision. refs/main was written for both repositories before the first start, pointing at the pinned snapshots, so the probe resolved locally and the server log shows no lookup for either."
+    },
+    {
+      "severity": "info",
+      "text": "The toolkit launcher builds its command line for EAGLE and the DFlash2 wrapper only appends overrides, so --speculative-num-steps 3 and --speculative-eagle-topk 1 are still on the command line under --speculative-algorithm DFLASH. SGLang resolved speculative_num_steps to 1 for DFlash2 and ignored the rest; the served args record what the server parsed, not what the wrapper passed."
+    },
+    {
+      "severity": "info",
+      "text": "Draft tokens are set to 16, the recipe README step 6 optimum for interactive single-stream work. The recipe is explicit that the optima diverge and that 10 is the better setting for concurrent serving, worth 435 against 385 aggregate tok/s in its own sweep, so the c8 and c16 rows here are measured at the single-stream setting and are not this recipe at its concurrency optimum."
+    },
+    {
+      "severity": "info",
+      "text": "This is the standalone launch path of README step 3 plus the step 5 and step 6 tuning passed through DF_EXTRA, not the SparkStation orchestration of step 4. The recipe measures the LiteLLM gateway overhead at zero (62.3 against 62.5 tok/s), and its own traps list the SparkStation supervisor restarting a healthy model mid-job when a long prefill cannot answer a 5 second health probe, which would corrupt the long-context rows. No systemd unit, supervisor or cockpit was installed."
+    },
+    {
+      "severity": "info",
+      "text": "The server runs with no API key and with sleep_on_idle false, so unlike some recipes on this cell there is no idle wake-up cost on the first request after a gap. Every workload still ran after a warm-up request on an already-answering server."
+    },
+    {
+      "severity": "info",
+      "text": "Target revision 554ebba9 is the same revision the atlas quant entry nvfp4-fp4-lmhead pins, so no revision patch was needed. Passing it is still required: the recipe warns that downloading the right checkpoint does not make SGLang load it, and --revision has to be given to the server separately."
+    },
+    {
+      "severity": "info",
+      "text": "Speed rows force thinking off per request with chat_template_kwargs enable_thinking false. Eval rows use the served default, which here is thinking on at full length, because the chat template comes from the target repository unmodified and sampling-defaults is model. The recipe warns that a small token cap with thinking on returns empty content with everything in reasoning_content, which reads as a quality regression: it scored one of its own 97.0 percent runs at 90.9 percent that way."
+    }
+  ],
+  "derived": {
+    "cost_per_1m_output_tokens_usd": null,
+    "tokens_per_watt": null,
+    "tok_s_per_gb_bandwidth": null,
+    "bandwidth_efficiency": null,
+    "memory_headroom_gb": null
+  },
+  "raw": {
+    "harness": "atlas-bench",
+    "harness_version": "0.1.0",
+    "sha256": "337675f3cbab514e5d0e9c30d040feabad601763dab993701cfc94fb76aa79a0",
+    "payload_path": null,
+    "payload": {
+      "scorer": "exact",
+      "scorers_used": [
+        "exact"
+      ],
+      "engine_endpoint": {
+        "attached": true,
+        "base_url": "http://127.0.0.1:8888/v1",
+        "served_model_id": "qwen3.8-27b-sglang",
+        "advertised_models": [
+          "qwen3.8-27b-sglang"
+        ]
+      }
+    },
+    "truncated": false
+  },
+  "provenance": {
+    "github_login": "0xBakeer",
+    "github_user_id": 17404809,
+    "started_at": "2026-09-16T11:51:15Z",
+    "finished_at": "2026-09-16T11:51:29Z",
+    "submitted_at": null,
+    "commit": null,
+    "pr": null,
+    "method": "atlas-bench",
+    "agent": null,
+    "notes": "Served with the darkdatter DGX Spark Qwen3.8-27B recipe (https://github.com/darkdatter/gb10-repo, main 2db1ecd), using its standalone README step 3 path rather than the SparkStation orchestration of step 4: ./scripts/01-build-and-fetch.sh pulled the official LMSYS image lmsysorg/sglang:dev-cu13-qwen38-27b-dflash2 and both pinned checkpoints, then the recipe-pinned MiaAI-Lab toolkit (Qwen3.8-27B-SGLang-DGX-Spark at c90d8c34) launched the server with IMAGE set and DF_EXTRA carrying the recipe tuning. Target RadixArk/Qwen3.8-27B-NVFP4 at revision 554ebba9, DFlash2 speculative decoding against z-lab/Qwen3.8-27B-DFlash2 at revision 50307d4c with 16 draft tokens (the README step 6 interactive optimum), mem-fraction-static 0.85, max-total-tokens capped at 1048576, the README step 5 concurrency trio max-running-requests 16 with max-mamba-cache-size 80 and cuda-graph-max-bs-decode 16, KV cache fp8_e4m3, bf16 mamba SSM state, mamba radix cache extra_buffer, FlashInfer attention with autotune left on, chunked prefill 8192, prefill CUDA graph off, torch.compile off, and the native 262144 context window. The container is CPU-pinned to the GB10 Cortex-X5 cores 5-9,15-19 by the toolkit launcher. The chat template comes from the target repository, reasoning-parser qwen3 and sampling-defaults model, so the served default is thinking on: the speed rows force thinking off per request with chat_template_kwargs enable_thinking false, the eval rows use that served default. The server runs without an API key; the harness attached over HTTP on 127.0.0.1:8888 and sent a bearer header the server ignores. No systemd unit, no SparkStation supervisor and no cockpit were installed."
+  },
+  "verification": {
+    "level": "self-reported",
+    "reproduced_by": [],
+    "flags": []
+  }
+}

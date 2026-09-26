@@ -1,0 +1,795 @@
+{
+  "schema_version": 1,
+  "engine_id": "atlas",
+  "version": "bdcccc2c",
+  "released": "2026-08-26",
+  "extraction_method": "help",
+  "extracted_at": "2026-09-01T06:43:00Z",
+  "distribution": "upstream",
+  "source_repo": "Atlas-Inf/atlas",
+  "source_ref": "bdcccc2c",
+  "source": "`spark serve --help` on a release binary built from Atlas-Inf/atlas at bdcccc2c (cargo build --release -p spark-server --no-default-features --features cuda), plus the source for the six ATLAS_* environment knobs, which have no --help entry.",
+  "notes": "Atlas publishes no releases or tags and every build reports the same version string, `spark 1.0.0-beta-preview`, so that string identifies nothing; the version here is the commit, as with the sparkinfer registry entry. Two things to know before reading the defaults. FIRST, several booleans are tri-state Option<bool> (gdn-fused-norm, ssm-batched-recurrent, prefill-varlen-batch, exact-verify, ssm-tail-midchunk, disable-tool-grammar, content-loop-watchdog, high-speed-swap-graph): their absence means 'the engine decides', not false, so their default is null and an explicitly passed false is NOT dropped from the fingerprint. That is the safe direction and it is deliberate. SECOND, six knobs have no flag at all and are read from the environment; they are registered here as params with the environment variable named in each help string, the same convention the sparkinfer entry uses, because the published Atlas recipes turn several of them on and a fingerprint that dropped them would merge configurations that measure differently by 20% or more. kv-cache-dtype's default is null and not fp8: precedence is flag, then the model's MODEL.toml [behavior].default_kv_dtype, then fp8, so the effective default is model-dependent. `profile` is a bare switch; the `[default: 2]` that appears in its help block belongs to a neighbouring flag with no name of its own in the long help.",
+  "params": [
+    {
+      "name": "auto-swap",
+      "type": "bool",
+      "default": false,
+      "help": "Load a different model when a request names one, ollama-style.",
+      "impact": "low"
+    },
+    {
+      "name": "no-auto-swap",
+      "type": "bool",
+      "default": false,
+      "help": "Forbid request-triggered model loading outright.",
+      "impact": "low"
+    },
+    {
+      "name": "dangerously-allow-unresolved-kernel-lookups",
+      "type": "bool",
+      "default": false,
+      "help": "Serve even when kernel lookups this model's dispatch issued did not resolve.",
+      "impact": "low"
+    },
+    {
+      "name": "check-kernels",
+      "type": "bool",
+      "default": false,
+      "help": "Resolve all kernels for the model and exit, reporting any that did not resolve. Does not start the server. The",
+      "impact": "low"
+    },
+    {
+      "name": "model-from-path",
+      "type": "path",
+      "default": null,
+      "help": "Load model directly from this filesystem path (skips HF cache resolution)",
+      "group": "model",
+      "impact": "low"
+    },
+    {
+      "name": "model-name",
+      "type": "str",
+      "default": null,
+      "help": "Override model name shown in /v1/models and API responses. Defaults to the positional MODEL argument, then con",
+      "group": "model",
+      "impact": "low"
+    },
+    {
+      "name": "kernel-target",
+      "type": "str",
+      "default": null,
+      "help": "Pin kernel-target resolution to this compiled target directory name (e.g. \"qwen3.8-27b\").",
+      "group": "model",
+      "impact": "low"
+    },
+    {
+      "name": "cache-dir",
+      "type": "path",
+      "default": null,
+      "help": "Override HuggingFace cache directory (default: $HF_HUB_CACHE, $HF_HOME/hub, or ~/.cache/huggingface/hub)",
+      "group": "model",
+      "impact": "low"
+    },
+    {
+      "name": "port",
+      "type": "int",
+      "default": 8888,
+      "help": "HTTP port",
+      "impact": "low"
+    },
+    {
+      "name": "gpu-ordinal",
+      "type": "int",
+      "default": 0,
+      "help": "GPU ordinal",
+      "impact": "low"
+    },
+    {
+      "name": "max-seq-len",
+      "type": "int",
+      "default": 32768,
+      "help": "Maximum sequence length",
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "block-size",
+      "type": "int",
+      "default": 16,
+      "help": "KV cache block size (tokens per block)",
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "kv-cache-dtype",
+      "type": "str",
+      "default": null,
+      "help": "KV cache dtype (fp8, bf16, or nvfp4). Precedence (highest wins): this flag \u2192 MODEL.toml `[behavior].default_kv",
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "ssm-h-dtype",
+      "type": "str",
+      "default": null,
+      "help": "Storage dtype for the GDN decode h-state: `f32` (default), `f16`, or `f16-pool`.",
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "ssm-rollback-mode",
+      "type": "str",
+      "default": "snapshot",
+      "help": "EXPERIMENTAL \u2014 SSM verify-rollback mode: `snapshot` (default) or `replay`.",
+      "group": "speculative",
+      "impact": "low"
+    },
+    {
+      "name": "gdn-fused-norm",
+      "type": "bool",
+      "default": null,
+      "help": "Fused GDN output-norm kernel on the decode path (default: off).",
+      "group": "kernels",
+      "impact": "high"
+    },
+    {
+      "name": "ssm-batched-recurrent",
+      "type": "bool",
+      "default": null,
+      "help": "Batched multi-sequence GDN recurrent decode kernel (default: off).",
+      "group": "kernels",
+      "impact": "high"
+    },
+    {
+      "name": "prefill-varlen-batch",
+      "type": "bool",
+      "default": null,
+      "help": "VARLEN (ragged) batched prefill \u2014 OPT-IN (default: off).",
+      "group": "kernels",
+      "impact": "high"
+    },
+    {
+      "name": "exact-verify",
+      "type": "bool",
+      "default": null,
+      "help": "Sequential-decode-exact GDN/SSM verify chain \u2014 OPT-IN (default: off).",
+      "group": "speculative",
+      "impact": "high"
+    },
+    {
+      "name": "ssm-tail-midchunk",
+      "type": "bool",
+      "default": null,
+      "help": "Mid-chunk SSM tail capture on the prefill path (default: on).",
+      "group": "kernels",
+      "impact": "high"
+    },
+    {
+      "name": "mtp-gate",
+      "type": "str",
+      "default": null,
+      "help": "MTP throughput gate: `auto` (default) or `force`.",
+      "group": "speculative",
+      "impact": "high"
+    },
+    {
+      "name": "lm-head-dtype",
+      "type": "str",
+      "default": "default",
+      "help": "LM-head precision: `default` (the clap default \u2014 no override, the model config decides), `bf16` (final vocab p",
+      "group": "kernels",
+      "impact": "high"
+    },
+    {
+      "name": "kv-high-precision-layers",
+      "type": "str",
+      "default": "0",
+      "help": "Boundary attention layers to keep at BF16 KV cache precision (first N + last N). Protects attention sink token",
+      "group": "memory",
+      "impact": "low"
+    },
+    {
+      "name": "gpu-memory-utilization",
+      "type": "float",
+      "default": 0.9,
+      "help": "Fraction of total GPU memory this process may consume (0.0-1.0). Weights, buffers, KV cache, and reserves all ",
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "max-num-seqs",
+      "type": "int",
+      "default": 128,
+      "help": "Maximum concurrent sequences",
+      "group": "batching",
+      "impact": "high"
+    },
+    {
+      "name": "disable-thinking",
+      "type": "bool",
+      "default": false,
+      "help": "Global kill-switch for chain-of-thought / reasoning output. When set, the server forces thinking OFF regardles",
+      "group": "sampling",
+      "impact": "high"
+    },
+    {
+      "name": "max-thinking-budget",
+      "type": "int",
+      "default": null,
+      "help": "Override MODEL.toml's `[behavior].max_thinking_budget` (tokens). Sets the per-request ceiling for thinking-blo",
+      "group": "sampling",
+      "impact": "low"
+    },
+    {
+      "name": "max-inter-tool-prose",
+      "type": "int",
+      "default": null,
+      "help": "Override MODEL.toml's `[behavior].max_inter_tool_prose` (tokens): the cap on free-prose tokens between success",
+      "group": "tools",
+      "impact": "low"
+    },
+    {
+      "name": "content-loop-watchdog",
+      "type": "bool",
+      "default": null,
+      "help": "Arm or disarm the content-loop watchdog, overriding MODEL.toml's `[behavior].enable_loop_watchdog`. The watchd",
+      "group": "sampling",
+      "impact": "low"
+    },
+    {
+      "name": "content-loop-min-repeats",
+      "type": "int",
+      "default": null,
+      "help": "Override the content-loop watchdog's repeat threshold (end-anchored consecutive repeats that constitute a loop",
+      "group": "sampling",
+      "impact": "low"
+    },
+    {
+      "name": "disable-tool-grammar",
+      "type": "bool",
+      "default": null,
+      "help": "Override MODEL.toml's `[behavior].disable_tool_grammar`. When true, the server skips XGrammar structural-tag e",
+      "group": "tools",
+      "impact": "high"
+    },
+    {
+      "name": "default-chat-template-kwargs",
+      "type": "str",
+      "default": null,
+      "help": "Default chat template kwargs applied when the client sends no thinking parameters (no `reasoning.effort`, `cha",
+      "impact": "low"
+    },
+    {
+      "name": "disable-template-overrides",
+      "type": "bool",
+      "default": false,
+      "help": "Ignore the `jinja-templates/` override directory and render every model off its OWN chat template (`chat_templ",
+      "impact": "low"
+    },
+    {
+      "name": "speculative",
+      "type": "bool",
+      "default": false,
+      "help": "Enable MTP speculative decoding. The scheduler then MEASURES the verify-step cost over the first decode steps ",
+      "group": "speculative",
+      "impact": "high"
+    },
+    {
+      "name": "self-speculative",
+      "type": "bool",
+      "default": false,
+      "help": "Enable self-speculative decoding: draft via layer-skipping (no MTP weights needed). Skips SSM layers during dr",
+      "group": "speculative",
+      "impact": "low"
+    },
+    {
+      "name": "ngram-speculative",
+      "type": "bool",
+      "default": false,
+      "help": "Enable N-gram speculative decoding: CPU-side pattern matching proposer with CUDA-graphed K=2 verification. No ",
+      "group": "speculative",
+      "impact": "low"
+    },
+    {
+      "name": "dflash",
+      "type": "bool",
+      "default": false,
+      "help": "Enable DFlash block-diffusion speculative decoding (Z Lab, arXiv 2602.06036). Pairs the target with a small Qw",
+      "group": "speculative",
+      "impact": "high"
+    },
+    {
+      "name": "draft-model",
+      "type": "str",
+      "default": null,
+      "help": "HuggingFace id (or local path) of the DFlash drafter checkpoint. When `--dflash` is set without `--draft-model",
+      "group": "speculative",
+      "impact": "high"
+    },
+    {
+      "name": "dflash-gamma",
+      "type": "int",
+      "default": 16,
+      "help": "DFlash block size \u03b3 (parallel draft tokens per step). Default 16 \u2014 the `block_size` of every published Qwen3.6",
+      "group": "speculative",
+      "impact": "high"
+    },
+    {
+      "name": "dflash-window-size",
+      "type": "int",
+      "default": 4096,
+      "help": "DFlash drafter sliding-window size for long context. The drafter runs full-prefix attention by default; at Atl",
+      "group": "speculative",
+      "impact": "high"
+    },
+    {
+      "name": "num-drafts",
+      "type": "int",
+      "default": null,
+      "help": "Number of draft tokens per speculative step (1=K=2, 2=K=3, 3=K=4 verify). Higher K verifies more drafts per st",
+      "group": "speculative",
+      "impact": "high"
+    },
+    {
+      "name": "max-batch-size",
+      "type": "int",
+      "default": 8,
+      "help": "Maximum concurrent sequences batched into one GPU decode step",
+      "group": "batching",
+      "impact": "high"
+    },
+    {
+      "name": "mtp-quantization",
+      "type": "str",
+      "default": "bf16",
+      "help": "MTP head weight precision: bf16 (default, highest acceptance rate = highest end-to-end throughput; the MTP hea",
+      "group": "speculative",
+      "impact": "high"
+    },
+    {
+      "name": "mtp-vocab",
+      "type": "int",
+      "default": 100000,
+      "help": "MTP draft vocabulary size. Limits the LM head GEMV to the first N token IDs, reducing propose latency. BPE tok",
+      "group": "speculative",
+      "impact": "low"
+    },
+    {
+      "name": "enable-prefix-caching",
+      "type": "bool",
+      "default": false,
+      "help": "Enable prefix caching via radix tree (RadixAttention). Caches KV blocks for recurring prompt prefixes. For SSM",
+      "group": "caching",
+      "impact": "high"
+    },
+    {
+      "name": "dump",
+      "type": "path",
+      "default": null,
+      "help": "Dump every /v1/chat/completions, /v1/responses, and /v1/messages (Anthropic) request \u2014 plus the corresponding ",
+      "impact": "low"
+    },
+    {
+      "name": "scheduling-policy",
+      "type": "str",
+      "default": "fifo",
+      "help": "Scheduling policy: fifo (default) or slai (SLO-aware). SLAI prioritizes decode for sequences nearing TBT deadl",
+      "group": "batching",
+      "impact": "high"
+    },
+    {
+      "name": "tbt-deadline-ms",
+      "type": "int",
+      "default": 100,
+      "help": "TBT deadline in milliseconds for SLAI scheduling policy. Sequences approaching this deadline trigger decode-fi",
+      "group": "batching",
+      "impact": "low"
+    },
+    {
+      "name": "max-prefill-tokens",
+      "type": "int",
+      "default": 8192,
+      "help": "Maximum tokens to prefill per scheduler iteration (chunked prefill). Long prompts are split into chunks of thi",
+      "group": "batching",
+      "impact": "high"
+    },
+    {
+      "name": "oom-guard-mb",
+      "type": "int",
+      "default": 4096,
+      "help": "Minimum free GPU memory (in MB) to keep as a safety margin during model loading. If free memory drops below th",
+      "group": "memory",
+      "impact": "low"
+    },
+    {
+      "name": "rank",
+      "type": "int",
+      "default": 0,
+      "help": "Global rank (0=head, 1=worker, \u2026). Only used when --world-size > 1",
+      "group": "parallel",
+      "impact": "low"
+    },
+    {
+      "name": "world-size",
+      "type": "int",
+      "default": 1,
+      "help": "Total physical ranks across all parallelism dims. Set to 2 for two-node deployment. Must satisfy `world_size =",
+      "group": "parallel",
+      "impact": "low"
+    },
+    {
+      "name": "tp-size",
+      "type": "int",
+      "default": 1,
+      "help": "Tensor-parallel dimension. Splits attention/MLP weights column- and row-parallel across `tp_size` ranks. 1 = n",
+      "group": "parallel",
+      "impact": "high"
+    },
+    {
+      "name": "ep-size",
+      "type": "int",
+      "default": 1,
+      "help": "Expert-parallel dimension. Splits MoE expert weights across `ep_size` ranks. 1 = no EP. Default of 1 keeps sin",
+      "group": "parallel",
+      "impact": "high"
+    },
+    {
+      "name": "master-addr",
+      "type": "str",
+      "default": "127.0.0.1",
+      "help": "NCCL bootstrap address (IP of rank 0 node)",
+      "impact": "low"
+    },
+    {
+      "name": "master-port",
+      "type": "int",
+      "default": 29500,
+      "help": "NCCL bootstrap port",
+      "impact": "low"
+    },
+    {
+      "name": "tool-call-parser",
+      "type": "str",
+      "default": null,
+      "help": "Tool call parser format. Enables OpenAI-compatible tool calling. Supported: \"hermes\" (JSON `<tool_call>`, Qwen",
+      "group": "tools",
+      "impact": "high"
+    },
+    {
+      "name": "tool-max-tokens",
+      "type": "int",
+      "default": 8192,
+      "help": "Maximum output tokens per tool-calling request. Caps max_tokens from the client when tools are active to preve",
+      "group": "tools",
+      "impact": "low"
+    },
+    {
+      "name": "ssm-cache-slots",
+      "type": "int",
+      "default": 16,
+      "help": "Number of SSM state snapshot slots for Marconi prefix caching. Each slot stores SSM h_state + conv_state for a",
+      "group": "caching",
+      "impact": "high"
+    },
+    {
+      "name": "ssm-checkpoint-interval",
+      "type": "int",
+      "default": 256,
+      "help": "Save SSM state snapshots at regular block boundaries during prefill. When set to N > 0, a snapshot is saved at",
+      "group": "caching",
+      "impact": "high"
+    },
+    {
+      "name": "auto-compact",
+      "type": "float",
+      "default": null,
+      "help": "Enable automatic context compaction for long conversations. **DISABLED BY DEFAULT** (2026-04-25): the auto-com",
+      "impact": "low"
+    },
+    {
+      "name": "default-top-n-sigma",
+      "type": "float",
+      "default": 1.0,
+      "help": "Default top-n-sigma for sampling (filter tokens by logit z-score). 0.0 = disabled. Recommended: 1.0 for NVFP4 ",
+      "group": "sampling",
+      "impact": "low"
+    },
+    {
+      "name": "default-min-p",
+      "type": "float",
+      "default": 0.08,
+      "help": "Default min-p for sampling (keep tokens with prob >= min_p * max_prob). 0.0 = disabled. Recommended: 0.05-0.1.",
+      "group": "sampling",
+      "impact": "low"
+    },
+    {
+      "name": "swap-space-gb",
+      "type": "int",
+      "default": 3,
+      "help": "Swap space in GB for KV cache overflow to disk. When GPU blocks are exhausted, sequences are swapped to disk a",
+      "group": "memory",
+      "impact": "low"
+    },
+    {
+      "name": "high-speed-swap",
+      "type": "bool",
+      "default": false,
+      "help": "",
+      "impact": "low"
+    },
+    {
+      "name": "high-speed-swap-dir",
+      "type": "path",
+      "default": null,
+      "help": "Directory for the per-layer NVMe-backed KV files. Required when --high-speed-swap is set; must be on a differe",
+      "impact": "low"
+    },
+    {
+      "name": "high-speed-swap-gb",
+      "type": "int",
+      "default": null,
+      "help": "Total disk budget for --high-speed-swap, in GiB",
+      "impact": "low"
+    },
+    {
+      "name": "high-speed-swap-resident-blocks",
+      "type": "int",
+      "default": null,
+      "help": "HBM scratch slot count (number of resident blocks)",
+      "impact": "low"
+    },
+    {
+      "name": "high-speed-swap-rank",
+      "type": "int",
+      "default": 32,
+      "help": "Predictor low-rank dimension (Phase 1 ships at r=32)",
+      "impact": "low"
+    },
+    {
+      "name": "high-speed-swap-qd",
+      "type": "int",
+      "default": 8,
+      "help": "io_uring submission queue depth (Phase 3 shows QD=8 reaches 3.4 GB/s on this DGX Spark image)",
+      "impact": "low"
+    },
+    {
+      "name": "high-speed-swap-graph",
+      "type": "bool",
+      "default": null,
+      "help": "Capture the per-layer body in a CUDA graph and replay (Phase 4). Defaults to mirror --high-speed-swap",
+      "impact": "low"
+    },
+    {
+      "name": "high-speed-swap-cache-blocks-per-seq",
+      "type": "int",
+      "default": 64,
+      "help": "Per-sequence HBM cache cap for `--high-speed-swap` (Phase 6.1). When set together with --high-speed-swap, each",
+      "impact": "low"
+    },
+    {
+      "name": "request-timeout",
+      "type": "int",
+      "default": 300,
+      "help": "Server-side deadline for a single request, in seconds. A request that exceeds it is CUT and the response is re",
+      "impact": "low"
+    },
+    {
+      "name": "profile",
+      "type": "bool",
+      "default": false,
+      "help": "Enable per-kernel profiling: sync + time each operation within layers. Disables CUDA graphs for accurate per-o",
+      "impact": "low"
+    },
+    {
+      "name": "warmup-prompt",
+      "type": "path",
+      "default": null,
+      "help": "Path to a warmup prompt file (JSON messages or plain text). At startup, the server tokenizes and prefills this",
+      "impact": "low"
+    },
+    {
+      "name": "adaptive-sampling",
+      "type": "bool",
+      "default": false,
+      "help": "Enable adaptive sampling (entropy-based greedy gating, zone detection). Computes Shannon entropy over the full",
+      "group": "sampling",
+      "impact": "low"
+    },
+    {
+      "name": "no-fast-load",
+      "type": "bool",
+      "default": false,
+      "help": "Disable the InstantTensor-style fast weight loader and use the mmap loader instead. The fast loader (O_DIRECT ",
+      "impact": "low"
+    },
+    {
+      "name": "no-tui",
+      "type": "bool",
+      "default": false,
+      "help": "Disable the interactive TUI dashboard even on a TTY, keeping the plain log stream. The TUI also auto-disables ",
+      "impact": "low"
+    },
+    {
+      "name": "fast-load-prefetch-shards",
+      "type": "bool",
+      "default": false,
+      "help": "Ask the fast loader to prefetch each buffered shard before per-tensor reads. Useful on NFS-backed model stores",
+      "impact": "low"
+    },
+    {
+      "name": "vision-max-pixels",
+      "type": "int",
+      "default": 0,
+      "help": "Vision input AREA bound in pixels, applied before patching. Overrides the checkpoint in BOTH directions \u2014 it m",
+      "impact": "low"
+    },
+    {
+      "name": "vision-allow-remote-images",
+      "type": "bool",
+      "default": false,
+      "help": "Fetch `image_url` parts that carry an http(s) URL, instead of rejecting them.",
+      "impact": "low"
+    },
+    {
+      "name": "vision-remote-image-max-mb",
+      "type": "int",
+      "default": 20,
+      "help": "Cap, in MiB, on a single fetched remote image. Enforced against bytes actually read, so a remote understating ",
+      "impact": "low"
+    },
+    {
+      "name": "vision-remote-image-timeout-s",
+      "type": "int",
+      "default": 10,
+      "help": "Wall-clock budget, in seconds, for fetching one remote image. Bounds a slow-loris response, which would otherw",
+      "impact": "low"
+    },
+    {
+      "name": "vision-remote-image-allow-private",
+      "type": "bool",
+      "default": false,
+      "help": "Also permit remote images on loopback, private and link-local addresses.",
+      "impact": "low"
+    },
+    {
+      "name": "video-allow-ffmpeg",
+      "type": "bool",
+      "default": false,
+      "help": "Decode video content parts with ffmpeg.",
+      "impact": "low"
+    },
+    {
+      "name": "video-ffmpeg-path",
+      "type": "str",
+      "default": "ffmpeg",
+      "help": "Path to the ffmpeg binary. A bare name is resolved on PATH; an absolute path is used as given, so a deployment",
+      "impact": "low"
+    },
+    {
+      "name": "video-fps",
+      "type": "float",
+      "default": 2.0,
+      "help": "Frames per second to sample a video at. The checkpoints' own `video_processor` blocks declare 2, and the sampl",
+      "impact": "low"
+    },
+    {
+      "name": "video-max-frames",
+      "type": "int",
+      "default": 768,
+      "help": "Hard cap on frames taken from one video, before temporal grouping. Matches the checkpoints' `max_frames`. At t",
+      "impact": "low"
+    },
+    {
+      "name": "video-decode-timeout-s",
+      "type": "int",
+      "default": 120,
+      "help": "Wall-clock budget for decoding one video. Bounds a decoder that hangs on a malformed container; the child is k",
+      "impact": "low"
+    },
+    {
+      "name": "bind",
+      "type": "str",
+      "default": "127.0.0.1",
+      "help": "Address to bind the HTTP listener to. Defaults to `127.0.0.1` so a fresh install is reachable only from the lo",
+      "impact": "low"
+    },
+    {
+      "name": "require-auth",
+      "type": "bool",
+      "default": false,
+      "help": "Require an `Authorization: Bearer <token>` header on `/v1/*`, `/tokenize`, and `/detokenize`. The token must m",
+      "impact": "low"
+    },
+    {
+      "name": "auth-tokens-file",
+      "type": "path",
+      "default": null,
+      "help": "Path to a file containing valid bearer tokens, one per line. Blank lines and lines starting with `#` are ignor",
+      "impact": "low"
+    },
+    {
+      "name": "auth-token",
+      "type": "str",
+      "default": null,
+      "help": "A single inline bearer token. Convenient for quick starts; not recommended for production because the token is",
+      "impact": "low"
+    },
+    {
+      "name": "src-lang",
+      "type": "str",
+      "default": null,
+      "help": "NLLB/M2M-100 ONLY: source-language token for translation (e.g. `eng_Latn`). Prepended to the encoder input. Re",
+      "impact": "low"
+    },
+    {
+      "name": "tgt-lang",
+      "type": "str",
+      "default": null,
+      "help": "NLLB/M2M-100 ONLY: target-language token (`forced_bos`, e.g. `fra_Latn`, `gvn_Latn`). Forced as the first deco",
+      "impact": "low"
+    },
+    {
+      "name": "max-lora-rank",
+      "type": "int",
+      "default": 64,
+      "help": "Maximum LoRA adapter rank. The A/B slot pool and delta scratch buffers are allocated rank-padded to this value",
+      "impact": "low"
+    },
+    {
+      "name": "max-loras",
+      "type": "int",
+      "default": 8,
+      "help": "Maximum number of LoRA adapter slots in the rank-padded pool. Slots beyond the startup-resident adapters are c",
+      "impact": "low"
+    },
+    {
+      "name": "atlas-prefill-codispatch",
+      "type": "bool",
+      "default": false,
+      "help": "Co-schedule chunk-0 prefills across requests. Environment variable: ATLAS_PREFILL_CODISPATCH (1 = on). Unset is off; there is no CLI flag.",
+      "group": "kernels",
+      "impact": "high"
+    },
+    {
+      "name": "atlas-fp8-rowwise",
+      "type": "bool",
+      "default": false,
+      "help": "GDN qkvz/out prefill through native per-row FP8 GEMMs on a mixed-precision compressed-tensors checkpoint. Environment variable: ATLAS_FP8_ROWWISE (1 = on). Unset is off; there is no CLI flag.",
+      "group": "kernels",
+      "impact": "high"
+    },
+    {
+      "name": "atlas-mtp-dcut-ratio",
+      "type": "float",
+      "default": 0.75,
+      "help": "D-Cut draft-row retention ratio; values snap to the nearest of 0.25/0.5/0.75/1.0, and 1.0 disables pruning. Environment variable: ATLAS_MTP_DCUT_RATIO. Default 0.75 (mtp_dcut.rs::dcut_ratio).",
+      "group": "speculative",
+      "impact": "high"
+    },
+    {
+      "name": "atlas-mtp-k-ladder",
+      "type": "str",
+      "default": null,
+      "help": "Width-adaptive draft depth as width:drafts pairs, e.g. 1:3,2:1,4:2,8:2,16:1. Environment variable: ATLAS_MTP_K_LADDER. Unset means the engine ladder, which depends on the model and the batch width, so the default here is null rather than a constant.",
+      "group": "speculative",
+      "impact": "high"
+    },
+    {
+      "name": "atlas-canonical-key-min-width",
+      "type": "int",
+      "default": 8,
+      "help": "Batch width at or above which the canonical verify-graph key assignment is used. Environment variable: ATLAS_CANONICAL_KEY_MIN_WIDTH. Default 8 (verify_key.rs::CANONICAL_KEY_MIN_WIDTH).",
+      "group": "speculative",
+      "impact": "low"
+    },
+    {
+      "name": "atlas-dflash-option-b",
+      "type": "bool",
+      "default": false,
+      "help": "Required to boot a DSpark/DFlash drafter: dflash_head/product_policy.rs::validate refuses to start without it, and refuses if any DSpark diagnostic toggle is also set. Environment variable: ATLAS_DFLASH_OPTION_B (1 = on).",
+      "group": "speculative",
+      "impact": "high"
+    }
+  ]
+}

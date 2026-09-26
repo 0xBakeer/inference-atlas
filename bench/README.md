@@ -74,6 +74,14 @@ spelling `served_name` is still accepted):
 }
 ```
 
+The `request` block applies to every request of every workload in the packet: `temperature`,
+`seed`, `max_tokens`, `stop`, `timeout_s`, `extra_body`, `chat_template_kwargs`,
+`reasoning_effort`. `atlas-bench packet --request key=value` fills it (values are JSON when
+parseable, repeatable). The one that matters most: a model that thinks by default keeps
+thinking through an eval unless the packet turns it off, and an eval with an output budget
+then scores its thought block, not its answer —
+`--request 'chat_template_kwargs={"thinking": false}'` is the vLLM/SGLang spelling.
+
 ```bash
 uv run atlas-bench run --spec task.json --base-url http://localhost:1234/v1 --out ../results
 ```
@@ -83,9 +91,16 @@ What the harness does with it:
 - sends `served_model_id` verbatim as the `model` field, and warns
   (`served-model-not-advertised`) if `/v1/models` does not list it — it still sends it, since
   some servers load on demand;
-- without one, it looks for `model.id` in `/v1/models` **case-insensitively**, and only then
-  falls back to the first advertised model — saying so (`served-model-guessed`) when more
-  than one is loaded;
+- without one, it looks for `model.id` in `/v1/models` **case-insensitively**. A server
+  that advertises one model is used as is. Several, none matching: the run stops before the
+  first request (`AmbiguousServedModelError`; the CLI prints `which model?` and exits 2),
+  and the packet has to name the one it means in `served_model_id`. It used to take the
+  first advertised model and warn (`served-model-guessed`);
+- for llama.cpp, reads the server's own build string from `/props` (`build_info`, for
+  example `b11071-f95b0d9`), falling back to llama-swap's per-model
+  `/upstream/<model>/props`, records it as `raw.payload.engine_endpoint.build_info`, and
+  warns `engine-version-mismatch` when the packet's `engine.version` appears nowhere in
+  it. The validator reads the same field (SPEC §5.10);
 - records the resolved key, everything `/v1/models` advertised, the base URL and whether the
   server was already running in `raw.payload.engine_endpoint`, so a run against the wrong
   model can be spotted after the fact;
@@ -122,6 +137,8 @@ without an adapter falls back to attach mode.
 | `submit --dir DIR [--draft]`                                    | branch `result/<engine>-<model>-<hardware>-<short>`, commits **only** result files, `gh pr create --label results`                                                                                                       |
 | `packet --cell ...`                                             | prints the agent task packet (SPEC §7) for a cell                                                                                                                                                                        |
 | `wrap raw.json --spec task.json`                                | wraps `vllm bench serve` / SGLang `bench_serving` JSON into a result file                                                                                                                                                |
+| `restamp FILE... --build REF`                                   | names the build behind an already-written result, recomputes `config_id`/`run_id` and moves the file (the cell is unchanged); for results written before `engine.build` existed                                          |
+| `t2i-reference --spec task.json --out DIR`                      | renders the bf16 reference bundle the image fidelity suite scores against: images plus a manifest (per case sha256, perceptual hash, render digest) naming the configuration that produced them. Stays on the box        |
 
 Useful `run` flags: `--gotcha "text"` (repeatable), `--notes "ambient 22C, box idle"`,
 `--no-telemetry`, `--tokenizer <hf-id>`, `--login <github-login>`.
@@ -236,6 +253,22 @@ An eval's output cap is `eval.max_output_tokens`.
 - **Tool rows** send `meta.tools` with `tool_choice: "auto"` and score `tool_calls[0]`;
   `answer.tool_call: null` is correct only when no call was made at all.
 - **Vision rows** attach `row.image` as a `data:image/…;base64,…` part next to the text.
+- **Image suites render before they score.** A `kind: eval` workload whose scorer is `ocr`,
+  `clip`, `rgba` or `fidelity` goes through `atlas_bench/workloads/image_eval.py`: the render
+  spec comes from the row's `meta.render` (not from the workload), the picture is made in a
+  temporary directory and deleted afterwards, and `scores.items[].metrics` carries the
+  measurement behind each verdict while `predicted` stays null — a generated picture is not
+  data this repository stores, and neither is an OCR transcription of one.
+- **Image lanes are not chat clients.** `atlas_bench/images.py` speaks the OpenAI images API
+  (`/v1/images/generations`, and `/v1/images/edits` as multipart with one repeated `image`
+  field per reference) with a per-engine parameter map — `true_cfg_scale` on vLLM-Omni,
+  `guidance_scale` on SGLang-Diffusion, `transparent` only where it exists — or drives a CLI
+  that writes a PNG (stable-diffusion.cpp), whose argv template the packet carries in
+  `image_lane`. The map is a whitelist: a parameter a lane has no entry for is not sent.
+- **The image fidelity suite needs a local reference.** `atlas-bench t2i-reference` renders
+  it from the bf16 configuration on the same box; `run --reference-bundle DIR` then scores
+  against it. Optional extras: `atlas-bench[images]` (numpy + Pillow, required for any image
+  scoring), `[ocr]`, `[clip]`, `[lpips]`.
 - **A missed needle is a failed request** in a `longctx` workload: it lowers `success_rate`
   and adds a `failures[]` entry with category `malformed-output`, while the request's timing
   numbers are still reported.
@@ -255,8 +288,15 @@ drop `<think>…</think>` → drop code fences, keep the content → keep the ca
 Scorers: `exact` (+ `meta.answer_aliases`), `numeric` (last number, absolute tolerance from
 `meta.tolerance`), `mc`, `contains` (`{all, any}`, an entry may be a list of alternatives),
 `json` (`meta.match`, `meta.array_order`), `code-exec` (`meta.timeout_s`), `needle`,
-`instruction`, `vision`, `judge` (stub — judged items are recorded with `scored: false` until
+`instruction`, `integrity` (`meta.context_identifiers`), `vision`, `judge` (stub — judged items are recorded with `scored: false` until
 a judge model is pinned).
+
+`integrity` is the odd one out: it scores whether a long generation came back with every
+token intact, not whether it is correct. It masks strings, comments and regex literals in the
+generated code and reports only three shapes — a digit-initial token that is not a valid
+numeric literal, an undefined identifier that is a defined name plus 2-6 lower-case letters,
+and an undefined bare word between two numeric literals in a comma-separated list. Ordinary
+undefined identifiers are ordinary code errors and are not counted.
 
 `instruction` does not re-implement the rule DSL: it imports
 `datasets/eval-instruction-v1/rules.py`, the normative implementation, and evaluates it

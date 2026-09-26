@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://inference-atlas.dev/schemas/identities.schema.json",
+  "title": "Contributor identity map",
+  "description": "Author email -> GitHub login, so a registry file added with an ordinary git address still earns its contributor credit. Result files carry their own provenance.github_login and never consult this. File: site/identities.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "identities"],
+  "properties": {
+    "schema_version": { "type": "integer", "const": 1 },
+    "identities": {
+      "type": "array",
+      "description": "One entry per person. An address may appear in exactly one entry.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["login", "emails"],
+        "properties": {
+          "login": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 39,
+            "pattern": "^[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?$",
+            "description": "GitHub login, spelled the way GitHub spells it. Compared case-insensitively."
+          },
+          "emails": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "type": "string", "format": "email" },
+            "description": "Author addresses this person commits with. GitHub noreply addresses need no entry — they already carry the login."
+          },
+          "verified_by": {
+            "type": "array",
+            "items": { "type": "integer", "minimum": 1 },
+            "description": "Pull request numbers whose author GitHub recorded as this login, and whose commits carried one of these addresses. This is what makes the entry checkable by anyone with the repository."
+          },
+          "notes": {
+            "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/nullable_string"
+          }
+        }
+      }
+    }
+  }
+}

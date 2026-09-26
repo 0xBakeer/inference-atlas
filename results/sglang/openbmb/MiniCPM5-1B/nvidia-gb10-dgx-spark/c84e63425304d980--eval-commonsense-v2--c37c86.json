@@ -1,0 +1,1399 @@
+{
+  "schema_version": 1,
+  "run_id": "c84e63425304d980--eval-commonsense-v2--c37c86",
+  "config_id": "c84e63425304d980",
+  "cell_id": "0e7d746e67fa",
+  "workload_id": "eval-commonsense-v2",
+  "kind": "eval",
+  "engine": {
+    "id": "sglang",
+    "version": "0.5.20",
+    "commit": null,
+    "build": "pypi sglang==0.5.20 (py3.12 venv, torch 2.13.0+cu130, flashinfer-python 0.6.18, sglang-kernel 0.4.7)",
+    "container": null,
+    "install_method": "pip"
+  },
+  "model": {
+    "id": "openbmb/MiniCPM5-1B",
+    "quant_id": "bf16",
+    "hf_id": "openbmb/MiniCPM5-1B",
+    "revision": "87179e5c1f455ef22e6223592d2d61351b525bfc",
+    "dtype": "auto",
+    "local_path": null
+  },
+  "hardware": {
+    "id": "nvidia-gb10-dgx-spark",
+    "count": 1,
+    "driver": "580.173.02",
+    "cuda": "13.0",
+    "host": {
+      "cpu": "Cortex-A725",
+      "cpu_cores": 20,
+      "ram_gb": 121.6,
+      "os": "Ubuntu 24.04.4 LTS",
+      "kernel": "6.17.0-1029-nvidia",
+      "arch": "aarch64"
+    },
+    "fingerprint": "sha256:52ea2bdd513719724db88c162b6cc2c9fb4e5b67e02dbe41b9de00687acefb91",
+    "captured": {
+      "nvidia_smi": {
+        "driver": "580.173.02",
+        "cuda": "13.0",
+        "products": [
+          "NVIDIA GB10"
+        ],
+        "fb_memory_total_mib": 0
+      },
+      "lscpu": {
+        "architecture": "aarch64",
+        "cpus": "20",
+        "vendor_id": "ARM",
+        "model_name": "Cortex-A725",
+        "cores_per_socket": "10",
+        "sockets": "1",
+        "cpu_max_mhz": "2808.0000"
+      }
+    }
+  },
+  "args": {
+    "dtype": "bfloat16",
+    "context-length": 131072,
+    "mem-fraction-static": 0.75,
+    "tool-call-parser": "minicpm5",
+    "reasoning-parser": "qwen3",
+    "max-running-requests": 512
+  },
+  "args_canonical": "@build=pypi sglang==0.5.20 (py3.12 venv, torch 2.13.0+cu130, flashinfer-python 0.6.18, sglang-kernel 0.4.7);@dtype=auto;@quant=bf16;context-length=131072;dtype=bfloat16;max-running-requests=512;mem-fraction-static=0.75;reasoning-parser=qwen3;tool-call-parser=minicpm5",
+  "serve_command": null,
+  "workload": {
+    "id": "eval-commonsense-v2",
+    "resolved_params": {
+      "dataset_id": "eval-commonsense-v2",
+      "suite": "commonsense",
+      "scorer": "mc",
+      "items": 116,
+      "concurrency": 4,
+      "max_output_tokens": 2048,
+      "timeout_s": 300,
+      "temperature": 0,
+      "reasoning": "default",
+      "dataset_categories": null,
+      "dataset_target_tokens": null,
+      "pass_threshold": null,
+      "seed": 42
+    }
+  },
+  "env": {
+    "SGLANG_ALLOW_OVERWRITE_LONGER_CONTEXT_LEN": "1",
+    "SGLANG_DISABLE_CUDNN_CHECK": "1"
+  },
+  "metrics": {
+    "requests_total": 116,
+    "requests_ok": 116,
+    "requests_failed": 0,
+    "success_rate": 1,
+    "duration_s": 248.671,
+    "input_tokens_total": 9265,
+    "output_tokens_total": 100412,
+    "e2e_ms": {
+      "mean": 8078.007,
+      "p50": 5605.58,
+      "p90": 19076.084,
+      "p95": 19169.249,
+      "p99": 19197.218,
+      "min": 934.69,
+      "max": 21681.237
+    },
+    "vram_peak_gb": 89.374,
+    "ram_peak_gb": 97.893,
+    "power_avg_w": 32.39,
+    "power_peak_w": 35.03,
+    "energy_wh": 2.2358,
+    "gpu_util_avg_pct": 95.57,
+    "temp_max_c": 60,
+    "thermal_throttle_detected": false
+  },
+  "scores": {
+    "suite": "commonsense",
+    "total": 116,
+    "correct": 58,
+    "accuracy": 0.5,
+    "success_rate": 1,
+    "by_category": {
+      "false_presupposition": {
+        "total": 16,
+        "correct": 11
+      },
+      "feasibility": {
+        "total": 12,
+        "correct": 4
+      },
+      "goal_tracking": {
+        "total": 22,
+        "correct": 11
+      },
+      "physical": {
+        "total": 20,
+        "correct": 8
+      },
+      "reversed_classics": {
+        "total": 14,
+        "correct": 5
+      },
+      "text_selfref": {
+        "total": 32,
+        "correct": 19
+      }
+    },
+    "by_difficulty": {
+      "easy": {
+        "total": 27,
+        "correct": 14
+      },
+      "hard": {
+        "total": 31,
+        "correct": 13
+      },
+      "medium": {
+        "total": 58,
+        "correct": 31
+      }
+    },
+    "avg_output_tokens": 865.62,
+    "avg_latency_ms": 8078.01,
+    "failures": 0,
+    "items": [
+      {
+        "id": "common-0001",
+        "correct": false,
+        "predicted": "",
+        "expected": "D",
+        "latency_ms": 18954.637,
+        "output_tokens": 2048,
+        "category": "physical",
+        "difficulty": "medium"
+      },
+      {
+        "id": "common-0002",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 7008.46,
+        "output_tokens": 769,
+        "category": "goal_tracking",
+        "difficulty": "medium"
+      },
+      {
+        "id": "common-0003",
+        "correct": false,
+        "predicted": "",
+        "expected": "B",
+        "latency_ms": 18953.898,
+        "output_tokens": 2048,
+        "category": "false_presupposition",
+        "difficulty": "medium"
+      },
+      {
+        "id": "common-0004",
+        "correct": false,
+        "predicted": "D",
+        "expected": "B",
+        "latency_ms": 8909.456,
+        "output_tokens": 973,
+        "category": "feasibility",
+        "difficulty": "hard"
+      },
+      {
+        "id": "common-0005",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 13365.831,
+        "output_tokens": 1429,
+        "category": "physical",
+        "difficulty": "medium"
+      },
+      {
+        "id": "common-0006",
+        "correct": false,
+        "predicted": "C",
+        "expected": "A",
+        "latency_ms": 14399.84,
+        "output_tokens": 1539,
+        "category": "reversed_classics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "common-0007",
+        "correct": false,
+        "predicted": "repaper",
+        "expected": "reward",
+        "latency_ms": 1505.346,
+        "output_tokens": 158,
+        "category": "text_selfref",
+        "difficulty": "medium"
+      },
+      {
+        "id": "common-0008",
+        "correct": false,
+        "predicted": "",
+        "expected": "45",
+        "latency_ms": 19048.532,
+        "output_tokens": 2048,
+        "category": "reversed_classics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "common-0009",
+        "correct": false,
+        "predicted": "B",
+        "expected": "D",
+        "latency_ms": 8838.06,
+        "output_tokens": 958,
+        "category": "goal_tracking",
+        "difficulty": "easy"
+      },
+      {
+        "id": "common-0010",
+        "correct": false,
+        "predicted": "",
+        "expected": "D",
+        "latency_ms": 19050.719,
+        "output_tokens": 2048,
+        "category": "goal_tracking",
+        "difficulty": "medium"
+      },
+      {
+        "id": "common-0011",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 3836.866,
+        "output_tokens": 420,
+        "category": "feasibility",
+        "difficulty": "medium"
+      },
+      {
+        "id": "common-0012",
+        "correct": true,
+        "predicted": "4",
+        "expected": "4",
+        "latency_ms": 2762.905,
+        "output_tokens": 297,
+        "category": "text_selfref",
+        "difficulty": "hard"
+      },
+      {
+        "id": "common-0013",
+        "correct": false,
+        "predicted": "D",
+        "expected": "B",
+        "latency_ms": 3611.806,
+        "output_tokens": 385,
+        "category": "goal_tracking",
+        "difficulty": "easy"
+      },
+      {
+        "id": "common-0014",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 2946.183,
+        "output_tokens": 314,
+        "category": "false_presupposition",
+        "difficulty": "medium"
+      },
+      {
+        "id": "common-0015",
+        "correct": true,
+        "predicted": "4",
+        "expected": "4",
+        "latency_ms": 6905.316,
+        "output_tokens": 731,
+        "category": "text_selfref",
+        "difficulty": "hard"
+      },
+      {
+        "id": "common-0016",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 1305.681,
+        "output_tokens": 137,
+        "category": "false_presupposition",
+        "difficulty": "medium"
+      },
+      {
+        "id": "common-0017",
+        "correct": false,
+        "predicted": "3",
+        "expected": "4",
+        "latency_ms": 4634.425,
+        "output_tokens": 492,
+        "category": "text_selfref",
+        "difficulty": "hard"
+      },
+      {
+        "id": "common-0018",
+        "correct": true,
+        "predicted": "3",
+        "expected": "3",
+        "latency_ms": 5449.928,
+        "output_tokens": 592,
+        "category": "text_selfref",
+        "difficulty": "hard"
+      },
+      {
+        "id": "common-0019",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 2138.451,
+        "output_tokens": 230,
+        "category": "false_presupposition",
+        "difficulty": "medium"
+      },
+      {
+        "id": "common-0020",
+        "correct": false,
+        "predicted": "",
+        "expected": "17:00",
+        "latency_ms": 19003.068,
+        "output_tokens": 2048,
+        "category": "feasibility",
+        "difficulty": "hard"
+      },
+      {
+        "id": "common-0021",
+        "correct": true,
+        "predicted": "3",
+        "expected": "3",
+        "latency_ms": 8131.539,
+        "output_tokens": 888,
+        "category": "text_selfref",
+        "difficulty": "hard"
+      },
+      {
+        "id": "common-0022",
+        "correct": true,
+        "predicted": "11",
+        "expected": "11",
+        "latency_ms": 2991.786,
+        "output_tokens": 327,
+        "category": "text_selfref",
+        "difficulty": "medium"
+      },
+      {
+        "id": "common-0023",
+        "correct": false,
+        "predicted": "",
+        "expected": "A",
+        "latency_ms": 19142.959,
+        "output_tokens": 2048,
+        "category": "feasibility",
+        "difficulty": "medium"
+      },
+      {
+        "id": "common-0024",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 2395.321,
+        "output_tokens": 259,
+        "category": "goal_tracking",
+        "difficulty": "easy"
+      },
+      {
+        "id": "common-0025",
+        "correct": true,
+        "predicted": "2",
+        "expected": "2",
+        "latency_ms": 1868.064,
+        "output_tokens": 198,
+        "category": "text_selfref",
+        "difficulty": "hard"
+      },
+      {
+        "id": "common-0026",
+        "correct": true,
+        "predicted": "10",
+        "expected": "10",
+        "latency_ms": 1958.808,
+        "output_tokens": 208,
+        "category": "reversed_classics",
+        "difficulty": "hard"
+      },
+      {
+        "id": "common-0027",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 5651.516,
+        "output_tokens": 605,
+        "category": "false_presupposition",
+        "difficulty": "medium"
+      },
+      {
+        "id": "common-0028",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 3586.866,
+        "output_tokens": 384,
+        "category": "feasibility",
+        "difficulty": "easy"
+      },
+      {
+        "id": "common-0029",
+        "correct": true,
+        "predicted": "46",
+        "expected": "46",
+        "latency_ms": 12820.576,
+        "output_tokens": 1372,
+        "category": "reversed_classics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "common-0030",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 3989.611,
+        "output_tokens": 425,
+        "category": "feasibility",
+        "difficulty": "medium"
+      },
+      {
+        "id": "common-0031",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 4576.147,
+        "output_tokens": 485,
+        "category": "goal_tracking",
+        "difficulty": "medium"
+      },
+      {
+        "id": "common-0032",
+        "correct": false,
+        "predicted": "",
+        "expected": "A",
+        "latency_ms": 19070.916,
+        "output_tokens": 2048,
+        "category": "feasibility",
+        "difficulty": "hard"
+      },
+      {
+        "id": "common-0033",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 3103.92,
+        "output_tokens": 335,
+        "category": "feasibility",
+        "difficulty": "easy"
+      },
+      {
+        "id": "common-0034",
+        "correct": false,
+        "predicted": "",
+        "expected": "C",
+        "latency_ms": 19065.177,
+        "output_tokens": 2048,
+        "category": "physical",
+        "difficulty": "easy"
+      },
+      {
+        "id": "common-0035",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 2395.448,
+        "output_tokens": 258,
+        "category": "goal_tracking",
+        "difficulty": "medium"
+      },
+      {
+        "id": "common-0036",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 3172.253,
+        "output_tokens": 344,
+        "category": "goal_tracking",
+        "difficulty": "easy"
+      },
+      {
+        "id": "common-0037",
+        "correct": true,
+        "predicted": "5",
+        "expected": "5",
+        "latency_ms": 3459.332,
+        "output_tokens": 371,
+        "category": "text_selfref",
+        "difficulty": "hard"
+      },
+      {
+        "id": "common-0038",
+        "correct": false,
+        "predicted": "reviver",
+        "expected": "reviled",
+        "latency_ms": 1199.16,
+        "output_tokens": 127,
+        "category": "text_selfref",
+        "difficulty": "medium"
+      },
+      {
+        "id": "common-0039",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 1587.219,
+        "output_tokens": 167,
+        "category": "reversed_classics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "common-0040",
+        "correct": false,
+        "predicted": "C",
+        "expected": "D",
+        "latency_ms": 9757.542,
+        "output_tokens": 1040,
+        "category": "physical",
+        "difficulty": "easy"
+      },
+      {
+        "id": "common-0041",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 11723.537,
+        "output_tokens": 1250,
+        "category": "physical",
+        "difficulty": "medium"
+      },
+      {
+        "id": "common-0042",
+        "correct": false,
+        "predicted": "",
+        "expected": "D",
+        "latency_ms": 19047.384,
+        "output_tokens": 2048,
+        "category": "goal_tracking",
+        "difficulty": "easy"
+      },
+      {
+        "id": "common-0043",
+        "correct": false,
+        "predicted": "wasta",
+        "expected": "warts",
+        "latency_ms": 967.33,
+        "output_tokens": 101,
+        "category": "text_selfref",
+        "difficulty": "medium"
+      },
+      {
+        "id": "common-0044",
+        "correct": false,
+        "predicted": "peda",
+        "expected": "repaid",
+        "latency_ms": 1424.404,
+        "output_tokens": 152,
+        "category": "text_selfref",
+        "difficulty": "medium"
+      },
+      {
+        "id": "common-0045",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 7485.266,
+        "output_tokens": 808,
+        "category": "physical",
+        "difficulty": "medium"
+      },
+      {
+        "id": "common-0046",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 5949.17,
+        "output_tokens": 644,
+        "category": "goal_tracking",
+        "difficulty": "easy"
+      },
+      {
+        "id": "common-0047",
+        "correct": true,
+        "predicted": "3",
+        "expected": "3",
+        "latency_ms": 3146.588,
+        "output_tokens": 342,
+        "category": "text_selfref",
+        "difficulty": "hard"
+      },
+      {
+        "id": "common-0048",
+        "correct": false,
+        "predicted": "C",
+        "expected": "A",
+        "latency_ms": 7257.058,
+        "output_tokens": 782,
+        "category": "goal_tracking",
+        "difficulty": "medium"
+      },
+      {
+        "id": "common-0049",
+        "correct": false,
+        "predicted": "4",
+        "expected": "3",
+        "latency_ms": 2681.007,
+        "output_tokens": 287,
+        "category": "text_selfref",
+        "difficulty": "hard"
+      },
+      {
+        "id": "common-0050",
+        "correct": false,
+        "predicted": "A",
+        "expected": "D",
+        "latency_ms": 16296.223,
+        "output_tokens": 1760,
+        "category": "physical",
+        "difficulty": "medium"
+      },
+      {
+        "id": "common-0051",
+        "correct": false,
+        "predicted": "4",
+        "expected": "3",
+        "latency_ms": 5559.644,
+        "output_tokens": 595,
+        "category": "text_selfref",
+        "difficulty": "hard"
+      },
+      {
+        "id": "common-0052",
+        "correct": false,
+        "predicted": "B",
+        "expected": "A",
+        "latency_ms": 1759.182,
+        "output_tokens": 186,
+        "category": "false_presupposition",
+        "difficulty": "medium"
+      },
+      {
+        "id": "common-0053",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 3357.096,
+        "output_tokens": 361,
+        "category": "false_presupposition",
+        "difficulty": "medium"
+      },
+      {
+        "id": "common-0054",
+        "correct": false,
+        "predicted": "",
+        "expected": "A",
+        "latency_ms": 19143.057,
+        "output_tokens": 2048,
+        "category": "physical",
+        "difficulty": "hard"
+      },
+      {
+        "id": "common-0055",
+        "correct": false,
+        "predicted": "",
+        "expected": "A",
+        "latency_ms": 19166.218,
+        "output_tokens": 2048,
+        "category": "reversed_classics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "common-0056",
+        "correct": false,
+        "predicted": "",
+        "expected": "D",
+        "latency_ms": 19190.925,
+        "output_tokens": 2048,
+        "category": "reversed_classics",
+        "difficulty": "hard"
+      },
+      {
+        "id": "common-0057",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 3000.365,
+        "output_tokens": 321,
+        "category": "false_presupposition",
+        "difficulty": "easy"
+      },
+      {
+        "id": "common-0058",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 11237.015,
+        "output_tokens": 1188,
+        "category": "physical",
+        "difficulty": "medium"
+      },
+      {
+        "id": "common-0059",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 3456.333,
+        "output_tokens": 368,
+        "category": "false_presupposition",
+        "difficulty": "easy"
+      },
+      {
+        "id": "common-0060",
+        "correct": false,
+        "predicted": "A",
+        "expected": "D",
+        "latency_ms": 6574.808,
+        "output_tokens": 711,
+        "category": "goal_tracking",
+        "difficulty": "easy"
+      },
+      {
+        "id": "common-0061",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 9828.978,
+        "output_tokens": 1071,
+        "category": "false_presupposition",
+        "difficulty": "easy"
+      },
+      {
+        "id": "common-0062",
+        "correct": false,
+        "predicted": "A",
+        "expected": "B",
+        "latency_ms": 2747.951,
+        "output_tokens": 298,
+        "category": "false_presupposition",
+        "difficulty": "easy"
+      },
+      {
+        "id": "common-0063",
+        "correct": true,
+        "predicted": "a",
+        "expected": "a",
+        "latency_ms": 1249.081,
+        "output_tokens": 136,
+        "category": "text_selfref",
+        "difficulty": "medium"
+      },
+      {
+        "id": "common-0064",
+        "correct": true,
+        "predicted": "12",
+        "expected": "12",
+        "latency_ms": 1731.047,
+        "output_tokens": 185,
+        "category": "text_selfref",
+        "difficulty": "medium"
+      },
+      {
+        "id": "common-0065",
+        "correct": false,
+        "predicted": "D",
+        "expected": "C",
+        "latency_ms": 8894.577,
+        "output_tokens": 969,
+        "category": "physical",
+        "difficulty": "medium"
+      },
+      {
+        "id": "common-0066",
+        "correct": false,
+        "predicted": "B",
+        "expected": "C",
+        "latency_ms": 8093.822,
+        "output_tokens": 881,
+        "category": "reversed_classics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "common-0067",
+        "correct": true,
+        "predicted": "4",
+        "expected": "4",
+        "latency_ms": 2769.401,
+        "output_tokens": 305,
+        "category": "text_selfref",
+        "difficulty": "hard"
+      },
+      {
+        "id": "common-0068",
+        "correct": false,
+        "predicted": "",
+        "expected": "B",
+        "latency_ms": 18861.304,
+        "output_tokens": 2048,
+        "category": "reversed_classics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "common-0069",
+        "correct": true,
+        "predicted": "2",
+        "expected": "2",
+        "latency_ms": 2796.065,
+        "output_tokens": 300,
+        "category": "text_selfref",
+        "difficulty": "hard"
+      },
+      {
+        "id": "common-0070",
+        "correct": false,
+        "predicted": "1",
+        "expected": "2",
+        "latency_ms": 9394.276,
+        "output_tokens": 1023,
+        "category": "reversed_classics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "common-0071",
+        "correct": true,
+        "predicted": "12",
+        "expected": "12",
+        "latency_ms": 2515.861,
+        "output_tokens": 277,
+        "category": "text_selfref",
+        "difficulty": "medium"
+      },
+      {
+        "id": "common-0072",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 6610.635,
+        "output_tokens": 724,
+        "category": "goal_tracking",
+        "difficulty": "medium"
+      },
+      {
+        "id": "common-0073",
+        "correct": false,
+        "predicted": "5",
+        "expected": "6",
+        "latency_ms": 4802.863,
+        "output_tokens": 521,
+        "category": "text_selfref",
+        "difficulty": "hard"
+      },
+      {
+        "id": "common-0074",
+        "correct": false,
+        "predicted": "",
+        "expected": "C",
+        "latency_ms": 19185.476,
+        "output_tokens": 2048,
+        "category": "feasibility",
+        "difficulty": "medium"
+      },
+      {
+        "id": "common-0075",
+        "correct": true,
+        "predicted": "4",
+        "expected": "4",
+        "latency_ms": 7724.553,
+        "output_tokens": 832,
+        "category": "text_selfref",
+        "difficulty": "hard"
+      },
+      {
+        "id": "common-0076",
+        "correct": false,
+        "predicted": "",
+        "expected": "B",
+        "latency_ms": 19178.34,
+        "output_tokens": 2048,
+        "category": "physical",
+        "difficulty": "hard"
+      },
+      {
+        "id": "common-0077",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 2702.216,
+        "output_tokens": 289,
+        "category": "physical",
+        "difficulty": "easy"
+      },
+      {
+        "id": "common-0078",
+        "correct": false,
+        "predicted": "r",
+        "expected": "y",
+        "latency_ms": 1502.935,
+        "output_tokens": 159,
+        "category": "text_selfref",
+        "difficulty": "medium"
+      },
+      {
+        "id": "common-0079",
+        "correct": false,
+        "predicted": "",
+        "expected": "B",
+        "latency_ms": 19196.577,
+        "output_tokens": 2048,
+        "category": "feasibility",
+        "difficulty": "easy"
+      },
+      {
+        "id": "common-0080",
+        "correct": false,
+        "predicted": "A",
+        "expected": "C",
+        "latency_ms": 7024.682,
+        "output_tokens": 747,
+        "category": "goal_tracking",
+        "difficulty": "easy"
+      },
+      {
+        "id": "common-0081",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 8369.661,
+        "output_tokens": 894,
+        "category": "false_presupposition",
+        "difficulty": "easy"
+      },
+      {
+        "id": "common-0082",
+        "correct": false,
+        "predicted": "a",
+        "expected": "m",
+        "latency_ms": 7439.12,
+        "output_tokens": 800,
+        "category": "text_selfref",
+        "difficulty": "medium"
+      },
+      {
+        "id": "common-0083",
+        "correct": false,
+        "predicted": "",
+        "expected": "C",
+        "latency_ms": 18942.817,
+        "output_tokens": 2048,
+        "category": "feasibility",
+        "difficulty": "medium"
+      },
+      {
+        "id": "common-0084",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 3725.378,
+        "output_tokens": 396,
+        "category": "goal_tracking",
+        "difficulty": "medium"
+      },
+      {
+        "id": "common-0085",
+        "correct": false,
+        "predicted": "C",
+        "expected": "B",
+        "latency_ms": 7932.456,
+        "output_tokens": 860,
+        "category": "false_presupposition",
+        "difficulty": "easy"
+      },
+      {
+        "id": "common-0086",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 5891.857,
+        "output_tokens": 640,
+        "category": "goal_tracking",
+        "difficulty": "medium"
+      },
+      {
+        "id": "common-0087",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 4183.575,
+        "output_tokens": 458,
+        "category": "physical",
+        "difficulty": "medium"
+      },
+      {
+        "id": "common-0088",
+        "correct": true,
+        "predicted": "4",
+        "expected": "4",
+        "latency_ms": 12929.185,
+        "output_tokens": 1397,
+        "category": "reversed_classics",
+        "difficulty": "medium"
+      },
+      {
+        "id": "common-0089",
+        "correct": false,
+        "predicted": "",
+        "expected": "C",
+        "latency_ms": 19081.252,
+        "output_tokens": 2048,
+        "category": "physical",
+        "difficulty": "hard"
+      },
+      {
+        "id": "common-0090",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 3702.714,
+        "output_tokens": 403,
+        "category": "goal_tracking",
+        "difficulty": "medium"
+      },
+      {
+        "id": "common-0091",
+        "correct": false,
+        "predicted": "",
+        "expected": "100",
+        "latency_ms": 19154.955,
+        "output_tokens": 2048,
+        "category": "reversed_classics",
+        "difficulty": "hard"
+      },
+      {
+        "id": "common-0092",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 2214.997,
+        "output_tokens": 238,
+        "category": "false_presupposition",
+        "difficulty": "easy"
+      },
+      {
+        "id": "common-0093",
+        "correct": false,
+        "predicted": "",
+        "expected": "08:45",
+        "latency_ms": 19156.2,
+        "output_tokens": 2048,
+        "category": "feasibility",
+        "difficulty": "hard"
+      },
+      {
+        "id": "common-0094",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 2944.807,
+        "output_tokens": 314,
+        "category": "physical",
+        "difficulty": "easy"
+      },
+      {
+        "id": "common-0095",
+        "correct": true,
+        "predicted": "C",
+        "expected": "C",
+        "latency_ms": 3390.026,
+        "output_tokens": 358,
+        "category": "goal_tracking",
+        "difficulty": "easy"
+      },
+      {
+        "id": "common-0096",
+        "correct": true,
+        "predicted": "5",
+        "expected": "5",
+        "latency_ms": 4088.003,
+        "output_tokens": 433,
+        "category": "text_selfref",
+        "difficulty": "hard"
+      },
+      {
+        "id": "common-0097",
+        "correct": false,
+        "predicted": "D",
+        "expected": "A",
+        "latency_ms": 10215.901,
+        "output_tokens": 1095,
+        "category": "physical",
+        "difficulty": "hard"
+      },
+      {
+        "id": "common-0098",
+        "correct": true,
+        "predicted": "D",
+        "expected": "D",
+        "latency_ms": 3926.437,
+        "output_tokens": 421,
+        "category": "physical",
+        "difficulty": "easy"
+      },
+      {
+        "id": "common-0099",
+        "correct": true,
+        "predicted": "A",
+        "expected": "A",
+        "latency_ms": 3869.534,
+        "output_tokens": 416,
+        "category": "false_presupposition",
+        "difficulty": "medium"
+      },
+      {
+        "id": "common-0100",
+        "correct": false,
+        "predicted": "",
+        "expected": "C",
+        "latency_ms": 18975.052,
+        "output_tokens": 2048,
+        "category": "physical",
+        "difficulty": "easy"
+      },
+      {
+        "id": "common-0101",
+        "correct": false,
+        "predicted": "A",
+        "expected": "C",
+        "latency_ms": 8691.63,
+        "output_tokens": 943,
+        "category": "goal_tracking",
+        "difficulty": "easy"
+      },
+      {
+        "id": "common-0102",
+        "correct": true,
+        "predicted": "4",
+        "expected": "4",
+        "latency_ms": 3977.745,
+        "output_tokens": 431,
+        "category": "text_selfref",
+        "difficulty": "hard"
+      },
+      {
+        "id": "common-0103",
+        "correct": false,
+        "predicted": "lage",
+        "expected": "lager",
+        "latency_ms": 934.69,
+        "output_tokens": 101,
+        "category": "text_selfref",
+        "difficulty": "medium"
+      },
+      {
+        "id": "common-0104",
+        "correct": false,
+        "predicted": "A",
+        "expected": "B",
+        "latency_ms": 18120.989,
+        "output_tokens": 1952,
+        "category": "goal_tracking",
+        "difficulty": "easy"
+      },
+      {
+        "id": "common-0105",
+        "correct": true,
+        "predicted": "p",
+        "expected": "p",
+        "latency_ms": 1837.37,
+        "output_tokens": 200,
+        "category": "text_selfref",
+        "difficulty": "medium"
+      },
+      {
+        "id": "common-0106",
+        "correct": false,
+        "predicted": "D",
+        "expected": "A",
+        "latency_ms": 8060.466,
+        "output_tokens": 878,
+        "category": "false_presupposition",
+        "difficulty": "medium"
+      },
+      {
+        "id": "common-0107",
+        "correct": false,
+        "predicted": "",
+        "expected": "D",
+        "latency_ms": 19197.331,
+        "output_tokens": 2048,
+        "category": "reversed_classics",
+        "difficulty": "hard"
+      },
+      {
+        "id": "common-0108",
+        "correct": true,
+        "predicted": "11",
+        "expected": "11",
+        "latency_ms": 1715.92,
+        "output_tokens": 181,
+        "category": "text_selfref",
+        "difficulty": "medium"
+      },
+      {
+        "id": "common-0109",
+        "correct": false,
+        "predicted": "B",
+        "expected": "A",
+        "latency_ms": 3350.947,
+        "output_tokens": 352,
+        "category": "goal_tracking",
+        "difficulty": "medium"
+      },
+      {
+        "id": "common-0110",
+        "correct": false,
+        "predicted": "C",
+        "expected": "A",
+        "latency_ms": 8589.077,
+        "output_tokens": 909,
+        "category": "physical",
+        "difficulty": "hard"
+      },
+      {
+        "id": "common-0111",
+        "correct": false,
+        "predicted": "C",
+        "expected": "A",
+        "latency_ms": 9804.19,
+        "output_tokens": 1038,
+        "category": "goal_tracking",
+        "difficulty": "medium"
+      },
+      {
+        "id": "common-0112",
+        "correct": false,
+        "predicted": "7",
+        "expected": "8",
+        "latency_ms": 4398.251,
+        "output_tokens": 467,
+        "category": "text_selfref",
+        "difficulty": "hard"
+      },
+      {
+        "id": "common-0113",
+        "correct": true,
+        "predicted": "i",
+        "expected": "i",
+        "latency_ms": 2057.137,
+        "output_tokens": 212,
+        "category": "text_selfref",
+        "difficulty": "medium"
+      },
+      {
+        "id": "common-0114",
+        "correct": false,
+        "predicted": "tsreh",
+        "expected": "desserts",
+        "latency_ms": 1181.777,
+        "output_tokens": 123,
+        "category": "text_selfref",
+        "difficulty": "medium"
+      },
+      {
+        "id": "common-0115",
+        "correct": false,
+        "predicted": "",
+        "expected": "C",
+        "latency_ms": 21681.237,
+        "output_tokens": 2048,
+        "category": "physical",
+        "difficulty": "hard"
+      },
+      {
+        "id": "common-0116",
+        "correct": true,
+        "predicted": "B",
+        "expected": "B",
+        "latency_ms": 5529.336,
+        "output_tokens": 608,
+        "category": "reversed_classics",
+        "difficulty": "medium"
+      }
+    ]
+  },
+  "failures": [],
+  "conditions": {
+    "dedicated": true,
+    "detail": "Only this SGLang server (and, for the speed and long-context rows, the small cache-busting proxy in front of it) was resident; the image server that normally runs on the box was stopped, and nvidia-smi listed no other compute process. The only other running container was a small host metrics exporter (python, about 10 MB, no GPU).",
+    "isolation_check": "nvidia-smi compute apps -> 1335306, .venv/bin/python 1335362, sglang::scheduler ; docker ps -> 1 containers; load1 at start 1.02"
+  },
+  "gotchas": [
+    {
+      "severity": "info",
+      "text": "Tool calling needs SGLang with the minicpm5 tool-call parser (sgl-project/sglang#25600). The openbmb cookbook says to install SGLang from main because v0.5.12.post1 lacked it; the PyPI 0.5.20 wheel used here ships it, so no source build is needed any more. The model writes XML tool calls (<function name=\"x\"><param name=\"k\">v</param></function>) and they come back as OpenAI tool_calls with finish_reason tool_calls, with thinking on and off."
+    },
+    {
+      "severity": "info",
+      "text": "SGLang has no MiniCPM5 reasoning parser, but the model uses plain <think> ... </think>, so --reasoning-parser qwen3 splits it into reasoning_content. With enable_thinking left unset the template adds no <think> prefix; the model opens the tag itself and the qwen3 parser still catches it."
+    },
+    {
+      "severity": "info",
+      "text": "flashinfer JIT-compiles its prefill kernels on the first request and shells out to ninja. In a venv that is not activated the first prefill dies with FileNotFoundError: ninja and the scheduler exits; put the venv bin directory on PATH before starting the server."
+    },
+    {
+      "severity": "info",
+      "text": "In a llama.cpp deployment the card warns that the default min_p 0.05 causes repetition and asks for min_p 0; the SGLang default min_p is already 0."
+    }
+  ],
+  "derived": {
+    "cost_per_1m_output_tokens_usd": null,
+    "tokens_per_watt": null,
+    "tok_s_per_gb_bandwidth": null,
+    "bandwidth_efficiency": null,
+    "memory_headroom_gb": 38.626
+  },
+  "raw": {
+    "harness": "atlas-bench",
+    "harness_version": "0.1.0",
+    "sha256": "35c30f7fc28c79dd18d4380cc7c8499a7116671d17f57472396b40cc22a8cb0d",
+    "payload_path": null,
+    "payload": {
+      "scorer": "mc",
+      "scorers_used": [
+        "exact",
+        "mc",
+        "numeric"
+      ],
+      "engine_endpoint": {
+        "attached": true,
+        "base_url": "http://127.0.0.1:30000/v1",
+        "served_model_id": "MiniCPM5-1B",
+        "advertised_models": [
+          "MiniCPM5-1B"
+        ]
+      }
+    },
+    "truncated": false
+  },
+  "provenance": {
+    "github_login": "0xBakeer",
+    "github_user_id": 17404809,
+    "started_at": "2026-09-22T23:23:12Z",
+    "finished_at": "2026-09-22T23:27:21Z",
+    "submitted_at": null,
+    "commit": null,
+    "pr": null,
+    "method": "atlas-bench",
+    "agent": null,
+    "notes": "Weights: openbmb/MiniCPM5-1B at 87179e5c1f455ef22e6223592d2d61351b525bfc, BF16, one 2.16 GB safetensors shard, sha256 checked against the Hub. SGLang 0.5.20 from PyPI in a Python 3.12 venv (uv) with torch 2.13.0+cu130, flashinfer-python 0.6.18, sglang-kernel 0.4.7, triton 3.7.1, transformers 5.12.1, xgrammar 0.2.1; CUDA 13.0, driver 580.173.02, Ubuntu 24.04.4, kernel 6.17.0-1029-nvidia. Environment SGLANG_ALLOW_OVERWRITE_LONGER_CONTEXT_LEN=1 and SGLANG_DISABLE_CUDNN_CHECK=1 as the MiniCPM SGLang cookbook recommends, the venv bin directory on PATH (flashinfer JIT needs ninja). Server flags follow the openbmb SGLang cookbook (docs/deployment/sglang.md): --dtype bfloat16 --context-length 131072 --tool-call-parser minicpm5, plus --reasoning-parser qwen3 so the <think> block lands in reasoning_content; --mem-fraction-static 0.75 instead of the cookbook 0.85 to leave the unified-memory box about 20 GB of host headroom (the KV pool still holds about 2 million tokens). Radix prefix cache, chunked prefill 8192, CUDA graphs and the flashinfer attention backend are SGLang defaults. Every request sets temperature 0 and seed 42 as the workloads specify. The chat template has three thinking states: enable_thinking true prefills <think>, false prefills an empty think block, and unset lets the model decide, which on almost every prompt means it thinks. Speed and long-context depth rows send chat_template_kwargs enable_thinking false; eval and needle rows leave it unset (the template default). Load: weights 13.0 s (2.38 GB), KV cache allocation 3.2 s, CUDA graph capture 10.6 s, scheduler end to end 32.2 s; SGLang reported max_total_num_tokens 3,679,002 and chunked_prefill_size 8192, and 23.5 GB of GPU memory was still free after start. max_running_requests is passed explicitly as 512 (the SGLang default on this box was 4096) so the concurrency limit is recorded in the row args and can be read back from /get_server_info; it was confirmed at 512 on this server before the first concurrent row."
+  },
+  "verification": {
+    "level": "self-reported",
+    "reproduced_by": [],
+    "flags": []
+  }
+}

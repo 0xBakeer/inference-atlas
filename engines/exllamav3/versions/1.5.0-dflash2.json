@@ -1,0 +1,220 @@
+{
+  "schema_version": 1,
+  "engine_id": "exllamav3",
+  "version": "1.5.0-dflash2",
+  "released": "2026-09-16",
+  "extraction_method": "hand-seeded",
+  "extracted_at": "2026-09-16T19:00:00Z",
+  "source": "TabbyAPI config_sample.yml and common/config_models.py at 53da791, driving exllamav3 1.5.0 built from github.com/r0b0tlab/exllamav3 branch dflash2-pathway at 30846b8; names follow the 1.4.2-anemone and 0.0.14 registry files where the knob exists there.",
+  "notes": "NOT an upstream exllamav3 release. The dflash2-pathway fork is upstream v1.5.0 plus four commits that add the DFlash2 block-diffusion drafter: the DFlash2DraftModel architecture, its grouped dynamic causal convolution and candidate selector, a selector-driven propose step and a q-aware rejection verify in the generator (github.com/turboderp-org/exllamav3/pull/379 proposes the same change upstream). The generator switches to the DFlash2 path on its own when the attached draft model is a DFlash2DraftModel, so a TabbyAPI draft_mode model with that draft directory is what enables it; there is no separate flag. Recorded as its own square because a stock 1.5.0 build cannot load the drafter. Results on it were served through TabbyAPI, so args carry TabbyAPI's config values under the names below. Defaults are TabbyAPI's, which is what canonicalization drops: cache-quant fp16, draft-cache-quant fp16, max-chunk-size 2048, draft-mode model. On the GB10 (aarch64) the build carries the same x86 stub patch as 1.4.2-anemone (AVX CPU reduce and MoE CPU kernels excluded and stubbed, _mm_pause in the two spin loops replaced by yield); no GPU kernel or numeric path is touched.",
+  "params": [
+    {
+      "name": "model-dir",
+      "type": "path",
+      "default": null,
+      "help": "EXL3 model directory. Dropped from the fingerprint.",
+      "aliases": [
+        "model"
+      ],
+      "group": "model",
+      "impact": "low"
+    },
+    {
+      "name": "max-seq-len",
+      "type": "int",
+      "default": null,
+      "help": "Maximum sequence length per request. TabbyAPI: max_seq_len (defaults to min(model max_position_embeddings, cache_size)).",
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "cache-size",
+      "type": "int",
+      "default": 4096,
+      "help": "Paged KV cache size in tokens, a multiple of 256; larger than max-seq-len leaves room for prefix caching across requests. TabbyAPI: cache_size.",
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "cache-quant",
+      "type": "enum",
+      "default": "fp16",
+      "help": "KV cache quantization of the target model. TabbyAPI: cache_mode, which also accepts a k_bits,v_bits pair (3,3 is written as 3).",
+      "group": "caching",
+      "impact": "high",
+      "choices": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        8,
+        "fp16"
+      ],
+      "aliases": [
+        "cache-mode"
+      ]
+    },
+    {
+      "name": "gpu-split",
+      "type": "list",
+      "default": null,
+      "help": "Per-GPU VRAM budget in GiB.",
+      "group": "parallelism",
+      "impact": "high"
+    },
+    {
+      "name": "tensor-parallel",
+      "type": "bool",
+      "default": false,
+      "help": "Split each layer across GPUs instead of splitting by layer.",
+      "aliases": [
+        "tp"
+      ],
+      "group": "parallelism",
+      "impact": "high"
+    },
+    {
+      "name": "rope-scale",
+      "type": "float",
+      "default": null,
+      "help": "Linear RoPE scaling factor.",
+      "group": "model",
+      "impact": "high"
+    },
+    {
+      "name": "rope-alpha",
+      "type": "float",
+      "default": null,
+      "help": "NTK-aware RoPE alpha.",
+      "group": "model",
+      "impact": "high"
+    },
+    {
+      "name": "max-batch-size",
+      "type": "int",
+      "default": null,
+      "help": "Maximum concurrent sequences. TabbyAPI: max_batch_size; left unset it resolves to 4 for models with recurrent layers (Qwen3.8's gated DeltaNet) and 32 otherwise. With a draft attached every slot reserves its own verify history on the recurrent layers.",
+      "group": "batching",
+      "impact": "high"
+    },
+    {
+      "name": "max-chunk-size",
+      "type": "int",
+      "default": 2048,
+      "help": "Prefill chunk size. TabbyAPI: chunk_size.",
+      "group": "batching",
+      "impact": "medium",
+      "aliases": [
+        "chunk-size"
+      ]
+    },
+    {
+      "name": "draft-mode",
+      "type": "enum",
+      "default": "model",
+      "help": "Speculative decoding path. model loads a separate draft model (a DFlash2DraftModel here, which switches the generator to DFlash2); mtp uses the multi-token-prediction head in the target pack; ngram needs no draft weights. TabbyAPI: draft_model.draft_mode.",
+      "group": "speculative",
+      "impact": "high",
+      "choices": [
+        "model",
+        "disabled",
+        "mtp",
+        "ngram"
+      ]
+    },
+    {
+      "name": "draft-gpu-split",
+      "type": "list",
+      "default": null,
+      "help": "Per-GPU VRAM budget in GiB for the draft head or draft model. TabbyAPI: draft_model.draft_gpu_split.",
+      "group": "speculative",
+      "impact": "medium"
+    },
+    {
+      "name": "draft-model",
+      "type": "str",
+      "default": null,
+      "help": "Draft model served beside the target, recorded as <hf_id>@<revision>. TabbyAPI: draft_model.draft_model_name inside draft_model_dir.",
+      "group": "speculative",
+      "impact": "high"
+    },
+    {
+      "name": "draft-cache-quant",
+      "type": "enum",
+      "default": "fp16",
+      "help": "KV cache quantization of the draft model. TabbyAPI: draft_model.draft_cache_mode; the k_bits,v_bits pair form needs the one-line config-model change noted on results that use it.",
+      "group": "speculative",
+      "impact": "medium",
+      "choices": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        8,
+        "fp16"
+      ],
+      "aliases": [
+        "draft-cache-mode"
+      ]
+    },
+    {
+      "name": "draft-num-tokens",
+      "type": "int",
+      "default": null,
+      "help": "Tokens drafted per step. TabbyAPI: draft_model.draft_num_tokens; unset, the generator takes the draft model's default_draft_size, which for DFlash2 is block_size - 1.",
+      "group": "speculative",
+      "impact": "high"
+    },
+    {
+      "name": "template-vars-default",
+      "type": "json",
+      "default": null,
+      "help": "TabbyAPI `template_vars_default`: chat-template variables applied when a request sends none (for Qwen3.8: `enable_thinking`). A request's `chat_template_kwargs`/`template_vars` takes precedence."
+    },
+    {
+      "name": "reasoning",
+      "type": "bool",
+      "default": false,
+      "help": "TabbyAPI reasoning parser: splits text between reasoning-start-token and reasoning-end-token into reasoning_content. Output tokens are unchanged; only where the text lands in the response.",
+      "group": "server",
+      "impact": "low"
+    },
+    {
+      "name": "tool-format",
+      "type": "str",
+      "default": null,
+      "help": "TabbyAPI tool-call parser (for example qwen3_coder). Unset, tool calls stay in content as text.",
+      "group": "server",
+      "impact": "medium"
+    },
+    {
+      "name": "sysmem-recurrent-cache",
+      "type": "int",
+      "default": 4096,
+      "help": "TabbyAPI memory.sysmem_recurrent_cache in MB: host-memory cache of recurrent-layer states for prefix reuse.",
+      "group": "caching",
+      "impact": "medium"
+    },
+    {
+      "name": "port",
+      "type": "int",
+      "default": 8080,
+      "help": "Bind port. Dropped from the fingerprint.",
+      "group": "server",
+      "impact": "low"
+    },
+    {
+      "name": "verbose",
+      "type": "bool",
+      "default": false,
+      "help": "Verbose logging. Dropped from the fingerprint.",
+      "group": "server",
+      "impact": "low"
+    }
+  ],
+  "distribution": "fork",
+  "source_repo": "github.com/r0b0tlab/exllamav3",
+  "source_ref": "30846b8"
+}

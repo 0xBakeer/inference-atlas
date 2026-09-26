@@ -17,13 +17,13 @@ from pathlib import Path
 from typing import Any
 
 from . import HARNESS_NAME, __version__
-from .canonical import canonicalize
+from .canonical import REQUEST_DEFAULTS, REQUEST_DROP, canonicalize
 from .client import utc_now
 from .hwinfo import HostInfo, fingerprint
 from .ids import cell_id, config_id_from_canonical, result_path, run_id
 from .plausibility import active_weight_gb
 from .registry import Registry
-from .spec import TaskSpec
+from .spec import RunConditions, TaskSpec
 from .workloads.base import WorkloadOutcome
 
 __all__ = [
@@ -33,6 +33,7 @@ __all__ = [
     "bound_payload",
     "build_result",
     "derived_metrics",
+    "recorded_request",
     "resolve_login",
 ]
 
@@ -60,10 +61,14 @@ class ResultInputs:
     served_model_id: str | None = None
     #: Everything ``/v1/models`` advertised, so a wrong-model run can be spotted afterwards.
     advertised_models: list[str] = field(default_factory=list)
+    #: The build the server itself reported (llama.cpp ``/props``), when it reports one.
+    server_build: str | None = None
     #: True when the engine was already running and the harness only measured it.
     attached: bool = False
     extra_gotchas: list[str] = field(default_factory=list)
     notes: str | None = None
+    #: Run conditions: dedicated-or-not is asserted, ``isolation_check`` is measured.
+    conditions: RunConditions | None = None
     warnings: list[str] = field(default_factory=list)
 
 
@@ -253,18 +258,46 @@ def auto_gotchas(inputs: ResultInputs, metrics: dict[str, Any] | None) -> list[d
     return deduped
 
 
+def recorded_request(request: Any) -> dict[str, Any] | None:
+    """The run's request block as the result records it (SPEC §4 ``request``).
+
+    Only what was actually *chosen* is written: options left at the harness default say
+    nothing about the run and would change the fingerprint of every result recorded before
+    the block existed. ``api_key`` is dropped outright — a credential is not a measurement
+    input and has no business in a public file. ``None`` when nothing survives, so a run
+    that took every default looks exactly as it did before this field existed.
+    """
+    if request is None:
+        return None
+    raw = request if isinstance(request, dict) else request.model_dump(mode="json")
+    kept: dict[str, Any] = {}
+    for name, value in raw.items():
+        if name in REQUEST_DROP or value is None:
+            continue
+        if name in REQUEST_DEFAULTS and value == REQUEST_DEFAULTS[name]:
+            continue
+        kept[name] = value
+    return kept or None
+
+
 def build_result(inputs: ResultInputs) -> dict[str, Any]:
     """Assemble the full SPEC §4 result record for one workload run."""
     spec = inputs.spec
     registry = inputs.registry
     outcome = inputs.outcome
 
+    # The request block is part of the configuration, not a harness detail: a run that sent
+    # chat_template_kwargs {"enable_thinking": false} measured a different thing from one that
+    # did not, and the two may not share a config_id (SPEC §3, decision 28).
+    request_block = recorded_request(spec.request)
     resolved = registry.resolve_config(
         engine_id=spec.engine.id,
         engine_version=spec.engine.version,
         args=spec.args,
         quant_id=spec.model.quant_id,
         dtype=spec.model.dtype,
+        build=spec.engine.build,
+        request=request_block,
     )
     inputs.warnings.extend(resolved.warnings)
     args_canonical = canonicalize(resolved.canonical_input)
@@ -303,6 +336,8 @@ def build_result(inputs: ResultInputs) -> dict[str, Any]:
         "served_model_id": inputs.served_model_id,
         "advertised_models": inputs.advertised_models,
     }
+    if inputs.server_build:
+        raw_payload["engine_endpoint"]["build_info"] = inputs.server_build
     payload, truncated = bound_payload(raw_payload)
     payload_json = json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
 
@@ -318,6 +353,7 @@ def build_result(inputs: ResultInputs) -> dict[str, Any]:
             "id": spec.engine.id,
             "version": spec.engine.version,
             "commit": spec.engine.commit,
+            "build": spec.engine.build,
             "container": inputs.container or spec.engine.container,
             "install_method": _install_method(inputs.install_method or spec.engine.install_method),
         },
@@ -342,6 +378,7 @@ def build_result(inputs: ResultInputs) -> dict[str, Any]:
         },
         "args": spec.args,
         "args_canonical": args_canonical,
+        "request": request_block,
         "serve_command": inputs.serve_command,
         "workload": {
             "id": str(inputs.workload.get("id")),
@@ -357,6 +394,8 @@ def build_result(inputs: ResultInputs) -> dict[str, Any]:
     if outcome.scores is not None:
         record["scores"] = outcome.scores
     record["failures"] = outcome.failures
+    conditions = inputs.conditions or spec.conditions
+    record["conditions"] = conditions.record_dict() if conditions else None
     record["gotchas"] = auto_gotchas(inputs, metrics)
     record["derived"] = derived_metrics(
         metrics, hardware_record, model_record, quant, spec.hardware.count

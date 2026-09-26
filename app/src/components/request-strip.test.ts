@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { RequestSample } from '../util/requests.js';
+import type { RequestSample } from '@atlas/core';
 import './request-strip.js';
 import { logTicks, type AtlasRequestStrip } from './request-strip.js';
 

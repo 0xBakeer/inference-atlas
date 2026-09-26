@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "id": "eval-t2i-text-v1",
+  "name": "Text rendering in generated images v1",
+  "kind": "eval",
+  "description": "Six cases whose pictures must contain exact strings — shop signage, a 2K poster, a chalkboard menu, a UI mock, a bilingual sign and one edit that writes a street name onto a blank plate — read back with OCR and scored against the strings the prompt asked for.",
+  "dataset_id": "eval-t2i-text-v1",
+  "params": {
+    "concurrency": 1,
+    "num_requests": 6,
+    "input_tokens": null,
+    "output_tokens": null,
+    "seed": 42,
+    "warmup_requests": 1,
+    "repeat": 1,
+    "timeout_s": 1800,
+    "guidance": null,
+    "images_per_request": 1,
+    "ocr_backend": "auto",
+    "ocr_languages": [
+      "eng",
+      "chi_sim"
+    ]
+  },
+  "sweep": null,
+  "eval": {
+    "suite": "t2i-text",
+    "scorer": "ocr",
+    "pass_threshold": null,
+    "max_output_tokens": null,
+    "categories": [
+      "text",
+      "edit"
+    ],
+    "notes": "An item is correct when every expected string is found after normalisation (NFKC, casefold, collapse whitespace, drop punctuation). The character error rate travels next to it in items[].metrics. The OCR backend is part of the measurement and is recorded in workload.resolved_params.ocr_backend; scores from two backends are not comparable, and a run whose backend read nothing at all is a failed measurement rather than a lane that renders no text."
+  },
+  "metrics_required": [
+    "accuracy",
+    "success_rate",
+    "avg_latency_ms"
+  ],
+  "immutable": true,
+  "created": "2026-09-20",
+  "supersedes": null,
+  "notes": "The render shape comes from each row's meta.render, not from params: these are frozen cases, and a case rendered at another size or seed is a different picture. params carries only what is the same for all of them. ocr_backend: auto picks pytesseract when the tesseract binary is present, then rapidocr-onnxruntime, then easyocr. Name one explicitly to compare lanes measured on different machines."
+}

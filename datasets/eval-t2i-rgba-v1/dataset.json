@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "id": "eval-t2i-rgba-v1",
+  "name": "Transparency eval v1",
+  "kind": "eval",
+  "description": "Four cases that must come back with a real alpha channel: three stickers and one cut-out edit. Scored on the alpha channel itself — how much of it is transparent, how clean the edge is, and whether the opaque part is one subject rather than a field of speckles.",
+  "licence": "MIT",
+  "created": "2026-09-20",
+  "files": [
+    "items.jsonl",
+    "images/"
+  ],
+  "count": 4,
+  "generator": "datasets/_gen/gen_t2i.py",
+  "token_heuristic": "approx_tokens = ceil(sum(len(m.content) for m in messages) / 4)",
+  "provenance": "Synthetic, authored in this repository. No third-party text.",
+  "default_scorer": "rgba",
+  "scoring": {
+    "answer_extraction": [
+      "Drop everything inside <think>...</think> (and an unterminated leading <think> block).",
+      "Drop markdown code fences, keeping the fenced content.",
+      "If any line matches /^\\s*(?:final answer|answer)\\s*[:\\-]\\s*(.+)$/i, take the capture of the LAST such line and use only that.",
+      "Strip surrounding whitespace, matching quotes, and a single trailing '.' or '!'.",
+      "Scorers that need the untouched output (instruction, json) get the raw text as well; the instruction scorer always works on the raw output."
+    ],
+    "scorers": {
+      "rgba": "Image suites only. Check the alpha channel of a transparent-background request: the transparent share, the share of ambiguous alpha (0.1-0.9) that betrays an inferred matte, and the number of connected components above 0.1 % of the image in alpha > 0.5. An image with no alpha channel fails."
+    },
+    "pass_rule": "One item is correct or incorrect; there is no partial credit. accuracy = correct / total. An item whose request failed (timeout, 5xx, context overflow) counts as incorrect AND is reported in scores.failures and metrics.requests_failed."
+  },
+  "categories": [
+    "edit",
+    "rgba"
+  ],
+  "difficulties": [
+    "easy",
+    "medium",
+    "hard"
+  ],
+  "counts": {
+    "by_category": {
+      "rgba": 3,
+      "edit": 1
+    },
+    "by_difficulty": {
+      "easy": 1,
+      "medium": 2,
+      "hard": 1
+    },
+    "by_scorer": {
+      "rgba": 4
+    }
+  },
+  "render": {
+    "sizes_px": [
+      [
+        1024,
+        1024
+      ]
+    ],
+    "steps": 40,
+    "note": "Every row carries its own meta.render. Two images are only comparable when prompt, size, steps and seed are identical, which is what meta.render_digest pins."
+  },
+  "notes": [
+    "The reference images in this dataset are drawn by the generator. No model output is stored here or in any result file: an image a lane produced is not data (SPEC §0.6).",
+    "A lane that returns a JPEG, or a PNG with a fully opaque alpha channel, fails every item here. That is the point: `transparent: true` silently ignored is the failure mode this suite exists to catch.",
+    "max_components is per case, not global: the steam curls of t2i-0019 are genuinely separate from the cup. Components smaller than 0.1 % of the image are ignored before counting.",
+    "max_ambiguous_fraction bounds the share of pixels whose alpha is between 0.1 and 0.9 — a soft grey halo around the subject is the usual sign of an alpha channel that was inferred rather than generated."
+  ],
+  "images": {
+    "dir": "images",
+    "format": "PNG",
+    "sizes_px": [
+      512
+    ],
+    "count": 1,
+    "total_bytes": 28006,
+    "max_bytes": 30720
+  }
+}

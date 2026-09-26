@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "id": "qwen-image-spark",
+  "name": "qwen-image-2.1-spark",
+  "repo": "https://github.com/0xBakeer/qwen-image-21-spark",
+  "docs": "https://github.com/0xBakeer/qwen-image-21-spark#readme",
+  "description": "A single-GPU recipe: one diffusers QwenImage21Pipeline loaded in bf16 behind FastAPI, one image at a time under a lock, with an OpenAI-shaped images API, probes, a bounded queue and a pinned dependency set. Registered as its own engine for the same reason atlas and sparkinfer are: what is measured is the serving stack, and \"diffusers\" is a library that several of these lanes contain rather than a thing you can start. It is the bf16 reference lane \u2014 the one with no quantization question attached.",
+  "api": "openai",
+  "default_port": 8020,
+  "platforms": [
+    "linux-cuda"
+  ],
+  "quant_formats": [
+    "bf16"
+  ],
+  "install": [
+    {
+      "method": "source",
+      "command": "./run.sh setup",
+      "arch": [
+        "aarch64",
+        "x86_64"
+      ],
+      "notes": "Pins diffusers to the commit the pipeline classes landed in; the pipeline is not in a released diffusers wheel."
+    }
+  ],
+  "serve": {
+    "command_template": "./run.sh serve {flags}",
+    "model_ref": "hf_id",
+    "flag_style": "{NAME}={value}",
+    "bool_style": "{NAME}=1",
+    "bool_false_style": "{NAME}=0",
+    "env_style": "{NAME}={value}",
+    "notes": "Configured through QIMG_* environment variables read at startup (attention backend, default steps, queue bound, output format), so the configuration is the environment and registry parameter names render as upper-case underscored variables."
+  },
+  "health": {
+    "path": "/healthz",
+    "models_path": "/v1/models"
+  },
+  "bench_harness": "atlas-bench",
+  "drop_params": [
+    "model",
+    "model-dir",
+    "host",
+    "port",
+    "api-key",
+    "output-dir"
+  ],
+  "param_aliases": {},
+  "version_source": {
+    "kind": "manual",
+    "repo": "0xBakeer/qwen-image-21-spark",
+    "version_scheme": "opaque"
+  },
+  "versions_available": [
+    "0.1.1"
+  ],
+  "links": {
+    "model_doc": "https://huggingface.co/Qwen/Qwen-Image-2.1"
+  },
+  "notes": "Serves the reference implementation directly, which is what makes it the fidelity baseline: bf16, no offload, no compile, no CUDA graphs. Its response carries a `timing` block (queue/encode/denoise/decode/total in ms) and the harness prefers that over the HTTP wall clock, so its seconds-per-image excludes the client. versions_available was empty on purpose until the first measurement. A version file has to carry that build's real flags and their real defaults (AGENTS.md), and a wrong default silently merges two configurations into one fingerprint. Nobody has installed this engine for this model yet, so the first run that does reads `--help` on the actual build and adds the version file in the same pull request as its numbers."
+}

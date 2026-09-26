@@ -12,26 +12,80 @@ comparable when they saw the same bytes.
 
 ## Index
 
-| id                         | kind     | rows |    size | generator                      | default scorer     |
-| -------------------------- | -------- | ---: | ------: | ------------------------------ | ------------------ |
-| `prompts-mixed-v1`         | prompts  |  600 | 3.14 MB | `gen_prompts_mixed.py`         | –                  |
-| `prompts-shared-prefix-v1` | prompts  |  100 | 2.88 MB | `gen_prompts_shared_prefix.py` | –                  |
-| `prompts-code-v1`          | prompts  |  150 |  449 KB | `gen_prompts_code.py`          | –                  |
-| `haystack-v1`              | haystack |   32 | 1007 KB | `gen_haystack.py`              | –                  |
-| `eval-math-v1`             | eval     |  130 |   40 KB | `gen_eval_math.py`             | `numeric`          |
-| `eval-reasoning-v1`        | eval     |  120 |   56 KB | `gen_eval_reasoning.py`        | `exact`            |
-| `eval-code-v1`             | eval     |  140 |  164 KB | `gen_eval_code.py`             | `code_exec`        |
-| `eval-knowledge-v1`        | eval     |  130 |   49 KB | `gen_eval_knowledge.py`        | `mc`               |
-| `eval-instruction-v1`      | eval     |  104 |   65 KB | `gen_eval_instruction.py`      | `instruction`      |
-| `eval-json-v1`             | eval     |  110 |   62 KB | `gen_eval_json.py`             | `json`             |
-| `eval-tools-v1`            | eval     |   80 |  149 KB | `gen_eval_tools.py`            | `json`             |
-| `eval-vision-v1`           | eval     |   60 |  141 KB | `gen_eval_vision.py`           | `exact` (+ images) |
-| `eval-multilingual-v1`     | eval     |   80 |   39 KB | `gen_eval_multilingual.py`     | `contains`         |
-| `eval-longctx-v1`          | eval     |  100 |  100 KB | `gen_eval_longctx.py`          | `needle`           |
-| `eval-format-v1`           | eval     |   30 |    8 KB | `gen_eval_format.py`           | `exact`            |
+| id                          | kind     | rows |    size | generator                       | default scorer     |
+| --------------------------- | -------- | ---: | ------: | ------------------------------- | ------------------ |
+| `prompts-mixed-v1`          | prompts  |  600 | 3.14 MB | `gen_prompts_mixed.py`          | –                  |
+| `prompts-shared-prefix-v1`  | prompts  |  100 | 2.88 MB | `gen_prompts_shared_prefix.py`  | –                  |
+| `prompts-code-v1`           | prompts  |  150 |  449 KB | `gen_prompts_code.py`           | –                  |
+| `haystack-v1`               | haystack |   32 | 1007 KB | `gen_haystack.py`               | –                  |
+| `eval-math-v1`              | eval     |  130 |   40 KB | `gen_eval_math.py`              | `numeric`          |
+| `eval-reasoning-v1`         | eval     |  120 |   56 KB | `gen_eval_reasoning.py`         | `exact`            |
+| `eval-code-v1`              | eval     |  140 |  164 KB | `gen_eval_code.py`              | `code_exec`        |
+| `eval-knowledge-v1`         | eval     |  130 |   49 KB | `gen_eval_knowledge.py`         | `mc`               |
+| `eval-instruction-v1`       | eval     |  104 |   65 KB | `gen_eval_instruction.py`       | `instruction`      |
+| `eval-json-v1`              | eval     |  110 |   62 KB | `gen_eval_json.py`              | `json`             |
+| `eval-tools-v1`             | eval     |   80 |  149 KB | `gen_eval_tools.py`             | `json`             |
+| `eval-vision-v1`            | eval     |   60 |  141 KB | `gen_eval_vision.py`            | `exact` (+ images) |
+| `eval-multilingual-v1`      | eval     |   80 |   39 KB | `gen_eval_multilingual.py`      | `contains`         |
+| `eval-longctx-v1`           | eval     |  100 |  100 KB | `gen_eval_longctx.py`           | `needle`           |
+| `eval-format-v1`            | eval     |   30 |    8 KB | `gen_eval_format.py`            | `exact`            |
+| `eval-math-v2`              | eval     |  140 |   54 KB | `gen_eval_math_v2.py`           | `numeric`          |
+| `eval-reasoning-v2`         | eval     |  140 |   81 KB | `gen_eval_reasoning_v2.py`      | `exact`            |
+| `eval-knowledge-v2`         | eval     |  151 |   63 KB | `gen_eval_knowledge_v2.py`      | `mc`               |
+| `eval-science-v2`           | eval     |  120 |   49 KB | `gen_eval_science_v2.py`        | `numeric`          |
+| `eval-commonsense-v2`       | eval     |  116 |   75 KB | `gen_eval_commonsense_v2.py`    | `mc`               |
+| `eval-security-v2`          | eval     |  111 |   63 KB | `gen_eval_security_v2.py`       | `mc`               |
+| `eval-longgen-integrity-v1` | eval     |   36 | 1.03 MB | `gen_eval_longgen_integrity.py` | `integrity`        |
+| `eval-rag-grounded-v1`      | eval     |  120 |  142 KB | `gen_eval_rag_grounded.py`      | `needle`           |
+| `eval-tools-small-v1`       | eval     |  100 |  145 KB | `gen_eval_tools_small.py`       | `json`             |
+| `t2i-prompts-v1`            | images   |   12 |   73 KB | `gen_t2i.py`                    | – (+ refs)         |
+| `eval-t2i-text-v1`          | eval     |    6 |   11 KB | `gen_t2i.py`                    | `ocr`              |
+| `eval-t2i-adherence-v1`     | eval     |   20 |   20 KB | `gen_t2i.py`                    | `clip`             |
+| `eval-t2i-rgba-v1`          | eval     |    4 |   34 KB | `gen_t2i.py`                    | `rgba`             |
+| `eval-t2i-fidelity-v1`      | eval     |   24 |   66 KB | `gen_t2i.py`                    | `fidelity`         |
+
+`eval-rag-grounded-v1` and `eval-tools-small-v1` (2026-09-22) are the **small-model
+tier** (see [`workloads/README.md`](../workloads/README.md#small-model-tier)): answering
+from a short provided passage, and declining when the passage does not hold the answer;
+and tool use with one or two tools where the arguments must be derived, the tool must be
+chosen, a missing argument must be asked for, or an earlier call's result must be used.
+
+`eval-longgen-integrity-v1` (2026-09-02) is a different axis again. Every suite above
+asks a short question, so a serving build that corrupts roughly one token in several
+thousand scores 100 % on all of them: the answer ends before the defect has room to
+appear. This one asks for 36 code generations of 150 to 290 lines each and scores them
+mechanically for spliced tokens — an identifier or number welded together from two
+fragments — so `accuracy` reads as "share of long generations that came back intact".
+
+The `-v2` rows are the **second-generation eval wave** (2026-09-01): the v1
+capability evals saturated — several models score 98–100 % on knowledge, math,
+reasoning, tools and format — so v2 raises the difficulty ceiling.
+`eval-math-v2`, `eval-reasoning-v2` and `eval-knowledge-v2` supersede their v1
+ids (which stay published and immutable); `eval-science-v2` (applied
+physics/chemistry with every constant pinned in the prompt) and
+`eval-commonsense-v2` (goal-tracking traps, altered classic riddles, false
+premises, literal-text questions) and `eval-security-v2` (defensive cyber
+security: toy crypto, CIDR arithmetic, vulnerability classification, log
+forensics, incident-response traps) are new suites, versioned `-v2` to mark
+the wave they belong to.
+
+The five `t2i` datasets (2026-09-20) are the image-generation set: one table of 24 frozen
+cases asked four different questions, plus twelve prompts for the latency workloads. A case
+keeps one id across all four suites, so a text score and a fidelity score for `t2i-0007` can
+be put side by side. Every row carries its own `meta.render` — width, height, steps, seed,
+transparency and the reference images an edit conditions on — because two generated images
+are only comparable when all of those are identical; `meta.render_digest` hashes exactly
+that tuple and the fidelity scorer refuses to compare across a mismatch.
+
+The reference images the edit cases condition on are drawn by the generator from flat
+geometry (no fonts, no noise, no photographs), which keeps them MIT and makes drift in an
+edited subject obvious. **No generated image is in this repository and none should be**: the
+fidelity suite compares against a bundle produced locally by `atlas-bench t2i-reference` on
+the contributor's own box, and publishes numbers plus a 64-bit perceptual hash, never
+pixels.
 
 Licence for all of the above: **MIT**. Total, including the generator scripts:
-about 8.7 MB against a 25 MB budget, which `_gen/check.py` prints and enforces.
+about 11.5 MB against a 25 MB budget, which `_gen/check.py` prints and enforces.
 
 Validate the whole corpus:
 
@@ -107,8 +161,9 @@ system message naming the language.
 ```
 
 **Always use the row's own `scorer`.** A workload's `eval.scorer` is only the
-dataset default; `eval-reasoning-v1` mixes `mc` and `exact`, and
-`eval-multilingual-v1` mixes `contains`, `mc` and `numeric`.
+dataset default; `eval-reasoning-v1` mixes `mc` and `exact`,
+`eval-multilingual-v1` mixes `contains`, `mc` and `numeric`, and the `-v2`
+evals mix `mc`, `exact` and `numeric` per row.
 
 ### `kind: haystack`
 
@@ -142,17 +197,22 @@ Applied in this order to the raw model output, before any scorer except
    capture of the **last** such line and use only that;
 4. strip surrounding whitespace, matching quotes, and a single trailing `.` or `!`.
 
-| scorer        | `answer`                    | rule                                                                                                                                                             |
-| ------------- | --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `exact`       | string                      | case-insensitive after collapsing whitespace; `meta.answer_aliases` also accepted                                                                                |
-| `numeric`     | numeric string              | parse the last number in the output (thousands separators, leading currency symbol and trailing `%` stripped); correct within `max(meta.tolerance or 1e-6, 1e-9· | expected | )`  |
-| `mc`          | `"A"`…`"D"`                 | accept the bare letter, `A)`, `(A)`, `A.` or the full text of the correct choice                                                                                 |
-| `contains`    | `{all: [...], any: [...]}`  | casefolded substring match, no diacritic folding. An entry may be a **list of alternatives** that passes when any one is found                                   |
-| `json`        | expected value              | parse the output as JSON; `meta.match` is `subset` (default) or `exact`; arrays compare elementwise in order; numbers compare numerically                        |
-| `code_exec`   | reference solution (unused) | run `extracted_code + "\n\n" + tests` in a subprocess, no network, throwaway cwd, `meta.timeout_s` (default 10)                                                  |
-| `needle`      | string                      | casefolded substring test after removing spaces, commas and hyphens from both sides                                                                              |
-| `instruction` | rule set                    | evaluate the DSL below against the **raw** output                                                                                                                |
-| `vision`      | –                           | attach `row.image` as a base64 data URL image part next to the prompt, then apply the row's own scorer                                                           |
+| scorer        | `answer`                     | rule                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| ------------- | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `exact`       | string                       | case-insensitive after collapsing whitespace; `meta.answer_aliases` also accepted                                                                                                                                                                                                                                                                                                                                                                                                                |
+| `numeric`     | numeric string               | parse the last number in the output (thousands separators, leading currency symbol and trailing `%` stripped); correct within `max(meta.tolerance or 1e-6, 1e-9·                                                                                                                                                                                                                                                                                                                                 | expected | )`  |
+| `mc`          | `"A"`…`"D"`                  | accept the bare letter, `A)`, `(A)`, `A.` or the full text of the correct choice                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| `contains`    | `{all: [...], any: [...]}`   | casefolded substring match, no diacritic folding. An entry may be a **list of alternatives** that passes when any one is found                                                                                                                                                                                                                                                                                                                                                                   |
+| `json`        | expected value               | parse the output as JSON; `meta.match` is `subset` (default) or `exact`; arrays compare elementwise in order; numbers compare numerically                                                                                                                                                                                                                                                                                                                                                        |
+| `code_exec`   | reference solution (unused)  | run `extracted_code + "\n\n" + tests` in a subprocess, no network, throwaway cwd, `meta.timeout_s` (default 10)                                                                                                                                                                                                                                                                                                                                                                                  |
+| `needle`      | string                       | casefolded substring test after removing spaces, commas and hyphens from both sides                                                                                                                                                                                                                                                                                                                                                                                                              |
+| `instruction` | rule set                     | evaluate the DSL below against the **raw** output                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| `vision`      | –                            | attach `row.image` as a base64 data URL image part next to the prompt, then apply the row's own scorer                                                                                                                                                                                                                                                                                                                                                                                           |
+| `ocr`         | `{strings: [...]}`           | image suites: read the generated picture with an OCR backend, normalise both sides (NFKC, casefold, collapse whitespace, drop punctuation) and require every string; the character error rate against the closest matching region is reported alongside, and the backend is part of the measurement                                                                                                                                                                                              |
+| `clip`        | short prompt                 | image suites: CLIPScore = 100 · max(cos(image, text), 0), correct above the workload's `clipscore_min`. The short prompt is the text side because CLIP truncates at 77 tokens                                                                                                                                                                                                                                                                                                                    |
+| `rgba`        | alpha thresholds             | image suites: transparent share, ambiguous-alpha share (0.1–0.9, the halo of an inferred matte) and connected components of the opaque region, against the row's own thresholds. No alpha channel is a failure, not an unscorable item                                                                                                                                                                                                                                                           |
+| `fidelity`    | `{reference, render_digest}` | image suites: PSNR, SSIM, LPIPS (when installed) and alpha MAE against a local bf16 reference bundle at identical prompt/size/steps/seed; correct above `psnr_min` and `ssim_min`. Refuses to score when the bundle's render digest differs                                                                                                                                                                                                                                                      |
+| `integrity`   | `"clean"`                    | long-output token integrity, not correctness: mask strings, comments and regex literals, then flag a digit-initial token that is not a valid numeric literal (`128Pin`), an undefined identifier that is a defined name plus 2–6 lower-case letters (`carrier`+`hed`), or an undefined bare word between two numeric literals (`[6, visible, 0]`). The definition set is `meta.context_identifiers` ∪ what the output declares ∪ the JS globals. An ordinary undefined identifier is not counted |
 
 One item is correct or it is not; there is no partial credit.
 `accuracy = correct / total`. A request that failed (timeout, 5xx,
@@ -172,6 +232,33 @@ with `tool_choice: "auto"` and score **`tool_calls[0]`**:
   after stripping; numbers compare numerically.
 - `answer.tool_call = null` → correct only when the response contains no tool call
   at all. The text of the reply is not scored.
+
+`eval-tools-small-v1` uses the same scorer and adds one optional key. When a
+`tool_call: null` row also carries `answer.reply_contains` (a list of strings, or of
+lists of accepted alternatives), the reply must additionally contain every entry,
+casefolded, with `<think>` blocks removed. Its multi-turn rows carry earlier assistant
+`tool_calls` and `tool` role results in `messages`, in the OpenAI chat format.
+
+### `eval-longgen-integrity-v1`
+
+Rows carry a 20–25k-character synthetic JavaScript ES-module project as the prompt plus a
+task: write one complete new module of the stated line range, importing at least six named
+exports from the project, and reply with the file contents and nothing else. `answer` is
+`"clean"` — the expected observation is "no spliced token", not a string the model types —
+and `difficulty` orders the items by requested output length (`easy` ≈ 1200 output tokens,
+`medium` ≈ 1800, `hard` ≈ 2400, recorded exactly in `meta.target_output_tokens`).
+
+`meta.context_identifiers` is every identifier the generated project defines or exports,
+computed from the generated source. The scorer needs it: without a definition set it cannot
+tell a spliced name from one the project supplied. The generic `Answer:`-line extraction
+step is **not** applied here — the output is a source file, and a line beginning `answer:`
+inside it is code.
+
+An item is correct when the generation contains no splice. That is deliberately not a
+correctness check: wrong-but-intact code scores 1.0, and the other eval suites are where
+correctness is measured. A clean run of 36 is also not proof of absence — at an observed
+rate of roughly one affected generation in five, a clean pass is a plausible outcome for an
+affected build.
 
 ### `eval-vision-v1`
 

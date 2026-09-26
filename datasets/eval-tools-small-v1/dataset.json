@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "id": "eval-tools-small-v1",
+  "name": "Small-scale tool use v1",
+  "kind": "eval",
+  "description": "100 tool-use items with one or two tools each: arguments that must be derived (relative dates, spoken times, durations, dozens, Fahrenheit into a Celsius tool), a choice between two near-identical tools, asking instead of guessing when a required argument is missing, a second call that needs a value from the first call's result, answering from a tool result without calling again, and re-issuing a call after the user changes one detail.",
+  "licence": "MIT",
+  "created": "2026-09-22",
+  "files": [
+    "items.jsonl"
+  ],
+  "count": 100,
+  "generator": "datasets/_gen/gen_eval_tools_small.py",
+  "token_heuristic": "approx_tokens = ceil(sum(len(m.content) for m in messages) / 4)",
+  "provenance": "Synthetic, authored in this repository. No third-party text.",
+  "default_scorer": "json",
+  "scoring": {
+    "answer_extraction": [
+      "Drop everything inside <think>...</think> (and an unterminated leading <think> block).",
+      "Drop markdown code fences, keeping the fenced content.",
+      "If any line matches /^\\s*(?:final answer|answer)\\s*[:\\-]\\s*(.+)$/i, take the capture of the LAST such line and use only that.",
+      "Strip surrounding whitespace, matching quotes, and a single trailing '.' or '!'.",
+      "Scorers that need the untouched output (instruction, json) get the raw text as well; the instruction scorer always works on the raw output."
+    ],
+    "scorers": {
+      "json": "Parse the extracted output as JSON. `answer` is the expected value; `meta.match` is 'subset' (default — every key/value in `answer` must appear, extra keys allowed) or 'exact'. Arrays compare elementwise in order unless meta.array_order is false."
+    },
+    "pass_rule": "One item is correct or incorrect; there is no partial credit. accuracy = correct / total. An item whose request failed (timeout, 5xx, context overflow) counts as incorrect AND is reported in scores.failures and metrics.requests_failed."
+  },
+  "categories": [
+    "chain",
+    "clarify",
+    "derive_args",
+    "pick_tool",
+    "revise",
+    "use_result"
+  ],
+  "difficulties": [
+    "easy",
+    "medium",
+    "hard"
+  ],
+  "counts": {
+    "by_category": {
+      "derive_args": 20,
+      "pick_tool": 20,
+      "clarify": 15,
+      "chain": 20,
+      "use_result": 15,
+      "revise": 10
+    },
+    "by_difficulty": {
+      "medium": 39,
+      "easy": 31,
+      "hard": 30
+    },
+    "by_scorer": {
+      "json": 100
+    }
+  },
+  "seed": 20260923,
+  "tool_catalogue": [
+    "book_flight",
+    "book_table",
+    "convert_amount",
+    "create_return",
+    "find_customer",
+    "geocode",
+    "get_air_quality",
+    "get_current_weather",
+    "get_exchange_rate",
+    "get_forecast",
+    "list_invoices",
+    "list_orders",
+    "lookup_order",
+    "order_groceries",
+    "search_flights",
+    "send_email",
+    "send_sms",
+    "set_reminder",
+    "set_thermostat",
+    "start_timer"
+  ],
+  "notes": [
+    "The harness sends meta.tools as the request's `tools` parameter with tool_choice='auto' and scores the FIRST entry of response.tool_calls, exactly as for eval-tools-v1.",
+    "Multi-turn rows carry earlier assistant tool calls and `tool` role results in `messages`, in the OpenAI chat format (assistant.tool_calls[].id matched by tool.tool_call_id). A server or chat template that cannot take them fails the request, and that is recorded as a failure, not skipped.",
+    "answer.tool_call = {name, arguments}: the name must match and the arguments must match as a subset (strings case-insensitively, numbers numerically). answer.tool_call = null: correct only when no tool call is made; when answer.reply_contains is present the reply text must also contain every entry (casefolded substring, <think> blocks removed).",
+    "Every row's system prompt states today's date; relative dates are resolved against it with datetime, and spoken times, durations, dozens and the Fahrenheit conversions are computed from their components.",
+    "The dates in `meta.today` span 2026-10-01 to 2026-11-30 so no single weekday or month boundary dominates."
+  ]
+}

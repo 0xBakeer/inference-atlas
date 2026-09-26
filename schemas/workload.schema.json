@@ -14,7 +14,10 @@
       "description": "Versioned suffix is mandatory: workloads are immutable once published."
     },
     "name": { "type": "string", "minLength": 1 },
-    "kind": { "type": "string", "enum": ["serving", "sweep", "prefill", "longctx", "eval", "agentic"] },
+    "kind": {
+      "type": "string",
+      "enum": ["serving", "sweep", "prefill", "longctx", "eval", "agentic", "image"]
+    },
     "description": {
       "$ref": "https://inference-atlas.dev/schemas/common.schema.json#/$defs/nullable_string"
     },
@@ -37,7 +40,14 @@
         "warmup_requests": { "type": "integer", "minimum": 0 },
         "temperature": { "type": "number", "minimum": 0 },
         "repeat": { "type": "integer", "minimum": 1 },
-        "timeout_s": { "type": "number", "minimum": 0 }
+        "timeout_s": { "type": "number", "minimum": 0 },
+        "width": { "type": "integer", "minimum": 256, "multipleOf": 32 },
+        "height": { "type": "integer", "minimum": 256, "multipleOf": 32 },
+        "steps": { "type": "integer", "minimum": 1 },
+        "guidance": { "type": ["number", "null"], "minimum": 0 },
+        "images_per_request": { "type": "integer", "minimum": 1 },
+        "ref_images": { "type": "integer", "minimum": 0 },
+        "transparent": { "type": "boolean" }
       }
     },
     "sweep": {
@@ -80,7 +90,12 @@
                 "judge",
                 "needle",
                 "vision",
-                "abstention"
+                "abstention",
+                "integrity",
+                "ocr",
+                "clip",
+                "rgba",
+                "fidelity"
               ]
             },
             "pass_threshold": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
@@ -133,6 +148,31 @@
     {
       "if": { "properties": { "kind": { "const": "serving" } }, "required": ["kind"] },
       "then": { "properties": { "sweep": { "type": "null" }, "eval": { "type": "null" } } }
+    },
+    {
+      "$comment": "kind=image renders pictures instead of tokens, so the render shape is the workload: the same prompts at another size or step count are another measurement. The shape lives in params and is required there, unlike an image eval suite (kind=eval, scorer ocr/clip/rgba/fidelity), where each frozen case carries its own render spec in the dataset row.",
+      "if": { "properties": { "kind": { "const": "image" } }, "required": ["kind"] },
+      "then": {
+        "required": ["dataset_id", "params"],
+        "properties": {
+          "dataset_id": { "type": "string" },
+          "sweep": { "type": "null" },
+          "eval": { "type": "null" },
+          "params": {
+            "required": [
+              "width",
+              "height",
+              "steps",
+              "seed",
+              "images_per_request",
+              "ref_images",
+              "num_requests",
+              "warmup_requests",
+              "repeat"
+            ]
+          }
+        }
+      }
     }
   ]
 }

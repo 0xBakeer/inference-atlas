@@ -1,8 +1,9 @@
-"""Result assembly: payload bounding, derived metrics, gotchas, provenance and paths."""
+"""Result assembly: payload bounding, derived metrics, gotchas, conditions, provenance, paths."""
 
 from __future__ import annotations
 
 import json
+from dataclasses import replace
 from pathlib import Path
 
 import pytest
@@ -18,6 +19,7 @@ from atlas_bench.result import (
     output_path,
     resolve_login,
 )
+from atlas_bench.spec import RunConditions
 from atlas_bench.workloads.base import WorkloadOutcome
 from tests.test_run_e2e import host, make_spec
 
@@ -207,3 +209,111 @@ def test_derived_metrics_scales_registered_figures_by_hardware_count() -> None:
         derived_metrics(metrics, hardware, model, quant)["bandwidth_efficiency"]
         == (one["bandwidth_efficiency"])
     )
+
+
+def test_conditions_from_inputs(atlas_repo: Path) -> None:
+    """Structured run conditions land in the record, asserted and measured kept distinct."""
+    record = build_result(
+        inputs(
+            atlas_repo,
+            WorkloadOutcome(kind="serving"),
+            conditions=RunConditions(
+                dedicated=False,
+                detail="shared LM Studio endpoint reachable by other services",
+                isolation_check="resident-model set sampled before and after every workload",
+            ),
+        )
+    )
+    assert record["conditions"] == {
+        "dedicated": False,
+        "detail": "shared LM Studio endpoint reachable by other services",
+        "isolation_check": "resident-model set sampled before and after every workload",
+    }
+
+
+def test_conditions_fall_back_to_the_packet(atlas_repo: Path) -> None:
+    """A packet can carry conditions, like it carries notes."""
+    made = inputs(atlas_repo, WorkloadOutcome(kind="serving"))
+    made.spec = make_spec(conditions={"dedicated": True, "extra_key": "kept in the packet"})
+    record = build_result(made)
+    # Exactly the three schema fields: packet extras never leak into the CC-BY record.
+    assert record["conditions"] == {"dedicated": True, "detail": None, "isolation_check": None}
+
+
+def test_conditions_absent_stays_null(atlas_repo: Path) -> None:
+    """No conditions given: the field is null, never invented."""
+    record = build_result(inputs(atlas_repo, WorkloadOutcome(kind="serving")))
+    assert record["conditions"] is None
+
+
+def test_engine_build_reaches_the_fingerprint_and_the_record() -> None:
+    """A fork build must change config_id and be recorded, or the fork rule is unenforceable.
+
+    A fork's version string names the upstream commit it branched from, so two builds share
+    it; ``engine.build`` is what separates them (SPEC §3, decision 24).
+    """
+    from atlas_bench.canonical import CanonicalInput, canonicalize
+
+    base = dict(engine_id="vllm", engine_version="0.1.dev20073+g8e685d198", args={}, quant_id="nvfp4")
+    before = canonicalize(CanonicalInput(**base, build="github.com/example/fork@82ed48d"))
+    after = canonicalize(CanonicalInput(**base, build="github.com/example/fork@8347e7c"))
+    assert before != after, "two builds of one version must not share a canonical string"
+
+    # And a run that declares nothing hashes exactly as it did before the field existed.
+    assert canonicalize(CanonicalInput(**base)) == canonicalize(CanonicalInput(**base, build=None))
+    assert canonicalize(CanonicalInput(**base)) == "@dtype=auto;@quant=nvfp4"
+
+
+def test_request_block_is_recorded_and_fingerprinted(atlas_repo: Path) -> None:
+    """The packet said thinking was off; the row has to say so too, and in its config_id.
+
+    Regression test for the harness dropping the packet's ``request`` block: the two rows of
+    a thinking-on/thinking-off pair then differed only by the contributor hash in the file
+    name, which makes neither of them reproducible.
+    """
+    base = inputs(atlas_repo, WorkloadOutcome(kind="serving"))
+    on = build_result(base)
+    off = build_result(
+        replace(
+            base,
+            spec=make_spec(
+                request={
+                    "temperature": 0,
+                    "seed": 42,
+                    "chat_template_kwargs": {"enable_thinking": False},
+                }
+            ),
+        )
+    )
+
+    # Everything at the harness default says nothing about the run and is not recorded.
+    assert on["request"] is None
+    assert off["request"] == {"chat_template_kwargs": {"enable_thinking": False}}
+    assert '@req.chat_template_kwargs={"enable_thinking":false}' in off["args_canonical"]
+    assert off["config_id"] != on["config_id"]
+    assert off["run_id"].startswith(off["config_id"])
+
+
+def test_request_block_never_records_a_credential(atlas_repo: Path) -> None:
+    """An api_key is not a measurement input and never lands in a public file."""
+    record = build_result(
+        replace(
+            inputs(atlas_repo, WorkloadOutcome(kind="serving")),
+            spec=make_spec(request={"temperature": 0, "seed": 42, "api_key": "sk-secret"}),
+        )
+    )
+    assert record["request"] is None
+    assert "sk-secret" not in json.dumps(record)
+
+
+def test_the_build_the_server_reported_is_recorded(atlas_repo: Path) -> None:
+    """engine_endpoint.build_info carries what the server said, so a reviewer can compare it."""
+    outcome = WorkloadOutcome(kind="serving", metrics={})
+    record = build_result(inputs(atlas_repo, outcome, server_build="b11071-f95b0d9"))
+    assert record["raw"]["payload"]["engine_endpoint"]["build_info"] == "b11071-f95b0d9"
+
+
+def test_no_build_info_key_when_the_server_reported_none(atlas_repo: Path) -> None:
+    """Engines that do not report a build keep the payload they always had."""
+    record = build_result(inputs(atlas_repo, WorkloadOutcome(kind="serving", metrics={})))
+    assert "build_info" not in record["raw"]["payload"]["engine_endpoint"]

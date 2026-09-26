@@ -54,8 +54,10 @@ _NON_NEGATIVE = (
     "requests_total",
     "requests_ok",
     "requests_failed",
+    "load_s",
 )
-_DISTRIBUTIONS = ("ttft_ms", "tpot_ms", "itl_ms", "e2e_ms", "decode_tok_s_per_request")
+_DISTRIBUTIONS = ("ttft_ms", "tpot_ms", "itl_ms", "e2e_ms", "decode_tok_s_per_request",
+                  "s_per_image")
 _ORDERED_QUANTILES = ("min", "p50", "p90", "p95", "p99", "max")
 _DRAFT_COUNT_KEYS = (
     "num-speculative-tokens",

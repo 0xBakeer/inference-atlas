@@ -167,6 +167,8 @@ class Registry:
         args: dict[str, Any],
         quant_id: str,
         dtype: str | None,
+        build: str | None = None,
+        request: dict[str, Any] | None = None,
     ) -> ResolvedConfig:
         """Build the :class:`CanonicalInput` for a run from the registries.
 
@@ -174,6 +176,9 @@ class Registry:
         contributes the params (with their types, defaults and per-param aliases). A missing
         version file means ``params is None`` — nothing is dropped as a default and the
         caller gets an ``unknown-engine-version`` warning, exactly as SPEC §3.2 requires.
+
+        ``request`` is the run's request block; its non-default options fold into the
+        fingerprint as ``@req.<name>`` (SPEC §3, decision 28).
         """
         warnings: list[str] = []
         meta = self.engine_meta(engine_id) or {}
@@ -182,6 +187,10 @@ class Registry:
         version = self.engine_version(engine_id, engine_version)
         if version is None:
             warnings.append(f"unknown-engine-version:{engine_id}@{engine_version}")
+        elif version.get("distribution") == "fork" and not (build or "").strip():
+            # The validator refuses this on review; failing here means the contributor finds
+            # out before the run rather than after it.
+            warnings.append(f"fork-build-unnamed:{engine_id}@{engine_version}")
 
         params: tuple[ParamSpec, ...] | None = None
         if version is not None:
@@ -209,6 +218,8 @@ class Registry:
                 param_aliases={
                     str(k): str(v) for k, v in (meta.get("param_aliases") or {}).items()
                 },
+                build=build,
+                request=dict(request) if request else None,
             ),
             warnings=warnings,
         )

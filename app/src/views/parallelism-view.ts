@@ -16,7 +16,7 @@ import { emptyState, skeletonLines, who } from '../components/ui.js';
 import { href, qget, setQuery } from '../router.js';
 import { store } from '../store.js';
 import { seriesColor } from '../util/colors.js';
-import { fmtInt, fmtPct, fmtTokS } from '../util/format.js';
+import { fmtInt, fmtPct, fmtTokS } from '@atlas/core';
 import { ViewElement } from './view-base.js';
 
 @customElement('atlas-parallelism-view')

@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "id": "eval-knowledge-v2",
+  "name": "Knowledge eval v2",
+  "kind": "eval",
+  "description": "151 four-option multiple-choice questions on stable facts a tier deeper than eval-knowledge-v1, which strong models saturate: SI base-unit decompositions and second-tier units, particle classification, atomic numbers and compound and ion formulas, organelles, vitamins and hormones, planetary moons and stellar facts, harder capitals, straits, river mouths and landforms, and scientists, authors, composers and fixed dates.",
+  "licence": "MIT",
+  "created": "2026-08-23",
+  "files": [
+    "items.jsonl"
+  ],
+  "count": 151,
+  "generator": "datasets/_gen/gen_eval_knowledge_v2.py",
+  "token_heuristic": "approx_tokens = ceil(sum(len(m.content) for m in messages) / 4)",
+  "provenance": "Synthetic, authored in this repository. No third-party text.",
+  "default_scorer": "mc",
+  "scoring": {
+    "answer_extraction": [
+      "Drop everything inside <think>...</think> (and an unterminated leading <think> block).",
+      "Drop markdown code fences, keeping the fenced content.",
+      "If any line matches /^\\s*(?:final answer|answer)\\s*[:\\-]\\s*(.+)$/i, take the capture of the LAST such line and use only that.",
+      "Strip surrounding whitespace, matching quotes, and a single trailing '.' or '!'.",
+      "Scorers that need the untouched output (instruction, json) get the raw text as well; the instruction scorer always works on the raw output."
+    ],
+    "scorers": {
+      "mc": "Multiple choice. `choices` is a list of strings; `answer` is the 0-based-letter label ('A', 'B', ...). Accept the bare letter, 'A)', '(A)', 'A.' or the full text of the correct choice, case-insensitively."
+    },
+    "pass_rule": "One item is correct or incorrect; there is no partial credit. accuracy = correct / total. An item whose request failed (timeout, 5xx, context overflow) counts as incorrect AND is reported in scores.failures and metrics.requests_failed."
+  },
+  "categories": [
+    "astronomy",
+    "biology",
+    "chemistry",
+    "geography",
+    "history_biography",
+    "physics"
+  ],
+  "difficulties": [
+    "easy",
+    "medium",
+    "hard"
+  ],
+  "counts": {
+    "by_category": {
+      "chemistry": 25,
+      "history_biography": 25,
+      "geography": 25,
+      "astronomy": 25,
+      "biology": 25,
+      "physics": 26
+    },
+    "by_difficulty": {
+      "medium": 104,
+      "hard": 42,
+      "easy": 5
+    },
+    "by_scorer": {
+      "mc": 151
+    }
+  },
+  "seed": 20260910,
+  "supersedes": "eval-knowledge-v1",
+  "notes": [
+    "Same exclusions as v1: nothing here depends on the current year, on an office-holder, or on a superlative that sources disagree about — a model must not be able to lose a point for being more up to date than the dataset.",
+    "Every fact was hand-curated for stability and cross-checked; distractors are drawn from the same fact table as the answer (atomic numbers use the numerically nearest table values), so wrong options are plausible rather than absurd.",
+    "Options are shuffled with the dataset seed, so the correct letter is spread evenly and is stable across regenerations.",
+    "The mc scorer accepts the bare letter, 'A)', '(A)', 'A.' or the full text of the correct option."
+  ]
+}

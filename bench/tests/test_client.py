@@ -2,10 +2,19 @@
 
 from __future__ import annotations
 
+import asyncio
+
 import httpx
 import pytest
 
-from atlas_bench.client import ChatClient, categorize_error, is_refusal
+from atlas_bench.client import (
+    POOL_HEADROOM,
+    POOL_MINIMUM,
+    ChatClient,
+    categorize_error,
+    is_refusal,
+    pool_limits,
+)
 from tests.conftest import FakeOpenAIServer
 
 MESSAGES = [{"role": "user", "content": "hello"}]
@@ -42,6 +51,46 @@ def test_error_categorization(status, message, exc, expected) -> None:
 def test_oom_beats_the_status_class() -> None:
     """An OOM behind a 500 is an OOM, not a generic server error."""
     assert categorize_error(500, "torch.cuda.OutOfMemoryError", None) == "oom"
+
+
+#: One verbatim over-the-ceiling message per engine we have measured. `longctx` promises a
+#: point that does not fit is recorded as `context-overflow` and never omitted
+#: (`workloads/README.md`), and that promise is only kept if every engine's wording matches.
+#: An engine whose phrasing is not here silently downgrades to its status class, so add the
+#: real string when adding an engine rather than trusting the regex to generalise.
+CONTEXT_OVERFLOW_MESSAGES = {
+    "vllm": "This model's maximum context length is 8192 tokens. However, you requested "
+    "9000 tokens. Please reduce the length of the messages.",
+    "atlas": '{"error":{"message":"Prompt too long: 5152 tokens exceeds max_seq_len 2048 '
+    '(leave room for output tokens)","type":"invalid_request_error"}}',
+    "llamacpp": "the request exceeds the available context size, n_ctx = 4096",
+    "lmstudio": "The number of tokens to keep from the initial prompt is greater than the "
+    "context length. Try to load the model with a larger context length, or provide a "
+    "shorter input",
+    "sglang": "Input length 40316 exceeds the maximum allowed length 32768",
+}
+
+
+@pytest.mark.parametrize("engine", sorted(CONTEXT_OVERFLOW_MESSAGES))
+def test_context_overflow_is_recognised_per_engine(engine: str) -> None:
+    """Every engine's own over-the-ceiling wording categorises as context-overflow.
+
+    A 4xx that is really a context overflow must not fall through to ``http-4xx``: the
+    category is what the site and ``result.py``'s warning read.
+    """
+    assert categorize_error(400, CONTEXT_OVERFLOW_MESSAGES[engine], None) == "context-overflow"
+
+
+def test_context_overflow_beats_the_status_class() -> None:
+    """Atlas returns 400 for an oversized prompt; the category must still be the reason."""
+    message = "Prompt too long: 5152 tokens exceeds max_seq_len 2048"
+    assert categorize_error(400, message, None) == "context-overflow"
+
+
+def test_a_plain_bad_request_is_still_http_4xx() -> None:
+    """Widening the context patterns must not swallow unrelated 4xx failures."""
+    assert categorize_error(400, "unknown field 'temperatur'", None) == "http-4xx"
+    assert categorize_error(404, "model not found", None) == "http-4xx"
 
 
 @pytest.mark.parametrize(
@@ -291,3 +340,81 @@ async def test_extra_body_passes_through(fake_server: FakeOpenAIServer) -> None:
     body = fake_server.requests[0]
     assert body["chat_template_kwargs"] == {"enable_thinking": False}
     assert body["reasoning_effort"] == "low"
+
+
+# ------------------------------------------------------- connection pool sizing
+
+
+def test_pool_limits_never_shrink_below_the_httpx_default() -> None:
+    """A small run keeps httpx's own 100, and keepalive is raised to match it.
+
+    httpx defaults ``max_keepalive_connections`` to 20, so even a 32-way workload spends
+    most of its life tearing down and re-opening sockets. The pool is one number here.
+    """
+    limits = pool_limits(None)
+    assert limits.max_connections == POOL_MINIMUM
+    assert limits.max_keepalive_connections == POOL_MINIMUM
+    assert pool_limits(8).max_connections == POOL_MINIMUM
+
+
+def test_pool_limits_follow_the_widest_workload() -> None:
+    """Past 100 the pool tracks the workload, with headroom for the side requests."""
+    assert pool_limits(256).max_connections == 256 + POOL_HEADROOM
+    assert pool_limits(256).max_keepalive_connections == 256 + POOL_HEADROOM
+    assert pool_limits(1024).max_connections == 1024 + POOL_HEADROOM
+
+
+def test_client_pool_admits_every_request_of_a_256_way_workload() -> None:
+    """The regression this guards: a 256-way sweep point capped at 100 in-flight requests.
+
+    The pool, not the engine, was the limit, and nothing in the result file said so — the
+    server's queue was empty while 156 requests sat in the client.
+    """
+    client = ChatClient("http://fake", "fake-model", max_connections=256)
+    pool = client._client._transport._pool  # type: ignore[attr-defined]
+    assert pool._max_connections >= 256
+    assert pool._max_keepalive_connections >= 256
+
+
+async def test_concurrent_requests_are_not_serialized_by_the_pool(
+    fake_server: FakeOpenAIServer,
+) -> None:
+    """With the pool sized to the workload, 120 streams are in flight together."""
+    async with ChatClient(
+        "http://fake", "fake-model", transport=fake_server.transport, max_connections=120
+    ) as client:
+        results = await asyncio.gather(
+            *(client.chat_stream(MESSAGES, request_id=f"r{i}") for i in range(120))
+        )
+    assert all(r.ok for r in results)
+    assert len(fake_server.requests) == 120
+
+
+def _props_client(routes: dict[str, httpx.Response]) -> ChatClient:
+    def handler(request: httpx.Request) -> httpx.Response:
+        return routes.get(request.url.path, httpx.Response(404, json={"error": "not found"}))
+
+    return ChatClient("http://fake", "m", transport=httpx.MockTransport(handler))
+
+
+async def test_server_build_reads_llama_cpp_props() -> None:
+    """llama-server reports its build in /props; that is the build that was measured."""
+    client = _props_client({"/props": httpx.Response(200, json={"build_info": "b11071-f95b0d9"})})
+    async with client:
+        assert await client.server_build("qwen") == "b11071-f95b0d9"
+
+
+async def test_server_build_falls_back_to_the_llama_swap_upstream_path() -> None:
+    """llama-swap proxies /props per model under /upstream/<model>/props."""
+    client = _props_client(
+        {"/upstream/qwen3.8-27b/props": httpx.Response(200, json={"build_info": "b11071-abc"})}
+    )
+    async with client:
+        assert await client.server_build("qwen3.8-27b") == "b11071-abc"
+
+
+async def test_server_build_is_none_when_the_server_does_not_say() -> None:
+    """Engines without /props, or a /props without build_info, report nothing."""
+    client = _props_client({"/props": httpx.Response(200, json={"n_ctx": 4096})})
+    async with client:
+        assert await client.server_build("m") is None

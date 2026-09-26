@@ -21,9 +21,10 @@ from .engines.base import AttachAdapter, EngineAdapter, get_adapter
 from .registry import Registry
 from .repo import write_json
 from .result import ResultInputs, build_result, output_path
-from .spec import TaskSpec
+from .spec import RunConditions, TaskSpec
 from .telemetry import TelemetrySampler
 from .workloads import RunContext, get_runner, resolve_workload
+from .workloads.sweep import sweep_axis
 
 __all__ = ["RunOutput", "plan_spec", "run_spec", "run_spec_sync"]
 
@@ -55,6 +56,10 @@ def _resolve_hardware(spec: TaskSpec, registry: Registry, host: hwinfo.HostInfo)
     return warnings
 
 
+class AmbiguousServedModelError(RuntimeError):
+    """Several models are loaded, none is the one in the packet, and nothing says which."""
+
+
 async def _served_model(client: ChatClient, spec: TaskSpec) -> tuple[str, list[str], list[str]]:
     """Pick the model name to send in requests: ``(served_model_id, advertised, warnings)``.
 
@@ -64,8 +69,8 @@ async def _served_model(client: ChatClient, spec: TaskSpec) -> tuple[str, list[s
     ``model.served_model_id``, and it is used verbatim.
 
     Without one we look for the model id in ``/v1/models`` (case-insensitively, since that is
-    exactly the kind of difference this field exists for) and only then fall back to the first
-    advertised model, which is a guess and says so.
+    exactly the kind of difference this field exists for). A server with exactly one model loaded
+    serves that one. A server with several and no match is an error, not a guess.
     """
     advertised = await client.list_models()
     warnings: list[str] = []
@@ -84,12 +89,15 @@ async def _served_model(client: ChatClient, spec: TaskSpec) -> tuple[str, list[s
         for name in advertised:
             if name.casefold() == str(candidate).casefold():
                 return name, advertised, warnings
+    if len(advertised) > 1:
+        # This used to pick advertised[0] and warn. Behind a proxy that serves several models,
+        # that measures whichever one is listed first and files it under the packet's model;
+        # a warning at the end of the run is not enough to stop that row being submitted.
+        raise AmbiguousServedModelError(
+            f"{len(advertised)} models are loaded ({', '.join(advertised)}) and none matches "
+            f"'{spec.model.id}'. Set model.served_model_id in the packet to the one to measure."
+        )
     if advertised:
-        if len(advertised) > 1:
-            warnings.append(
-                f"served-model-guessed: {advertised} are loaded and none matches "
-                f"'{spec.model.id}'; using '{advertised[0]}'. Set model.served_model_id."
-            )
         return advertised[0], advertised, warnings
     return spec.model.hf_id or spec.model.id, advertised, warnings
 
@@ -129,6 +137,25 @@ def plan_spec(spec: TaskSpec, registry: Registry) -> list[dict[str, Any]]:
     return plan
 
 
+def max_concurrency(spec: TaskSpec, registry: Registry) -> int:
+    """Largest number of requests any workload in ``spec`` will have in flight at once.
+
+    One client serves every workload of a packet, so the pool has to fit the widest of
+    them — and for a sweep that is the top of its axis, not the ``concurrency`` in its
+    params, which is only the first level.
+    """
+    widest = 1
+    for ref in spec.workloads:
+        workload, params = resolve_workload(registry, ref)
+        levels = [int(params.get("concurrency") or 1)]
+        if str(workload.get("kind") or "") == "sweep":
+            axis, values = sweep_axis(workload)
+            if axis == "concurrency":
+                levels += [int(v) for v in values]
+        widest = max(widest, *levels)
+    return widest
+
+
 async def run_spec(
     spec: TaskSpec,
     *,
@@ -140,6 +167,7 @@ async def run_spec(
     telemetry: bool = True,
     gotchas: list[str] | None = None,
     notes: str | None = None,
+    conditions: RunConditions | None = None,
     transport: httpx.AsyncBaseTransport | None = None,
     adapter: EngineAdapter | None = None,
     host: hwinfo.HostInfo | None = None,
@@ -175,9 +203,18 @@ async def run_spec(
         transport=transport,
         tokenizer=tokenizer,
         extra_body=extra_body,
+        max_connections=max_concurrency(spec, registry),
     ) as client:
         client.model, advertised, model_warnings = await _served_model(client, spec)
         output.warnings.extend(model_warnings)
+        server_build = None
+        if spec.engine.id == "llamacpp":
+            server_build = await client.server_build(client.model)
+        if server_build and spec.engine.version.lower() not in server_build.lower().split("-"):
+            output.warnings.append(
+                f"engine-version-mismatch: the packet says {spec.engine.id} {spec.engine.version} "
+                f"but the server reports build {server_build}; record the build you measured"
+            )
         for ref in spec.workloads:
             workload, params = resolve_workload(registry, ref)
             started_at = utc_now()
@@ -205,9 +242,11 @@ async def run_spec(
                     install_method=spec.engine.install_method,
                     served_model_id=client.model,
                     advertised_models=advertised,
+                    server_build=server_build,
                     attached=attached,
                     extra_gotchas=list(gotchas or []),
                     notes=notes,
+                    conditions=conditions,
                     warnings=list(output.warnings),
                 )
             )

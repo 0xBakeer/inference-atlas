@@ -10,6 +10,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import type { ResultRecord } from '@atlas/core';
+import { canonicalizeArgs } from '@atlas/core';
 import { main, validateRepo } from '../src/validate.js';
 import {
   CASE_SENSITIVE_FS,
@@ -436,5 +437,56 @@ describe('CI-owned fields', () => {
     expect(codes(validateRepo({ root: repo.root, changed: [path] }), 'warn')).toContain(
       'ci-owned-field',
     );
+  });
+});
+
+describe('fork builds must name themselves (SPEC decision 24)', () => {
+  // A fork's version string is typically `<upstream release>+g<upstream sha>`: it names the
+  // commit the fork branched FROM, not the patches it carries. Two forks of the same commit,
+  // or two builds of one fork either side of a fix, therefore share it.
+  const FORK_VERSION = '0.1.dev20073+g8e685d198';
+
+  function registerFork(): void {
+    repo.write(`engines/vllm/versions/${FORK_VERSION}.json`, {
+      schema_version: 1,
+      engine_id: 'vllm',
+      version: FORK_VERSION,
+      extraction_method: 'argparse',
+      distribution: 'fork',
+      source_repo: 'github.com/example/fork',
+      source_ref: 'abc1234',
+      params: [],
+    });
+  }
+
+  it('refuses a result on a fork version that does not say which build it was', () => {
+    registerFork();
+    const result = makeResult(repo, { engineId: 'vllm', version: FORK_VERSION });
+    const path = repo.writeResult(result);
+    const outcome = validateRepo({ root: repo.root, changed: [path] });
+    expect(codes(outcome)).toContain('fork-build-unnamed');
+  });
+
+  it('leaves an already-merged result alone: the field postdates it', () => {
+    registerFork();
+    const result = makeResult(repo, { engineId: 'vllm', version: FORK_VERSION });
+    repo.writeResult(result);
+    const outcome = validateRepo({ root: repo.root });
+    expect(codes(outcome)).not.toContain('fork-build-unnamed');
+  });
+
+  it('gives two builds of one fork version different config ids', () => {
+    const base = { engine_id: 'vllm', engine_version: FORK_VERSION, args: {}, quant_id: 'nvfp4' };
+    const before = canonicalizeArgs({ ...base, build: 'github.com/example/fork@82ed48d' });
+    const after = canonicalizeArgs({ ...base, build: 'github.com/example/fork@8347e7c' });
+    expect(before.configId).not.toBe(after.configId);
+  });
+
+  it('hashes exactly as before when no build is declared', () => {
+    const base = { engine_id: 'vllm', engine_version: '0.27.1', args: {}, quant_id: 'nvfp4' };
+    expect(canonicalizeArgs({ ...base, build: null }).configId).toBe(
+      canonicalizeArgs(base).configId,
+    );
+    expect(canonicalizeArgs(base).canonical).toBe('@dtype=auto;@quant=nvfp4');
   });
 });

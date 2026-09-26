@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "id": "eval-tools-small-v1",
+  "name": "Small-scale tool use eval v1",
+  "kind": "eval",
+  "description": "Runs all 100 items of eval-tools-small-v1 at temperature 0: one or two tools per request, derived arguments (relative dates, spoken times, units), a choice between near-identical tools, asking instead of guessing, a second call that uses the first call's result, answering from a tool result, and revising a call after the user changes one detail. Pinned together with the dataset: a change to either means a new -v2 id.",
+  "dataset_id": "eval-tools-small-v1",
+  "params": {
+    "concurrency": 4,
+    "num_requests": 100,
+    "input_tokens": null,
+    "output_tokens": 2048,
+    "seed": 42,
+    "warmup_requests": 0,
+    "temperature": 0,
+    "repeat": 1,
+    "timeout_s": 300,
+    "reasoning": "default"
+  },
+  "sweep": null,
+  "eval": {
+    "suite": "tools-small",
+    "scorer": "json",
+    "pass_threshold": null,
+    "max_output_tokens": 2048,
+    "categories": [
+      "derive_args",
+      "pick_tool",
+      "clarify",
+      "chain",
+      "use_result",
+      "revise"
+    ],
+    "notes": "Send meta.tools as the request's tools parameter with tool_choice='auto' and score tool_calls[0], as for eval-tools-v1. Multi-turn rows carry earlier assistant tool_calls and tool results in messages. clarify and use_result rows are correct only when no call is made; use_result additionally requires the reply to contain answer.reply_contains."
+  },
+  "metrics_required": [
+    "accuracy",
+    "success_rate",
+    "avg_latency_ms"
+  ],
+  "immutable": true,
+  "created": "2026-09-22",
+  "supersedes": null,
+  "notes": "Part of the small-model tier (workloads/README.md). Engines differ in how they emit tool calls (native field vs a parsed text block): record the tool-call parser flag in the result's args, because it changes the score. accuracy and avg_latency_ms live in the result's `scores` block, not in `metrics`."
+}

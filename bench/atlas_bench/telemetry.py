@@ -26,6 +26,7 @@ __all__ = [
     "THERMAL_THROTTLE_MASK",
     "TelemetrySample",
     "TelemetrySampler",
+    "parse_nvidia_smi_compute_apps",
     "parse_nvidia_smi_csv",
     "parse_powermetrics",
 ]
@@ -37,6 +38,7 @@ THERMAL_THROTTLE_MASK = 0x08 | 0x20 | 0x40
 _NVIDIA_QUERY = (
     "utilization.gpu,memory.used,power.draw,temperature.gpu,clocks_throttle_reasons.active"
 )
+_NVIDIA_COMPUTE_APPS_QUERY = "used_memory"
 _NA = {"", "n/a", "[n/a]", "not supported", "[not supported]", "unknown"}
 
 
@@ -119,6 +121,25 @@ def parse_nvidia_smi_csv(text: str, *, now: float = 0.0) -> TelemetrySample | No
     )
 
 
+def parse_nvidia_smi_compute_apps(text: str, *, now: float = 0.0) -> TelemetrySample | None:
+    """Aggregate one ``--query-compute-apps=used_memory`` block into a memory-only sample.
+
+    The fallback for devices whose ``--query-gpu=memory.used`` is ``[N/A]``: on GB10 the CPU
+    and the GPU share one pool and the per-device counter is not implemented, while the
+    per-process one is. Summing it is the whole-device figure on a box running one engine,
+    which is the only shape ``vram_peak_gb`` was ever defined for (AGENTS.md rule 5).
+    """
+    total = 0.0
+    seen = False
+    for line in text.splitlines():
+        if not line.strip():
+            continue
+        if (value := _number(line.split(",")[-1])) is not None:
+            total += value
+            seen = True
+    return TelemetrySample(t=now, vram_used_gb=total / 1024) if seen else None
+
+
 _POWERMETRICS_LINE = re.compile(
     r"Combined Power \(CPU \+ GPU \+ ANE\):\s*([\d.]+)\s*mW", re.IGNORECASE
 )
@@ -187,7 +208,22 @@ class TelemetrySampler:
 
     def _sample_nvidia(self, now: float) -> TelemetrySample | None:
         out = _run(["nvidia-smi", f"--query-gpu={_NVIDIA_QUERY}", "--format=csv,noheader,nounits"])
-        return parse_nvidia_smi_csv(out, now=now) if out else None
+        sample = parse_nvidia_smi_csv(out, now=now) if out else None
+        if sample is not None and sample.vram_used_gb is None:
+            sample.vram_used_gb = self._sample_compute_apps()
+        return sample
+
+    def _sample_compute_apps(self) -> float | None:
+        """Per-process memory, summed, for devices that do not implement ``memory.used``."""
+        out = _run(
+            [
+                "nvidia-smi",
+                f"--query-compute-apps={_NVIDIA_COMPUTE_APPS_QUERY}",
+                "--format=csv,noheader,nounits",
+            ]
+        )
+        sample = parse_nvidia_smi_compute_apps(out) if out else None
+        return sample.vram_used_gb if sample is not None else None
 
     def _sample_rocm(self, now: float) -> TelemetrySample | None:
         out = _run(["rocm-smi", "--showuse", "--showmemuse", "--showpower", "--showtemp", "--csv"])

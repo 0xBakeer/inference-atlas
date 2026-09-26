@@ -12,8 +12,7 @@ import { html, nothing, type TemplateResult } from 'lit';
 import { styleMap } from 'lit/directives/style-map.js';
 import uPlot from 'uplot';
 import type { IndexRow } from '../data/types.js';
-import { fmtInt, isNum } from '../util/format.js';
-import { METRIC_BY_KEY, type MetricDef } from '../util/metrics.js';
+import { fmtInt, isNum, METRIC_BY_KEY, type MetricDef } from '@atlas/core';
 import { axisDefaults, tooltipPlugin, type ChartBuild } from './chart.js';
 
 /* ------------------------------------------------------------------ bar list */

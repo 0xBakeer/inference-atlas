@@ -67,6 +67,10 @@ export interface MetricBlock {
   itl_ms?: Distribution | null;
   e2e_ms?: Distribution | null;
   decode_tok_s_per_request?: Distribution | null;
+  /** Seconds per generated image, warmup excluded (kind=image). */
+  s_per_image?: Distribution | null;
+  /** Seconds from process start to the engine reporting ready. */
+  load_s?: number | null;
   vram_peak_gb?: number | null;
   ram_peak_gb?: number | null;
   kv_cache_tokens?: number | null;
@@ -208,6 +212,15 @@ export interface EngineVersion {
   source?: string | null;
   notes?: string | null;
   params: EngineParam[];
+  /**
+   * `upstream` — a published release, where the version string identifies the build.
+   * `fork` — a build carrying patches the version string does not name, which is the usual
+   * case for a `+g<sha>` dev version: that sha is the UPSTREAM commit branched from. Forks
+   * must declare `source_repo` and `source_ref`, and results on them must set `engine.build`.
+   */
+  distribution?: 'upstream' | 'fork';
+  source_repo?: string | null;
+  source_ref?: string | null;
 }
 
 export interface EngineOverlayEntry {
@@ -291,10 +304,27 @@ export interface Quant {
 
 /* -------------------------------------------------------------------- workload */
 
-export type WorkloadKind = 'serving' | 'sweep' | 'prefill' | 'longctx' | 'eval' | 'agentic';
+export type WorkloadKind =
+  | 'serving'
+  | 'sweep'
+  | 'prefill'
+  | 'longctx'
+  | 'eval'
+  | 'agentic'
+  /** Image generation: seconds per picture at one fixed render shape. */
+  | 'image';
 
 export type ScorerKind =
-  'exact' | 'numeric' | 'mc' | 'contains' | 'json' | 'code-exec' | 'judge' | 'needle' | 'vision';
+  | 'exact'
+  | 'numeric'
+  | 'mc'
+  | 'contains'
+  | 'json'
+  | 'code-exec'
+  | 'judge'
+  | 'needle'
+  | 'vision'
+  | 'integrity';
 
 export type SweepAxis = 'concurrency' | 'input_tokens' | 'output_tokens' | 'num_requests';
 
@@ -407,6 +437,17 @@ export interface Gotcha {
   link?: string | null;
 }
 
+/**
+ * Run conditions: what else could have contended for the box while this was measured.
+ * `dedicated` + `detail` record what the contributor ASSERTS about the box; `isolation_check`
+ * records what was MEASURED about isolation. The two are deliberately separate.
+ */
+export interface RunConditions {
+  dedicated: boolean;
+  detail?: string | null;
+  isolation_check?: string | null;
+}
+
 export interface Provenance {
   github_login: string;
   github_user_id?: number | null;
@@ -418,6 +459,24 @@ export interface Provenance {
   method: 'atlas-bench' | 'manual' | 'issue-form' | 'agent';
   agent?: { name: string; model?: string | null } | null;
   notes?: string | null;
+}
+
+/**
+ * Request options applied to every request of a run (`RequestOptions` in
+ * `bench/atlas_bench/spec.py`, minus `api_key` — a credential is never recorded).
+ * Only the options that differ from the harness default are written.
+ */
+export interface RequestBlock {
+  temperature?: number | null;
+  top_p?: number | null;
+  seed?: number | null;
+  max_tokens?: number | null;
+  stop?: string[] | null;
+  timeout_s?: number | null;
+  extra_body?: Record<string, unknown> | null;
+  /** How a thinking model's thinking is switched off: `{ "enable_thinking": false }`. */
+  chat_template_kwargs?: Record<string, unknown> | null;
+  reasoning_effort?: string | null;
 }
 
 export interface ResultRecord {
@@ -434,6 +493,12 @@ export interface ResultRecord {
     container?: string | null;
     install_method?: InstallMethod | null;
     build_flags?: string | null;
+    /**
+     * Identity of the engine build when its version string does not pin it: a container
+     * digest, or `<fork repo>@<fork ref>`. Folded into `config_id` as `@build`, and required
+     * when the engine version is registered with `distribution: "fork"`.
+     */
+    build?: string | null;
   };
   model: {
     id: ModelId;
@@ -462,6 +527,14 @@ export interface ResultRecord {
   };
   args: Args;
   args_canonical: string;
+  /**
+   * Sampling and transport options sent with every request of the run, as the harness packet
+   * carried them. Options left at the harness default are omitted; anything else folds into
+   * `config_id` as `@req.<name>`, so a run with thinking switched off through
+   * `chat_template_kwargs` cannot share a fingerprint with one that left it alone. Absent on
+   * results recorded before the block existed.
+   */
+  request?: RequestBlock | null;
   env?: Record<string, string | number | boolean | null> | null;
   serve_command?: string | null;
   workload?: {
@@ -472,6 +545,7 @@ export interface ResultRecord {
   sweep?: SweepPoint[] | null;
   scores?: Scores | null;
   failures?: Failure[];
+  conditions?: RunConditions | null;
   gotchas?: Gotcha[];
   derived?: {
     cost_per_1m_output_tokens_usd?: number | null;
@@ -598,6 +672,8 @@ export interface CompiledIndexRow {
     vram_peak_gb?: number | null;
     power_avg_w?: number | null;
     decode_tok_s_per_request?: number | null;
+    /** Median seconds per generated image (kind=image). */
+    s_per_image_p50?: number | null;
   };
   provenance: {
     login: string;

@@ -155,11 +155,15 @@ export function addCommits(root: string, paths: string[]): Map<string, GitCommit
  * verbatim, which is the only place git history knows about GitHub identities at all.
  * Anything else returns null and the credit is simply not awarded — guessing a login from
  * a display name would put points on somebody else's account.
+ *
+ * The address spells the login the way GitHub does, so it is returned unchanged: a login
+ * lowercased here and mixed-case in a result file used to score as two people. Compare
+ * logins with `loginKey` from `@atlas/core` rather than by lowercasing at the source.
  */
 export function loginFromEmail(email: string): string | null {
   const match =
     /^(?:\d+\+)?([A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?)@users\.noreply\.github\.com$/.exec(
       email.trim(),
     );
-  return match ? match[1]!.toLowerCase() : null;
+  return match ? match[1]! : null;
 }

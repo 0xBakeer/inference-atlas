@@ -18,6 +18,7 @@ Two rules the whole corpus depends on:
 
 from __future__ import annotations
 
+import hashlib
 import json
 import random
 import re
@@ -49,6 +50,27 @@ def approx_tokens(messages: Sequence[dict], shared_prefix: str | None = None) ->
     if shared_prefix:
         n += len(shared_prefix)
     return approx_tokens_from_chars(n)
+
+
+def render_digest(prompt: str, render: dict) -> str:
+    """Fingerprint of everything that decides what a generated image is.
+
+    Two images are only comparable — for fidelity metrics, or for a perceptual-hash
+    comparison across two contributors' boxes — when the prompt, the size, the step count,
+    the seed, the colour mode and the conditioning images are all the same. This is that
+    tuple, hashed. `atlas_bench.images.render_digest` mirrors it, and the fidelity scorer
+    refuses to compare a candidate against a reference bundle whose digest differs.
+    """
+    parts = [
+        prompt,
+        str(render["width"]),
+        str(render["height"]),
+        str(render["steps"]),
+        str(render["seed"]),
+        "rgba" if render.get("transparent") else "rgb",
+        ",".join(render.get("reference_images") or ()),
+    ]
+    return hashlib.sha256("|".join(parts).encode("utf-8")).hexdigest()[:16]
 
 
 def dataset_dir(dataset_id: str) -> Path:
@@ -159,6 +181,36 @@ SCORERS = {
     "spaces, commas and hyphens from both sides. Meant for retrieval, not phrasing.",
     "instruction": "Evaluate the rule DSL in `answer` against the RAW output. See "
     "eval-instruction-v1/dataset.json for the rule list.",
+    "ocr": "Image suites only. Read the text in the generated image with an OCR backend, "
+    "normalise both sides (NFKC, casefold, collapse whitespace, drop punctuation) and "
+    "require every string in `answer.strings` to be present. The character error rate "
+    "against the concatenated expected strings is reported alongside, and the backend "
+    "that was used is part of the measurement.",
+    "clip": "Image suites only. CLIPScore = 100 * max(cosine(image embedding, text "
+    "embedding), 0) with `answer` as the text. Correct when the score clears the "
+    "workload's pass_threshold. A relative measure: it separates right subject from "
+    "wrong subject and says nothing about two lanes a point apart.",
+    "rgba": "Image suites only. Check the alpha channel of a transparent-background "
+    "request: the transparent share, the share of ambiguous alpha (0.1-0.9) that "
+    "betrays an inferred matte, and the number of connected components above 0.1 % of "
+    "the image in alpha > 0.5. An image with no alpha channel fails.",
+    "fidelity": "Image suites only. Compare the image against the same case in a bf16 "
+    "reference bundle produced on the same box at identical prompt, size, steps and "
+    "seed: PSNR, SSIM, LPIPS when installed, and mean absolute alpha error on RGBA "
+    "cases. Correct when it clears the workload's psnr_min and ssim_min. Refuses to "
+    "score when the reference's render_digest differs.",
+    "integrity": "Long-output token integrity, not correctness. Mask strings, comments and "
+    "regex literals in the generated code; build a definition set from "
+    "meta.context_identifiers plus every name the output declares plus the JavaScript "
+    "globals; report a splice when a digit-initial token is not a valid numeric literal "
+    "(`128Pin`), when an undefined identifier is a defined name — down to one letter — "
+    "plus 2-6 lower-case letters (`carrier` + `hed`, `z` + `hed`), when a property name "
+    "the file defines is welded to a tail (`ship.bobAmporton`), when an undefined bare "
+    "word or dotted fragment sits between two numeric literals in a comma-separated list "
+    "(`[6, visible, 0]`, `[2, 0, .src, 4]`), or when a non-ASCII character appears in "
+    "code (`[2, 0, 惯, 4]`). A welded name that recurs counts once per generation. "
+    "Correct = no splice; an undefined identifier that is not one of those shapes is an "
+    "ordinary code error and is not counted.",
 }
 
 

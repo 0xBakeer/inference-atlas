@@ -15,10 +15,10 @@ import type { IndexRow } from '../data/types.js';
 import { href, navigate, qget, setQuery } from '../router.js';
 import { store } from '../store.js';
 import { vendorClass } from '../util/colors.js';
-import { fmtInt } from '../util/format.js';
+import { fmtInt } from '@atlas/core';
 import { ViewElement } from './view-base.js';
 
-const KINDS = ['serving', 'sweep', 'prefill', 'longctx', 'eval'] as const;
+const KINDS = ['serving', 'sweep', 'prefill', 'longctx', 'eval', 'image'] as const;
 
 function paramsSummary(w: Workload): string {
   const p = w.params ?? {};

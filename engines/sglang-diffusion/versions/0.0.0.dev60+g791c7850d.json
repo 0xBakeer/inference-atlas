@@ -1,0 +1,622 @@
+{
+  "schema_version": 1,
+  "engine_id": "sglang-diffusion",
+  "version": "0.0.0.dev60+g791c7850d",
+  "released": null,
+  "extraction_method": "argparse",
+  "extracted_at": "2026-09-20T00:00:00Z",
+  "source": "the installed source checkout at ~/lanes/qwen-image-21/sglang/src/python/sglang \u2014 multimodal_gen/runtime/server_args/server_args.py (the ServerArgs dataclass `sglang serve --help` renders) and multimodal_gen/runtime/entrypoints/openai/protocol.py::ImageGenerationsRequest for the per-request knobs",
+  "notes": "Defaults are the dataclass fields of THIS build, not the documentation. Three things are worth knowing before reading a fingerprint made from them. (1) --component-quantizations.<component> is real but invisible: it does not appear in `sglang serve --help`, because ServerArgs._extract_component_quantizations() pulls it out of argparse's unknown args. (2) Every placement default is null on purpose \u2014 the auto memory policy decides offloading from the free device memory at load time, so the same flags produce a different peak on a busy box than on an idle one, and a null default is never dropped from the fingerprint, which is the safe direction. (3) The attention backend is null for the same reason: SM120-class parts fall back to Torch SDPA whatever is selected. Only a curated subset of ServerArgs' ~200 fields is listed: everything that can move a number on a single-GPU image run, plus the path and port fields that must be present so they can be dropped.",
+  "params": [
+    {
+      "name": "model-path",
+      "type": "path",
+      "default": null,
+      "help": "Checkpoint directory or HF id. Dropped from the fingerprint.",
+      "group": "model",
+      "impact": "low"
+    },
+    {
+      "name": "model-id",
+      "type": "str",
+      "default": null,
+      "help": "Name used to look the pipeline config up in the registry; without it the loader infers one from the path.",
+      "group": "model",
+      "impact": "low"
+    },
+    {
+      "name": "served-model-name",
+      "type": "str",
+      "default": null,
+      "help": "Name the OpenAI routes answer to. Dropped from the fingerprint.",
+      "group": "model",
+      "impact": "low"
+    },
+    {
+      "name": "revision",
+      "type": "str",
+      "default": null,
+      "help": "Checkpoint revision. Dropped from the fingerprint.",
+      "group": "model",
+      "impact": "low"
+    },
+    {
+      "name": "trust-remote-code",
+      "type": "bool",
+      "default": false,
+      "help": "Allow custom code from the checkpoint repo.",
+      "group": "model",
+      "impact": "low"
+    },
+    {
+      "name": "host",
+      "type": "str",
+      "default": "127.0.0.1",
+      "help": "Dropped from the fingerprint.",
+      "group": "io",
+      "impact": "low"
+    },
+    {
+      "name": "port",
+      "type": "int",
+      "default": 30000,
+      "help": "Dropped from the fingerprint.",
+      "group": "io",
+      "impact": "low"
+    },
+    {
+      "name": "output-path",
+      "type": "path",
+      "default": "outputs/",
+      "help": "Where rendered files are written before being returned. Dropped from the fingerprint.",
+      "group": "io",
+      "impact": "low"
+    },
+    {
+      "name": "backend",
+      "type": "enum",
+      "default": "auto",
+      "help": "auto prefers the sglang-native implementation and falls back to the vanilla diffusers pipeline.",
+      "group": "runtime",
+      "impact": "high",
+      "choices": [
+        "auto",
+        "sglang",
+        "diffusers"
+      ]
+    },
+    {
+      "name": "attention-backend",
+      "type": "str",
+      "default": null,
+      "help": "Resolved from the device at startup when unset. On SM120-class parts, which is what GB10 is, the selection falls back to Torch SDPA.",
+      "group": "runtime",
+      "impact": "high"
+    },
+    {
+      "name": "enable-attention-backend-autotune",
+      "type": "bool",
+      "default": false,
+      "help": "Benchmark the available attention backends at startup and keep the fastest.",
+      "group": "runtime",
+      "impact": "medium"
+    },
+    {
+      "name": "component-attention-backends",
+      "type": "json",
+      "default": null,
+      "help": "Per-component override of the attention backend.",
+      "group": "runtime",
+      "impact": "medium"
+    },
+    {
+      "name": "num-gpus",
+      "type": "int",
+      "default": 1,
+      "help": "Devices the pipeline is spread over.",
+      "group": "parallelism",
+      "impact": "high"
+    },
+    {
+      "name": "tp-size",
+      "type": "int",
+      "default": null,
+      "help": "Tensor parallel size; derived from num-gpus when unset.",
+      "group": "parallelism",
+      "impact": "high",
+      "aliases": [
+        "tp"
+      ]
+    },
+    {
+      "name": "dp-size",
+      "type": "int",
+      "default": 1,
+      "help": "Data parallel size.",
+      "group": "parallelism",
+      "impact": "high"
+    },
+    {
+      "name": "sp-degree",
+      "type": "int",
+      "default": null,
+      "help": "Sequence parallel degree; derived when unset.",
+      "group": "parallelism",
+      "impact": "high"
+    },
+    {
+      "name": "ulysses-degree",
+      "type": "int",
+      "default": null,
+      "help": "Ulysses sequence-parallel degree.",
+      "group": "parallelism",
+      "impact": "medium"
+    },
+    {
+      "name": "ring-degree",
+      "type": "int",
+      "default": null,
+      "help": "Ring attention degree.",
+      "group": "parallelism",
+      "impact": "medium"
+    },
+    {
+      "name": "enable-cfg-parallel",
+      "type": "bool",
+      "default": null,
+      "help": "Run the two classifier-free-guidance branches on separate devices. Irrelevant at guidance 1, which is this model's own setting.",
+      "group": "parallelism",
+      "impact": "medium"
+    },
+    {
+      "name": "cfg-parallel-degree",
+      "type": "int",
+      "default": null,
+      "help": "Devices for the CFG split.",
+      "group": "parallelism",
+      "impact": "low"
+    },
+    {
+      "name": "encoder-parallel",
+      "type": "str",
+      "default": "auto",
+      "help": "How the text/image encoders are sharded.",
+      "group": "parallelism",
+      "impact": "medium"
+    },
+    {
+      "name": "base-gpu-id",
+      "type": "int",
+      "default": 0,
+      "help": "First device index.",
+      "group": "parallelism",
+      "impact": "low"
+    },
+    {
+      "name": "performance-mode",
+      "type": "str",
+      "default": "auto",
+      "help": "Preset that moves several placement and compile defaults at once.",
+      "group": "runtime",
+      "impact": "high"
+    },
+    {
+      "name": "quantization",
+      "type": "str",
+      "default": null,
+      "help": "Whole-pipeline quantization override. Per-component is the form the Qwen-Image-2.1 recipe uses.",
+      "group": "precision",
+      "impact": "high"
+    },
+    {
+      "name": "quantization-ignored-layers",
+      "type": "list",
+      "default": null,
+      "help": "Layers kept at full precision by the whole-pipeline override.",
+      "group": "precision",
+      "impact": "high"
+    },
+    {
+      "name": "component-quantizations.transformer",
+      "type": "str",
+      "default": null,
+      "help": "Online quantization of the DiT, e.g. fp8. NOTE: this spelling does not appear in `sglang serve --help`; ServerArgs._extract_component_quantizations() pulls --component-quantizations.<name> out of argparse's UNKNOWN args. The server echoes it back in server_args and the loader logs 'Using quantization override fp8 for transformer'.",
+      "group": "precision",
+      "impact": "high"
+    },
+    {
+      "name": "component-quantizations.text_encoder",
+      "type": "str",
+      "default": null,
+      "help": "Online quantization of the Qwen3-VL 8B text encoder, e.g. fp8. Same undocumented extraction path as the transformer form.",
+      "group": "precision",
+      "impact": "high"
+    },
+    {
+      "name": "component-quantization-ignored-layers",
+      "type": "json",
+      "default": {},
+      "help": "Per-component list of layers kept at full precision.",
+      "group": "precision",
+      "impact": "high"
+    },
+    {
+      "name": "component-precisions",
+      "type": "json",
+      "default": {},
+      "help": "Per-component dtype override.",
+      "group": "precision",
+      "impact": "high"
+    },
+    {
+      "name": "component-paths.transformer",
+      "type": "path",
+      "default": null,
+      "help": "Directory with config.json + weights + quant metadata for a serialized (ModelOpt FP8/NVFP4) component. Switches the config and the loader, not just the tensors.",
+      "group": "precision",
+      "impact": "high"
+    },
+    {
+      "name": "component-weights-paths.transformer",
+      "type": "path",
+      "default": null,
+      "help": "A single GGUF holding the whole component, with native tensor names. Accepts owner/repo/file.gguf and owner/repo:QUANT_TYPE.",
+      "group": "precision",
+      "impact": "high"
+    },
+    {
+      "name": "transformer-weights-path",
+      "type": "path",
+      "default": null,
+      "help": "Raw weights-only override for the DiT.",
+      "group": "precision",
+      "impact": "high"
+    },
+    {
+      "name": "nunchaku-config",
+      "type": "json",
+      "default": null,
+      "help": "SVDQuant loader, selected by the svdq-(int4|fp4)_r{rank} filename; gated to SM8x or SM12x, so GB10 is allowed.",
+      "group": "precision",
+      "impact": "medium"
+    },
+    {
+      "name": "component-residency",
+      "type": "json",
+      "default": null,
+      "help": "Which components stay resident on the device.",
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "cpu-offload-components",
+      "type": "list",
+      "default": null,
+      "help": "Components offloaded to host memory wholesale.",
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "dit-cpu-offload",
+      "type": "bool",
+      "default": null,
+      "help": "Offload the DiT; decided by the auto memory policy when unset.",
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "dit-layerwise-offload",
+      "type": "bool",
+      "default": null,
+      "help": "Stream the DiT layer by layer; decided by the auto memory policy when unset.",
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "layerwise-offload-components",
+      "type": "list",
+      "default": null,
+      "help": "Components streamed layer by layer. Left unset, the auto memory policy picks them from the free device memory at load, which is why the same build gives different peaks on a busy and an idle box.",
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "dit-offload-prefetch-size",
+      "type": "float",
+      "default": 0.0,
+      "help": "Layers prefetched ahead of the DiT's current layer.",
+      "group": "memory",
+      "impact": "medium"
+    },
+    {
+      "name": "dit-layerwise-resident-layers",
+      "type": "float",
+      "default": 0.0,
+      "help": "Layers of the DiT kept permanently resident.",
+      "group": "memory",
+      "impact": "medium"
+    },
+    {
+      "name": "dit-layerwise-residency-policy",
+      "type": "enum",
+      "default": "leading",
+      "help": "Which layers stay resident when only some do.",
+      "group": "memory",
+      "impact": "medium"
+    },
+    {
+      "name": "text-encoder-cpu-offload",
+      "type": "bool",
+      "default": null,
+      "help": "Decided by the auto memory policy when unset.",
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "image-encoder-cpu-offload",
+      "type": "bool",
+      "default": null,
+      "help": "Decided by the auto memory policy when unset.",
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "vae-cpu-offload",
+      "type": "bool",
+      "default": false,
+      "help": "Offload the VAE to host memory.",
+      "group": "memory",
+      "impact": "medium"
+    },
+    {
+      "name": "direct-gpu-weight-loading",
+      "type": "bool",
+      "default": false,
+      "help": "Load weights straight onto the device instead of through host memory.",
+      "group": "memory",
+      "impact": "medium"
+    },
+    {
+      "name": "use-fsdp-inference",
+      "type": "bool",
+      "default": null,
+      "help": "Shard with FSDP at inference.",
+      "group": "memory",
+      "impact": "medium"
+    },
+    {
+      "name": "pin-cpu-memory",
+      "type": "bool",
+      "default": true,
+      "help": "Pin the host-side copy. On unified memory a pinned copy holds the same bytes twice, and the build says so in its own log.",
+      "group": "memory",
+      "impact": "high"
+    },
+    {
+      "name": "offload-during-compile",
+      "type": "bool",
+      "default": true,
+      "help": "Keep offloading active while torch.compile traces.",
+      "group": "memory",
+      "impact": "low"
+    },
+    {
+      "name": "enable-torch-compile",
+      "type": "bool",
+      "default": false,
+      "help": "torch.compile the DiT.",
+      "group": "compile",
+      "impact": "high"
+    },
+    {
+      "name": "regional-compile",
+      "type": "bool",
+      "default": false,
+      "help": "Compile per region instead of the whole graph.",
+      "group": "compile",
+      "impact": "medium"
+    },
+    {
+      "name": "enable-breakable-cuda-graph",
+      "type": "bool",
+      "default": false,
+      "help": "Capture CUDA graphs that can be broken out of.",
+      "group": "compile",
+      "impact": "high"
+    },
+    {
+      "name": "cache-dit-config",
+      "type": "json",
+      "default": null,
+      "help": "Step-caching config (reuses DiT output across steps); changes the picture, not just the speed.",
+      "group": "sampling",
+      "impact": "high"
+    },
+    {
+      "name": "disable-autocast",
+      "type": "bool",
+      "default": null,
+      "help": "Turn off autocast in the pipeline.",
+      "group": "precision",
+      "impact": "medium"
+    },
+    {
+      "name": "warmup-mode",
+      "type": "str",
+      "default": null,
+      "help": "Render a throwaway image at startup so the first real request is not measuring compilation.",
+      "group": "runtime",
+      "impact": "medium"
+    },
+    {
+      "name": "warmup-steps",
+      "type": "int",
+      "default": 1,
+      "help": "Steps used by the warmup render.",
+      "group": "runtime",
+      "impact": "low"
+    },
+    {
+      "name": "warmup-resolutions",
+      "type": "list",
+      "default": null,
+      "help": "Resolutions warmed up.",
+      "group": "runtime",
+      "impact": "low"
+    },
+    {
+      "name": "batching-mode",
+      "type": "enum",
+      "default": "dynamic",
+      "help": "How concurrent requests are grouped. Irrelevant at concurrency 1, which is what every image workload runs at.",
+      "group": "serving",
+      "impact": "medium"
+    },
+    {
+      "name": "batching-max-size",
+      "type": "int",
+      "default": 1,
+      "help": "Largest batch the scheduler will form.",
+      "group": "serving",
+      "impact": "medium"
+    },
+    {
+      "name": "batching-delay-ms",
+      "type": "float",
+      "default": 0.0,
+      "help": "How long the scheduler waits to fill a batch.",
+      "group": "serving",
+      "impact": "low"
+    },
+    {
+      "name": "lora-path",
+      "type": "path",
+      "default": null,
+      "help": "LoRA adapter.",
+      "group": "model",
+      "impact": "high"
+    },
+    {
+      "name": "lora-scale",
+      "type": "float",
+      "default": 1.0,
+      "help": "LoRA merge scale.",
+      "group": "model",
+      "impact": "high"
+    },
+    {
+      "name": "enable-metrics",
+      "type": "bool",
+      "default": false,
+      "help": "Prometheus endpoint.",
+      "group": "serving",
+      "impact": "low"
+    },
+    {
+      "name": "num-inference-steps",
+      "type": "int",
+      "default": null,
+      "help": "Per-request. Falls back to the pipeline config's own value when absent; every workload here sends 40.",
+      "group": "sampling",
+      "impact": "high"
+    },
+    {
+      "name": "guidance-scale",
+      "type": "float",
+      "default": null,
+      "help": "Per-request. This engine's spelling of the canonical guidance parameter; vLLM-Omni calls the same thing true_cfg_scale, so the two lanes are comparable only at the effective value, never at the raw flag.",
+      "group": "sampling",
+      "impact": "high"
+    },
+    {
+      "name": "true-cfg-scale",
+      "type": "float",
+      "default": null,
+      "help": "Per-request. Distinct from guidance-scale on distilled pipelines.",
+      "group": "sampling",
+      "impact": "high"
+    },
+    {
+      "name": "flow-shift",
+      "type": "float",
+      "default": null,
+      "help": "Per-request. Unset leaves the scheduler's own shift.",
+      "group": "sampling",
+      "impact": "high"
+    },
+    {
+      "name": "negative-prompt",
+      "type": "str",
+      "default": null,
+      "help": "Per-request. Only does anything above guidance 1.",
+      "group": "sampling",
+      "impact": "medium"
+    },
+    {
+      "name": "background",
+      "type": "enum",
+      "default": "auto",
+      "help": "Per-request. transparent asks for an alpha channel; this is the only transparency knob this lane has.",
+      "group": "sampling",
+      "impact": "high",
+      "choices": [
+        "transparent",
+        "opaque",
+        "auto"
+      ]
+    },
+    {
+      "name": "output-format",
+      "type": "enum",
+      "default": null,
+      "help": "Per-request, png/jpeg/webp; the sampling params class picks a default per model.",
+      "group": "io",
+      "impact": "low"
+    },
+    {
+      "name": "response-format",
+      "type": "enum",
+      "default": "url",
+      "help": "Per-request. The harness asks for b64_json so nothing is left on the server's disk.",
+      "group": "io",
+      "impact": "low",
+      "choices": [
+        "url",
+        "b64_json"
+      ]
+    },
+    {
+      "name": "generator-device",
+      "type": "str",
+      "default": "cuda",
+      "help": "Per-request. Which device the seeded torch generator lives on \u2014 seed semantics differ between engines partly because of this.",
+      "group": "sampling",
+      "impact": "high"
+    },
+    {
+      "name": "enable-teacache",
+      "type": "bool",
+      "default": false,
+      "help": "Per-request step caching.",
+      "group": "sampling",
+      "impact": "high"
+    },
+    {
+      "name": "max-sequence-length",
+      "type": "int",
+      "default": null,
+      "help": "Per-request cap on the encoded prompt.",
+      "group": "sampling",
+      "impact": "medium"
+    },
+    {
+      "name": "enable-upscaling",
+      "type": "bool",
+      "default": false,
+      "help": "Per-request post-hoc upscale; would make a size number mean something else.",
+      "group": "sampling",
+      "impact": "high"
+    }
+  ],
+  "distribution": "upstream"
+}

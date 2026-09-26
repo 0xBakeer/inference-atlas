@@ -4,7 +4,7 @@ import '../components/chart.js';
 import { icon } from '../components/icons.js';
 import { activityBuild } from '../components/stat-charts.js';
 import { store } from '../store.js';
-import { fmtInt } from '../util/format.js';
+import { fmtInt } from '@atlas/core';
 import { ViewElement } from './view-base.js';
 
 @customElement('atlas-about-view')

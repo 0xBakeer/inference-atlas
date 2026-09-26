@@ -1,0 +1,399 @@
+{
+  "schema_version": 1,
+  "run_id": "b9daf792fa8de18c--prefill-8k-v1--6552ab",
+  "config_id": "b9daf792fa8de18c",
+  "cell_id": "7b7ca8936123",
+  "workload_id": "prefill-8k-v1",
+  "kind": "prefill",
+  "engine": {
+    "id": "sglang",
+    "version": "0.0.0.dev0+qwen38.27b.g561c8f3",
+    "commit": null,
+    "build": "github.com/hasso5703/dgx-spark-qwen38@f01c798",
+    "container": "qwen38-dflash2:v1.2.3 (built by the recipe installer from the pinned base lmsysorg/sglang@sha256:febfb971c7352570fc445c466ebd6ffc9d896024958e544a60f2137fd85856b1 plus 8 sha256-verified overlay files)",
+    "install_method": "docker"
+  },
+  "model": {
+    "id": "Qwen/Qwen3.8-27B",
+    "quant_id": "nvfp4-fp4-lmhead",
+    "hf_id": "Qwen/Qwen3.8-27B",
+    "revision": "52d1adc5f38aa5ebf099c29ed7025ba34cfbb854",
+    "dtype": "auto",
+    "local_path": null
+  },
+  "hardware": {
+    "id": "nvidia-gb10-dgx-spark",
+    "count": 1,
+    "driver": "580.173.02",
+    "cuda": "13.0",
+    "host": {
+      "cpu": "Cortex-A725",
+      "cpu_cores": 20,
+      "ram_gb": 121.6,
+      "os": "Ubuntu 24.04.4 LTS",
+      "kernel": "6.17.0-1029-nvidia",
+      "arch": "aarch64"
+    },
+    "fingerprint": "sha256:52ea2bdd513719724db88c162b6cc2c9fb4e5b67e02dbe41b9de00687acefb91",
+    "captured": {
+      "nvidia_smi": {
+        "driver": "580.173.02",
+        "cuda": "13.0",
+        "products": [
+          "NVIDIA GB10"
+        ],
+        "fb_memory_total_mib": 0
+      },
+      "lscpu": {
+        "architecture": "aarch64",
+        "cpus": "20",
+        "vendor_id": "ARM",
+        "model_name": "Cortex-A725",
+        "cores_per_socket": "10",
+        "sockets": "1",
+        "cpu_max_mhz": "2808.0000"
+      }
+    }
+  },
+  "args": {
+    "trust-remote-code": true,
+    "revision": "52d1adc5f38aa5ebf099c29ed7025ba34cfbb854",
+    "tp-size": 1,
+    "mem-fraction-static": 0.5,
+    "attention-backend": "flashinfer",
+    "chunked-prefill-size": 8192,
+    "disable-prefill-cuda-graph": true,
+    "cuda-graph-max-bs": 8,
+    "disable-flashinfer-autotune": true,
+    "speculative-algorithm": "DFLASH",
+    "speculative-draft-model-path": "maurienne-ai/Qwen3.8-27B-DFlash2-NVFP4-RTNcal",
+    "speculative-draft-model-revision": "bd7a934213c47a9e7ef69eef36bb3325f47fd1f1",
+    "speculative-num-draft-tokens": 16,
+    "speculative-draft-model-quantization": "modelopt_fp4",
+    "mamba-radix-cache-strategy": "extra_buffer",
+    "mamba-ssm-dtype": "bfloat16",
+    "max-mamba-cache-size": 96,
+    "max-running-requests": 8,
+    "enable-torch-compile": true,
+    "torch-compile-max-bs": 4,
+    "num-continuous-decode-steps": 2,
+    "reasoning-parser": "qwen3",
+    "tool-call-parser": "qwen3_coder",
+    "chat-template": "/out/chat-template-sglang.jinja",
+    "sleep-on-idle": true,
+    "enable-metrics": true
+  },
+  "args_canonical": "@build=github.com/hasso5703/dgx-spark-qwen38@f01c798;@dtype=auto;@quant=nvfp4-fp4-lmhead;attention-backend=flashinfer;chat-template=/out/chat-template-sglang.jinja;chunked-prefill-size=8192;cuda-graph-max-bs=8;disable-flashinfer-autotune=true;disable-prefill-cuda-graph=true;enable-metrics=true;enable-torch-compile=true;mamba-radix-cache-strategy=extra_buffer;mamba-ssm-dtype=bfloat16;max-mamba-cache-size=96;max-running-requests=8;mem-fraction-static=0.5;num-continuous-decode-steps=2;reasoning-parser=qwen3;sleep-on-idle=true;speculative-algorithm=DFLASH;speculative-draft-model-path=maurienne-ai/Qwen3.8-27B-DFlash2-NVFP4-RTNcal;speculative-draft-model-quantization=modelopt_fp4;speculative-draft-model-revision=bd7a934213c47a9e7ef69eef36bb3325f47fd1f1;speculative-num-draft-tokens=16;tool-call-parser=qwen3_coder;torch-compile-max-bs=4;trust-remote-code=true",
+  "serve_command": null,
+  "workload": {
+    "id": "prefill-8k-v1",
+    "resolved_params": {
+      "concurrency": 1,
+      "num_requests": 10,
+      "input_tokens": 8192,
+      "output_tokens": 16,
+      "warmup_requests": 1,
+      "prompts_padded": false,
+      "needle_check": false,
+      "timeout_s": 900,
+      "seed": 42
+    }
+  },
+  "metrics": {
+    "requests_total": 10,
+    "requests_ok": 10,
+    "requests_failed": 0,
+    "success_rate": 1,
+    "duration_s": 18.52,
+    "input_tokens_total": 101562,
+    "output_tokens_total": 57,
+    "output_tok_s": 3.078,
+    "total_tok_s": 5487.021,
+    "req_s": 0.54,
+    "prefill_tok_s": 6164.953,
+    "ttft_ms": {
+      "mean": 1647.409,
+      "p50": 216.193,
+      "p90": 5003.68,
+      "p95": 5007.001,
+      "p99": 5009.657,
+      "min": 209.301,
+      "max": 5010.321
+    },
+    "tpot_ms": {
+      "mean": 44.653,
+      "p50": 42.812,
+      "p90": 56.262,
+      "p95": 68.638,
+      "p99": 78.539,
+      "min": 21.353,
+      "max": 81.014
+    },
+    "itl_ms": {
+      "mean": 107.185,
+      "p50": 107.083,
+      "p90": 110.048,
+      "p95": 110.723,
+      "p99": 112.743,
+      "min": 103.917,
+      "max": 113.248
+    },
+    "e2e_ms": {
+      "mean": 1851.895,
+      "p50": 429.381,
+      "p90": 5196.099,
+      "p95": 5265.239,
+      "p99": 5320.551,
+      "min": 316.066,
+      "max": 5334.379
+    },
+    "decode_tok_s_per_request": {
+      "mean": 25.702,
+      "p50": 23.358,
+      "p90": 44.16,
+      "p95": 45.496,
+      "p99": 46.565,
+      "min": 12.343,
+      "max": 46.832
+    },
+    "vram_peak_gb": null,
+    "ram_peak_gb": 75.941,
+    "kv_cache_tokens": null,
+    "power_avg_w": 66.52,
+    "power_peak_w": 82.12,
+    "energy_wh": 0.4407,
+    "gpu_util_avg_pct": 91.26,
+    "temp_max_c": 76,
+    "thermal_throttle_detected": false
+  },
+  "failures": [],
+  "conditions": {
+    "dedicated": true,
+    "detail": "Only the recipe's own SGLang container (qwen38-sglang-run) was resident; nothing else used the GPU.",
+    "isolation_check": "docker ps -> qwen38-sglang-run dgx-exporter ; nvidia-smi compute apps -> 2; load1 at start 0.77"
+  },
+  "gotchas": [
+    {
+      "severity": "info",
+      "text": "Boot lottery: this boot allocated a KV pool of 383,883 tokens (target cache torch.float8_e4m3fn, K 5.86 GB + V 5.86 GB; the DFlash2 draft cache is bf16 at the same token count, K 3.66 GB + V 3.66 GB), with mem-fraction-static 0.50 and the native 262144 window. The recipe documents that this number moves from boot to boot, so read it out of the server log of the boot a number belongs to instead of assuming it."
+    },
+    {
+      "severity": "info",
+      "text": "The quant registry entry nvfp4-fp4-lmhead pins RadixArk/Qwen3.8-27B-NVFP4 at revision 554ebba9, which is what an earlier run on this cell served. This recipe pins 52d1adc, and that is what model.revision and the revision arg record here. The quantization scheme is unchanged between the two: hf_quant_config.json at 52d1adc still declares MIXED_PRECISION over 401 quantized layers, NVFP4 group-16 on lm_head and on the MLP triplets, FP8 on the attention projections, mtp excluded, and kv_cache_quant_algo FP8."
+    },
+    {
+      "severity": "info",
+      "text": "kv-cache-dtype is left at auto and resolves to fp8_e4m3 from the checkpoint's kv_cache_quant_algo, so no flag is needed for the NVFP4 target. Qwen's own FP8 release carries no such declaration and needs --kv-cache-dtype fp8_e4m3 or the pool halves."
+    },
+    {
+      "severity": "info",
+      "text": "The 27B lane does not serve the official lmsysorg/sglang:dev-qwen38-27b-dflash2 image. The recipe installer builds qwen38-dflash2:v1.2.3 on the host from the pinned base digest lmsysorg/sglang@sha256:febfb971 plus eight sha256-verified overlay files, because the official image predates the fused Qwen3.5 RoPE mrope fix. engine.version still reports the base image's 0.0.0.dev0+qwen38.27b.g561c8f3, so engine.build names the recipe commit to tell this build apart from another recipe that starts from the same base."
+    },
+    {
+      "severity": "info",
+      "text": "Speculative decoding is DFLASH with 16 draft tokens from maurienne-ai/Qwen3.8-27B-DFlash2-NVFP4-RTNcal at bd7a9342, quantized modelopt_fp4. --speculative-token-map is a flash-lane option in v1.13 and is not used on the 27B lane, so speculative_token_map is None in the served args."
+    },
+    {
+      "severity": "info",
+      "text": "A pinned revision download leaves no refs/main in the HF cache, and an SGLang build that resolves the draft config without the revision then fails offline. That did not happen here: the recipe resolves the snapshot path itself and the server log says it found the local snapshot and skipped the download for both target and draft."
+    },
+    {
+      "severity": "info",
+      "text": "The server runs with --sleep-on-idle, so the first request after an idle gap pays a wake-up on top of the usual cold-start cost. Every workload here ran after a warm-up request on a server that had already answered."
+    },
+    {
+      "severity": "info",
+      "text": "Speed rows force thinking off per request with chat_template_kwargs enable_thinking false. Eval rows use the served default, which in v1.13 is thinking on at the recipe's own lean reasoning-effort level (74 words in the chat template, the level the recipe added and made the default)."
+    },
+    {
+      "severity": "info",
+      "text": "Brought up with the recipe's documented foreground path: CONTEXT_MODE=native ./install.sh --no-service --no-opencode, then ./run.sh. run.sh issues the same docker run and the same server flags as the systemd unit, so the numbers describe the unit's configuration, without installing systemd units, a keepalive proxy or the cockpit on the box."
+    }
+  ],
+  "derived": {
+    "cost_per_1m_output_tokens_usd": null,
+    "tokens_per_watt": 0.0463,
+    "tok_s_per_gb_bandwidth": 0.094147,
+    "bandwidth_efficiency": 2.063692,
+    "memory_headroom_gb": null
+  },
+  "raw": {
+    "harness": "atlas-bench",
+    "harness_version": "0.1.0",
+    "sha256": "c6c290bda1190c3cc9c40a5b0387f2b64d000126b49c7563aedabf22f4a33910",
+    "payload_path": null,
+    "payload": {
+      "requests": [
+        {
+          "id": "prefill-w00000",
+          "prompt_id": "hay-8k-d10",
+          "warmup": true,
+          "status": "ok",
+          "ttft_ms": 4951.858,
+          "e2e_ms": 5169.057,
+          "prompt_tokens": 10208,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00000",
+          "prompt_id": "hay-8k-d10",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 214.852,
+          "e2e_ms": 427.182,
+          "prompt_tokens": 10208,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00001",
+          "prompt_id": "hay-8k-multi",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 5010.321,
+          "e2e_ms": 5334.379,
+          "prompt_tokens": 10154,
+          "completion_tokens": 5,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00002",
+          "prompt_id": "hay-8k-d50",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 4961.914,
+          "e2e_ms": 5180.734,
+          "prompt_tokens": 10103,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00003",
+          "prompt_id": "hay-8k-d90",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 5002.942,
+          "e2e_ms": 5116.932,
+          "prompt_tokens": 10135,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00004",
+          "prompt_id": "hay-8k-d10",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 209.584,
+          "e2e_ms": 423.839,
+          "prompt_tokens": 10208,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00005",
+          "prompt_id": "hay-8k-multi",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 212.694,
+          "e2e_ms": 425.84,
+          "prompt_tokens": 10154,
+          "completion_tokens": 5,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00006",
+          "prompt_id": "hay-8k-d50",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 223.875,
+          "e2e_ms": 437.743,
+          "prompt_tokens": 10103,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00007",
+          "prompt_id": "hay-8k-d90",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 209.301,
+          "e2e_ms": 316.066,
+          "prompt_tokens": 10135,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00008",
+          "prompt_id": "hay-8k-d10",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 211.076,
+          "e2e_ms": 424.651,
+          "prompt_tokens": 10208,
+          "completion_tokens": 6,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        },
+        {
+          "id": "prefill-r00009",
+          "prompt_id": "hay-8k-multi",
+          "warmup": false,
+          "status": "ok",
+          "ttft_ms": 217.534,
+          "e2e_ms": 431.581,
+          "prompt_tokens": 10154,
+          "completion_tokens": 5,
+          "token_source": "usage",
+          "finish_reason": "stop",
+          "error_category": null
+        }
+      ],
+      "engine_endpoint": {
+        "attached": true,
+        "base_url": "http://127.0.0.1:30000/v1",
+        "served_model_id": "qwen3.8-27b",
+        "advertised_models": [
+          "qwen3.8-27b"
+        ]
+      }
+    },
+    "truncated": false
+  },
+  "provenance": {
+    "github_login": "0xBakeer",
+    "github_user_id": 17404809,
+    "started_at": "2026-09-16T09:02:05Z",
+    "finished_at": "2026-09-16T09:02:30Z",
+    "submitted_at": null,
+    "commit": null,
+    "pr": null,
+    "method": "atlas-bench",
+    "agent": null,
+    "notes": "Served with the hasso5703 DGX Spark Qwen3.8 recipe (https://github.com/hasso5703/dgx-spark-qwen38, main f01c798, v1.13.0), 27B lane, target \"stock\", brought up with its documented foreground path: CONTEXT_MODE=native ./install.sh --no-service --no-opencode followed by ./run.sh, which issues the same docker run and the same server flags as the systemd unit. Target RadixArk/Qwen3.8-27B-NVFP4 at revision 52d1adc5, DFlash2 speculative decoding with the calibrated NVFP4 drafter maurienne-ai/Qwen3.8-27B-DFlash2-NVFP4-RTNcal at revision bd7a9342 and 16 draft tokens, mem-fraction-static 0.50, chunked prefill 8192, FlashInfer attention with autotune disabled for determinism, torch.compile on up to batch 4, CUDA graph max batch 8, prefill CUDA graph off, mamba radix cache extra_buffer with bf16 SSM state, max-running-requests 8, sleep-on-idle, and the recipe-patched chat template whose default reasoning effort is the recipe-added \"lean\" level. KV cache dtype is left at auto, which resolves to fp8_e4m3 from the checkpoint kv_cache_quant_algo, and the context window is the native 262144. The speed rows force thinking off per request (chat_template_kwargs enable_thinking false); the eval rows use the served default, which is thinking on at lean effort. Serving image built on the host by the recipe installer from the pinned base digest plus eight sha256-verified overlay files. The harness attached over HTTP on 127.0.0.1:30000 with the bearer key."
+  },
+  "verification": {
+    "level": "self-reported",
+    "reproduced_by": [],
+    "flags": []
+  }
+}

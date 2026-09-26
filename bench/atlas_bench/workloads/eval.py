@@ -35,7 +35,7 @@ from typing import Any
 from ..client import RequestResult, is_refusal
 from ..data import EvalRow, filter_eval_rows, load_eval_rows, render_haystack_prompt
 from ..metrics import aggregate_serving, distribution
-from ..scorers import ScoreResult, get_scorer, normalize_scorer_name
+from ..scorers import ScoreResult, get_scorer, is_image_scorer, normalize_scorer_name
 from ..scorers.tools import score_tool_call
 from .base import RunContext, WorkloadOutcome, gotcha, sampling
 
@@ -204,6 +204,13 @@ def _eval_metrics(results: list[RequestResult]) -> dict[str, Any]:
 async def run_eval(ctx: RunContext) -> WorkloadOutcome:
     """Run every eval row, score it and build the ``scores`` block."""
     eval_cfg = ctx.workload.get("eval") or {}
+    # A suite whose scorer reads a picture has to render one first, which is a different
+    # client and a different item loop. It stays `kind: eval` — same scores block, same
+    # coverage, same meaning of accuracy — so the split is here rather than in the kind.
+    if is_image_scorer(eval_cfg.get("scorer")):
+        from .image_eval import run_image_eval
+
+        return await run_image_eval(ctx)
     dataset_id = str(ctx.workload.get("dataset_id") or "")
     rows = load_eval_rows(ctx.registry, dataset_id) if dataset_id else []
     rows = filter_eval_rows(

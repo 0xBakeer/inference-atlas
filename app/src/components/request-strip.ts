@@ -7,8 +7,8 @@
  */
 import { html, nothing, svg, type SVGTemplateResult } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import { fmtCompact, fmtInt, fmtMs } from '../util/format.js';
-import { quantile, samplesByLevel, type RequestSample } from '../util/requests.js';
+import { fmtCompact, fmtInt, fmtMs } from '@atlas/core';
+import { quantile, samplesByLevel, type RequestSample } from '@atlas/core';
 import { AtlasElement } from './base.js';
 
 export type StripMetric = 'ttft' | 'e2e';
