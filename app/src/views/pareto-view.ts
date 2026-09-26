@@ -298,6 +298,7 @@ export class AtlasParetoView extends ViewElement {
                   .build=${this.build(pts, xKey, yKey, frontier)}
                   .height=${400}
                   .key=${`${xKey}${yKey}${pts.length}`}
+                  .chartTitle=${'Pareto frontier'}
                 ></atlas-chart>
                 <div class="row-wrap mt-3" style="justify-content:space-between">
                   <div class="legend-inline">

@@ -130,6 +130,7 @@ export class AtlasParallelismView extends ViewElement {
                     .build=${sweepChartBuild(series, metric, 'concurrency')}
                     .height=${320}
                     .key=${`${metric}${recs.length}`}
+                    .chartTitle=${'Parallelism sweep'}
                   ></atlas-chart>
                 </div>
                 <section class="mt-4">

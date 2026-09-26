@@ -311,7 +311,12 @@ export class AtlasView extends ViewElement {
         <span class="meta">results landing on main — per period and running total</span>
       </div>
       <div class="card tight">
-        <atlas-chart .build=${build} .height=${180} .key=${rows.length}></atlas-chart>
+        <atlas-chart
+          .build=${build}
+          .height=${180}
+          .key=${rows.length}
+          .chartTitle=${'Activity — results landing on main'}
+        ></atlas-chart>
       </div>
     </section>`;
   }

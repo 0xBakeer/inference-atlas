@@ -411,6 +411,8 @@ export class AtlasResultsView extends ViewElement {
                 .build=${hist}
                 .height=${190}
                 .key=${`${metric.key}:${rows.length}`}
+                .chartTitle=${`Distribution of ${metric.label}`}
+                .subtitle=${`${fmtInt(values.length)} runs · Inference Atlas results`}
               ></atlas-chart>
             </section>`
           : nothing
@@ -431,7 +433,13 @@ export class AtlasResultsView extends ViewElement {
                 <h3>Activity</h3>
                 <span class="muted small">submissions over time</span>
               </div>
-              <atlas-chart .build=${activity} .height=${190} .key=${rows.length}></atlas-chart>
+              <atlas-chart
+                .build=${activity}
+                .height=${190}
+                .key=${rows.length}
+                .chartTitle=${'Submissions over time'}
+                .subtitle=${`${fmtInt(rows.length)} runs · Inference Atlas results`}
+              ></atlas-chart>
             </section>`
           : nothing
       }

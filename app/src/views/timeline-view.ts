@@ -155,6 +155,7 @@ export class AtlasTimelineView extends ViewElement {
                   .build=${ordinalLinesBuild(versions, series, `${metric.label}${metric.unit ? ` (${metric.unit})` : ''}`, (v) => metric.fmt(v), flagged)}
                   .height=${300}
                   .key=${`${metricKey}${rows.length}${versions.join()}`}
+                  .chartTitle=${`${metric.label} across engine versions`}
                 ></atlas-chart>
                 <div class="legend-inline mt-3">
                   ${series.map((s) => html`<span><i class="sw" style="background:${s.color}"></i>${s.label}</span>`)}

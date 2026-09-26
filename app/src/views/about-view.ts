@@ -88,6 +88,7 @@ export class AtlasAboutView extends ViewElement {
                   .build=${activity}
                   .height=${220}
                   .key=${store.index.value.length}
+                  .chartTitle=${'Results landing on main'}
                 ></atlas-chart>
               </div>`
             : nothing;
