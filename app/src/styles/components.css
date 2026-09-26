@@ -1229,7 +1229,8 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  max-height: min(76vh, 960px);
+  /* nearly the whole viewport, and never so short that only a handful of rows show */
+  max-height: max(480px, calc(100vh - 120px));
 }
 .rgrid .rg-scroll {
   overflow: auto;
@@ -1885,4 +1886,286 @@
   background: var(--ev-single);
   border-radius: 1px;
   min-height: 2px;
+}
+
+/* ------------------------------------------------------------------ run page: answer first */
+.run-head h1.title {
+  margin: 0;
+}
+.run-head .run-sub {
+  font-size: var(--fs-lg);
+  color: var(--ink-2);
+}
+.run-head .run-sub a {
+  color: var(--ink);
+  font-weight: 600;
+}
+.run-head .meta .who {
+  display: inline-flex;
+  vertical-align: middle;
+}
+.recipe-card {
+  display: grid;
+  gap: var(--sp-4);
+  padding: var(--sp-4);
+  margin-bottom: var(--sp-5);
+}
+.key-numbers {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--sp-3);
+}
+.knum {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.knum .k {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.knum .v {
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xl);
+  font-weight: 600;
+  line-height: 1.1;
+  color: var(--ink);
+}
+.knum.lead .v {
+  font-size: var(--fs-3xl);
+}
+.knum .v .unit {
+  font-size: var(--fs-sm);
+  font-weight: 400;
+  color: var(--muted);
+  margin-left: 4px;
+}
+.knum .hint {
+  font-size: var(--fs-xs);
+  color: var(--muted);
+}
+.recipe {
+  border-top: 1px solid var(--line);
+  padding-top: var(--sp-3);
+}
+.recipe .facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--sp-3) var(--sp-4);
+  margin: var(--sp-2) 0 0;
+}
+.recipe .fact {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+.recipe .fact dt {
+  font-size: var(--fs-xs);
+  color: var(--muted);
+}
+.recipe .fact dd {
+  margin: 0;
+  font-size: var(--fs-md);
+  font-weight: 600;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+.recipe .fact.missing dd {
+  font-weight: 400;
+  color: var(--faint);
+  font-style: italic;
+}
+.recipe .fact .hint {
+  font-size: var(--fs-2xs);
+  color: var(--faint);
+}
+.recipe-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  align-items: center;
+  border-top: 1px solid var(--line);
+  padding-top: var(--sp-3);
+}
+.codeblock.wrap pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  padding-right: 72px;
+}
+.run-body {
+  gap: var(--sp-5);
+}
+.details-stack {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  overflow: hidden;
+}
+.disclosure + .disclosure {
+  border-top: 1px solid var(--line);
+}
+.disclosure > summary {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-2);
+  flex-wrap: wrap;
+  padding: 12px var(--sp-4);
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+.disclosure > summary::-webkit-details-marker {
+  display: none;
+}
+.disclosure > summary:hover {
+  background: var(--surface-2);
+}
+.disclosure > summary svg {
+  align-self: center;
+  transition: transform 0.15s ease;
+  color: var(--muted);
+}
+.disclosure[open] > summary svg {
+  transform: rotate(90deg);
+}
+.disclosure > summary .t {
+  font-weight: 600;
+  font-size: var(--fs-md);
+}
+.disclosure > summary .m {
+  font-size: var(--fs-xs);
+  color: var(--muted);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.disclosure > .body {
+  padding: 0 var(--sp-4) var(--sp-4);
+}
+.disclosure .notes {
+  line-height: 1.6;
+  max-width: 90ch;
+}
+@media (max-width: 640px) {
+  .recipe-card {
+    padding: var(--sp-3);
+  }
+  .knum.lead .v {
+    font-size: var(--fs-2xl);
+  }
+  .key-numbers {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .recipe .facts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .recipe .fact .hint {
+    display: none;
+  }
+}
+
+/* ------------------------------------------------------------------ runs table: one kind per tab */
+.runs-tabs {
+  flex-wrap: wrap;
+  margin-bottom: var(--sp-2);
+}
+.runs-tabs .count {
+  opacity: 0.6;
+  margin-left: 2px;
+  font-variant-numeric: tabular-nums;
+}
+.runs-table th .th-sub {
+  display: block;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--faint);
+  font-size: var(--fs-2xs);
+}
+.runs-table td.primary a {
+  color: var(--ink);
+  font-weight: 500;
+}
+.runs-table td .unit {
+  margin-left: 2px;
+}
+
+/* ------------------------------------------------------------------ model page */
+.fact-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  font-size: var(--fs-sm);
+  color: var(--ink-2);
+  margin-top: var(--sp-2);
+}
+.fact-strip b {
+  color: var(--ink);
+  font-weight: 600;
+}
+.disclosure.boxed {
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  overflow: hidden;
+}
+.runs-table td .ver {
+  display: inline-block;
+  max-width: 14ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: bottom;
+}
+.cell-drawer .runs-table th,
+.cell-drawer .runs-table td {
+  padding-left: 8px;
+  padding-right: 8px;
+}
+.drawer.cell-drawer {
+  width: min(640px, 100%);
+}
+.runs-table td.primary {
+  white-space: normal;
+  min-width: 12ch;
+}
+.cell-drawer .runs-table th .th-sub {
+  display: none;
+}
+
+/* ------------------------------------------------------------------ results: kind tabs */
+.kind-tabs {
+  flex-wrap: wrap;
+}
+.kind-tabs button {
+  height: 32px;
+  padding: 0 14px;
+  font-size: var(--fs-sm);
+}
+.kind-tabs .count {
+  opacity: 0.6;
+  margin-left: 3px;
+  font-variant-numeric: tabular-nums;
+}
+.kind-note {
+  max-width: 90ch;
+}
+.filters > .btn.active {
+  border-color: var(--ink);
+}
+.run-page .section-title {
+  flex-wrap: wrap;
+}
+.run-page .section-title h2 {
+  white-space: nowrap;
+}
+.run-page .section-title .meta {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
