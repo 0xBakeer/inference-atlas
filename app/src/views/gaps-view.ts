@@ -1,4 +1,4 @@
-import { html, nothing } from 'lit';
+import { html, nothing, type TemplateResult } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import type { Gap } from '@atlas/core';
 import { addButton } from '../components/add-modal.js';
@@ -12,6 +12,38 @@ import { matchesQuery, uniqueSorted } from '../util/filters.js';
 import { fmtInt } from '@atlas/core';
 import { ViewElement } from './view-base.js';
 
+/**
+ * A gap's reasons in a few words. The build writes one reason per scoring rule, so a top gap
+ * carries eight of them; the reader wants the two that matter and the rest on hover.
+ */
+function whyShort(g: Gap): { lead: string[]; rest: string[] } {
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const r of g.reasons) {
+    const t = r
+      .replace(/^featured hardware .*/, 'wanted device')
+      .replace(/^featured model .*/, 'wanted model')
+      .replace(/^featured engine .*/, 'wanted engine')
+      .replace(/^newest (\S+) minor.*/, 'newest $1')
+      .replace(/^(.*) has never been measured$/, (_m, x: string) =>
+        x === g.hardware_id
+          ? 'device never measured'
+          : x === g.engine_id
+            ? 'engine never measured'
+            : x.startsWith(g.model_id)
+              ? 'model never measured'
+              : 'never measured',
+      )
+      .replace(/^(\d+) workloads?$/, '$1 workloads');
+    if (/^\d+ workloads$/.test(t)) continue;
+    if (!seen.has(t)) {
+      seen.add(t);
+      out.push(t);
+    }
+  }
+  return { lead: out.slice(0, 2), rest: out.slice(2) };
+}
+
 @customElement('atlas-gaps-view')
 export class AtlasGapsView extends ViewElement {
   override connectedCallback(): void {
@@ -20,7 +52,7 @@ export class AtlasGapsView extends ViewElement {
   }
 
   /** Where the queue concentrates: gaps per device and per engine, under the current filters. */
-  private queueCharts(rows: Gap[]) {
+  private queueCharts(rows: Gap[]): TemplateResult | typeof nothing {
     if (rows.length < 3) return nothing;
     const count = (key: (g: Gap) => string) => {
       const m = new Map<string, number>();
@@ -29,11 +61,12 @@ export class AtlasGapsView extends ViewElement {
     };
     const byHw = count((g) => g.hardware_id);
     const byEngine = count((g) => g.engine_id);
+    const byModel = count((g) => g.model_id);
     return html`<div class="insights">
       <section class="card tight">
         <div class="card-head">
-          <h3>Gaps by device</h3>
-          <span class="muted small">where a box would help most</span>
+          <h3>By device</h3>
+          <span class="muted small">a box like this would help most</span>
         </div>
         ${barList(
           byHw.map(([id, n]) => ({
@@ -41,14 +74,14 @@ export class AtlasGapsView extends ViewElement {
             value: n,
             text: fmtInt(n),
             color: `var(--${vendorClass(store.lookups.hardware.get(id)?.vendor)})`,
-            href: href('hardware', id),
+            href: `#/gaps?hardware=${id}`,
           })),
           { ariaLabel: 'Open gaps per device' },
         )}
       </section>
       <section class="card tight">
         <div class="card-head">
-          <h3>Gaps by engine</h3>
+          <h3>By engine</h3>
           <span class="muted small">in the current queue</span>
         </div>
         ${barList(
@@ -57,9 +90,25 @@ export class AtlasGapsView extends ViewElement {
             value: n,
             text: fmtInt(n),
             color: 'var(--chart-2)',
-            href: href('engines', id),
+            href: `#/gaps?engine=${id}`,
           })),
           { ariaLabel: 'Open gaps per engine' },
+        )}
+      </section>
+      <section class="card tight">
+        <div class="card-head">
+          <h3>By model</h3>
+          <span class="muted small">most wanted first</span>
+        </div>
+        ${barList(
+          byModel.map(([id, n]) => ({
+            label: store.lookups.models.get(id)?.model.name ?? id,
+            value: n,
+            text: fmtInt(n),
+            color: 'var(--chart-1)',
+            href: `#/gaps?model=${encodeURIComponent(id)}`,
+          })),
+          { ariaLabel: 'Open gaps per model' },
         )}
       </section>
     </div>`;
@@ -84,8 +133,9 @@ export class AtlasGapsView extends ViewElement {
           search,
         ),
     );
-    const shown = rows.slice(0, Number(f('n') ?? 50));
+    const shown = rows.slice(0, Number(f('n') ?? 25));
     const weights = store.site.wanted.weights;
+    const active = ['engine', 'model', 'hardware', 'vendor', 'level', 'q'].filter((k) => f(k));
     const spec = (g: Gap) => ({
       engine_id: g.engine_id,
       engine_version: g.engine_version,
@@ -95,20 +145,48 @@ export class AtlasGapsView extends ViewElement {
       hw_count: g.hw_count,
       workload_ids: g.workload_ids,
     });
+    const devices = new Set(rows.map((g) => g.hardware_id)).size;
+    const modelsN = new Set(rows.map((g) => g.model_id)).size;
+    const enginesN = new Set(rows.map((g) => g.engine_id)).size;
+    const lk = store.lookups;
 
     return html`<div class="page">
       <div class="page-head">
         <div class="eyebrow">Wanted</div>
         <div class="row-wrap" style="justify-content:space-between">
-          <h1>${fmtInt(rows.length)} gap${rows.length === 1 ? '' : 's'} in the queue</h1>
+          <h1>Pick a square nobody has measured</h1>
           <div class="head-actions">
             <a class="btn btn-sm" href="#/contribute">${icon('sparkle')} Build your own packet</a>
           </div>
         </div>
         <p class="lede">
-          Every row is a cell nobody has measured, ranked by how much the map would learn from it.
-          Each one opens a packet that a coding agent — or you — can execute end to end.
+          Every row is a model, a quantization, a device and an engine that nobody has put a number
+          on yet, ranked by how much the map would learn from it. Each one opens a packet that a
+          coding agent — or you — can run end to end in about twenty minutes.
         </p>
+      </div>
+
+      <div class="stats-strip mb-5">
+        <div class="stat">
+          <div class="v">${fmtInt(rows.length)}</div>
+          <div class="k">gaps in the queue</div>
+        </div>
+        <div class="stat">
+          <div class="v">${devices}</div>
+          <div class="k">devices wanted</div>
+        </div>
+        <div class="stat">
+          <div class="v">${modelsN}</div>
+          <div class="k">models</div>
+        </div>
+        <div class="stat">
+          <div class="v">${enginesN}</div>
+          <div class="k">engines</div>
+        </div>
+        <div class="stat">
+          <div class="v">${shown[0] ? shown[0].score.toFixed(0) : '–'}</div>
+          <div class="k">top wanted score</div>
+        </div>
       </div>
 
       <div class="filters mb-3">
@@ -122,22 +200,31 @@ export class AtlasGapsView extends ViewElement {
           />
         </div>
         ${selectField(
-          'Engine',
-          f('engine'),
-          uniqueSorted(gaps.map((g) => g.engine_id)).map((v) => ({ value: v, label: v })),
-          (v) => setQuery({ engine: v }),
+          'Hardware',
+          f('hardware'),
+          uniqueSorted(gaps.map((g) => g.hardware_id)).map((v) => ({
+            value: v,
+            label: lk.hardware.get(v)?.name ?? v,
+          })),
+          (v) => setQuery({ hardware: v }),
         )}
         ${selectField(
           'Model',
           f('model'),
-          uniqueSorted(gaps.map((g) => g.model_id)).map((v) => ({ value: v, label: v })),
+          uniqueSorted(gaps.map((g) => g.model_id)).map((v) => ({
+            value: v,
+            label: lk.models.get(v)?.model.name ?? v,
+          })),
           (v) => setQuery({ model: v }),
         )}
         ${selectField(
-          'Hardware',
-          f('hardware'),
-          uniqueSorted(gaps.map((g) => g.hardware_id)).map((v) => ({ value: v, label: v })),
-          (v) => setQuery({ hardware: v }),
+          'Engine',
+          f('engine'),
+          uniqueSorted(gaps.map((g) => g.engine_id)).map((v) => ({
+            value: v,
+            label: lk.engines.get(v)?.meta.name ?? v,
+          })),
+          (v) => setQuery({ engine: v }),
         )}
         ${selectField(
           'Vendor',
@@ -145,12 +232,7 @@ export class AtlasGapsView extends ViewElement {
           uniqueSorted(reg.hardware.map((h) => h.vendor)).map((v) => ({ value: v, label: v })),
           (v) => setQuery({ vendor: v }),
         )}
-        ${selectField(
-          'Level',
-          f('level'),
-          uniqueSorted(gaps.map((g) => g.level)).map((v) => ({ value: v, label: v })),
-          (v) => setQuery({ level: v }),
-        )}
+        ${active.length ? html`<button class="btn btn-ghost btn-sm" @click=${() => setQuery(Object.fromEntries([...active, 'n'].map((k) => [k, null])))}>${icon('x')} Clear</button>` : nothing}
       </div>
 
       ${this.queueCharts(rows)}
@@ -163,66 +245,97 @@ export class AtlasGapsView extends ViewElement {
             })
           : rows.length === 0
             ? emptyState({ title: 'Nothing matches', text: 'Loosen a filter.' })
-            : html`<div class="card flush">
-                <div style="padding:0 var(--sp-4)">
-                  ${shown.map(
-                    (g, i) =>
-                      html`<div class="gap-row">
-                        <span class="rank">${i + 1}</span>
-                        <div class="what">
-                          <div class="line">
-                            <a href=${href('engines', g.engine_id)}>${g.engine_id}</a>
-                            <span class="muted">${g.engine_version}</span>
-                            <span class="faint">·</span>
-                            <a class="mono" href=${modelHref(g.model_id)}>${g.model_id}</a
-                            ><span class="muted">/${g.quant_id}</span>
-                            <span class="faint">·</span>
-                            ${vendorDot(store.lookups.hardware.get(g.hardware_id)?.vendor)}
-                            <a href=${href('hardware', g.hardware_id)}>${g.hardware_id}</a>
-                            ${g.level !== 'none' ? html`<span class="tag warn">${g.level}</span>` : nothing}
-                          </div>
-                          <div class="why">
-                            ${g.reasons.map((r) => html`<span class="tag">${r}</span>`)}
-                            <span class="muted"
-                              >· ${g.workload_ids.length}
-                              workload${g.workload_ids.length === 1 ? '' : 's'}</span
+            : html`<div class="table-wrap">
+                  <table class="table gaps-table">
+                    <thead>
+                      <tr>
+                        <th class="num">#</th>
+                        <th>Model / quant</th>
+                        <th>Device</th>
+                        <th>Engine</th>
+                        <th>Why it matters</th>
+                        <th class="num">Tests</th>
+                        <th class="num">Score</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      ${shown.map((g, i) => {
+                        const why = whyShort(g);
+                        const hw = lk.hardware.get(g.hardware_id);
+                        return html`<tr>
+                          <td class="num rank ${i < 3 ? 'top' : ''}">${i + 1}</td>
+                          <td class="primary">
+                            <a href=${modelHref(g.model_id)}
+                              >${lk.models.get(g.model_id)?.model.name ?? g.model_id}</a
                             >
-                          </div>
-                        </div>
-                        <span class="row" style="gap:6px">
-                          <span class="score" title="wanted score">${g.score.toFixed(0)}</span>
-                          <a
-                            class="btn btn-sm btn-ghost"
-                            href=${`#/explore?engine=${g.engine_id}&version=${g.engine_version}&model=${encodeURIComponent(g.model_id)}&quant=${g.quant_id}&hardware=${g.hardware_id}`}
-                            title="Open in the explorer"
-                            >${icon('sparkle')}</a
-                          >
-                          ${addButton(spec(g), { label: 'Add', size: 'sm' })}
-                        </span>
-                      </div>`,
-                  )}
+                            <span class="mono xs muted">/${g.quant_id}</span>
+                          </td>
+                          <td>
+                            <span class="row" style="gap:6px"
+                              >${vendorDot(hw?.vendor)}
+                              <a href=${href('hardware', g.hardware_id)}
+                                >${hw?.name ?? g.hardware_id}</a
+                              >${g.hw_count > 1 ? html` <span class="muted">×${g.hw_count}</span>` : nothing}</span
+                            >
+                          </td>
+                          <td>
+                            <a href=${href('engines', g.engine_id)}
+                              >${lk.engines.get(g.engine_id)?.meta.name ?? g.engine_id}</a
+                            >
+                            <span class="mono xs muted ver" title=${g.engine_version}
+                              >${g.engine_version}</span
+                            >
+                          </td>
+                          <td class="why" title=${g.reasons.join('\n')}>
+                            ${why.lead.map((r) => html`<span class="chip static">${r}</span>`)}
+                            ${why.rest.length ? html`<span class="xs muted">+${why.rest.length}</span>` : nothing}
+                            ${g.level !== 'none' ? html`<span class="tag warn">${g.level}</span>` : nothing}
+                          </td>
+                          <td class="num" title=${g.workload_ids.join(', ')}>
+                            ${g.workload_ids.length}
+                          </td>
+                          <td class="num score">${g.score.toFixed(0)}</td>
+                          <td class="right nowrap">
+                            <a
+                              class="btn btn-xs btn-ghost"
+                              href=${`#/explore?engine=${g.engine_id}&version=${g.engine_version}&model=${encodeURIComponent(g.model_id)}&quant=${g.quant_id}&hardware=${g.hardware_id}`}
+                              title="Open in the explorer"
+                              >${icon('sparkle')}</a
+                            >
+                            ${addButton(spec(g), { label: 'Add', size: 'sm' })}
+                          </td>
+                        </tr>`;
+                      })}
+                    </tbody>
+                  </table>
                 </div>
                 ${
                   rows.length > shown.length
-                    ? html`<div
-                        style="padding:var(--sp-3) var(--sp-4);border-top:1px solid var(--line)"
-                      >
+                    ? html`<div class="row mt-3" style="gap:8px">
                         <button
                           class="btn btn-sm"
-                          @click=${() => setQuery({ n: String(shown.length + 50) })}
+                          @click=${() => setQuery({ n: String(shown.length + 25) })}
                         >
-                          Show 50 more of ${fmtInt(rows.length - shown.length)}
+                          Show 25 more
                         </button>
+                        <span class="xs muted"
+                          >${fmtInt(shown.length)} of ${fmtInt(rows.length)}</span
+                        >
                       </div>`
                     : nothing
-                }
-              </div>`
+                }`
       }
 
-      <section class="mt-6">
-        <div class="section-title"><h2>How gaps are scored</h2></div>
-        <div class="card">
-          <p class="small" style="max-width:70ch">
+      <details class="disclosure boxed mt-6">
+        <summary>
+          ${icon('chevronRight')}<span class="t">How gaps are scored</span
+          ><span class="m"
+            >the registry cross product, minus what has runs, plus a weight per reason</span
+          >
+        </summary>
+        <div class="body">
+          <p class="small" style="max-width:80ch;line-height:1.55">
             The build crosses every model × quant × device × engine minor the registry says is
             physically possible (the quant lists the engine, the engine supports the format, the
             engine has a platform the device can host), subtracts cells that have runs, and adds
@@ -233,7 +346,7 @@ export class AtlasGapsView extends ViewElement {
             ${Object.entries(weights).map(([k, v]) => html`<span class="tag" title=${k}>${k.replace(/_/g, ' ')} <b class="mono" style="margin-left:4px">+${v}</b></span>`)}
           </div>
         </div>
-      </section>
+      </details>
     </div>`;
   }
 }
