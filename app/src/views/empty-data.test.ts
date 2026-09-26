@@ -64,7 +64,7 @@ describe('every view renders well with zero runs', () => {
     const text = el.textContent ?? '';
     expect(text).toContain('The rest are yours');
     expect(text).toContain('0');
-    expect(el.querySelector('.mini-map')).toBeTruthy(); // every possible cell, all grey
+    expect(el.querySelector('atlas-living-map')).toBeTruthy(); // every possible cell, all grey
     expect(el.querySelector('atlas-heatmap')).toBeTruthy();
     expect(text).toContain('No results yet');
     expect(text).toContain('Pick a gap');
