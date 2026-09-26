@@ -151,35 +151,35 @@ export class AtlasContributorsView extends ViewElement {
                   </thead>
                   <tbody>
                     ${rows.map(
-                    (c, i) =>
-                      html`<tr
-                        class="lb-row clickable"
-                        @click=${() => (location.hash = href('contributors', c.login))}
-                      >
-                        <td class="rank ${i < 3 ? 'top' : ''}">${i + 1}</td>
-                        <td class="primary">
-                          <span class="row" style="gap:8px"
-                            >${avatar(c.login, { userId: c.user_id, avatarUrl: c.avatar_url, size: 'md' })}<span
-                              >${c.login}</span
-                            ></span
-                          >
-                        </td>
-                        <td class="num points" data-label="points">
-                          ${fmtNum(c.points, c.points % 1 ? 1 : 0)}
-                        </td>
-                        <td class="num" data-label="runs">${c.runs}</td>
-                        <td class="num" data-label="cells">${c.cells_filled}</td>
-                        <td class="num" data-label="reproductions">${c.reproductions}</td>
-                        <td data-label="hardware">
-                          <span class="row-wrap" style="gap:3px"
-                            >${c.hardware_ids.slice(0, 4).map((h) => html`<span class="tag mono">${h}</span>`)}${c.hardware_ids.length > 4 ? html`<span class="tag">+${c.hardware_ids.length - 4}</span>` : nothing}</span
-                          >
-                        </td>
-                        <td class="xs muted" data-label="active">
-                          ${absDate(c.first_seen)} · ${when(c.last_seen)}
-                        </td>
-                      </tr>`,
-                  )}
+                      (c, i) =>
+                        html`<tr
+                          class="lb-row clickable"
+                          @click=${() => (location.hash = href('contributors', c.login))}
+                        >
+                          <td class="rank ${i < 3 ? 'top' : ''}">${i + 1}</td>
+                          <td class="primary">
+                            <span class="row" style="gap:8px"
+                              >${avatar(c.login, { userId: c.user_id, avatarUrl: c.avatar_url, size: 'md' })}<span
+                                >${c.login}</span
+                              ></span
+                            >
+                          </td>
+                          <td class="num points" data-label="points">
+                            ${fmtNum(c.points, c.points % 1 ? 1 : 0)}
+                          </td>
+                          <td class="num" data-label="runs">${c.runs}</td>
+                          <td class="num" data-label="cells">${c.cells_filled}</td>
+                          <td class="num" data-label="reproductions">${c.reproductions}</td>
+                          <td data-label="hardware">
+                            <span class="row-wrap" style="gap:3px"
+                              >${c.hardware_ids.slice(0, 4).map((h) => html`<span class="tag mono">${h}</span>`)}${c.hardware_ids.length > 4 ? html`<span class="tag">+${c.hardware_ids.length - 4}</span>` : nothing}</span
+                            >
+                          </td>
+                          <td class="xs muted" data-label="active">
+                            ${absDate(c.first_seen)} · ${when(c.last_seen)}
+                          </td>
+                        </tr>`,
+                    )}
                   </tbody>
                 </table>
               </div>`

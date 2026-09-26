@@ -6,7 +6,12 @@ import { icon } from '../components/icons.js';
 import '../components/mini-coverage.js';
 import { fmtDefault } from '../components/param-form.js';
 import { runsTable } from '../components/runs-table.js';
-import { barList, bestPerGroup, countPerGroup, firstMetricWithData } from '../components/stat-charts.js';
+import {
+  barList,
+  bestPerGroup,
+  countPerGroup,
+  firstMetricWithData,
+} from '../components/stat-charts.js';
 import {
   codeBlock,
   emptyState,
@@ -161,9 +166,7 @@ export class AtlasEnginesView extends ViewElement {
                     }),
                   {
                     max:
-                      metric.better === 'lower'
-                        ? Math.max(...best.map((b) => b.value))
-                        : undefined,
+                      metric.better === 'lower' ? Math.max(...best.map((b) => b.value)) : undefined,
                     ariaLabel: `Best ${metric.label} per engine version`,
                   },
                 )}

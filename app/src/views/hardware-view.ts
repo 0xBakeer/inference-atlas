@@ -257,9 +257,7 @@ export class AtlasHardwareView extends ViewElement {
                 })),
                 {
                   max:
-                    metric.better === 'lower'
-                      ? Math.max(...best.map((b) => b.value))
-                      : undefined,
+                    metric.better === 'lower' ? Math.max(...best.map((b) => b.value)) : undefined,
                   ariaLabel: `Best ${metric.label} per device`,
                 },
               )}
