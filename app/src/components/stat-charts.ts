@@ -10,7 +10,7 @@
  */
 import { html, nothing, type TemplateResult } from 'lit';
 import { styleMap } from 'lit/directives/style-map.js';
-import type uPlot from 'uplot';
+import uPlot from 'uplot';
 import type { IndexRow } from '../data/types.js';
 import { fmtInt, isNum } from '../util/format.js';
 import { METRIC_BY_KEY, type MetricDef } from '../util/metrics.js';
@@ -45,7 +45,8 @@ export function barList(items: BarItem[], opts: { max?: number; ariaLabel?: stri
   const row = (it: BarItem) => {
     const frac = it.frac ?? (isNum(it.value) ? it.value / max : 0);
     const w = Math.max(0, Math.min(1, frac)) * 100;
-    const body = html`<span class="bl-label ellipsis"
+    const body = html`<span
+        class="bl-label ellipsis"
         title=${it.title ?? (typeof it.label === 'string' ? it.label : '')}
         >${it.label}</span
       >
@@ -155,7 +156,9 @@ export function activityBuild(
       scales: {
         x: { time: false },
         y: { range: (_u, _min, max) => [0, Math.max(1, max) * 1.15] },
-        ...(opts.cumulative ? { c: { range: (_u, _min, max) => [0, Math.max(1, max) * 1.1] } } : {}),
+        ...(opts.cumulative
+          ? { c: { range: (_u, _min, max) => [0, Math.max(1, max) * 1.1] } }
+          : {}),
       },
       axes: [
         { ...axisDefaults(p), values: (_u, vals) => vals.map((v) => fmtDate(v)) },
@@ -349,14 +352,9 @@ export function countPerGroup(
 
 /* ------------------------------------------------------------------ shared bits */
 
-/** uPlot bar renderer; loaded lazily because `uPlot.paths.bars` lives on the constructor. */
+/** uPlot bar renderer. `paths` is a static on the uPlot constructor, not on instances. */
 function barsPath(size: number): uPlot.Series.PathBuilder {
-  return (u, seriesIdx, idx0, idx1) => {
-    const ctor = u.constructor as unknown as {
-      paths: { bars: (o?: { size?: [number, number] }) => uPlot.Series.PathBuilder };
-    };
-    return ctor.paths.bars({ size: [size, 100] })(u, seriesIdx, idx0, idx1);
-  };
+  return uPlot.paths.bars!({ size: [size, 100] });
 }
 
 /** A titled chart section used by list/detail pages. */
