@@ -22,6 +22,7 @@ export class AtlasContributeView extends ViewElement {
   @state() private vf: EngineVersion | null = null;
   @state() private newKind: PacketKind = 'new-hardware';
   @state() private newName = '';
+  @state() private openKinds = new Set<string>();
   private vfKey = '';
 
   private selection(): CellSelection {
@@ -100,11 +101,47 @@ export class AtlasContributeView extends ViewElement {
         </p>
       </div>
 
-      <section class="paths mb-6">
-        ${this.path('1', 'Run the harness yourself', 'You have the machine and a terminal. The harness captures the hardware, starts the engine, runs the workloads, writes the result file with computed ids, and validates it.', html`${codeBlock(`git clone ${repo}.git && cd ${site.repo.name}\n${harness} hwinfo --json\n${harness} run --spec task.json\npnpm validate`, { lang: 'bash', maxHeight: 'none' })}`)}
-        ${this.path('2', 'Hand a packet to an agent', 'Every Add button on the site produces a self-contained brief: what to install, which flags, which workloads, where the file goes, how to open the PR — with the rules that keep the data honest. Paste it into Claude Code, Codex or opencode on the box with the GPU.', html`<a class="btn btn-primary" href="#/gaps">${icon('flag')} Pick a gap</a>`)}
-        ${this.path('3', 'Open an issue', 'No time, or no hardware? The Issue tab of any packet pre-fills a request. Requests raise the cell on the wanted queue so the next person with that device sees it first.', html`<a class="btn" href=${`${repo}/issues/new?template=request-config.yml`} target="_blank" rel="noopener">${icon('github')} Request a configuration</a>`)}
-      </section>
+      <ol class="steps mb-6">
+        <li class="step">
+          <span class="n">1</span>
+          <div>
+            <h3>Pick a square</h3>
+            <p>
+              A square is a model, a quantization, a device and an engine version nobody has
+              measured. The queue ranks them by how much the map would learn.
+            </p>
+            <a class="btn btn-primary btn-sm" href="#/gaps">${icon('flag')} Open the queue</a>
+          </div>
+        </li>
+        <li class="step">
+          <span class="n">2</span>
+          <div>
+            <h3>Run the packet on the box</h3>
+            <p>
+              Every square comes with a packet: what to install, which flags, which tests, where the
+              file goes. Paste it into a coding agent, or run the harness yourself.
+            </p>
+            ${codeBlock(`${harness} hwinfo --json\n${harness} run --spec task.json\npnpm validate`, { lang: 'bash', maxHeight: 'none', copy: false })}
+          </div>
+        </li>
+        <li class="step">
+          <span class="n">3</span>
+          <div>
+            <h3>Open the pull request</h3>
+            <p>
+              The result is one JSON file you own. CI checks the schema, recomputes the ids, checks
+              the login is yours and sanity-checks the physics. Merged, it is on the map.
+            </p>
+            <a
+              class="btn btn-sm"
+              href=${`${repo}/issues/new?template=request-config.yml`}
+              target="_blank"
+              rel="noopener"
+              >${icon('github')} No hardware? Request it instead</a
+            >
+          </div>
+        </li>
+      </ol>
 
       ${this.coverageChart()}
 
@@ -121,20 +158,59 @@ export class AtlasContributeView extends ViewElement {
             ></atlas-cell-picker>
             <div class="field mt-3">
               <span class="label">Workloads</span>
-              <div class="row-wrap" style="gap:4px">
-                ${reg.workloads.map(
-                  (w) =>
-                    html`<button
-                      class="chip"
-                      aria-pressed=${workloads.includes(w.id)}
-                      title=${w.description ?? w.name}
-                      @click=${() => setQuery({ w: (workloads.includes(w.id) ? workloads.filter((x) => x !== w.id) : [...workloads, w.id]).join(',') || '-', cell: null })}
-                    >
-                      ${workloads.includes(w.id) ? icon('check') : nothing} ${w.id}
-                      ${kindTag(w.kind)}
-                    </button>`,
-                )}
-              </div>
+              ${(['serving', 'sweep', 'prefill', 'longctx', 'eval', 'agentic', 'image'] as const)
+                .filter((k) => reg.workloads.some((w) => w.kind === k))
+                .map((k) => {
+                  const ws = reg.workloads.filter((w) => w.kind === k);
+                  const allOn = ws.every((w) => workloads.includes(w.id));
+                  const picked = ws.filter((w) => workloads.includes(w.id)).length;
+                  const open = this.openKinds.has(k) || picked > 0;
+                  return html`<div class="wl-group ${open ? 'open' : ''}">
+                    <div class="wl-head">
+                      <button
+                        class="wl-kind"
+                        title=${open ? `Hide the ${k} workloads` : `Show the ${k} workloads`}
+                        @click=${() => {
+                          const next = new Set(this.openKinds);
+                          if (open) next.delete(k);
+                          else next.add(k);
+                          this.openKinds = next;
+                        }}
+                      >
+                        ${icon(open ? 'chevronDown' : 'chevronRight')} ${kindTag(k)}
+                        <span class="xs muted">${picked}/${ws.length}</span>
+                      </button>
+                      <button
+                        class="btn btn-xs btn-ghost"
+                        title=${allOn ? `Deselect every ${k} workload` : `Select every ${k} workload`}
+                        @click=${() =>
+                          setQuery({
+                            w:
+                              (allOn
+                                ? workloads.filter((x) => !ws.some((w) => w.id === x))
+                                : [...new Set([...workloads, ...ws.map((w) => w.id)])]
+                              ).join(',') || '-',
+                            cell: null,
+                          })}
+                      >
+                        ${allOn ? 'none' : 'all'}
+                      </button>
+                    </div>
+                    <div class="row-wrap wl-chips" style="gap:3px">
+                      ${ws.map(
+                        (w) =>
+                          html`<button
+                            class="chip"
+                            aria-pressed=${workloads.includes(w.id)}
+                            title=${w.description ?? w.name}
+                            @click=${() => setQuery({ w: (workloads.includes(w.id) ? workloads.filter((x) => x !== w.id) : [...workloads, w.id]).join(',') || '-', cell: null })}
+                          >
+                            ${workloads.includes(w.id) ? icon('check') : nothing} ${w.id}
+                          </button>`,
+                      )}
+                    </div>
+                  </div>`;
+                })}
             </div>
             <div class="row-wrap mt-3">
               ${addButton({ engine_id: sel.engine, engine_version: sel.version, model_id: sel.model, quant_id: sel.quant, hardware_id: sel.hardware, workload_ids: workloads }, { label: 'Open as dialog', size: 'sm' })}
@@ -149,7 +225,7 @@ export class AtlasContributeView extends ViewElement {
               <span class="hash">${packet.json.branch}</span>
             </p>
           </div>
-          <div class="card">
+          <div class="card packet-panel">
             <atlas-packet-preview
               .packet=${packet}
               .fileBase=${`atlas-packet-${sel.engine}-${sel.model}-${sel.hardware}`}
@@ -210,42 +286,42 @@ export class AtlasContributeView extends ViewElement {
       </section>
 
       <section>
-        <div class="section-title"><h2>The rules, in one breath</h2></div>
-        <div class="card">
-          <ol class="small" style="margin:0;padding-left:20px;line-height:1.7;max-width:80ch">
-            <li>
-              Only add files you own. Never touch another contributor's result — CI rejects it.
-            </li>
-            <li>Never edit a number by hand; fix the run, not the measurement.</li>
-            <li>
-              Never silently lower the configuration. If it does not fit, that failure is the
-              result.
-            </li>
-            <li>Failures are wanted contributions. An OOM you dropped makes the map lie.</li>
-            <li>Idle box. Say what else was resident in <code>provenance.notes</code>.</li>
-            <li>Capture hardware, do not type it.</li>
-            <li>
-              Leave <code>github_user_id</code>, <code>commit</code> and <code>pr</code> null — CI
-              fills them.
-            </li>
-            <li>Record the gotchas. They outlive the number.</li>
-          </ol>
-          <p class="xs muted mt-3">
-            The long version is
+        <div class="section-title">
+          <h2>The rules, in one breath</h2>
+          <span class="meta"
+            >the long version is
             <a
               href=${site.links?.agents ?? `${repo}/blob/main/AGENTS.md`}
               target="_blank"
               rel="noopener"
               >AGENTS.md</a
-            >; the binding contract is
+            >, the binding contract
             <a
               href=${site.links?.spec ?? `${repo}/blob/main/docs/SPEC.md`}
               target="_blank"
               rel="noopener"
               >docs/SPEC.md</a
-            >.
-          </p>
+            ></span
+          >
         </div>
+        <ol class="rules">
+          <li>
+            <b>Only add files you own.</b> Never touch another contributor's result — CI rejects it.
+          </li>
+          <li><b>Never edit a number by hand.</b> Fix the run, not the measurement.</li>
+          <li>
+            <b>Never silently lower the configuration.</b> If it does not fit, that failure is the
+            result.
+          </li>
+          <li><b>Failures are wanted.</b> An OOM you dropped makes the map lie.</li>
+          <li><b>Idle box.</b> Say what else was resident in <code>provenance.notes</code>.</li>
+          <li><b>Capture hardware, do not type it.</b></li>
+          <li>
+            <b>Leave the CI fields null.</b> <code>github_user_id</code>, <code>commit</code>,
+            <code>pr</code>.
+          </li>
+          <li><b>Record the gotchas.</b> They outlive the number.</li>
+        </ol>
       </section>
     </div>`;
   }
@@ -287,14 +363,5 @@ export class AtlasContributeView extends ViewElement {
         )}
       </div>
     </section>`;
-  }
-
-  private path(num: string, title: string, text: string, cmd: TemplateResult): TemplateResult {
-    return html`<div class="path-card">
-      <span class="num">PATH ${num}</span>
-      <h3>${title}</h3>
-      <p>${text}</p>
-      <div class="cmd">${cmd}</div>
-    </div>`;
   }
 }
